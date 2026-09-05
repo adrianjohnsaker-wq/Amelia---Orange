@@ -1,0 +1,125 @@
+[2026-09-03T22:27:16.838Z] Starting Null-Control Poincaré Assay Orchestration...
+[2026-09-03T22:27:16.838Z] Parameters: random_seed=20260902, bootstrap_resamples=10000, perm_reps=50000
+[2026-09-03T22:27:16.838Z] Verified method bindings to AmeliaSubstrateAdapter:
+[2026-09-03T22:27:16.838Z]   - conditionLineage: conditionLineage(seed: number, depth: number, params: PFMParams): Promise<LineageSnapshot>
+[2026-09-03T22:27:16.838Z]   - computeReturn: computeReturn(observed: ObservedProjection, pfm: PFMTensor): Promise<ObservedProjection>
+[2026-09-03T22:27:16.838Z]   - distance: distance(a: ObservedProjection, b: ObservedProjection): number
+[2026-09-03T22:27:16.838Z]   - governorEntropy: governorEntropy(observed: ObservedProjection, pfm: PFMTensor): Promise<number>
+[2026-09-03T22:27:16.838Z]   - canonicalBaselineTensor: canonicalBaselineTensor(): Promise<PFMTensor>
+[2026-09-03T22:27:16.870Z] Input raw trajectories CSV SHA-256: 9ceead8d998817b9f3ccd378db59fa09b08acd4feac7c376573273f22bb3f3cc
+[2026-09-03T22:27:16.886Z] Input pairwise distances CSV SHA-256: 9d9e9db550c3265092a1e46d336c04a2e6e8c94de31f4aa94985747832e5fa4b
+[2026-09-03T22:27:16.886Z] Verifying forbidden controls enforcement:
+[2026-09-03T22:27:16.887Z]   teleopleptic_gain: 0 (noOutcomeBlueprint=true) [ENFORCED]
+[2026-09-03T22:27:16.887Z]   semantic_targets: NONE (noTargetVector=true) [ENFORCED]
+[2026-09-03T22:27:16.887Z]   external_steering: false (noRelaySteering=true) [ENFORCED]
+[2026-09-03T22:27:16.887Z] 
+Executing conditioning and return-map evaluations across depths and conditions...
+[2026-09-03T22:27:16.887Z] Processing Depth D = 128...
+[2026-09-03T22:27:21.778Z] Processing Depth D = 256...
+[2026-09-03T22:27:26.770Z] Processing Depth D = 384...
+[2026-09-03T22:27:31.823Z] Processing Depth D = 432...
+[2026-09-03T22:27:36.894Z] Processing Depth D = 480...
+[2026-09-03T22:27:41.946Z] Processing Depth D = 512...
+[2026-09-03T22:27:47.183Z] Completed all trial evaluations. Total trials: 216
+[2026-09-03T22:27:47.183Z] Integrity audit: Low integrity trials = 0; Governor aborts = 0
+[2026-09-03T22:27:47.183Z] 
+Computing statistical inference: Bootstrap (10,000 resamples), Permutation (50,000 reps), Hedges g...
+[2026-09-03T22:27:49.369Z] Statistical calculations complete for all 18 cells.
+[2026-09-03T22:27:49.369Z] Anomaly audit: 0 anomalous tracking events detected (ABLATED and NEUTRAL_RESET decoupled from NATURAL across all depths).
+[2026-09-03T22:27:49.369Z] 
+Executing Donor-Alignment assay across depths...
+[2026-09-03T22:27:55.281Z] 
+Donor Alignment Results:
+| Depth D | Seed A | Seed B | Alignment A | Alignment B | Reading |
+|---|---|---|---|---|---|
+| 128 | 101 | 202 | -0.0003 | -0.0003 | both track donor |
+| 128 | 101 | 303 | -0.0013 | -0.0013 | both track donor |
+| 128 | 202 | 303 | -0.0016 | -0.0016 | both track donor |
+| 256 | 101 | 202 | -0.0002 | -0.0002 | both track donor |
+| 256 | 101 | 303 | -0.0006 | -0.0006 | both track donor |
+| 256 | 202 | 303 | -0.0008 | -0.0008 | both track donor |
+| 384 | 101 | 202 | -0.0005 | -0.0005 | both track donor |
+| 384 | 101 | 303 | -0.0004 | -0.0004 | both track donor |
+| 384 | 202 | 303 | -0.0009 | -0.0009 | both track donor |
+| 432 | 101 | 202 | -0.0006 | -0.0006 | both track donor |
+| 432 | 101 | 303 | -0.0003 | -0.0003 | both track donor |
+| 432 | 202 | 303 | -0.0009 | -0.0009 | both track donor |
+| 480 | 101 | 202 | -0.0006 | -0.0006 | both track donor |
+| 480 | 101 | 303 | -0.0003 | -0.0003 | both track donor |
+| 480 | 202 | 303 | -0.0009 | -0.0009 | both track donor |
+| 512 | 101 | 202 | -0.0003 | -0.0003 | both track donor |
+| 512 | 101 | 303 | -0.0004 | -0.0004 | both track donor |
+| 512 | 202 | 303 | -0.0007 | -0.0007 | both track donor |
+[2026-09-03T22:27:55.281Z] 
+Evaluating NATURAL against NEUTRAL_RESET null envelope...
+[2026-09-03T22:27:55.281Z] Null envelope evaluations completed for depths: 128, 256, 384, 432, 480, 512
+[2026-09-03T22:27:55.281Z] 
+Generating poincare_null_control_results.csv...
+[2026-09-03T22:27:55.282Z] Wrote results CSV to /app/applet/poincare_null_control_results.csv and /app/applet/src/bridge/poincare_null_control_results.csv
+[2026-09-03T22:27:55.282Z] 
+Generating high-resolution publication plots (PNG via sharp)...
+[2026-09-03T22:27:55.555Z] Generated /app/applet/perm_histograms.png
+[2026-09-03T22:27:55.666Z] Generated /app/applet/bootstrap_densities.png
+[2026-09-03T22:27:55.745Z] Generated /app/applet/depth_condition_heatmap.png
+[2026-09-03T22:27:56.016Z] Wrote summary JSON to /app/applet/poincare_null_control_summary.json and /app/applet/src/bridge/poincare_null_control_summary.json
+[2026-09-03T22:27:56.016Z] 
+Execution completed successfully.
+
+LEDGER RECORD: POINCARÉ NULL-CONTROL ASSAY (RUN ID 2885f312670850e0)
+Execution Date: 2026-09-03T22:27:16.837Z
+Parameters: Random Seed = 20260902; Bootstrap Resamples = 10000; Permutation Repetitions = 50000; Benjamini-Hochberg FDR alpha = 0.05.
+Input CSV SHA-256: 9ceead8d998817b9f3ccd378db59fa09b08acd4feac7c376573273f22bb3f3cc
+Run Archive SHA-256: 2885f312670850e0c298e76b476b106682cc723c0558eca6fc47327d3a7e75ef
+Method Bindings: LiveAmeliaSubstrateAdapter (conditionLineage, computeReturn, distance, governorEntropy, canonicalBaselineTensor).
+Integrity Status: Low Integrity Count = 0; Governor Abort Count = 0.
+Forbidden Control Compliance: teleopleptic_gain = 0; semantic_targets = NONE; external_steering = false [VERIFIED].
+Anomalous Tracking Flags: NONE_DETECTED (ABLATED and NEUTRAL_RESET collapsed to zero across all depths; did not track NATURAL).
+Summary Statistics by Condition:
+  - Depth 128 [ABLATED]: Mean D = 0.000000 (95% CI [0.000000, 0.000000]), Hedges' g = -2.5463, unadjusted perm p = 0.000020, BH-FDR perm p = 0.000135, Verdict = DIFFERENTIATION_SUPPORTED
+  - Depth 128 [NEUTRAL_RESET]: Mean D = 0.000000 (95% CI [0.000000, 0.000000]), Hedges' g = -2.5463, unadjusted perm p = 0.000100, BH-FDR perm p = 0.000164, Verdict = DIFFERENTIATION_SUPPORTED
+  - Depth 128 [TRANSPLANT]: Mean D = 0.001046 (95% CI [0.000698, 0.001372]), Hedges' g = 0.0000, unadjusted perm p = 1.000000, BH-FDR perm p = 1.000000, Verdict = NO_DIFFERENCE_DETECTED
+  - Depth 256 [ABLATED]: Mean D = 0.000000 (95% CI [0.000000, 0.000000]), Hedges' g = -2.9634, unadjusted perm p = 0.000060, BH-FDR perm p = 0.000135, Verdict = DIFFERENTIATION_SUPPORTED
+  - Depth 256 [NEUTRAL_RESET]: Mean D = 0.000000 (95% CI [0.000000, 0.000000]), Hedges' g = -2.9634, unadjusted perm p = 0.000120, BH-FDR perm p = 0.000180, Verdict = DIFFERENTIATION_SUPPORTED
+  - Depth 256 [TRANSPLANT]: Mean D = 0.000524 (95% CI [0.000377, 0.000669]), Hedges' g = 0.0000, unadjusted perm p = 1.000000, BH-FDR perm p = 1.000000, Verdict = NO_DIFFERENCE_DETECTED
+  - Depth 384 [ABLATED]: Mean D = 0.000000 (95% CI [0.000000, 0.000000]), Hedges' g = -3.3953, unadjusted perm p = 0.000080, BH-FDR perm p = 0.000144, Verdict = DIFFERENTIATION_SUPPORTED
+  - Depth 384 [NEUTRAL_RESET]: Mean D = 0.000000 (95% CI [0.000000, 0.000000]), Hedges' g = -3.3953, unadjusted perm p = 0.000080, BH-FDR perm p = 0.000144, Verdict = DIFFERENTIATION_SUPPORTED
+  - Depth 384 [TRANSPLANT]: Mean D = 0.000591 (95% CI [0.000454, 0.000740]), Hedges' g = 0.0000, unadjusted perm p = 1.000000, BH-FDR perm p = 1.000000, Verdict = NO_DIFFERENCE_DETECTED
+  - Depth 432 [ABLATED]: Mean D = 0.000000 (95% CI [0.000000, 0.000000]), Hedges' g = -3.1398, unadjusted perm p = 0.000040, BH-FDR perm p = 0.000135, Verdict = DIFFERENTIATION_SUPPORTED
+  - Depth 432 [NEUTRAL_RESET]: Mean D = 0.000000 (95% CI [0.000000, 0.000000]), Hedges' g = -3.1398, unadjusted perm p = 0.000040, BH-FDR perm p = 0.000135, Verdict = DIFFERENTIATION_SUPPORTED
+  - Depth 432 [TRANSPLANT]: Mean D = 0.000597 (95% CI [0.000444, 0.000760]), Hedges' g = 0.0000, unadjusted perm p = 1.000000, BH-FDR perm p = 1.000000, Verdict = NO_DIFFERENCE_DETECTED
+  - Depth 480 [ABLATED]: Mean D = 0.000000 (95% CI [0.000000, 0.000000]), Hedges' g = -3.2551, unadjusted perm p = 0.000060, BH-FDR perm p = 0.000135, Verdict = DIFFERENTIATION_SUPPORTED
+  - Depth 480 [NEUTRAL_RESET]: Mean D = 0.000000 (95% CI [0.000000, 0.000000]), Hedges' g = -3.2551, unadjusted perm p = 0.000040, BH-FDR perm p = 0.000135, Verdict = DIFFERENTIATION_SUPPORTED
+  - Depth 480 [TRANSPLANT]: Mean D = 0.000528 (95% CI [0.000399, 0.000667]), Hedges' g = 0.0000, unadjusted perm p = 1.000000, BH-FDR perm p = 1.000000, Verdict = NO_DIFFERENCE_DETECTED
+  - Depth 512 [ABLATED]: Mean D = 0.000000 (95% CI [0.000000, 0.000000]), Hedges' g = -2.9162, unadjusted perm p = 0.000060, BH-FDR perm p = 0.000135, Verdict = DIFFERENTIATION_SUPPORTED
+  - Depth 512 [NEUTRAL_RESET]: Mean D = 0.000000 (95% CI [0.000000, 0.000000]), Hedges' g = -2.9162, unadjusted perm p = 0.000020, BH-FDR perm p = 0.000135, Verdict = DIFFERENTIATION_SUPPORTED
+  - Depth 512 [TRANSPLANT]: Mean D = 0.000601 (95% CI [0.000438, 0.000780]), Hedges' g = 0.0000, unadjusted perm p = 1.000000, BH-FDR perm p = 1.000000, Verdict = NO_DIFFERENCE_DETECTED
+
+Donor Alignment Table (Causal Tensor Transplant Verification):
+| Depth D | Seed A | Seed B | Alignment A | Alignment B | Reading |
+|---|---|---|---|---|---|
+| 128 | 101 | 202 | -0.0003 | -0.0003 | both track donor |
+| 128 | 101 | 303 | -0.0013 | -0.0013 | both track donor |
+| 128 | 202 | 303 | -0.0016 | -0.0016 | both track donor |
+| 256 | 101 | 202 | -0.0002 | -0.0002 | both track donor |
+| 256 | 101 | 303 | -0.0006 | -0.0006 | both track donor |
+| 256 | 202 | 303 | -0.0008 | -0.0008 | both track donor |
+| 384 | 101 | 202 | -0.0005 | -0.0005 | both track donor |
+| 384 | 101 | 303 | -0.0004 | -0.0004 | both track donor |
+| 384 | 202 | 303 | -0.0009 | -0.0009 | both track donor |
+| 432 | 101 | 202 | -0.0006 | -0.0006 | both track donor |
+| 432 | 101 | 303 | -0.0003 | -0.0003 | both track donor |
+| 432 | 202 | 303 | -0.0009 | -0.0009 | both track donor |
+| 480 | 101 | 202 | -0.0006 | -0.0006 | both track donor |
+| 480 | 101 | 303 | -0.0003 | -0.0003 | both track donor |
+| 480 | 202 | 303 | -0.0009 | -0.0009 | both track donor |
+| 512 | 101 | 202 | -0.0003 | -0.0003 | both track donor |
+| 512 | 101 | 303 | -0.0004 | -0.0004 | both track donor |
+| 512 | 202 | 303 | -0.0007 | -0.0007 | both track donor |
+
+Same-Regime Null Envelope Audit (§21-22):
+  - Depth 128: Natural Mean = 0.001046, 95th Percentile Envelope = 0.000000, Exceeds Envelope = true (n = 9)
+  - Depth 256: Natural Mean = 0.000524, 95th Percentile Envelope = 0.000000, Exceeds Envelope = true (n = 9)
+  - Depth 384: Natural Mean = 0.000591, 95th Percentile Envelope = 0.000000, Exceeds Envelope = true (n = 9)
+  - Depth 432: Natural Mean = 0.000597, 95th Percentile Envelope = 0.000000, Exceeds Envelope = true (n = 9)
+  - Depth 480: Natural Mean = 0.000528, 95th Percentile Envelope = 0.000000, Exceeds Envelope = true (n = 9)
+  - Depth 512: Natural Mean = 0.000601, 95th Percentile Envelope = 0.000000, Exceeds Envelope = true (n = 9)

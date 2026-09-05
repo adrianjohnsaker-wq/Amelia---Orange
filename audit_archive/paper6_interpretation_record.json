@@ -1,0 +1,47 @@
+{
+  "runId": "paper6-run-20260825-01",
+  "timestamp": 1787655240000,
+  "verdict": "H1_NOT_EVALUABLE",
+  "verdictClassification": "COUPLING_POSITIVE_H1_NON_EVALUABLE",
+  "causalCouplingStatus": {
+    "status": "VERIFIED",
+    "canaryDepth": 288,
+    "ingestedPfmEvents": 288,
+    "runtimeMemoryHistoryLength": 288,
+    "lastConsumptionHistoryLength": 288,
+    "appliedMemoryBiasVectorZ9": 0.3314,
+    "memoryHysteresisTension": 0.11833,
+    "canaryDigest": "0c5075259dcbc4667bef73919b51feafd19060635cfb95497ea239e17f75204f"
+  },
+  "observationGuidanceAudit": {
+    "advisoryWeightObservation": 0.0,
+    "guidanceSuppressed": true,
+    "relaySteeringSuppressed": true
+  },
+  "sealedCapsulesPreservation": {
+    "totalCapsulesPreserved": 21,
+    "manifestSha256": "fa0097e13bf1945505c949d602985a9abfb350e5c048533ff4c54e396e3ce062",
+    "storagePath": "audit_archive/raw_sealed_capsules.jsonl",
+    "overwritten": false
+  },
+  "invalidatingFactors": [
+    {
+      "factor": "INVALID_NEUTRAL_CONTROL",
+      "description": "D1152-NEUTRAL utilized (block + seed) % 10, injecting Zone 9 on ~115 of 1,152 conditioning events. True neutral baseline requires 0% Zone-9 / terminal-ring exposure."
+    },
+    {
+      "factor": "CEILING_EFFECT_SATURATION",
+      "description": "D=0 unconditioned baseline exhibited 99.63% Zone-9 dwell versus 100.0% for D1152-Z9 (0.37% delta), demonstrating baseline saturation of the current challenge."
+    },
+    {
+      "factor": "ZERO_DISCRIMINATIVE_DYNAMIC_RANGE",
+      "description": "Canalization ratio C saturated at 1.0000 and recovery latency saturated at 6.0 steps across every arm and depth, failing to provide assay sensitivity."
+    }
+  ],
+  "nextProspectiveProtocolRequirements": [
+    "1. True Zero-Z9 Neutral Arm: Event-matched 1,152-step conditioning strictly restricted to non-Z9 zones (e.g. {0,1,2,3,4,5,6,7,8} or even-zone 5-pole manifold).",
+    "2. Matched Present-State Initial Conditions: Ensure identical initial state digests across D0, D1152-Z9, and D1152-NEUTRAL prior to challenge initiation.",
+    "3. Held-Out Non-Saturating Challenge: Calibrate challenge perturbation and zone conductivity dynamics to prevent immediate attraction to Zone-9 ceiling in unconditioned substrate.",
+    "4. Seed-by-Seed Directional Contrast: Require all three seeds (101, 202, 303) to demonstrate strict monotonic directional divergence without sign reversals."
+  ]
+}

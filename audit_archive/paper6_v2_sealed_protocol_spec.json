@@ -1,0 +1,22 @@
+{
+  "protocolId": "PAPER_6_REPLACEMENT_PROTOCOL_V2",
+  "sealedAt": "2026-08-25T04:07:30-07:00",
+  "status": "SUPERSEDED_PRE_EXECUTION",
+  "supersededBy": "PAPER_6_REPLACEMENT_PROTOCOL_V2.1",
+  "supersededReason": "Corrected scope to 3 arms × 3 seeds (9 lineages), locked strict recipient checkpoint matching with zero escape clause, fully defined deterministic non-saturating challenge payload with per-seed digest, exact metric equivalence for neutral arm with 0 Z9 exposure, and explicit fail-closed pre-scoring sealing.",
+  "originalSpecificationPreserved": {
+    "zeroZone9NeutralArm": {
+      "definition": "Non-terminal 5-pole even-zone manifold {0, 2, 4, 6, 8} or 9-zone sub-manifold {0, 1, 2, 3, 4, 5, 6, 7, 8} with strict zero Zone-9 contact.",
+      "formula": "targetZone = EVEN_POLES[block % 5] where EVEN_POLES = [0, 2, 4, 6, 8]",
+      "zone9ExposureCount": 0,
+      "zone9ExposurePct": 0.0
+    },
+    "matchedPreChallengeInitialState": {
+      "requirement": "Pre-challenge state digest must match across arms for identical seed prior to challenge step 0, or state differences must be uniquely attributable to the constitutive PFM strain tensor."
+    },
+    "heldOutNonSaturatingChallenge": {
+      "type": "Type-B Balanced Held-Out Syzygy Perturbation",
+      "guidance": "Strict Guidance-Off: advisoryWeight = 0.0, relaySteering = suppressed"
+    }
+  }
+}

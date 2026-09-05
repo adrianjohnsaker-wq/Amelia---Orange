@@ -1,0 +1,78 @@
+{
+  "entities": {
+    "amelia_process_memory": {
+      "title": "Amelia Process Memory",
+      "description": "Constitutive deformation field history and persistent process memory records",
+      "fields": {
+        "id": { "type": "string", "description": "Memory ID" },
+        "step": { "type": "number", "description": "Substrate step" },
+        "timestamp": { "type": "string", "description": "ISO timestamp" },
+        "deformationVector": { "type": "array", "description": "10-zone deformation stress tensor" },
+        "objective": { "type": "string", "description": "Selected bounded objective" },
+        "identityContinuity": { "type": "number", "description": "Continuity score" },
+        "scaffoldStage": { "type": "number", "description": "Scaffold stage 0-4" }
+      },
+      "indexes": ["timestamp", "step"]
+    },
+    "amelia_canalization_runs": {
+      "title": "Canalization Assay Runs",
+      "description": "Persistent 3-arm canalization assay results (Frozen, Null, Active C1)",
+      "fields": {
+        "id": { "type": "string", "description": "Assay run ID" },
+        "depth": { "type": "number", "description": "Depth e.g. 48, 72, 288" },
+        "seed": { "type": "number", "description": "Seed number" },
+        "activeC1Retention": { "type": "number", "description": "Active C1 Zone 9 Retention %" },
+        "fieldCoherence": { "type": "number", "description": "Field coherence" },
+        "frozenRetention": { "type": "number", "description": "Frozen arm retention %" },
+        "nullRetention": { "type": "number", "description": "Null arm retention %" },
+        "timestamp": { "type": "string", "description": "ISO timestamp" }
+      },
+      "indexes": ["timestamp", "depth"]
+    },
+    "amelia_paper6_assays": {
+      "title": "Paper 6 H1 Resistance Assays",
+      "description": "Hypothesis 1 resistance canary runs and p-values",
+      "fields": {
+        "id": { "type": "string", "description": "Assay ID" },
+        "depth": { "type": "string", "description": "Depth code" },
+        "seed": { "type": "number", "description": "Seed number" },
+        "h1ResistanceRatio": { "type": "number", "description": "Resistance ratio" },
+        "nullResponseMean": { "type": "number", "description": "Null response mean" },
+        "activeC1ResponseMean": { "type": "number", "description": "Active C1 response mean" },
+        "differentialSignificanceP": { "type": "number", "description": "p-value" },
+        "status": { "type": "string", "description": "PASSED | BORDERLINE | ANOMALOUS" },
+        "timestamp": { "type": "string", "description": "ISO timestamp" }
+      },
+      "indexes": ["timestamp", "seed"]
+    },
+    "amelia_dialogue_messages": {
+      "title": "Amelia Dialogue Messages",
+      "description": "Persistent conversational dialogue messages between the user and Amelia morphogenetic substrate",
+      "fields": {
+        "id": { "type": "string", "description": "Message ID" },
+        "sender": { "type": "string", "description": "user | amelia | system" },
+        "text": { "type": "string", "description": "Dialogue text content" },
+        "timestamp": { "type": "string", "description": "ISO timestamp" },
+        "step": { "type": "number", "description": "Substrate step at emission" },
+        "activeSyzygy": { "type": "string", "description": "Active syzygy context" },
+        "deformationTension": { "type": "number", "description": "Deformation tension at emission" },
+        "governorStatus": { "type": "string", "description": "Governor status at emission" },
+        "suggestedActions": { "type": "array", "description": "Interactive action keys" }
+      },
+      "indexes": ["timestamp", "step"]
+    },
+    "amelia_substrate_snapshots": {
+      "title": "Substrate Snapshots",
+      "description": "Latest state of all 10 zones and Governor telemetry",
+      "fields": {
+        "id": { "type": "string", "description": "Snapshot ID" },
+        "step": { "type": "number", "description": "Step index" },
+        "timestamp": { "type": "number", "description": "Unix timestamp" },
+        "zones": { "type": "object", "description": "Zone states 0-9" },
+        "governor": { "type": "object", "description": "Governor telemetry" },
+        "updatedAt": { "type": "string", "description": "ISO string" }
+      },
+      "indexes": ["step"]
+    }
+  }
+}

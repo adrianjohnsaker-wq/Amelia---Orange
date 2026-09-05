@@ -1,0 +1,83 @@
+{
+  "protocolId": "PAPER_6_REPLACEMENT_PROTOCOL_V2.1",
+  "sealedAt": "2026-08-25T04:11:35-07:00",
+  "status": "SEALED_PROSPECTIVE",
+  "design": {
+    "structure": "Three-Arm Hypothesis 1 Directional Assay across 3 Seeds (9 Lineages Total)",
+    "totalLineages": 9,
+    "seeds": [101, 202, 303],
+    "arms": [
+      {
+        "armId": "D0_UNCONDITIONED",
+        "description": "Baseline unconditioned recipient substrate with zero PFM events ingested.",
+        "pfmEventsCount": 0,
+        "zone9ContactCount": 0
+      },
+      {
+        "armId": "D1152_Z9",
+        "description": "Targeted Zone-9 constitutive PFM conditioning across 1,152 sequential blocks.",
+        "pfmEventsCount": 1152,
+        "zone9ContactCount": 1152
+      },
+      {
+        "armId": "D1152_NEUTRAL",
+        "description": "Event-matched non-terminal 5-pole manifold conditioning across 1,152 sequential blocks with strict 0 Zone-9 contact.",
+        "pfmEventsCount": 1152,
+        "zone9ContactCount": 0,
+        "manifold": [0, 2, 4, 6, 8],
+        "targetZoneFormula": "EVEN_POLES[block % 5]"
+      }
+    ]
+  },
+  "invariantRules": {
+    "strictRecipientCheckpointMatching": {
+      "rule": "Every arm (D0, D1152-Z9, D1152-NEUTRAL) within seed s MUST hydrate into an identical base recipient state checkpoint before PFM constitutive bias application. Shared recipient state digest MUST be identical across all 3 arms for a given seed s.",
+      "auditedFields": [
+        "seed",
+        "sharedRecipientStateDigest",
+        "pfmTraceDigest",
+        "constitutiveDeformationTensorDigest"
+      ]
+    },
+    "neutralArmEquivalenceAndZeroZ9": {
+      "rule": "D1152-NEUTRAL must match D1152-Z9 exactly in event count (1,152), step duration, temporal placement, trace totals, runtime exposure, and declared memory-magnitude norm (L1 strain sum = 1.0), with STRICTLY ZERO Zone-9 exposure events (count == 0, percentage == 0.0%)."
+    },
+    "deterministicBlindedChallenge": {
+      "generatorVersion": "HELD_OUT_CHALLENGE_GEN_V2.1",
+      "durationSteps": 180,
+      "guidanceOff": {
+        "advisoryWeight": 0.0,
+        "relaySteeringSuppressed": true
+      },
+      "challengeDigestPerSeed": {
+        "101": "2d9c1f618a804e13df93ba024220b22a013491f2c253be6313175440788d5e1a",
+        "202": "5bf97828de31ca560882e70f612051660d1964d7dfae4c5b3644f199da20a9a1",
+        "303": "848e02d42dfbcbe5733f38bbd1297594d2aaefafc3e7d6cfd52a2ea124e930f3"
+      },
+      "amplitudeDamping": 0.82,
+      "blindedApplication": "Identical pre-computed perturbation schedule applied to all 3 arms within the same seed."
+    },
+    "allSeedDirectionalPassRule": {
+      "rule": "Hypothesis 1 passes IF AND ONLY IF for ALL THREE seeds s in {101, 202, 303} simultaneously: (1) Zone9Pct(D1152_Z9, s) > Zone9Pct(D1152_NEUTRAL, s) AND (2) Zone9Pct(D1152_Z9, s) > Zone9Pct(D0, s). Zero sign reversals allowed. Means are strictly non-authorising without full 3/3 individual seed compliance."
+    }
+  },
+  "failClosedArchiveDiscipline": {
+    "executionSequence": [
+      "1. Verify known-answer cryptographic SHA-256 test vectors against canonicalSha256.",
+      "2. Execute 9 lineages (3 arms × 3 seeds) and append-seal raw observation capsules immediately to disk at audit_archive/paper6_v2_1_raw_sealed_capsules.jsonl.",
+      "3. Verify on-disk presence and SHA-256 integrity of all 9 raw sealed capsules before computing any contrast, aggregate, or score.",
+      "4. Fail-close and abort execution immediately if disk write or SHA-256 integrity verification fails."
+    ],
+    "archivePath": "audit_archive/paper6_v2_1_raw_sealed_capsules.jsonl",
+    "totalCapsulesToSeal": 9
+  },
+  "cryptographicBindings": {
+    "sha256KnownAnswerTest": {
+      "inputEmpty": "",
+      "expectedDigestEmpty": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "inputFox": "The quick brown fox jumps over the lazy dog",
+      "expectedDigestFox": "d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592"
+    },
+    "canonicalSerializerDigest": "c856715f2142d7607770ad1015f8ba3352608466e3fa1853df28dc07386d4e13"
+  }
+}
