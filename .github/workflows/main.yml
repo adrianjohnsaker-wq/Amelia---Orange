@@ -1,0 +1,92 @@
+name: Generate Android APK
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Fetch your Kotlin and Python source code
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # 2. Setup Java 17 (Required for modern Android builds)
+    - name: Set up JDK 17
+      uses: actions/setup-java@v5
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    # 3. Dynamically build a standard Android structure with a fixed Gradle version
+    - name: Bootstrap Android App Structure
+      run: |
+        # Initialize an empty gradle project wrapper and explicitly force it to use a stable 8.x release
+        gradle init --type basic --dsl kotlin --project-name AmeliaApp --overwrite
+        
+        # Force the Gradle wrapper to downscale from 9.7 to a highly stable 8.2.2 to match AGP
+        gradle wrapper --gradle-version 8.2.2
+        
+        # Create standard Android app directories
+        mkdir -p app/src/main/java/com/amelia/app
+        mkdir -p app/src/main/res/values
+        
+        # Move your loose Kotlin files into the standard app source path
+        mv *.kt app/src/main/java/com/amelia/app/ || true
+        
+        # Enable AndroidX support explicitly in gradle.properties
+        echo "android.useAndroidX=true" > gradle.properties
+        
+        # Create minimal Android settings file
+        echo "pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }" > settings.gradle.kts
+        echo "dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }" >> settings.gradle.kts
+        echo "include(\":app\")" >> settings.gradle.kts
+        
+        # Create root build configuration
+        echo "plugins { id(\"com.android.application\") version \"8.2.2\" apply false; id(\"org.jetbrains.kotlin.android\") version \"1.9.22\" apply false }" > build.gradle.kts
+        
+        # Create the App module configuration
+        cat << 'EOF' > app/build.gradle.kts
+        plugins {
+            id("com.android.application")
+            id("org.jetbrains.kotlin.android")
+        }
+        android {
+            namespace = "com.amelia.app"
+            compileSdk = 34
+            defaultConfig {
+                applicationId = "com.amelia.app"
+                minSdk = 24
+                targetSdk = 34
+                versionCode = 1
+                versionName = "1.0"
+            }
+        }
+        dependencies {
+            implementation("androidx.core:core-ktx:1.12.0")
+            implementation("androidx.appcompat:appcompat:1.6.1")
+        }
+        EOF
+        
+        # Generate essential minimal Android resources (Manifest, Strings)
+        echo '<manifest xmlns:android="http://android.com"></manifest>' > app/src/main/AndroidManifest.xml
+        echo '<resources><string name="app_name">Amelia</string></resources>' > app/src/main/res/values/strings.xml
+
+    # 4. Make execution permissions certain
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    # 5. Compile the app using the downscaled local gradlew wrapper script
+    - name: Build Debug APK
+      run: ./gradlew :app:assembleDebug
+
+    # 6. Output the compiled package to your GitHub Actions panel for download
+    - name: Upload Downloadable APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: Amelia-App-Download
+        path: app/build/outputs/apk/debug/app-debug.apk
