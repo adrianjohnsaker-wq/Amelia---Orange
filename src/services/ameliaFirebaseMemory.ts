@@ -44,8 +44,10 @@ export interface FirebaseCanalizationRun {
 
 export class AmeliaFirebaseMemoryService {
   private static isInitialized = false;
+  private static readonly localOnly = import.meta.env.VITE_AMELIA_LOCAL_ONLY === '1';
 
   public static async init() {
+    if (this.localOnly) return;
     if (!this.isInitialized) {
       await initFirebaseAuth();
       this.isInitialized = true;
@@ -56,6 +58,7 @@ export class AmeliaFirebaseMemoryService {
    * Save a live substrate state snapshot to Firestore
    */
   public static async saveSnapshot(snapshot: SubstrateStepSnapshot): Promise<string> {
+    if (this.localOnly) return 'local-only';
     await this.init();
     const docRef = doc(db, 'amelia_substrate_snapshots', 'latest');
     await setDoc(docRef, {
@@ -75,6 +78,7 @@ export class AmeliaFirebaseMemoryService {
    * Record a process memory checkpoint into constitutive deformation field memory
    */
   public static async recordProcessMemory(snapshot: SubstrateStepSnapshot): Promise<string> {
+    if (this.localOnly) return 'local-only';
     await this.init();
     const colRef = collection(db, 'amelia_process_memory');
     const record: FirebaseProcessMemoryRecord = {
@@ -101,6 +105,7 @@ export class AmeliaFirebaseMemoryService {
     seed: number, 
     results: Record<'FROZEN' | 'NULL_BASELINE' | 'ACTIVE_C1', CanalizationArmResult>
   ): Promise<string> {
+    if (this.localOnly) return 'local-only';
     await this.init();
     const colRef = collection(db, 'amelia_canalization_runs');
     const run: FirebaseCanalizationRun = {
@@ -122,6 +127,7 @@ export class AmeliaFirebaseMemoryService {
    * Save Paper 6 Assay Result
    */
   public static async savePaper6Assay(assay: Paper6AssayResult): Promise<string> {
+    if (this.localOnly) return 'local-only';
     await this.init();
     const docRef = doc(db, 'amelia_paper6_assays', assay.id);
     await setDoc(docRef, {
@@ -135,6 +141,7 @@ export class AmeliaFirebaseMemoryService {
    * Fetch recent process memory records
    */
   public static async fetchProcessMemory(maxRecords = 25): Promise<FirebaseProcessMemoryRecord[]> {
+    if (this.localOnly) return [];
     await this.init();
     const q = query(collection(db, 'amelia_process_memory'), orderBy('timestamp', 'desc'), limit(maxRecords));
     const querySnapshot = await getDocs(q);
@@ -149,6 +156,7 @@ export class AmeliaFirebaseMemoryService {
    * Fetch saved canalization runs
    */
   public static async fetchCanalizationRuns(maxRuns = 30): Promise<FirebaseCanalizationRun[]> {
+    if (this.localOnly) return [];
     await this.init();
     const q = query(collection(db, 'amelia_canalization_runs'), orderBy('timestamp', 'desc'), limit(maxRuns));
     const querySnapshot = await getDocs(q);
@@ -163,6 +171,7 @@ export class AmeliaFirebaseMemoryService {
    * Fetch saved Paper 6 assays
    */
   public static async fetchPaper6Assays(): Promise<Paper6AssayResult[]> {
+    if (this.localOnly) return [];
     await this.init();
     const q = query(collection(db, 'amelia_paper6_assays'), orderBy('timestamp', 'desc'), limit(40));
     const querySnapshot = await getDocs(q);
@@ -177,6 +186,7 @@ export class AmeliaFirebaseMemoryService {
    * Realtime subscription to process memory
    */
   public static subscribeProcessMemory(callback: (records: FirebaseProcessMemoryRecord[]) => void) {
+    if (this.localOnly) { callback([]); return () => {}; }
     this.init();
     const q = query(collection(db, 'amelia_process_memory'), orderBy('timestamp', 'desc'), limit(30));
     return onSnapshot(q, (snapshot) => {
@@ -194,6 +204,7 @@ export class AmeliaFirebaseMemoryService {
    * Realtime subscription to Canalization runs
    */
   public static subscribeCanalizationRuns(callback: (runs: FirebaseCanalizationRun[]) => void) {
+    if (this.localOnly) { callback([]); return () => {}; }
     this.init();
     const q = query(collection(db, 'amelia_canalization_runs'), orderBy('timestamp', 'desc'), limit(30));
     return onSnapshot(q, (snapshot) => {
@@ -211,6 +222,7 @@ export class AmeliaFirebaseMemoryService {
    * Save a dialogue message to Firestore
    */
   public static async saveDialogueMessage(msg: AmeliaDialogueMessage): Promise<string> {
+    if (this.localOnly) return msg.id;
     await this.init();
     const colRef = collection(db, 'amelia_dialogue_messages');
     const docData: any = {
@@ -232,6 +244,7 @@ export class AmeliaFirebaseMemoryService {
    * Fetch recent dialogue messages
    */
   public static async fetchDialogueMessages(maxMessages = 50): Promise<AmeliaDialogueMessage[]> {
+    if (this.localOnly) return [];
     await this.init();
     const q = query(collection(db, 'amelia_dialogue_messages'), orderBy('timestamp', 'asc'), limit(maxMessages));
     const querySnapshot = await getDocs(q);
@@ -246,6 +259,7 @@ export class AmeliaFirebaseMemoryService {
    * Realtime subscription to dialogue messages
    */
   public static subscribeDialogueMessages(callback: (messages: AmeliaDialogueMessage[]) => void) {
+    if (this.localOnly) { callback([]); return () => {}; }
     this.init();
     const q = query(collection(db, 'amelia_dialogue_messages'), orderBy('timestamp', 'asc'), limit(60));
     return onSnapshot(q, (snapshot) => {
@@ -263,6 +277,7 @@ export class AmeliaFirebaseMemoryService {
    * Clear dialogue history from Firestore
    */
   public static async clearDialogueHistory(): Promise<void> {
+    if (this.localOnly) return;
     await this.init();
     const q = query(collection(db, 'amelia_dialogue_messages'), limit(100));
     const snapshot = await getDocs(q);
