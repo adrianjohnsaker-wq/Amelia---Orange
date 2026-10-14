@@ -35,3 +35,14 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(168, 162, 158, 0.6);
 }
+
+/* Tablet touch controls. Scroll the navigation horizontally, keep chat usable when keyboard appears. */
+@media (max-width: 1023px) {
+  #amelia-nav { width: 100%; overflow-x: auto; overflow-y: hidden; padding: 0.5rem; -webkit-overflow-scrolling: touch; }
+  #amelia-nav > button { width: auto; flex: 0 0 auto; white-space: nowrap; min-height: 44px; }
+  #amelia-dialogue-window { height: 70dvh; min-height: 360px; }
+  #amelia-dialogue-input { font-size: 16px; min-height: 48px; }
+  #btn-send-dialogue { min-width: 64px; min-height: 48px; justify-content: center; }
+  #btn-play-pause, #btn-open-chat-header { min-height: 44px; }
+  header { padding: 0.75rem !important; }
+}
