@@ -70,12 +70,13 @@ export function App() {
   
   const [snapshot, setSnapshot] = useState<SubstrateStepSnapshot>(() => runtimeRef.current.step());
   const [history, setHistory] = useState<SubstrateStepSnapshot[]>([]);
-  const [isRunning, setIsRunning] = useState<boolean>(true);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
   const [selectedZone, setSelectedZone] = useState<ZoneId>(9);
   const [isFloatingChatOpen, setIsFloatingChatOpen] = useState<boolean>(false);
   
   type TabType = 'morphogenetic' | 'dialogue' | 'thread3' | 'numogram' | 'atlas' | 'deformation' | 'canalization' | 'paper6' | 'midplex' | 'd288probe' | 'hyperstition' | 'benchmarks' | 'governor' | 'rhythms' | 'firebase' | 'audit';
-  const [activeTab, setActiveTab] = useState<TabType>('morphogenetic');
+  const [activeTab, setActiveTab] = useState<TabType>('dialogue');
+  const tabletLocalMode = import.meta.env.VITE_AMELIA_LOCAL_ONLY === '1';
   
   // Assay controls
   const [selectedDepth, setSelectedDepth] = useState<number>(288);
@@ -105,7 +106,7 @@ export function App() {
   );
 
   const [auditLog, setAuditLog] = useState<string[]>([
-    `[FIREBASE] Connected to Firestore Database (${firebaseConfig.firestoreDatabaseId}) on project ${firebaseConfig.projectId}`,
+    tabletLocalMode ? '[STORAGE] Local-only tablet build; remote memory disabled' : `[FIREBASE] Configured for ${firebaseConfig.projectId}; connection not verified`,
     `[INIT] Amelia Morphogenetic Substrate initialized at ${new Date().toLocaleTimeString()}`,
     `[GOVERNOR] Invariants validated: AntiLock=99.4%, IdentityContinuity=0.965, Scaffolding=Stage 3`,
     `[CANALIZATION] Baseline 3-Arm assay ready for D288 across seeds [101, 202, 303, 404, 505]`,
@@ -250,11 +251,11 @@ export function App() {
               </span>
               <span 
                 className="text-xs px-2.5 py-0.5 rounded-full font-mono font-semibold bg-amber-950/80 border border-amber-600/80 text-amber-300 flex items-center gap-1.5 cursor-pointer hover:bg-amber-900/80 transition-colors" 
-                onClick={() => setActiveTab('firebase')} 
+                onClick={() => { if (!tabletLocalMode) setActiveTab('firebase'); }} 
                 title="Click to open Firestore Process Memory Hub"
               >
                 <Flame className="w-3 h-3 text-amber-400" />
-                FIRESTORE: CONNECTED
+                {tabletLocalMode ? 'LOCAL STORAGE' : 'FIRESTORE: CONFIGURED'}
               </span>
             </div>
             <p className="text-xs text-stone-400 font-mono">
@@ -577,7 +578,7 @@ export function App() {
         </nav>
 
         {/* Dynamic Content Viewport */}
-        <main className="flex-1 p-6 overflow-y-auto max-w-7xl mx-auto w-full space-y-6">
+        <main className="flex-1 min-w-0 p-3 sm:p-6 overflow-y-auto max-w-7xl mx-auto w-full space-y-6">
           {/* TAB 0: LIVE MORPHOGENETIC LAB */}
           {activeTab === 'morphogenetic' && (
             <LiveMorphogeneticLab onLogMessage={addLogMessage} />
