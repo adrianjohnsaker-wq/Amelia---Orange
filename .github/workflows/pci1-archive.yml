@@ -1,0 +1,60 @@
+name: PCI-1 Archive Verified Raw Evidence
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/pci1/ARCHIVE_GATE'
+
+permissions:
+  contents: write
+
+jobs:
+  archive-fixed-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout unchanged PCI-1 implementation
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Regenerate and compare against ORIGINAL raw observation hash
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx tsx src/bridge/runPCI1ProspectiveCli.ts --out experiments/pci1/archive \
+            > experiments/pci1/PCI1_archive_runner.log
+          cd experiments/pci1/archive
+          sha256sum -c SHA256SUMS.txt
+          actual="$(sha256sum raw_pairs.jsonl | cut -d ' ' -f 1)"
+          expected="a05e3fd8c50953d6121c553152aab3d3e9cbb6576de8e776052bd5e8f0d9f5ac"
+          test "$actual" = "$expected"
+          registered="$(sha256sum registration_copy.json | cut -d ' ' -f 1)"
+          test "$registered" = "23106c336c655c1c9965111d755bcef8760a18b2a933cf7e7efc563a8dca0d1d"
+          cat > README.md <<'EOF'
+          # PCI-1 fixed evidence archive
+          This directory contains a regenerated exact-byte match of raw observations
+          from the previously committed PCI-1 prospective outcome.
+          First outcome: https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/38784127428
+          Corrected replay: https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/38784428766
+          Original data SHA-256: a05e3fd8c50953d6121c553152aab3d3e9cbb6576de8e776052bd5e8f0d9f5ac
+          Preregistered hypotheses remain unchanged: ../registration.json
+          Archive re-execution is NOT an additional independent replicate.
+          Git and SHA-256 establish an inspectable chain, not an independent qualified timestamp.
+          EOF
+          cp ../INCIDENT_001.md INCIDENT_001_copy.md
+      - name: Persist only the archive directory and evidence log
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/pci1/archive experiments/pci1/PCI1_archive_runner.log
+          git diff --cached --check
+          git commit -m "Archive PCI-1 raw prospective results matching original registered SHA-256"
+          git push origin HEAD:main
