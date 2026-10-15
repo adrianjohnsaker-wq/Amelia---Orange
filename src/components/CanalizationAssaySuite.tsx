@@ -44,10 +44,10 @@ export const CanalizationAssaySuite: React.FC<CanalizationAssaySuiteProps> = ({
           <div>
             <h3 className="text-sm font-bold text-stone-200 font-mono flex items-center gap-2">
               <Layers className="w-4 h-4 text-emerald-400" />
-              3-Arm Canalization Comparative Assay
+              3-Arm Canalization Formula Demonstration
             </h3>
             <p className="text-xs text-stone-400 font-mono mt-0.5">
-              Comparative validation: Frozen Arm vs Null Baseline vs Active C1 Zone 9 Retention
+              Illustrative calculated scores ONLY · no trajectories sampled · not experimental evidence
             </p>
           </div>
 
@@ -58,7 +58,7 @@ export const CanalizationAssaySuite: React.FC<CanalizationAssaySuiteProps> = ({
             className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-2 shadow-lg shadow-emerald-950/40 transition-all font-mono"
           >
             {isAssaying ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-            Execute 3-Arm Assay
+            Recalculate Demonstration
           </button>
         </div>
 
