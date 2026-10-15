@@ -1,0 +1,124 @@
+{
+  "protocol": "PCI-1",
+  "title": "Prospective causal incorporation: matched-present-state, different-history challenge",
+  "version": "1.0.0",
+  "status": "PRE-REGISTERED — predictions fixed before outcome execution",
+  "registrationDate": "2026-10-15",
+  "researchBoundary": "Prospective deterministic software specificity probe. No inference about consciousness, autonomous emergence, or an external Outside. No inferential p-values.",
+  "context": "The 2026-10-15 exploratory 25-check audit previously showed history-dependent divergence. This is not an independent discovery or confirmatory population test.",
+  "software": "Amelia---Orange TypeScript AmeliaNumogramSubstrateRuntime and stepAmeliaSubstrate",
+  "deterministicConditioningTapes": [
+    101,
+    202,
+    303,
+    404,
+    505,
+    606,
+    707,
+    808,
+    909,
+    1010,
+    1111,
+    1212
+  ],
+  "conditioning": {
+    "steps": "12 + (seed % 7)",
+    "input": "PCI1-HISTORY-<seed>-<step modulo 5>",
+    "type": "genuine endogenous step events produced by the existing runtime"
+  },
+  "pairing": {
+    "commonPresent": "After preconditioning, export the full active runtime, then import into paired arms; equality requires byte-identical zones, gates, governor, and current zone.",
+    "arms": {
+      "RETAIN": "keep actual prior PFM events",
+      "RESET": "reset only PFM, preserve matched present state",
+      "H9": "reset PFM, then inject one positive target-zone-9 memory event",
+      "H0": "reset PFM, then inject one identical positive target-zone-0 memory event",
+      "SHAM": "reset PFM, then inject one zero-flux event targeting zone 9"
+    },
+    "perturbation": {
+      "fluxDelta": 0.18,
+      "phaseCoherence": 0.96,
+      "strainRelaxation": 0.025
+    },
+    "sham": {
+      "fluxDelta": 0,
+      "phaseCoherence": 1,
+      "strainRelaxation": 0
+    },
+    "observationSteps": 8,
+    "fieldProbe": {
+      "width": 12,
+      "height": 12,
+      "preset": "SYZYGETIC_GRID",
+      "noiseAmp": 0.003,
+      "observationSteps": 1
+    }
+  },
+  "predictions": [
+    {
+      "id": "P1",
+      "metric": "L1 difference of ten zone activations, RETAIN vs RESET, at first post-pair step",
+      "direction": ">",
+      "threshold": 1e-7,
+      "unit": "activation L1",
+      "requiredPairs": 12
+    },
+    {
+      "id": "P2",
+      "metric": "Zone-9 activation, H9 minus H0, at first post-intervention step",
+      "direction": ">",
+      "threshold": 0.000001,
+      "unit": "activation",
+      "requiredPairs": 12
+    },
+    {
+      "id": "P3",
+      "metric": "Zone-0 activation, H0 minus H9, at first post-intervention step",
+      "direction": ">",
+      "threshold": 0.000001,
+      "unit": "activation",
+      "requiredPairs": 12
+    },
+    {
+      "id": "P4",
+      "metric": "Maximum absolute activation difference, SHAM vs RESET, at first step",
+      "direction": "<=",
+      "threshold": 1e-12,
+      "unit": "activation",
+      "requiredPairs": 12
+    },
+    {
+      "id": "P5",
+      "metric": "Mean absolute difference in B concentration, H9 vs H0 fields after one coupled update",
+      "direction": ">",
+      "threshold": 1e-7,
+      "unit": "concentration",
+      "requiredPairs": 12
+    }
+  ],
+  "exploratoryMeasurements": [
+    "discrete transition differences at steps 1 and 8",
+    "RETAIN-vs-RESET activation differences at step 8",
+    "governor invariant telemetry",
+    "memory head digest",
+    "event counts",
+    "field entropy difference"
+  ],
+  "policy": {
+    "forbidInterimInspection": true,
+    "noOptionalStopping": true,
+    "precommittedPairCount": 12,
+    "thresholdEvaluation": "Strict all-pairs rule; no cherry-picked subsets. Failed predictions recorded as failed.",
+    "executionSeparation": "Prediction JSON and source committed to main first. A later independent EXECUTE file push triggers outcome workflow.",
+    "resultStatus": "SUPPORTED iff all five predictions meet their registered directional thresholds for all 12 pairs; otherwise NOT_SUPPORTED",
+    "artifacts": [
+      "registration_copy.json",
+      "raw_pairs.jsonl",
+      "prediction_verdicts.json",
+      "report.md",
+      "SHA256SUMS.txt",
+      "runner.log",
+      "provenance.json"
+    ]
+  }
+}
