@@ -21,6 +21,8 @@ export interface PFMEventRecord {
   seed?: number;
   eventDigest: string;
   timestamp: number;
+  kind?: 'STEP' | 'CONSOLIDATE' | 'FIELD' | 'OTHER';
+  fromZone?: ZoneId | number;
 }
 
 export interface MemoryReadout {
@@ -117,6 +119,15 @@ export class IntegratedMemorySystem {
     this.events = JSON.parse(JSON.stringify(state.events || []));
     this.zoneStrainHistory = state.zoneStrainHistory ? [...state.zoneStrainHistory] : new Array(10).fill(0.0);
     this.hysteresisTension = typeof state.hysteresisTension === 'number' ? state.hysteresisTension : 0.05;
+  }
+
+  /** Reworks the internal deformation readout, retaining the full event ledger. */
+  public consolidateStrain(): void {
+    this.zoneStrainHistory = this.zoneStrainHistory.map(value =>
+      Number(Math.max(0, Math.min(1, value * 0.97)).toFixed(8)));
+    this.hysteresisTension = Math.max(0.02,
+      Number((this.hysteresisTension * 0.82).toFixed(8)));
+    this.cachedDigest = null;
   }
 
   public reset(): void {
