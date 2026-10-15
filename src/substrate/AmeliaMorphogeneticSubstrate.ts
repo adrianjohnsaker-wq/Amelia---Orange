@@ -184,7 +184,8 @@ export function initMorphogeneticState(
   preset: MorphogeneticPreset,
   seed: number = 707,
   noiseAmp: number = 0.003,
-  existingLineage?: CanonicalAmeliaLineageInstance
+  existingLineage?: CanonicalAmeliaLineageInstance,
+  sharedRuntime?: AmeliaNumogramSubstrateRuntime
 ): MorphogeneticState {
   const N = width * height;
   const params = PRESETS[preset];
@@ -193,8 +194,8 @@ export function initMorphogeneticState(
   }
 
   const rng = new DeterministicRNG(seed);
-  const runtime = new AmeliaNumogramSubstrateRuntime();
-  runtime.setSuppressRelaySteering(true); // Suppress relay for open multi-pole Numogram dynamics
+  const runtime = sharedRuntime ?? new AmeliaNumogramSubstrateRuntime();
+  if (!sharedRuntime) runtime.setSuppressRelaySteering(true); // independent reference arms only
 
   const lineage = existingLineage ?? new CanonicalAmeliaLineageInstance(`morph-lineage-${seed}`, seed);
   if (!existingLineage) {
