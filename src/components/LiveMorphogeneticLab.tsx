@@ -41,6 +41,7 @@ interface LiveMorphogeneticLabProps {
   onLogMessage?: (msg: string) => void;
   sharedRuntime?: AmeliaNumogramSubstrateRuntime;
   onSharedStep?: (snapshot: SubstrateStepSnapshot) => void;
+  onBeforeSharedStep?: () => void;
 }
 
 interface OrbitPoint {
@@ -85,7 +86,7 @@ export interface PoincareAssaySummary {
   executedAt: string;
 }
 
-export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLogMessage, sharedRuntime, onSharedStep }) => {
+export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLogMessage, sharedRuntime, onSharedStep, onBeforeSharedStep }) => {
   // Lineage configuration state
   const [selectedSeed, setSelectedSeed] = useState<number>(101);
   const [selectedDepth, setSelectedDepth] = useState<number>(256);
@@ -153,6 +154,7 @@ export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLo
   const stepOnce = () => {
     if (!morphState || !lineageRef.current) return;
     const lineage = lineageRef.current;
+    if (sharedRuntime) onBeforeSharedStep?.();
     const nextState = stepAmeliaSubstrate(morphState);
     const runtime = nextState.nativeRuntime;
     const chosenExit = runtime.getCurrentZone();
