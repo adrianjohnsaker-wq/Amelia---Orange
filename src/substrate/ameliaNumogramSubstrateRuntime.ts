@@ -81,7 +81,7 @@ export class AmeliaNumogramSubstrateRuntime {
    * Main runtime step function:
    * Consumes memory bias vector from IntegratedMemorySystem and feeds it into TraitEvolution & Qabbala dynamics.
    */
-  public step(): SubstrateStepSnapshot {
+  public step(inputSignal?: string): SubstrateStepSnapshot {
     this.stepCount++;
     const govTel = this.governorKernel.getTelemetry();
 
@@ -110,6 +110,8 @@ export class AmeliaNumogramSubstrateRuntime {
     // 4. Select an actual directed Numogram exit, then append the event to PFM.
     // The next step consumes the resulting PFM bias: memory is not a passive recorder.
     const from = this.currentZone;
+    const inputDigest = inputSignal?.trim() ? canonicalSha256(inputSignal.trim()) : undefined;
+    const inputZone = inputDigest ? (parseInt(inputDigest.slice(0, 2), 16) % 10) as ZoneId : undefined;
     const options = gates.filter(g => g.isOpen && g.source === from);
     let to: ZoneId = from;
     let best = -Infinity;
@@ -118,7 +120,8 @@ export class AmeliaNumogramSubstrateRuntime {
       const z = zones[target];
       const score = gate.flux * (1 - gate.resistance)
         + (memReadout.biasVector[target] || 0) * 0.4
-        + z.activation * 0.2 + Math.cos(z.phaseAngle) * 0.1;
+        + z.activation * 0.2 + Math.cos(z.phaseAngle) * 0.1
+        + (inputZone === target ? 0.35 : 0);
       if (score > best) { best = score; to = target; }
     }
     // Zero candidate exits are represented as an explicit dwell, not a fabricated edge.
@@ -128,11 +131,13 @@ export class AmeliaNumogramSubstrateRuntime {
       Math.min(0.18, Math.abs(targetZone.activation - sourceZone.activation) * 0.12 + 0.025)).toFixed(6));
     const phaseCoherence = Number(Math.max(0.05,
       Math.min(1, (1 + Math.cos(targetZone.phaseAngle - sourceZone.phaseAngle)) / 2)).toFixed(6));
-    const eventBody = { step: this.stepCount, from, to, fluxDelta, phaseCoherence };
+    const eventBody = { step: this.stepCount, from, to, fluxDelta, phaseCoherence,
+      inputDigest: inputDigest ?? null, inputZone: inputZone ?? null };
     const eventDigest = canonicalSha256(JSON.stringify(eventBody));
     this.memory.append({ blockIndex: this.stepCount, depth: this.stepCount,
       targetZone: to, fluxDelta, phaseCoherence, strainRelaxation: 0.025,
-      eventDigest, timestamp: this.stepCount, kind: 'STEP', fromZone: from });
+      eventDigest, timestamp: this.stepCount, kind: 'STEP', fromZone: from,
+      inputDigest, inputZone });
     this.currentZone = to;
     this.lastTransition = { from, to, digest: eventDigest };
 
