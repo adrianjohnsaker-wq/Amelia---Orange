@@ -214,6 +214,9 @@ export class AmeliaNumogramSubstrateRuntime {
       lastTransition: this.lastTransition,
       memoryState: this.memory.exportState(),
       governorState: this.governorKernel.exportState(),
+      qabbalaZones: JSON.parse(JSON.stringify(this.qabbala.getZones())),
+      qabbalaGates: JSON.parse(JSON.stringify(this.qabbala.getGates())),
+      traitEvolutionHistory: this.traitEvolution.exportState(),
       deformationTensor: [...this.deformationTensor],
       currentObjective: this.currentObjective,
       suppressRelaySteering: this.suppressRelaySteering,
@@ -229,6 +232,9 @@ export class AmeliaNumogramSubstrateRuntime {
     if (state.lastTransition) this.lastTransition = state.lastTransition as any;
     if (state.memoryState) this.memory.importState(state.memoryState as ReturnType<IntegratedMemorySystem['exportState']>);
     if (state.governorState) this.governorKernel.importState(state.governorState as Record<string, unknown>);
+    if (state.qabbalaZones) this.qabbala.setZones(state.qabbalaZones as any);
+    if (state.qabbalaGates) this.qabbala.setGates(state.qabbalaGates as any);
+    if (state.traitEvolutionHistory) this.traitEvolution.importState(state.traitEvolutionHistory as any);
     if (Array.isArray(state.deformationTensor)) this.deformationTensor = [...state.deformationTensor];
     if (typeof state.currentObjective === 'string') this.currentObjective = state.currentObjective;
     if (typeof state.suppressRelaySteering === 'boolean') this.suppressRelaySteering = state.suppressRelaySteering;
