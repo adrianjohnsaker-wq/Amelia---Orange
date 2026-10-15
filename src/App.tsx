@@ -169,12 +169,17 @@ export function App() {
     setHistory(prev => [...prev.slice(-30), snap]);
   };
 
-  const advanceRuntime = (inputSignal?: string): SubstrateStepSnapshot => {
+  const prepareRuntimeStep = () => {
     const runtime = runtimeRef.current;
     const nextStep = (runtime.getSnapshots().at(-1)?.step ?? 0) + 1;
     const tuning = rhythmHarmonizerRef.current.computeAdvisoryTuning(advisoryWeight, nextStep);
     runtime.setAdvisoryWeight(tuning);
     runtime.setMomentumDamping(momentumDamping);
+  };
+
+  const advanceRuntime = (inputSignal?: string): SubstrateStepSnapshot => {
+    const runtime = runtimeRef.current;
+    prepareRuntimeStep();
     const snap = runtime.step(inputSignal);
     publishSnapshot(snap);
     return snap;
@@ -662,6 +667,7 @@ export function App() {
               key={runtimeEpoch}
               sharedRuntime={runtimeRef.current}
               onSharedStep={publishSnapshot}
+              onBeforeSharedStep={prepareRuntimeStep}
               onLogMessage={addLogMessage}
             />
           )}
