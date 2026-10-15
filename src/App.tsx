@@ -70,6 +70,7 @@ export function App() {
   
   const [snapshot, setSnapshot] = useState<SubstrateStepSnapshot>(() => runtimeRef.current.step());
   const [history, setHistory] = useState<SubstrateStepSnapshot[]>([]);
+  const [runtimeEpoch, setRuntimeEpoch] = useState(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [selectedZone, setSelectedZone] = useState<ZoneId>(9);
   const [isFloatingChatOpen, setIsFloatingChatOpen] = useState<boolean>(false);
@@ -109,7 +110,7 @@ export function App() {
     tabletLocalMode ? '[STORAGE] Local-only tablet build; remote memory disabled' : `[FIREBASE] Configured for ${firebaseConfig.projectId}; connection not verified`,
     `[INIT] Amelia Morphogenetic Substrate initialized at ${new Date().toLocaleTimeString()}`,
     `[GOVERNOR] Invariants validated: AntiLock=99.4%, IdentityContinuity=0.965, Scaffolding=Stage 3`,
-    `[CANALIZATION] Baseline 3-Arm assay ready for D288 across seeds [101, 202, 303, 404, 505]`,
+    `[DEMO] Three-arm and Paper 6 displays are formula-based; no experimental inference`,
     `[NUMOGRAM] Pandemonium channels & 5 Syzygies online`,
   ]);
 
@@ -117,31 +118,55 @@ export function App() {
     setAuditLog(prev => [msg, ...prev]);
   };
 
-  // Substrate step heartbeat
-  useEffect(() => {
-    if (!isRunning) return;
-    const interval = setInterval(() => {
-      const snap = runtimeRef.current.step();
-      
-      // Weakly tune advisory weight via external rhythm harmonizer
-      const tunedAdvisory = rhythmHarmonizerRef.current.computeAdvisoryTuning(advisoryWeight, snap.step);
-      
-      setSnapshot(snap);
-      setHistory(prev => [...prev.slice(-30), snap]);
-    }, 450);
-    return () => clearInterval(interval);
-  }, [isRunning, advisoryWeight]);
-
-  const handleStepOnce = () => {
-    const snap = runtimeRef.current.step();
+  // All panels share the same runtime. Field exploration advances it through
+  // onSharedStep, never through an independent hidden dialogue clock.
+  const publishSnapshot = (snap: SubstrateStepSnapshot) => {
     setSnapshot(snap);
     setHistory(prev => [...prev.slice(-30), snap]);
+  };
+
+  const advanceRuntime = (): SubstrateStepSnapshot => {
+    const runtime = runtimeRef.current;
+    const nextStep = (runtime.getSnapshots().at(-1)?.step ?? 0) + 1;
+    const tuning = rhythmHarmonizerRef.current.computeAdvisoryTuning(advisoryWeight, nextStep);
+    runtime.setAdvisoryWeight(tuning);
+    runtime.setMomentumDamping(momentumDamping);
+    const snap = runtime.step();
+    publishSnapshot(snap);
+    return snap;
+  };
+
+  const handleSetAdvisoryWeight = (value: number) => {
+    setAdvisoryWeight(value);
+    runtimeRef.current.setAdvisoryWeight(value);
+    setSnapshot(prev => ({ ...prev, governor: runtimeRef.current.getGovernor() }));
+    addLogMessage(`[GOVERNOR] Advisory baseline changed to ${value.toFixed(3)}`);
+  };
+
+  const handleSetMomentumDamping = (value: number) => {
+    setMomentumDamping(value);
+    runtimeRef.current.setMomentumDamping(value);
+    setSnapshot(prev => ({ ...prev, governor: runtimeRef.current.getGovernor() }));
+    addLogMessage(`[GOVERNOR] Momentum damping changed to ${value.toFixed(3)}`);
+  };
+
+  useEffect(() => {
+    if (!isRunning || activeTab === 'morphogenetic') return;
+    const interval = setInterval(() => { advanceRuntime(); }, 450);
+    return () => clearInterval(interval);
+  }, [isRunning, activeTab, advisoryWeight, momentumDamping]);
+
+  const handleStepOnce = () => {
+    const snap = advanceRuntime();
     addLogMessage(`[STEP] Manual single-step executed (#${snap.step})`);
   };
 
   const handleReset = () => {
     runtimeRef.current = new AmeliaNumogramSubstrateRuntime();
+    runtimeRef.current.setAdvisoryWeight(advisoryWeight);
+    runtimeRef.current.setMomentumDamping(momentumDamping);
     const snap = runtimeRef.current.step();
+    setRuntimeEpoch(n => n + 1);
     setSnapshot(snap);
     setHistory([snap]);
     addLogMessage(`[RESET] Substrate state re-initialized to canonical coordinates`);
@@ -151,7 +176,7 @@ export function App() {
     runtimeRef.current.triggerConsolidation();
     const snap = runtimeRef.current.step();
     setSnapshot(snap);
-    addLogMessage(`[CONSOLIDATION] Process memory consolidation triggered across active basins`);
+    addLogMessage(`[CONSOLIDATION] PFM updated; ${runtimeRef.current.getMemory().getEvents().length} events, head ${runtimeRef.current.getMemory().exportHistoryDigest().slice(0,12)}`);
   };
 
   const handleShedScaffold = () => {
@@ -167,7 +192,7 @@ export function App() {
       const results = ThreeArmDiagnosticRunner.runDiagnostic(selectedDepth, selectedSeed);
       setThreeArmResults(results);
       setIsAssaying(false);
-      addLogMessage(`[ASSAY-3ARM] Completed 3-Arm assay for Depth D${selectedDepth} (Seed ${selectedSeed}): Active C1 Retention=${results.ACTIVE_C1.zone9ContactRetention}%`);
+      addLogMessage(`[DEMO-3ARM] Formula illustration for D${selectedDepth}, seed ${selectedSeed}; NOT a measured retention assay`);
       
       // Update benchmarks
       setBenchmarks(DevelopmentalBenchmarkEngine.getCanonicalBenchmarks(snapshot.governor, results.ACTIVE_C1.zone9ContactRetention));
@@ -180,7 +205,7 @@ export function App() {
       const updated = XxxviiiRouter.routeCanonicalEvaluation([101, 202, 303, 404, 505], ['D048', 'D072', 'D288']);
       setAllP6Results(updated);
       setIsAssaying(false);
-      addLogMessage(`[PAPER6-REPLICATION] Multi-seed Paper 6 canary replication batch completed (15 assays verified, p < 0.001)`);
+      addLogMessage('[DEMO-PAPER6] Calculated illustrative rows only; NO statistical test or replication executed');
     }, 500);
   };
 
@@ -221,7 +246,7 @@ export function App() {
         break;
       case 'tuneAdvisory':
         if (typeof action.payload === 'number') {
-          setAdvisoryWeight(action.payload);
+          handleSetAdvisoryWeight(action.payload);
           addLogMessage(`[ADVISORY] Tuned advisory weighting to ${action.payload}`);
         }
         break;
@@ -581,13 +606,19 @@ export function App() {
         <main className="flex-1 min-w-0 p-3 sm:p-6 overflow-y-auto max-w-7xl mx-auto w-full space-y-6">
           {/* TAB 0: LIVE MORPHOGENETIC LAB */}
           {activeTab === 'morphogenetic' && (
-            <LiveMorphogeneticLab onLogMessage={addLogMessage} />
+            <LiveMorphogeneticLab
+              key={runtimeEpoch}
+              sharedRuntime={runtimeRef.current}
+              onSharedStep={publishSnapshot}
+              onLogMessage={addLogMessage}
+            />
           )}
 
           {/* TAB 0.5: DIALOGUE & CHAT */}
           {activeTab === 'dialogue' && (
             <AmeliaDialogueWindow 
               currentSnapshot={snapshot}
+              runtime={runtimeRef.current}
               onExecuteAction={handleDialogueAction}
               onSelectTab={(t) => setActiveTab(t as TabType)}
               onSelectZone={(z) => setSelectedZone(z)}
@@ -723,8 +754,8 @@ export function App() {
               governor={snapshot.governor}
               momentumDamping={momentumDamping}
               advisoryWeight={advisoryWeight}
-              onSetMomentumDamping={setMomentumDamping}
-              onSetAdvisoryWeight={setAdvisoryWeight}
+              onSetMomentumDamping={handleSetMomentumDamping}
+              onSetAdvisoryWeight={handleSetAdvisoryWeight}
             />
           )}
 
@@ -778,6 +809,7 @@ export function App() {
       {activeTab !== 'dialogue' && isFloatingChatOpen && (
         <AmeliaDialogueWindow
           currentSnapshot={snapshot}
+          runtime={runtimeRef.current}
           onExecuteAction={handleDialogueAction}
           onSelectTab={(t) => {
             setActiveTab(t as TabType);
