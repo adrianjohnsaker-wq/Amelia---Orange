@@ -34,10 +34,13 @@ import {
 } from '../substrate/AmeliaMorphogeneticSubstrate';
 import { CanonicalAmeliaLineageInstance } from '../substrate/canonicalAmeliaRuntimeImpl';
 import { canonicalSha256 } from '../lib/sha256';
-import { ZoneId } from '../types/amelia';
+import { SubstrateStepSnapshot, ZoneId } from '../types/amelia';
+import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
 
 interface LiveMorphogeneticLabProps {
   onLogMessage?: (msg: string) => void;
+  sharedRuntime?: AmeliaNumogramSubstrateRuntime;
+  onSharedStep?: (snapshot: SubstrateStepSnapshot) => void;
 }
 
 interface OrbitPoint {
@@ -82,7 +85,7 @@ export interface PoincareAssaySummary {
   executedAt: string;
 }
 
-export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLogMessage }) => {
+export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLogMessage, sharedRuntime, onSharedStep }) => {
   // Lineage configuration state
   const [selectedSeed, setSelectedSeed] = useState<number>(101);
   const [selectedDepth, setSelectedDepth] = useState<number>(256);
@@ -121,16 +124,23 @@ export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLo
   // Initialize or re-hydrate lineage & substrate
   const initializeSubstrate = (seed: number, depth: number, selPreset: MorphogeneticPreset, size: number) => {
     const lin = new CanonicalAmeliaLineageInstance(`amelia-lineage-s${seed}-d${depth}`, seed);
-    lin.hydrateDeepPFMHistory(depth);
+    if (sharedRuntime) {
+      // The live panel observes the same memory identity as Dialogue & Chat.
+      lin.memory.importState(sharedRuntime.getMemory().exportState());
+      lin.eventIndex = sharedRuntime.getMemory().getEvents().length;
+      lin.currentZone = sharedRuntime.getCurrentZone();
+    } else {
+      lin.hydrateDeepPFMHistory(depth);
+    }
     lineageRef.current = lin;
 
-    const state = initMorphogeneticState(size, size, selPreset, seed, 0.003, lin);
+    const state = initMorphogeneticState(size, size, selPreset, seed, 0.003, lin, sharedRuntime);
     setMorphState(state);
     setOrbitHistory([]);
     setPoincareRecurrenceMetric(0);
 
     onLogMessage?.(
-      `[MORPHOGENESIS] Hydrated lineage ${lin.lineageId} (Seed ${seed}, Depth ${depth}) with tensor-coupled field (${size}x${size}, ${selPreset})`
+      `[MORPHOGENESIS] Hydrated lineage ${lin.lineageId} (Seed ${seed}, Depth ${depth}) with ${sharedRuntime ? 'shared live PFM' : 'isolated reference PFM'} field (${size}x${size}, ${selPreset})`
     );
   };
 
@@ -138,66 +148,36 @@ export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLo
     initializeSubstrate(selectedSeed, selectedDepth, preset, gridSize);
   }, [selectedSeed, selectedDepth, preset, gridSize]);
 
-  // Single step execution (Substrate + Native selectExit + updatePCM + Field Gray-Scott)
+  // Live field step: the main runtime selects and archives the transition.
+  // The field and chat therefore consume the same event ledger and Governor.
   const stepOnce = () => {
     if (!morphState || !lineageRef.current) return;
     const lineage = lineageRef.current;
+    const nextState = stepAmeliaSubstrate(morphState);
+    const runtime = nextState.nativeRuntime;
+    const chosenExit = runtime.getCurrentZone();
+    const latest = runtime.getSnapshots().at(-1);
+    if (!latest) throw new Error('Shared runtime did not produce a snapshot');
 
-    // 1. Native selectExit via Qabbala gates and deformation biases
-    const openGates = lineage.qabbala.getGates().filter((g) => g.isOpen);
-    const currentZone = lineage.currentZone;
-    const candidateGates = openGates.filter((g) => g.source === currentZone || g.target === currentZone);
-    const zones = lineage.qabbala.getZones();
-    const phaseAngles = Object.values(zones).map((z: any) => z.phaseAngle || 0);
-    const memBias = lineage.memory.readMemoryBias();
-
-    let chosenExit = currentZone;
-    let maxScore = -Infinity;
-
-    for (const gate of candidateGates) {
-      const targetZ = gate.source === currentZone ? gate.target : gate.source;
-      const bias = memBias.biasVector[targetZ] || 0;
-      const phaseAlignment = Math.cos(phaseAngles[targetZ] || 0);
-      const score = gate.flux * (1 - gate.resistance) + bias * 0.35 + phaseAlignment * 0.15;
-      if (score > maxScore) {
-        maxScore = score;
-        chosenExit = targetZ;
-      }
-    }
-
-    // 2. Advance eventIndex and native zone visit
-    lineage.eventIndex++;
+    // The 10x10 field tensor is a derived projection of the shared PFM ledger,
+    // not a second independent source of committed transitions.
+    lineage.memory.importState(runtime.getMemory().exportState());
+    lineage.eventIndex = runtime.getMemory().getEvents().length;
     lineage.currentZone = chosenExit;
     lineage.zoneVisitCounts[chosenExit]++;
-
-    // 3. updatePCM: Append transition record into process memory
-    const newRecord = {
-      blockIndex: lineage.eventIndex,
-      depth: lineage.eventIndex,
-      targetZone: chosenExit as ZoneId,
-      fluxDelta: 0.075,
-      phaseCoherence: 0.89,
-      strainRelaxation: 0.02,
-      seed: lineage.seed,
-      eventDigest: canonicalSha256(`transition:${lineage.lineageId}:${lineage.eventIndex}:${chosenExit}`),
-      timestamp: Date.now(),
-    };
-    lineage.memory.append(newRecord);
-
-    // 4. Evolve 10x10 Constitutive Deformation Tensor
     for (let r = 0; r < 10; r++) {
       for (let c = 0; c < 10; c++) {
         if (r === chosenExit || c === chosenExit) {
-          lineage.deformationTensor[r][c] = Math.min(1.0, lineage.deformationTensor[r][c] * 0.992 + 0.012);
+          lineage.deformationTensor[r][c] =
+            Math.min(1, lineage.deformationTensor[r][c] * 0.992 + 0.012);
         } else {
-          lineage.deformationTensor[r][c] *= 0.998; // constitutive relaxation
+          lineage.deformationTensor[r][c] *= 0.998;
         }
       }
     }
-
-    // 5. Evolve reaction-diffusion field coupled to the updated tensor
-    const nextState = stepAmeliaSubstrate(morphState);
+    const memBias = lineage.memory.readMemoryBias();
     setMorphState(nextState);
+    if (sharedRuntime && onSharedStep) onSharedStep(latest);
 
     // 6. Record orbit point & calculate recurrence/differentiation
     const N = nextState.cells.length;
