@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { AmeliaNumogramSubstrateRuntime } from "../src/substrate/ameliaNumogramSubstrateRuntime";
-import { AmeliaDialogueEngine } from "../src/services/ameliaDialogueEngine";
+import { AmeliaProcessRelay } from "../src/services/AmeliaProcessRelay";
 import { ThreeArmDiagnosticRunner } from "../src/ai/coupling/ThreeArmDiagnosticRunner";
 import { Paper6H1ResistanceAssay } from "../src/bridge/phases/paper6H1ResistanceAssay";
 import { initMorphogeneticState, stepAmeliaSubstrate } from "../src/substrate/AmeliaMorphogeneticSubstrate";
@@ -50,13 +50,16 @@ async function main() {
     assert.match(app, /onClick=\{\(\) => setIsRunning\(!isRunning\)\}/);
     return { step: snapshot.step, auditBefore: prior, auditAfter: snapshot.governor.invariantsAudited };
   });
-  await check("T03", "Process memory", "Normal main-screen ticks do not append endogenous PFM records", () => {
+  await check("T03", "Process memory", "Normal runtime steps now append endogenous PFM transition records", () => {
     const count = runtime.getMemory().getEvents().length;
-    assert.equal(count, 0);
-    assert(!runtimeSource.includes("this.memory.append("));
-    return { step: snapshot.step, eventCount: count, interpretation: "History does not accumulate in main runtime automatically" };
-  }, "LIMITATION_CONFIRMED");
-  await check("T04", "Process memory", "Main runtime consumes manually injected PFM memory bias", () => {
+    assert.equal(count, snapshot.step);
+    assert(runtimeSource.includes("this.memory.append("));
+    assert.equal(snapshot.memoryHistoryLength, count);
+    assert.equal(runtime.getMemory().exportHistoryDigest(), snapshot.memoryHeadDigest);
+    return { step: snapshot.step, events: count, lastTransition: snapshot.lastTransition };
+  });
+  await check("T04", "Process memory", "Recorded history feeds back as nonzero next-step memory bias", () => {
+    const prior = runtime.getMemory().getEvents().length;
     runtime.getMemory().append({
       blockIndex: snapshot.step, depth: snapshot.step, targetZone: 9,
       fluxDelta: 0.2, phaseCoherence: 0.9, strainRelaxation: 0.01,
@@ -64,22 +67,25 @@ async function main() {
     });
     snapshot = runtime.step();
     const consumption = runtime.getMemoryConsumptionLog().at(-1);
-    assert.equal(consumption?.memoryHistoryLength, 1);
+    assert.equal(consumption?.memoryHistoryLength, prior + 1);
     assert((consumption?.appliedBiasVector[9] ?? 0) > 0);
-    return { historyLength: consumption?.memoryHistoryLength,
+    return { priorEvents: prior, eventCount: snapshot.memoryHistoryLength,
+      consumedHistoryLength: consumption?.memoryHistoryLength,
       zone9Bias: consumption?.appliedBiasVector[9] };
   });
-  await check("T05", "Governor", "Consolidate alters Governor entropy but not PFM event history", () => {
+  await check("T05", "Consolidation", "PFM consolidation creates a recorded event and lowers strain tension", () => {
     const before = runtime.getGovernor();
-    const events = runtime.getMemory().getEvents().length;
+    const count = runtime.getMemory().getEvents().length;
+    const hysteresis = runtime.getMemory().readMemoryBias().hysteresisTension;
     runtime.triggerConsolidation();
     const after = runtime.getGovernor();
     assert(after.consolidationEntropy < before.consolidationEntropy);
-    assert.equal(runtime.getMemory().getEvents().length, events);
-    assert.match(app, /onClick=\{handleConsolidation\}/);
-    return { entropyBefore: before.consolidationEntropy, entropyAfter: after.consolidationEntropy,
-      PFMEventsBefore: events, PFMEventsAfter: runtime.getMemory().getEvents().length };
-  }, "LIMITATION_CONFIRMED");
+    assert.equal(runtime.getMemory().getEvents().length, count + 1);
+    assert.equal(runtime.getMemory().getEvents().at(-1)?.kind, "CONSOLIDATE");
+    assert(runtime.getMemory().readMemoryBias().hysteresisTension < hysteresis);
+    return { governorEntropyBefore: before.consolidationEntropy, governorEntropyAfter: after.consolidationEntropy,
+      PFMEventsBefore: count, PFMEventsAfter: count + 1 };
+  });
   await check("T06", "Governor", "Shed Stage advances internal Governor stage", () => {
     const before = runtime.getGovernor().scaffoldSheddingStage;
     runtime.shedScaffold();
@@ -88,23 +94,28 @@ async function main() {
     assert.match(app, /onClick=\{handleShedScaffold\}/);
     return { before, after };
   });
-  await check("T07", "Dialogue", "Status, Numogram, and open-ended prompts return text", () => {
-    const status = AmeliaDialogueEngine.generateResponse("What is your current state?", snapshot);
-    const zone = AmeliaDialogueEngine.generateResponse("Explain the Numogram", snapshot);
-    const open = AmeliaDialogueEngine.generateResponse("Can a river remember its own banks?", snapshot);
+  await check("T07", "Dialogue", "PFM-conditioned relay uses shared runtime and produces traceable module selection", () => {
+    snapshot = runtime.step("Explain the Numogram and its memory");
+    const status = AmeliaProcessRelay.generateResponse("What is your current state?", snapshot, [], runtime);
+    const zone = AmeliaProcessRelay.generateResponse("Explain the Numogram", snapshot, [], runtime);
+    const open = AmeliaProcessRelay.generateResponse("Can a river remember its own banks?", snapshot, [], runtime);
     assert(status.text.includes("Step #"));
     assert(zone.text.includes("Numogram"));
     assert(open.text.includes("Can a river remember its own banks?"));
-    assert.match(dialogue, /AmeliaDialogueEngine.generateResponse\(/);
+    assert.equal(zone.trace.memoryLength, runtime.getMemory().getEvents().length);
+    assert.equal(zone.trace.memoryHeadDigest, runtime.getMemory().exportHistoryDigest());
+    assert.match(dialogue, /AmeliaProcessRelay.generateResponse\(/);
     assert.match(dialogue, /id="btn-send-dialogue"/);
     return { statusChars: status.text.length, numogramChars: zone.text.length,
-      fallbackIsTemplate: open.text.includes("Understood. Reflecting on") };
+      openChars: open.text.length, selected: zone.trace.selectedModules,
+      traceDigest: zone.trace.traceDigest };
   });
-  await check("T08", "Dialogue controls", "Action suggestions are wired into main App dispatcher", () => {
-    const actions = AmeliaDialogueEngine.generateResponse("help", snapshot).actions;
+  await check("T08", "Dialogue controls", "Input triggers runtime step and suggested controls dispatch to main App", () => {
+    const actions = AmeliaProcessRelay.generateResponse("memory", snapshot, [], runtime).actions;
     assert(actions.some(a => a.actionType === "step"));
     assert(actions.some(a => a.actionType === "consolidate"));
     assert.match(app, /const handleDialogueAction = \(action: AmeliaDialogueAction\)/);
+    assert.match(app, /onDialogueInput=\{advanceRuntime\}/);
     assert.match(app, /onExecuteAction=\{handleDialogueAction\}/);
     return { actions: actions.map(a => a.actionType) };
   });
@@ -125,20 +136,23 @@ async function main() {
     assert(paper6Source.includes("0.00012 + seedVariation"));
     return { d72: a, d288: b, statisticalTestPerformed: false };
   }, "LIMITATION_CONFIRMED");
-  await check("T11", "Governor controls", "Advisory and damping sliders only update UI state", () => {
-    assert.match(app, /onSetMomentumDamping=\{setMomentumDamping\}/);
-    assert.match(app, /onSetAdvisoryWeight=\{setAdvisoryWeight\}/);
-    assert(!app.includes("runtimeRef.current.setMomentumDamping("));
-    assert(!app.includes("runtimeRef.current.setAdvisoryWeight("));
+  await check("T11", "Governor controls", "Advisory and damping control callbacks now invoke actual runtime setters", () => {
+    assert.match(app, /onSetMomentumDamping=\{handleSetMomentumDamping\}/);
+    assert.match(app, /onSetAdvisoryWeight=\{handleSetAdvisoryWeight\}/);
+    assert(app.includes("runtimeRef.current.setMomentumDamping(value)"));
+    assert(app.includes("runtimeRef.current.setAdvisoryWeight(value)"));
     runtime.setAdvisoryWeight(0.31);
+    runtime.setMomentumDamping(0.62);
     assert.equal(runtime.getGovernor().advisoryWeight, 0.31);
-    return { appToKernelSetter: false, kernelSetterWorks: true };
-  }, "LIMITATION_CONFIRMED");
-  await check("T12", "External rhythms", "Computed oscillator adjustment is not applied to runtime", () => {
-    assert(app.includes("const tunedAdvisory = rhythmHarmonizerRef.current.computeAdvisoryTuning"));
-    assert(!app.includes("runtimeRef.current.setAdvisoryWeight(tunedAdvisory)"));
-    return { computationPresent: true, runtimeApplicationPresent: false };
-  }, "LIMITATION_CONFIRMED");
+    assert.equal(runtime.getGovernor().momentumDampingFactor, 0.62);
+    return { advisory: runtime.getGovernor().advisoryWeight, damping: runtime.getGovernor().momentumDampingFactor };
+  });
+  await check("T12", "External rhythms", "Oscillator tuning is applied to runtime before each main-loop step", () => {
+    assert(app.includes("rhythmHarmonizerRef.current.computeAdvisoryTuning(advisoryWeight, nextStep)"));
+    assert(app.includes("runtime.setAdvisoryWeight(tuning)"));
+    assert(app.includes("runtime.setMomentumDamping(momentumDamping)"));
+    return { tuningApplied: true };
+  });
   await check("T13", "Storage", "Tablet build bypasses remote Firestore and uses localStorage for chat", () => {
     assert(firestore.includes("import.meta.env.VITE_AMELIA_LOCAL_ONLY === '1'"));
     assert(firestore.includes("if (this.localOnly) return msg.id;"));
@@ -146,13 +160,17 @@ async function main() {
     return { buildFlag: process.env.VITE_AMELIA_LOCAL_ONLY ?? "unset",
       transcriptStorage: "WebView localStorage; not sealed PFM" };
   }, "LIMITATION_CONFIRMED");
-  await check("T14", "Morphogenetic lab", "Separate Gray-Scott field model executes one step", () => {
-    const a = initMorphogeneticState(12, 12, "SYZYGETIC_GRID", 101, 0.003);
+  await check("T14", "Shared morphogenetic field", "Field consumes the exact existing main runtime object", () => {
+    const a = initMorphogeneticState(12, 12, "SYZYGETIC_GRID", 101, 0.003, undefined, runtime);
+    assert.equal(a.nativeRuntime, runtime);
+    const priorStep = runtime.getSnapshots().at(-1)?.step ?? 0;
     const b = stepAmeliaSubstrate(a);
-    assert.equal(b.stepCount, a.stepCount + 1);
+    assert.equal(b.nativeRuntime, runtime);
+    assert.equal(runtime.getSnapshots().at(-1)?.step, priorStep + 1);
     assert.equal(b.cells.length, 144);
-    return { before: a.stepCount, after: b.stepCount, cells: b.cells.length,
-      entropyBefore: a.entropy, entropyAfter: b.entropy };
+    assert(app.includes("sharedRuntime={runtimeRef.current}"));
+    return { priorStep, afterStep: runtime.getSnapshots().at(-1)?.step,
+      cells: b.cells.length, memoryEvents: runtime.getMemory().getEvents().length };
   });
   await check("T15", "Hyperstition", "Distinct computational assay runs at small depth with one seed", () => {
     const r = PlatonicMorphospaceHyperstitionProbe.runFullTest("platonic morphospace", 12, [101], 12);
