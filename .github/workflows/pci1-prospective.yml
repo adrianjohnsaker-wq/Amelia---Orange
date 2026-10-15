@@ -1,0 +1,92 @@
+name: PCI-1 Prospective Registered Outcome
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/pci1/EXECUTE'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  registered-challenge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out registered source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enforce pre-outcome registration ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f experiments/pci1/registration.json
+          test -f experiments/pci1/EXECUTE
+          reg_commit="$(git log -n 1 --format=%H -- experiments/pci1/registration.json)"
+          exec_commit="$(git log -n 1 --format=%H -- experiments/pci1/EXECUTE)"
+          test -n "$reg_commit"
+          test -n "$exec_commit"
+          test "$reg_commit" != "$exec_commit"
+          git merge-base --is-ancestor "$reg_commit" "$exec_commit"
+          test "$GITHUB_SHA" = "$exec_commit"
+          mkdir -p pci1-results/primary
+          {
+            echo "PROTOCOL=PCI-1"
+            echo "REGISTERED_COMMIT=$reg_commit"
+            echo "EXECUTION_GATE_COMMIT=$exec_commit"
+            echo "GITHUB_RUN_ID=$GITHUB_RUN_ID"
+            echo "REGISTRATION_SHA256=$(sha256sum experiments/pci1/registration.json | cut -d ' ' -f 1)"
+          } > pci1-results/registration_separation.txt
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pinned source dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Execute complete pre-registered 12-tape cohort
+        shell: bash
+        run: |
+          set -euo pipefail
+          set -o pipefail
+          npx tsx src/bridge/runPCI1ProspectiveCli.ts --out pci1-results/primary \
+            2>&1 | tee pci1-results/primary/runner.log
+
+      - name: Independently repeat with no adaptive parameter changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          set -o pipefail
+          npx tsx src/bridge/runPCI1ProspectiveCli.ts --out pci1-results/replay \
+            2>&1 | tee pci1-results/replay/runner.log
+          cmp pci1-results/primary/raw_pairs.jsonl pci1-results/replay/raw_pairs.jsonl
+          cmp pci1-results/primary/prediction_verdicts.json pci1-results/replay/prediction_verdicts.json
+          cd pci1-results/primary
+          sha256sum -c SHA256SUMS.txt
+          echo "REPLAY_IDENTICAL=true" > ../replay_verification.txt
+
+      - name: Capture run checksums and source context
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p pci1-results
+          echo "$GITHUB_SHA" > pci1-results/SOURCE_COMMIT.txt
+          if test -f pci1-results/primary/raw_pairs.jsonl; then
+            sha256sum pci1-results/primary/raw_pairs.jsonl > pci1-results/OUTCOME_SHA256.txt
+          fi
+          node --version > pci1-results/NODE_VERSION.txt
+          npm --version >> pci1-results/NODE_VERSION.txt
+
+      - name: Upload all outcomes including negative predictions and failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Amelia-PCI1-Prospective-Outcome
+          path: pci1-results/
+          if-no-files-found: error
+          retention-days: 90
