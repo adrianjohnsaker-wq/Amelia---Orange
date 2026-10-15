@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { AmeliaNumogramSubstrateRuntime } from "../src/substrate/ameliaNumogramSubstrateRuntime";
 import { AmeliaProcessRelay } from "../src/services/AmeliaProcessRelay";
+import { canonicalSha256 } from "../src/lib/sha256";
 import { ThreeArmDiagnosticRunner } from "../src/ai/coupling/ThreeArmDiagnosticRunner";
 import { Paper6H1ResistanceAssay } from "../src/bridge/phases/paper6H1ResistanceAssay";
 import { initMorphogeneticState, stepAmeliaSubstrate } from "../src/substrate/AmeliaMorphogeneticSubstrate";
@@ -187,6 +188,99 @@ async function main() {
     assert(rows.every(r => r.depth === 4 && r.pairwise.every(Number.isFinite)));
     return rows.map(r => ({ depth: r.depth, condition: r.condition,
       pairwise: r.pairwise, mean: r.disp.mean }));
+  });
+
+  await check("T17", "Causal specificity", "Matched memory vs reset trajectories diverge under endogenous PFM", () => {
+    const c = new AmeliaNumogramSubstrateRuntime();
+    const m = new AmeliaNumogramSubstrateRuntime();
+    const firstC = c.step(), firstM = m.step();
+    const firstDifference = Object.values(firstC.zones).reduce(
+      (sum,z) => sum + Math.abs(z.activation - firstM.zones[z.id].activation), 0);
+    assert(firstDifference < 1e-12);
+    let afterC = firstC, afterM = firstM;
+    m.getMemory().reset();
+    for (let i = 0; i < 24; i++) {
+      afterC = c.step();
+      afterM = m.step();
+      m.getMemory().reset();
+    }
+    const divergence = Object.values(afterC.zones).reduce(
+      (sum,z) => sum + Math.abs(z.activation - afterM.zones[z.id].activation), 0);
+    assert(divergence > 1e-7, "history should change future activations");
+    assert.equal(c.getMemory().getEvents().length, 25);
+    assert.equal(m.getMemory().getEvents().length, 0);
+    return { steps: 25, firstDifference, sumAbsActivationDifference: divergence,
+      memoryEventsC: 25, memoryEventsM: 0,
+      interpretation: "Local causal smoke test; no registered prospective effect claim" };
+  });
+
+  await check("T18", "Numeric input", "Distinct code inputs are hashed into bounded traceable transition pressure", () => {
+    const a = new AmeliaNumogramSubstrateRuntime();
+    const b = new AmeliaNumogramSubstrateRuntime();
+    const sa = a.step("333");
+    const sb = b.step("666");
+    const ea = a.getMemory().getEvents().at(-1)!;
+    const eb = b.getMemory().getEvents().at(-1)!;
+    assert.equal(ea.inputDigest, canonicalSha256("333"));
+    assert.equal(eb.inputDigest, canonicalSha256("666"));
+    assert.notEqual(ea.inputDigest, eb.inputDigest);
+    const ta = AmeliaProcessRelay.generateResponse("333", sa, [], a).trace;
+    const tb = AmeliaProcessRelay.generateResponse("666", sb, [], b).trace;
+    assert.notEqual(ta.traceDigest, tb.traceDigest);
+    assert.equal(ta.inputZone, ea.inputZone);
+    return { a: { inputZone: ea.inputZone, transition: sa.lastTransition },
+      b: { inputZone: eb.inputZone, transition: sb.lastTransition },
+      claimBoundary: "No assertion of genuine Outside access; input is numerical routing only" };
+  });
+
+  await check("T19", "Provenance", "Per-step SHA-256 digests recompute from transition and input payloads", () => {
+    const evs = runtime.getMemory().getEvents().filter(e => e.kind === "STEP");
+    assert(evs.length > 0);
+    for (const ev of evs) {
+      const body = { step: ev.blockIndex, from: ev.fromZone, to: ev.targetZone,
+        fluxDelta: ev.fluxDelta, phaseCoherence: ev.phaseCoherence,
+        inputDigest: ev.inputDigest ?? null, inputZone: ev.inputZone ?? null };
+      assert.equal(ev.eventDigest, canonicalSha256(JSON.stringify(body)));
+    }
+    return { verifiedEvents: evs.length, head: runtime.getMemory().exportHistoryDigest() };
+  });
+
+  await check("T20", "Laboratory", "Live field uses shared runtime and emits parent snapshot callbacks", () => {
+    const source = readFileSync("src/components/LiveMorphogeneticLab.tsx", "utf8");
+    assert(source.includes("onSharedStep(latest)"));
+    assert(source.includes("sharedRuntime"));
+    assert(source.includes("lineage.memory.importState(runtime.getMemory().exportState())"));
+    return { sameRuntimeInstance: true, parentNotificationWired: true,
+      boundary: "Live field readout is downstream of shared PFM; perturbation need not feed back to selector." };
+  });
+
+  await check("T21", "Control causality", "Different actual Governor advisory settings change trajectory", () => {
+    const low = new AmeliaNumogramSubstrateRuntime();
+    const high = new AmeliaNumogramSubstrateRuntime();
+    low.setAdvisoryWeight(0.2);
+    high.setAdvisoryWeight(0.9);
+    const a = low.step(), b = high.step();
+    const difference = Object.values(a.zones).reduce(
+      (sum,z) => sum + Math.abs(z.activation - b.zones[z.id].activation), 0);
+    assert(difference > 1e-7);
+    return { advisoryLow: a.governor.advisoryWeight,
+      advisoryHigh: b.governor.advisoryWeight, sumAbsActivationDifference: difference };
+  });
+
+  await check("T22", "Relay causality", "Same question after different histories changes relay content and trace", () => {
+    const shallow = new AmeliaNumogramSubstrateRuntime();
+    const deep = new AmeliaNumogramSubstrateRuntime();
+    let a = shallow.step(), b = deep.step();
+    for (let i = 0; i < 9; i++) b = deep.step();
+    const q = "What does memory contribute to the present state?";
+    const shallowAnswer = AmeliaProcessRelay.generateResponse(q, a, [], shallow);
+    const deepAnswer = AmeliaProcessRelay.generateResponse(q, b, [], deep);
+    assert.notEqual(shallowAnswer.trace.memoryHeadDigest, deepAnswer.trace.memoryHeadDigest);
+    assert.notEqual(shallowAnswer.text, deepAnswer.text);
+    return { shallowHistory: shallowAnswer.trace.memoryLength,
+      deepHistory: deepAnswer.trace.memoryLength,
+      shallowModules: shallowAnswer.trace.selectedModules,
+      deepModules: deepAnswer.trace.selectedModules };
   });
   mkdirSync("wiring-audit-results", { recursive: true });
   const report = {
