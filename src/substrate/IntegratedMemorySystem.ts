@@ -23,6 +23,8 @@ export interface PFMEventRecord {
   timestamp: number;
   kind?: 'STEP' | 'CONSOLIDATE' | 'FIELD' | 'OTHER';
   fromZone?: ZoneId | number;
+  inputDigest?: string;
+  inputZone?: ZoneId;
 }
 
 export interface MemoryReadout {
