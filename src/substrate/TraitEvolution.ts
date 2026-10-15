@@ -121,4 +121,12 @@ export class TraitEvolution {
   public getHistory(): TraitEvolutionSnapshot[] {
     return this.history;
   }
+
+  public exportState(): TraitEvolutionSnapshot[] {
+    return JSON.parse(JSON.stringify(this.history));
+  }
+
+  public importState(history: TraitEvolutionSnapshot[]): void {
+    this.history = JSON.parse(JSON.stringify(history || []));
+  }
 }
