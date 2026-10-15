@@ -13,6 +13,7 @@ import { IntegratedMemorySystem } from './IntegratedMemorySystem';
 import { TraitEvolution } from './TraitEvolution';
 import { CognitiveGovernor } from '../governance/CognitiveGovernor';
 import { GovernorTelemetry, NumogramZone, SubstrateStepSnapshot, ZoneId } from '../types/amelia';
+import { canonicalSha256 } from '../lib/sha256';
 
 export interface MemoryConsumptionTelemetry {
   step: number;
@@ -30,6 +31,8 @@ export class AmeliaNumogramSubstrateRuntime {
   private traitEvolution: TraitEvolution;
   private governorKernel: CognitiveGovernor;
   private stepCount: number = 0;
+  private currentZone: ZoneId = 0;
+  private lastTransition: { from: ZoneId; to: ZoneId; digest: string } | null = null;
   private deformationTensor: number[] = new Array(10).fill(0.1);
   private snapshots: SubstrateStepSnapshot[] = [];
   private memoryConsumptionLog: MemoryConsumptionTelemetry[] = [];
@@ -42,6 +45,9 @@ export class AmeliaNumogramSubstrateRuntime {
     this.traitEvolution = new TraitEvolution();
     this.governorKernel = new CognitiveGovernor(0.88, 0.72);
   }
+
+  public getCurrentZone(): ZoneId { return this.currentZone; }
+  public getLastTransition() { return this.lastTransition ? { ...this.lastTransition } : null; }
 
   public getMemory(): IntegratedMemorySystem {
     return this.memory;
@@ -101,7 +107,36 @@ export class AmeliaNumogramSubstrateRuntime {
       this.suppressRelaySteering
     );
 
-    // 4. Update deformation tensor
+    // 4. Select an actual directed Numogram exit, then append the event to PFM.
+    // The next step consumes the resulting PFM bias: memory is not a passive recorder.
+    const from = this.currentZone;
+    const options = gates.filter(g => g.isOpen && g.source === from);
+    let to: ZoneId = from;
+    let best = -Infinity;
+    for (const gate of options) {
+      const target = gate.target;
+      const z = zones[target];
+      const score = gate.flux * (1 - gate.resistance)
+        + (memReadout.biasVector[target] || 0) * 0.4
+        + z.activation * 0.2 + Math.cos(z.phaseAngle) * 0.1;
+      if (score > best) { best = score; to = target; }
+    }
+    // Zero candidate exits are represented as an explicit dwell, not a fabricated edge.
+    const targetZone = zones[to];
+    const sourceZone = zones[from];
+    const fluxDelta = Number(Math.max(0.005,
+      Math.min(0.18, Math.abs(targetZone.activation - sourceZone.activation) * 0.12 + 0.025)).toFixed(6));
+    const phaseCoherence = Number(Math.max(0.05,
+      Math.min(1, (1 + Math.cos(targetZone.phaseAngle - sourceZone.phaseAngle)) / 2)).toFixed(6));
+    const eventBody = { step: this.stepCount, from, to, fluxDelta, phaseCoherence };
+    const eventDigest = canonicalSha256(JSON.stringify(eventBody));
+    this.memory.append({ blockIndex: this.stepCount, depth: this.stepCount,
+      targetZone: to, fluxDelta, phaseCoherence, strainRelaxation: 0.025,
+      eventDigest, timestamp: this.stepCount, kind: 'STEP', fromZone: from });
+    this.currentZone = to;
+    this.lastTransition = { from, to, digest: eventDigest };
+
+    // 5. Update deformation tensor
     for (let i = 0; i <= 9; i++) {
       const z = zones[i as ZoneId];
       this.deformationTensor[i] =
@@ -147,6 +182,9 @@ export class AmeliaNumogramSubstrateRuntime {
       activeSyzygies,
       deformationVector: [...this.deformationTensor],
       selectedObjective: this.currentObjective,
+      lastTransition: { ...this.lastTransition },
+      memoryHistoryLength: this.memory.getEvents().length,
+      memoryHeadDigest: this.memory.exportHistoryDigest(),
     };
 
     if (this.snapshots.length >= 128) {
@@ -167,6 +205,10 @@ export class AmeliaNumogramSubstrateRuntime {
   public exportState(): Record<string, unknown> {
     return {
       stepCount: this.stepCount,
+      currentZone: this.currentZone,
+      lastTransition: this.lastTransition,
+      memoryState: this.memory.exportState(),
+      governorState: this.governorKernel.exportState(),
       deformationTensor: [...this.deformationTensor],
       currentObjective: this.currentObjective,
       suppressRelaySteering: this.suppressRelaySteering,
@@ -178,6 +220,10 @@ export class AmeliaNumogramSubstrateRuntime {
   public importState(state: Record<string, unknown>): void {
     if (!state) return;
     if (typeof state.stepCount === 'number') this.stepCount = state.stepCount;
+    if (typeof state.currentZone === 'number') this.currentZone = state.currentZone as ZoneId;
+    if (state.lastTransition) this.lastTransition = state.lastTransition as any;
+    if (state.memoryState) this.memory.importState(state.memoryState as ReturnType<IntegratedMemorySystem['exportState']>);
+    if (state.governorState) this.governorKernel.importState(state.governorState as Record<string, unknown>);
     if (Array.isArray(state.deformationTensor)) this.deformationTensor = [...state.deformationTensor];
     if (typeof state.currentObjective === 'string') this.currentObjective = state.currentObjective;
     if (typeof state.suppressRelaySteering === 'boolean') this.suppressRelaySteering = state.suppressRelaySteering;
@@ -187,6 +233,12 @@ export class AmeliaNumogramSubstrateRuntime {
 
   public triggerConsolidation(): void {
     this.governorKernel.consolidateMemory();
+    this.memory.consolidateStrain();
+    const event = { step: this.stepCount, zone: this.currentZone, kind: 'CONSOLIDATE' };
+    this.memory.append({ blockIndex: this.stepCount, depth: this.stepCount,
+      targetZone: this.currentZone, fluxDelta: 0.005, phaseCoherence: 1,
+      strainRelaxation: 0.08, eventDigest: canonicalSha256(JSON.stringify(event)),
+      timestamp: this.stepCount, kind: 'CONSOLIDATE', fromZone: this.currentZone });
   }
 
   public shedScaffold(): void {
