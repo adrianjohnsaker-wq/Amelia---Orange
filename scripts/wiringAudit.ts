@@ -282,6 +282,49 @@ async function main() {
       shallowModules: shallowAnswer.trace.selectedModules,
       deepModules: deepAnswer.trace.selectedModules };
   });
+
+  await check("T23", "Restart continuity", "Exported PFM/Qabbala/Governor state rehydrates with matching next transition", () => {
+    const uninterrupted = new AmeliaNumogramSubstrateRuntime();
+    for (let i = 0; i < 12; i++) uninterrupted.step(i % 3 === 0 ? "333" : undefined);
+    const exported = JSON.parse(JSON.stringify(uninterrupted.exportState()));
+    const resumed = new AmeliaNumogramSubstrateRuntime();
+    resumed.importState(exported);
+    assert.equal(resumed.getMemory().exportHistoryDigest(), uninterrupted.getMemory().exportHistoryDigest());
+    assert.equal(resumed.getCurrentZone(), uninterrupted.getCurrentZone());
+    const a = uninterrupted.step("shared continuation");
+    const b = resumed.step("shared continuation");
+    assert.deepEqual(a.zones, b.zones);
+    assert.deepEqual(a.governor, b.governor);
+    assert.deepEqual(a.lastTransition, b.lastTransition);
+    assert.equal(a.memoryHeadDigest, b.memoryHeadDigest);
+    return { resumedAtStep: 12, nextStep: a.step,
+      digest: a.memoryHeadDigest, nextTransition: a.lastTransition,
+      caveat: "JSON checkpoint remains local and unsigned" };
+  });
+
+  await check("T24", "Tablet continuity", "App includes WebView checkpoint restore, save and JSON export", () => {
+    assert(app.includes("amelia_pfm_shared_runtime_v2"));
+    assert(app.includes("runtimeRef.current.importState(record.state)"));
+    assert(app.includes("runtimeRef.current.exportState()"));
+    assert(app.includes("id=\"btn-export-checkpoint\""));
+    return { restore: true, localPersistence: true, exportButton: true };
+  });
+
+  await check("T25", "Dialogue history", "Earlier conversational turns enter the relay selector without replacing PFM", () => {
+    const sample = new AmeliaNumogramSubstrateRuntime();
+    const s = sample.step("A process question");
+    const q = "Consider this change.";
+    const initial = AmeliaProcessRelay.generateResponse(q, s, [], sample);
+    const contextual = AmeliaProcessRelay.generateResponse(q, s,
+      [{id:"preceding-1", sender:"user", text:"memory and history", timestamp:"2026-10-15T00:00:00Z"}], sample);
+    assert.equal(initial.trace.historyContextCount, 0);
+    assert.equal(contextual.trace.historyContextCount, 1);
+    assert(contextual.trace.moduleScores.PFM > initial.trace.moduleScores.PFM);
+    assert.notEqual(initial.trace.traceDigest, contextual.trace.traceDigest);
+    return { noHistoryScore: initial.trace.moduleScores.PFM,
+      contextScore: contextual.trace.moduleScores.PFM,
+      PFMHistoryLength: contextual.trace.memoryLength };
+  });
   mkdirSync("wiring-audit-results", { recursive: true });
   const report = {
     label: "Amelia Orange functional wiring audit; NOT scientific validation",
