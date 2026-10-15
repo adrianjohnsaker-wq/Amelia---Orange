@@ -30,11 +30,14 @@ import {
   AmeliaDialogueAction, 
   ZoneId 
 } from '../types/amelia';
-import { AmeliaDialogueEngine } from '../services/ameliaDialogueEngine';
+import { AmeliaProcessRelay } from '../services/AmeliaProcessRelay';
+import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
 import { AmeliaFirebaseMemoryService } from '../services/ameliaFirebaseMemory';
 
 interface AmeliaDialogueWindowProps {
   currentSnapshot: SubstrateStepSnapshot;
+  runtime: AmeliaNumogramSubstrateRuntime;
+  onDialogueInput?: (text: string) => SubstrateStepSnapshot;
   onExecuteAction?: (action: AmeliaDialogueAction) => void;
   onSelectTab?: (tab: string) => void;
   onSelectZone?: (zone: ZoneId) => void;
@@ -76,6 +79,8 @@ const SUGGESTED_PROMPTS = [
 
 export function AmeliaDialogueWindow({
   currentSnapshot,
+  runtime,
+  onDialogueInput,
   onExecuteAction,
   onSelectTab,
   onSelectZone,
@@ -167,17 +172,19 @@ export function AmeliaDialogueWindow({
     if (!textToSend || isTyping) return;
 
     setInputPrompt('');
+    // The input is processed as a bounded Numogram transition BEFORE rendering.
+    const inputSnapshot = onDialogueInput?.(textToSend) ?? currentSnapshot;
 
     const userMessage: AmeliaDialogueMessage = {
       id: `user-${Date.now()}`,
       sender: 'user',
       text: textToSend,
       timestamp: new Date().toISOString(),
-      step: currentSnapshot.step,
-      activeSyzygy: currentSnapshot.activeSyzygies[0] || '0::9 Abyssal',
-      deformationTension: currentSnapshot.governor.deformationFieldTension,
-      governorStatus: currentSnapshot.governor.governorStatus,
-      identityContinuityScore: currentSnapshot.governor.identityContinuityScore
+      step: inputSnapshot.step,
+      activeSyzygy: inputSnapshot.activeSyzygies[0] || '0::9 Abyssal',
+      deformationTension: inputSnapshot.governor.deformationFieldTension,
+      governorStatus: inputSnapshot.governor.governorStatus,
+      identityContinuityScore: inputSnapshot.governor.identityContinuityScore
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -189,18 +196,19 @@ export function AmeliaDialogueWindow({
 
     // Simulate morphogenetic process reasoning delay
     setTimeout(async () => {
-      const response = AmeliaDialogueEngine.generateResponse(textToSend, currentSnapshot, messages);
+      const response = AmeliaProcessRelay.generateResponse(textToSend, inputSnapshot, messages, runtime);
 
       const ameliaMessage: AmeliaDialogueMessage = {
+        relayTrace: response.trace,
         id: `amelia-${Date.now()}`,
         sender: 'amelia',
         text: response.text,
         timestamp: new Date().toISOString(),
-        step: currentSnapshot.step,
-        activeSyzygy: currentSnapshot.activeSyzygies[0] || '0::9 Abyssal',
-        deformationTension: currentSnapshot.governor.deformationFieldTension,
-        governorStatus: currentSnapshot.governor.governorStatus,
-        identityContinuityScore: currentSnapshot.governor.identityContinuityScore,
+        step: inputSnapshot.step,
+        activeSyzygy: inputSnapshot.activeSyzygies[0] || '0::9 Abyssal',
+        deformationTension: inputSnapshot.governor.deformationFieldTension,
+        governorStatus: inputSnapshot.governor.governorStatus,
+        identityContinuityScore: inputSnapshot.governor.identityContinuityScore,
         suggestedActions: response.actions
       };
 
@@ -557,7 +565,7 @@ export function AmeliaDialogueWindow({
         </form>
 
         <div className="mt-2 flex items-center justify-between text-[10px] font-mono text-stone-400">
-          <span>Non-Authorising Governor Disciplines Active</span>
+          <span>{tabletLocalMode ? 'PFM-conditioned local relay · no cloud LLM' : 'Non-Authorising Governor Disciplines Active'}</span>
           <span>Shift+Enter for newline</span>
         </div>
       </div>
