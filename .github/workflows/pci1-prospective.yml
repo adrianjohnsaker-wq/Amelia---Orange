@@ -62,6 +62,7 @@ jobs:
         run: |
           set -euo pipefail
           set -o pipefail
+          mkdir -p pci1-results/replay
           npx tsx src/bridge/runPCI1ProspectiveCli.ts --out pci1-results/replay \
             2>&1 | tee pci1-results/replay/runner.log
           cmp pci1-results/primary/raw_pairs.jsonl pci1-results/replay/raw_pairs.jsonl
