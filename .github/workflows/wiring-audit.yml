@@ -1,0 +1,52 @@
+name: Amelia Functional Wiring Audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/wiringAudit.ts'
+      - '.github/workflows/wiring-audit.yml'
+      - 'src/**'
+      - 'package.json'
+
+permissions:
+  contents: read
+
+jobs:
+  wiring-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact revision
+        uses: actions/checkout@v4
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Execute runtime and wiring tests
+        env:
+          VITE_AMELIA_LOCAL_ONLY: '1'
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p wiring-audit-results
+          npx tsx scripts/wiringAudit.ts 2>&1 | tee wiring-audit-results/execution.log
+      - name: Record report integrity
+        if: always()
+        shell: bash
+        run: |
+          echo "$GITHUB_SHA" > wiring-audit-results/SOURCE_COMMIT.txt
+          if test -f wiring-audit-results/wiring-audit.json; then
+            cd wiring-audit-results
+            sha256sum wiring-audit.json wiring-audit.md execution.log > SHA256SUMS.txt
+          fi
+      - name: Upload functional audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Amelia-Functional-Wiring-Audit
+          path: wiring-audit-results/
+          retention-days: 30
+          if-no-files-found: error
