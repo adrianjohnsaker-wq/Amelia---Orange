@@ -174,6 +174,7 @@ export interface AmeliaDialogueMessage {
   governorStatus?: 'NOMINAL' | 'REGULATING' | 'DAMPING' | 'LOCKED_RECOVERY';
   identityContinuityScore?: number;
   suggestedActions?: AmeliaDialogueAction[];
+  relayTrace?: Record<string, unknown>;
   isThinking?: boolean;
 }
 
