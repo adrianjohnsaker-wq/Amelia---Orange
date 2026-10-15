@@ -149,6 +149,9 @@ export interface SubstrateStepSnapshot {
   activeSyzygies: string[];
   deformationVector: number[];
   selectedObjective: string;
+  lastTransition?: { from: ZoneId; to: ZoneId; digest: string } | null;
+  memoryHistoryLength?: number;
+  memoryHeadDigest?: string;
   extrapolations?: OneStepExtrapolation[];
   atlasPoint?: DevelopmentalAtlasManifold;
 }
