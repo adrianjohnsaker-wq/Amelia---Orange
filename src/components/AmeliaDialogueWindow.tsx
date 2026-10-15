@@ -87,6 +87,7 @@ export function AmeliaDialogueWindow({
   isFloating = false,
   onCloseFloating
 }: AmeliaDialogueWindowProps) {
+  const tabletLocalMode = import.meta.env.VITE_AMELIA_LOCAL_ONLY === '1';
   const [messages, setMessages] = useState<AmeliaDialogueMessage[]>(() => {
     const saved = localStorage.getItem('amelia_dialogue_cache');
     if (saved) {
