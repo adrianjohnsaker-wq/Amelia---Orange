@@ -64,11 +64,25 @@ import { Thread3EncodingActivationLab } from './components/Thread3EncodingActiva
 import { AmeliaFirebaseMemoryService } from './services/ameliaFirebaseMemory';
 import firebaseConfig from '../firebase-applet-config.json';
 
+const LOCAL_CHECKPOINT_KEY = 'amelia_pfm_shared_runtime_v2';
+
 export function App() {
   const runtimeRef = useRef<AmeliaNumogramSubstrateRuntime>(new AmeliaNumogramSubstrateRuntime());
   const rhythmHarmonizerRef = useRef<ExternalRhythmHarmonizer>(new ExternalRhythmHarmonizer());
   
-  const [snapshot, setSnapshot] = useState<SubstrateStepSnapshot>(() => runtimeRef.current.step());
+  const [snapshot, setSnapshot] = useState<SubstrateStepSnapshot>(() => {
+    if (import.meta.env.VITE_AMELIA_LOCAL_ONLY === '1') {
+      try {
+        const saved = localStorage.getItem(LOCAL_CHECKPOINT_KEY);
+        if (saved) {
+          const record = JSON.parse(saved);
+          if (record.version === 2 && record.state) runtimeRef.current.importState(record.state);
+        }
+      } catch (err) { console.warn('PFM checkpoint restore failed; starting fresh', err); }
+    }
+    return runtimeRef.current.getSnapshots().at(-1) ?? runtimeRef.current.step();
+  });
+  const [checkpointError, setCheckpointError] = useState(false);
   const [history, setHistory] = useState<SubstrateStepSnapshot[]>([]);
   const [runtimeEpoch, setRuntimeEpoch] = useState(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -94,8 +108,8 @@ export function App() {
   );
 
   // Governor & Rhythms Controls
-  const [advisoryWeight, setAdvisoryWeight] = useState<number>(0.72);
-  const [momentumDamping, setMomentumDamping] = useState<number>(0.88);
+  const [advisoryWeight, setAdvisoryWeight] = useState<number>(() => runtimeRef.current.getGovernor().advisoryWeight);
+  const [momentumDamping, setMomentumDamping] = useState<number>(() => runtimeRef.current.getGovernor().momentumDampingFactor);
   const [rhythms, setRhythms] = useState<ExternalDevelopmentalRhythm[]>(() => rhythmHarmonizerRef.current.getRhythms());
   
   // Benchmarks
@@ -116,6 +130,36 @@ export function App() {
 
   const addLogMessage = (msg: string) => {
     setAuditLog(prev => [msg, ...prev]);
+  };
+
+  // Local checkpoint continuity: saves the whole live PFM/Qabbala/Governor state,
+  // including gates, phase and trait history. This is NOT a tamper-evident research seal.
+  useEffect(() => {
+    if (!tabletLocalMode) return;
+    const persist = () => {
+      try {
+        const record = { version: 2, state: runtimeRef.current.exportState() };
+        localStorage.setItem(LOCAL_CHECKPOINT_KEY, JSON.stringify(record));
+        setCheckpointError(false);
+      } catch (err) {
+        console.warn('Local PFM checkpoint storage unavailable', err);
+        setCheckpointError(true);
+      }
+    };
+    const task = setTimeout(persist, 220);
+    window.addEventListener('pagehide', persist);
+    return () => { clearTimeout(task); window.removeEventListener('pagehide', persist); };
+  }, [snapshot, tabletLocalMode]);
+
+  const handleExportCheckpoint = () => {
+    const capsule = { kind: 'AMELIA_LOCAL_CHECKPOINT_V2', createdAt: new Date().toISOString(),
+      note: 'Unsigned local runtime snapshot; not a sealed research receipt', state: runtimeRef.current.exportState() };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(capsule, null, 2)], { type: 'application/json' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'amelia-pfm-checkpoint-step-' + snapshot.step + '.json';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   // All panels share the same runtime. Field exploration advances it through
@@ -280,7 +324,7 @@ export function App() {
                 title="Click to open Firestore Process Memory Hub"
               >
                 <Flame className="w-3 h-3 text-amber-400" />
-                {tabletLocalMode ? 'LOCAL STORAGE' : 'FIRESTORE: CONFIGURED'}
+                {tabletLocalMode ? (checkpointError ? 'CHECKPOINT ERROR' : 'LOCAL STORAGE') : 'FIRESTORE: CONFIGURED'}
               </span>
             </div>
             <p className="text-xs text-stone-400 font-mono">
@@ -291,6 +335,14 @@ export function App() {
 
         {/* Global Action Controls */}
         <div className="flex items-center gap-2">
+          <button
+            id="btn-export-checkpoint"
+            onClick={handleExportCheckpoint}
+            title="Export current PFM/Qabbala/Governor state as local JSON"
+            className="px-3 py-1.5 rounded-lg bg-stone-800 text-stone-200 border border-stone-700 text-xs font-mono flex items-center gap-1.5 min-h-[44px]"
+          >
+            <Download className="w-3.5 h-3.5" /> Export PFM
+          </button>
           <button
             id="btn-open-chat-header"
             onClick={() => setActiveTab('dialogue')}
