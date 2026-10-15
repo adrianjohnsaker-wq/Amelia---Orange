@@ -20,6 +20,7 @@ import {
   execute20StepReturn,
   DepthSummaryStats,
   SensitivityGridResult,
+  ReturnEvaluationOutput,
 } from './executeMatchedStateAssayV2';
 import { canonicalSha256 } from '../lib/sha256';
 import * as fs from 'fs';
