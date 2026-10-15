@@ -17,10 +17,10 @@ export const DevelopmentalBenchmarkMatrix: React.FC<DevelopmentalBenchmarkMatrix
         <div>
           <h3 className="text-sm font-bold text-stone-200 font-mono flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            Controlled Developmental Benchmark Matrix
+            Diagnostic Threshold Display (partly demonstrative)
           </h3>
           <p className="text-xs text-stone-400 font-mono mt-0.5">
-            Non-authorising invariants and canary benchmark evaluation
+            Governor telemetry thresholds are live; D288 retention originates from a formula demonstration.
           </p>
         </div>
 
@@ -29,7 +29,7 @@ export const DevelopmentalBenchmarkMatrix: React.FC<DevelopmentalBenchmarkMatrix
           className="px-3.5 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-mono font-semibold flex items-center gap-1.5 transition-colors border border-stone-700"
         >
           <RefreshCw className="w-3.5 h-3.5 text-emerald-400" />
-          Re-evaluate All Invariants
+          Refresh Display Thresholds
         </button>
       </div>
 
