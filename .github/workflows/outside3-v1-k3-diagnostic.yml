@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: '22'
       - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
       - name: Run frozen-v1 diagnostic against original synthetic K3 observations
         shell: bash
         run: |
