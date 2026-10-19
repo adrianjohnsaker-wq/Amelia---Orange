@@ -36,10 +36,16 @@ for(let primary=0;primary<64;primary++)for(let mask=0;mask<64;mask++){
   // distinguishable event adjacent to its base at the SAME zone.
   for(let i=0;i<6;i++){
     const own=entries.filter(x=>x.descriptor.line===i+1);
-    const yang=cast[i]===7||cast[i]===9;
+    const originalYang=cast[i]===7||cast[i]===9;
     const moving=cast[i]===6||cast[i]===9;
+    const resultingYang=!!((primary^mask)&(1<<i));
+    assert.equal(resultingYang,moving?!originalYang:originalYang);
     assert.equal(own.length,moving?2:1);
-    assert.equal(own[0].descriptor.eventKind,yang?'CAST_POLARITY_YANG':'CAST_POLARITY_YIN');
+    assert.equal(own[0].descriptor.eventKind,resultingYang?'CAST_POLARITY_YANG':'CAST_POLARITY_YIN');
+    assert.equal(own[0].descriptor.primaryBit,originalYang?1:0);
+    assert.equal(own[0].descriptor.resultingBit,resultingYang?1:0);
+    assert.equal(own[0].descriptor.movementFlag,moving);
+    assert.equal(own[0].event.fluxDelta,resultingYang?p.yang:p.yin);
     assert(own.every(x=>x.descriptor.mappedZone===LINE_ZONES_V2[i]));
     if(moving){
       assert.equal(own[1].descriptor.eventKind,'CAST_MOVEMENT');
@@ -50,6 +56,15 @@ for(let primary=0;primary<64;primary++)for(let mask=0;mask<64;mask++){
   assert(!signatures.has(signature),'NON_INJECTIVE_PFM_INPUT '+primary+' '+mask);
   signatures.add(signature);
   if(mask===0)noMovement.add(signature);
+  // Option A must preserve the resulting hexagram even for old-line casts.
+  const resulting=primary^mask;
+  for(let i=0;i<6;i++){
+    const requiredPolarity=!!(resulting&(1<<i));
+    const base=entries.find(e=>e.descriptor.line===i+1&&e.descriptor.eventKind!=='CAST_MOVEMENT');
+    assert(base);
+    assert.equal(base.descriptor.resultingBit,requiredPolarity?1:0);
+    assert.equal(base.descriptor.eventKind,requiredPolarity?'CAST_POLARITY_YANG':'CAST_POLARITY_YIN');
+  }
   // Effective-state check exercises the EXISTING PFM append law, not merely
   // metadata tags. This does not establish resistance to saturated carryover
   // histories; future design gate must test those separately.
@@ -68,6 +83,12 @@ for(let primary=0;primary<64;primary++)for(let mask=0;mask<64;mask++){
   assert.equal(restored.exportHistoryDigest(),memory.exportHistoryDigest());
   eventsChecked+=entries.length;
 }
+// Explicit old-line reversal: old yin 6 becomes resulting yang, old yang 9 becomes resulting yin.
+const reversals=encodeCastToPFM([6,9,8,7,6,9],p,0);
+assert.equal(reversals.find(e=>e.descriptor.line===1)?.descriptor.eventKind,'CAST_POLARITY_YANG');
+assert.equal(reversals.find(e=>e.descriptor.line===2)?.descriptor.eventKind,'CAST_POLARITY_YIN');
+assert.equal(reversals.find(e=>e.descriptor.line===5)?.descriptor.eventKind,'CAST_POLARITY_YANG');
+assert.equal(reversals.find(e=>e.descriptor.line===6)?.descriptor.eventKind,'CAST_POLARITY_YIN');
 assert.equal(signatures.size,4096);
 assert.equal(noMovement.size,64);
 assert.equal(snapshots.size,4096,'PFM effective strains must distinguish all casts in fresh-state fixture');
