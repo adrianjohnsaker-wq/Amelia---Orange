@@ -1,0 +1,21 @@
+# OUTSIDE-3 synthetic-only design
+
+No real targets, workings or calibration K-checks.
+
+Selected delta=0.14, magnitude=0.065 by lexicographic cast rank-diversity and history-response criterion.
+
+Reference mean: [0.2160841344612644,0.27781338905397546,0.05597947672792053,0.22778319060698127,0.14310166852963585,0.19797509195570645]
+
+Grid:
+
+{"delta":0.14,"magnitude":0.065,"diversity":20,"spread":0.037887833807626246,"memoryResponse":0.021328146305000482}
+{"delta":0.1,"magnitude":0.065,"diversity":20,"spread":0.03786690176082416,"memoryResponse":0.02128389942051892}
+{"delta":0.06,"magnitude":0.065,"diversity":19,"spread":0.03783328108030757,"memoryResponse":0.021325091597786366}
+{"delta":0.06,"magnitude":0.035,"diversity":10,"spread":0.020297388447741392,"memoryResponse":0.011509000909492896}
+{"delta":0.1,"magnitude":0.035,"diversity":10,"spread":0.020332775662474493,"memoryResponse":0.011494871020266348}
+{"delta":0.14,"magnitude":0.035,"diversity":9,"spread":0.020360783306464066,"memoryResponse":0.011508813527428698}
+{"delta":0.1,"magnitude":0.015,"diversity":3,"spread":0.008715528839393432,"memoryResponse":0.0049203712379603595}
+{"delta":0.06,"magnitude":0.015,"diversity":3,"spread":0.008688522574528623,"memoryResponse":0.00491236499423419}
+{"delta":0.14,"magnitude":0.015,"diversity":3,"spread":0.00874759469577573,"memoryResponse":0.004912285035699265}
+
+Thresholds frozen before K1-K5: {"K1":{"minDistinctCRankings":2,"minNonzeroScoreVariance":1e-10,"maximumTieFraction":0.9},"K2":{"maxNullRejectionRate":0.065,"series":1000},"K3":{"minCDetectionRate":0.25,"series":200},"K4":{"minCDetectionRate":0.25,"maxMDetectionRate":0.065,"series":200},"K5":{"minMeanRankDifference":0.000001,"checkpoints":[10,44,88]}}
