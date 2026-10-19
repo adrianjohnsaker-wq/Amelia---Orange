@@ -70,6 +70,8 @@ const lines=[
 'All thresholds were frozen before these K-checks:',
 JSON.stringify(thresholds,null,2),
 '',
+'K1 automated status checks frozen diversity, tie rate and entropy only. Hexagram-specific rank-band balance is reported descriptively but has no frozen per-band tolerance; do not claim full K1 uniform coverage or approve registration solely from this PASS.',
+'',
 '## K gate outcomes',
 '| Gate | Verdict | Measurements |',
 '|---|---|---|',
