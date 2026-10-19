@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { encodeCast,doubledMidRanks,linearReadout,rawCastReadout } from './ejing';
+const zero=encodeCast([8,8,8,8,8,8]);assert.deepEqual(zero,{primary:0,movingMask:0,resulting:0});
+const allYang=encodeCast([7,7,7,7,7,7]);assert.equal(allYang.primary,63);
+const moving=encodeCast([6,7,8,9,6,9]);
+assert.equal(moving.resulting,moving.primary^moving.movingMask);
+assert.equal(moving.movingMask,1+8+16+32);
+const ranks=doubledMidRanks(new Array(64).fill(0));assert(ranks.every(x=>x===65));
+const ref=new Array(10).fill(0),zones=[0,1,2,3,4,5,6,7,8,9];
+const out=linearReadout(zones,ref);assert.equal(out.length,64);
+assert.equal(out.reduce((a,b)=>a+b,0),64*65);
+const raw=rawCastReadout(0);assert.equal(raw.length,64);
+assert.equal(raw.reduce((a,b)=>a+b,0),64*65);
+assert.equal(JSON.stringify(linearReadout(zones,ref)),JSON.stringify(out));
+console.log('OUTSIDE-3 encoding/readout synthetic unit checks PASS; no target generated');
