@@ -1,0 +1,100 @@
+name: OUTSIDE-3 v2 D0 Parameter Design Grid — SYNTHETIC
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/outside3/v2/runD0Candidate.ts'
+      - 'experiments/outside3/v2/aggregateD0.ts'
+      - '.github/workflows/outside3-v2-d0-design.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      matrix:
+        id: [D0A, D0B, D0C, D0D, D0E, D0F]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run one manifest-pinned synthetic design candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          set -o pipefail
+          mkdir -p "experiments/outside3/v2/design-grid/output/${{ matrix.id }}"
+          npx tsx experiments/outside3/v2/runD0Candidate.ts "${{ matrix.id }}" 2>&1 | tee "experiments/outside3/v2/design-grid/output/${{ matrix.id }}/runner.log"
+          cd "experiments/outside3/v2/design-grid/output/${{ matrix.id }}"
+          sha256sum -c SHA256SUMS.txt
+          echo "$GITHUB_SHA" > SOURCE_COMMIT.txt
+          sha256sum runner.log > LOG_SHA256.txt
+      - name: Upload complete candidate evidence whether pass or fail margin
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-V2-D0-${{ matrix.id }}
+          path: experiments/outside3/v2/design-grid/output/
+          retention-days: 90
+          if-no-files-found: warn
+
+  aggregate:
+    needs: [candidate]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Download all six completed synthetic design-shard artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: OUTSIDE3-V2-D0-*
+          path: experiments/outside3/v2/design-grid/output
+          merge-multiple: true
+      - name: Check all six candidates and preserve negative margins
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ needs.candidate.result }}" = success
+          npx tsx experiments/outside3/v2/aggregateD0.ts
+          cd experiments/outside3/v2/design-grid
+          sha256sum -c SHA256SUMS.txt
+          echo "$GITHUB_SHA" > SOURCE_COMMIT.txt
+      - name: Retain complete D0 grid even when no option meets criterion
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-V2-D0-Full-Design-Grid
+          path: experiments/outside3/v2/design-grid/
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Commit D0 design evidence only (no parameter freeze)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/outside3/v2/design-grid/output/ experiments/outside3/v2/design-grid/D0_GRID_RESULT.json experiments/outside3/v2/design-grid/D0_GRID_RESULT.md experiments/outside3/v2/design-grid/SHA256SUMS.txt
+          git diff --cached --check
+          git commit -m "Archive v2 synthetic D0 design grid including failures; no parameter freeze"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
