@@ -33,6 +33,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          (cd experiments/outside3 && sha256sum -c design-output/DESIGN_SHA256SUMS.txt)
           npx tsx experiments/outside3/combineCalibration.ts
           sha256sum experiments/outside3/report-output/CALIBRATION.json experiments/outside3/report-output/STAGE1_REPORT.md > experiments/outside3/report-output/REPORT_SHA256SUMS.txt
           git diff --check
