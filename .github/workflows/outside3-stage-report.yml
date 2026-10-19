@@ -28,6 +28,8 @@ jobs:
           merge-multiple: true
           path: experiments/outside3/calibration-output/
       - name: Combine without retuning thresholds
+        env:
+          OUTSIDE3_CALIBRATION_SHA: ${{ github.event.workflow_run.head_sha }}
         shell: bash
         run: |
           set -euo pipefail
