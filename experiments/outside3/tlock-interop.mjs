@@ -19,7 +19,7 @@ try {
   writeFileSync(output,plaintext,{mode:0o600});
  }
  console.log('TLOCK_JS_'+mode.toUpperCase()+'_OK (no payload output)');
-}catch(e:any){
+}catch(e){
  console.error('TLOCK_JS_'+mode.toUpperCase()+'_FAILED '+(e?.code??e?.name??'UNCLASSIFIED'));
  process.exitCode=1;
 }
