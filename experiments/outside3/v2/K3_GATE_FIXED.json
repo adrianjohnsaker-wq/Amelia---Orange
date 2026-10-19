@@ -1,0 +1,25 @@
+{
+  "schema": "OUTSIDE3_V2_K3_GATE_FIXED_V1",
+  "lockedOn": "2026-10-19",
+  "authorizedBy": "Operator before v2 parameter selection",
+  "status": "K3_GATE_FIXED_PARAMETERS_NOT_YET_SELECTED_REGISTRATION_CLOSED",
+  "series": 200,
+  "workingsPerSeries": 88,
+  "syntheticOnly": true,
+  "noRealTargets": true,
+  "nullTest": "Exact integer-frequency convolution P1 one-sided alpha 0.05 (must be implemented and validated before K calibration)",
+  "comparator": "raw ranks resulting hexagram; paired casts and targets",
+  "successConditions": {
+    "rawHitsAtLeast": 180,
+    "cHitsAtLeast": 50,
+    "twiceCHitsAtLeastRawHits": true
+  },
+  "evaluation": "PASS iff rawHits >= 180 AND cHits >= 50 AND 2*cHits >= rawHits; otherwise FAIL, no retuning",
+  "boundaries": {
+    "notScientificRegistration": true,
+    "noChangesAfterDesignOrCalibration": true,
+    "independentDisjointCalibrationSeeds": true,
+    "v1K3": "FAIL 11/200",
+    "v1K4": "FAIL C40/200"
+  }
+}
