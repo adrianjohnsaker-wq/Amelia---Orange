@@ -87,6 +87,7 @@ export function applyCast(runtime:AmeliaNumogramSubstrateRuntime,cast:Cast,confi
       fluxDelta:config.magnitude,phaseCoherence:0.95,strainRelaxation:0.025,
       eventDigest:digest(event),timestamp:at,kind:'OTHER',fromZone:runtime.getCurrentZone()});
   }
+  const movingEvents=runtime.getMemory().getEvents().length-preEventCount;
   let snap;
   for(let j=0;j<config.steps;j++)snap=runtime.step();
   if(!snap)throw Error('NO_DEVELOPMENT');
@@ -94,7 +95,7 @@ export function applyCast(runtime:AmeliaNumogramSubstrateRuntime,cast:Cast,confi
   const centered=activation.map((a,i)=>a-config.meanReference[i]);
   const scores=Array.from({length:64},(_,h)=>centered.reduce((s,v,i)=>s+(((h>>i)&1)?v:-v),0));
   return {encoding:encoded,ranks:ranks(scores),activation,centered,
-    movingEvents:runtime.getMemory().getEvents().length-preEventCount,transition:runtime.getLastTransition()};
+    movingEvents,transition:runtime.getLastTransition()};
 }
 export type WorkRecord = {
   cast:Cast; primary:number;movingMask:number;resulting:number;
