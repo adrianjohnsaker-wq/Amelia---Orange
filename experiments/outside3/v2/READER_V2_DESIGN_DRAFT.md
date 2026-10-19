@@ -23,41 +23,44 @@ For actual OUTSIDE-3, future registration remains prohibited until all required 
 
 The mapping remains bottom-first lines 1–6 → zones \`[1,2,4,8,7,5]\`. Binary encoding remains 6/8 = yin, 7/9 = yang; 6 and 9 move; resulting hexagram is primary XOR moving mask; raw arm continues ranking by resulting-hexagram agreement. Bit index 0 is the bottom line.
 
-### Injective cast-to-PFM input (amendment approved for design draft)
+### Option A: injective resulting-polarity memory encoding (operator directive)
 
-**Reject the v2 complement-zone yin proposal.** It was non-injective: for each Wilhelm pair, simultaneous yin/yin and yang/yang would feed the same unordered zone targets, collapsing the 64 static hexagrams to at most 27 target-zone patterns. This is not an acceptable representation of the cast.
+**Primary input polarity means the resulting hexagram, not the primary cast.** Each original line is encoded bottom-to-top with one mandatory polarity event at z(i) for the **resulting** polarity. Every old/moving line additionally inserts a distinct \`CAST_MOVEMENT\` event at its own z(i). Six base events plus 0–6 movement events jointly encode both the resulting hexagram and movement mask; the primary is recovered by XOR. **Raw continues to rank the resulting hexagram.**
 
-Instead, process **all six lines** in strict bottom-to-top order. Each line creates **one mandatory polarity event at its own mapped zone** z(i), followed immediately by **one additional movement event** at z(i) if and only if its value is old (6 or 9). Thus six base cast events are always inserted, plus 0–6 separately distinguishable movement events. This alternative to the optional "yang event, yin none" example keeps arm M's six-event order unambiguous and preserves the difference between old yin, young yin, young yang, and old yang.
-
-| Line value | Mandatory base event at z(i) | Additional movement event at z(i) | Effective design-stage dose |
+| Original value | Primary polarity | Resulting PFM polarity at z(i) | Additional PFM event |
 |---|---|---|---|
-| 6: old yin | CAST_POLARITY_YIN, magnitude \`m_yin\` | CAST_MOVEMENT, magnitude \`m_move\` | \`m_yin + m_move\` |
-| 7: young yang | CAST_POLARITY_YANG, magnitude \`m_yang\` | none | \`m_yang\` |
-| 8: young yin | CAST_POLARITY_YIN, magnitude \`m_yin\` | none | \`m_yin\` |
-| 9: old yang | CAST_POLARITY_YANG, magnitude \`m_yang\` | CAST_MOVEMENT, magnitude \`m_move\` | \`m_yang + m_move\` |
+| 6 (old yin) | yin | \`CAST_POLARITY_YANG\` (\`m_yang\`) | \`CAST_MOVEMENT\` (\`m_move\`) |
+| 7 (young yang) | yang | \`CAST_POLARITY_YANG\` (\`m_yang\`) | none |
+| 8 (young yin) | yin | \`CAST_POLARITY_YIN\` (\`m_yin\`) | none |
+| 9 (old yang) | yang | \`CAST_POLARITY_YIN\` (\`m_yin\`) | \`CAST_MOVEMENT\` (\`m_move\`) |
 
-The numbers \`m_yin\`, \`m_yang\`, and \`m_move\` are **fresh v2 design constants, not yet chosen or frozen**. Their nonnegative effective magnitudes must be *causally* distinguishable under the actual PFM memory update, not only by text labels. As preconditions for a valid candidate, require \`m_yin > 0\`, \`m_yang > 0\`, \`m_move > 0\`, \`m_yin != m_yang\`, and \`m_move != abs(m_yang - m_yin)\`. Check for clamping/saturation and numerical aliasing in the *actual updated PFM readout* across relevant starting histories; unique event metadata by itself does not prove distinguishable dynamical effects. A candidate failing effective-state separation is rejected before calibration.
+The complement-zone yin encoding is rejected as non-injective. Line-specific and chronologically ordered event descriptors retain original cast value, original and resulting polarity, moving flag and event type for replay, while the *nonnegative PFM flux magnitudes* must independently preserve causal differentiation. Magnitudes \`m_yin\`, \`m_yang\`, \`m_move\`, coherence and relaxation are **not yet selected or frozen**; neither unique metadata nor injectivity in fresh PFM suffices to pass the carried-history margin requirement. The numerical magnitudes require distinct positive effective levels, no clamping alias under 88-working histories and export/import parity. Do not introduce signed negative flux without an independent substrate-change commit before design runs.
 
-Each appended event carries \`lineIndex\` (1–6), \`mappedZone\`, \`eventKind\` (base yin/base yang/movement), \`castValue\`, \`eventOrder\`, a canonical digest and the registered magnitude/coherence. The substrate's existing nonnegative PFM event-insertion API is used. Event timestamps and digests must never encode the hidden target, a plant label, or any target-correlated metadata. Each original cast uniquely determines its chronological event stream.
+**Before design runs**, enumerate all **64 resulting hexagrams × 64 movement masks = 4,096 casts**, verify unique canonical PFM event streams, distinct freshly updated PFM readouts, explicit old-line reversal (6→yang, 9→yin), all 64 nonmoving hexagrams, and all movement masks. Test each candidate magnitude's dynamical distinguishability under carried/saturated histories separately.
 
-**Mandatory encoding tests before design runs:**
-1. Enumerate all **64 primary hexagrams × 64 moving masks = 4,096 possible casts**. Test unique, byte-identical canonical event streams: no collisions, with movement encoded separately from polarity.
-2. Confirm all 64 non-moving hexagrams are distinguishable from each other, with bottom-first line indices and zone map \`[1,2,4,8,7,5]\`.
-3. Confirm each movement mask is distinguishable for any fixed primary hexagram, including an empty movement mask.
-4. Test real PFM insertion/update and export/import replay for candidate frozen magnitudes *before* any calibration. Reject candidates that alias through effective strain/activation clamping.
-5. Confirm paired C/M/G receive precisely the same six base events and additional movement events; no hidden targets reach the encoder.
 
-Potential alternative: signed-history event encoding, but only if a separate substrate-change commit precedes every v2 design/calibration run. Do not introduce negative flux into the current nonnegative PFM update law without explicit safety and replay tests.
+**Arm M order is mandatory:** copy C's identical pre-working zones, phases, gates, Governor and traits; **reset PFM before inserting six resulting-polarity base cast events and the optional extra movement events**, then execute autonomous development. Never reset M after cast entry or within the observation window. C carries its own PFM; G carries its separate graph/history; all three receive the same event stream (and Raw receives the resulting hexagram only).
 
-Present orientation: **do not directly overwrite activation to ±δ for v2 primary path**. The cast should influence development through the ordinary PFM read/transition mechanism. The canonical present state and six ordered base events, with any separately encoded moving-line events, are sufficient for the candidate reader. A direct-orientation variant may be a **design-stage comparator only**, must not be silently combined with the primary pathway, and may not be selected using calibration outcomes.
+**Present orientation:** do not directly overwrite activations in the v2 primary reader. Casts enter through PFM, not a parallel transient orientation channel.
 
-**Arm M order is mandatory:** clone C's exact pre-working present state (zones, phases, Governor, traits and gates); **first reset ProcessFieldMemory to the registered baseline, then insert the six cast polarity events in line order and all applicable separate moving-line events**; only then start autonomous development. Do not reset M after entry or between steps. C carries its complete PFM across workings and receives the same newly encoded cast; G carries its own PFM and rewired graph and receives the same event stream; Raw receives only the resulting hexagram, with no substrate. The six base events and any 0–6 movement events must be identical between C/M/G for each working, except for differences in the arms' prior memory state.
+## Pre-selection margin / saturation feasibility (before any parameter-selection runs)
+
+The pre-freeze diagnostic reports the **smallest standardized readout difference between hexagrams one line apart**, both with fresh PFM and through synthetic **88-working carried-memory** trajectories, before choosing candidate magnitudes. The reference \`mu_z\`, \`sigma_z\` are **design-only** synthetic estimates, *not* frozen calibration references; freeze the final reference corpus only after choosing a window.
+
+For final standardized activations \`a_i=(activation[z(i)]-mu_i)/sigma_i\` and linear hexagram score \`S(h)=sum_i (2*bit_i(h)-1)*a_i\`, report:
+
+1. **Within-output Hamming-1 score margin:** for each recorded readout, enumerate all **192 undirected Hamming-1 hexagram edges** and compute \`min_(h,i) |S(h)-S(h xor 2^i)| = 2*min_i |a_i|\`. Report zeros, ties and minima, not just averages. This is *ranking margin* and may be small even if the encoder is injective.
+2. **Between-input response margin:** from the identical pre-working state, encode two casts with the same movement mask and resulting hexagrams differing at exactly one line; develop both under identical conditions and record the standardized activation-vector distance \`max_i |a_i(A)-a_i(B)|\` and \`|a_changed_zone(A)-a_changed_zone(B)|\`. Take the minimum over every one-line pair and tested history. A merely different input digest does not count.
+
+Include all six individual \`sigma_z\`, the observed synthetic output/readout variability (standard deviations and robust dispersion), and a **minimum margin-to-variability ratio** with its denominator explicitly shown. Check fresh memory, workings **1, 10, 44 and 88**, and a declared saturated PFM fixture. Carry the same synthetic history into each fork; do not reinitialize midway. Record worst cases and any zero separation. The numeric meaning of *clearly above variability* (\`TO_DESIGN\` margin factor) must be defined **before parameter-grid selection** and cannot be relaxed after seeing candidate results; if the entire parameter grid fails, return to design review.
 
 ## Architecture B: prospective development-window choice
 
 **The number of unguided steps is not 30 by default.** Before K1–K5 calibration, conduct design-only runs at predetermined candidate windows, proposed \`[0, 1, 3, 5, 10, 15, 20, 30, 45, 60]\`. Step 0 is a diagnostic baseline, not an automatically eligible production readout if it fails to develop any memory.
 
 **Design-only signal plants are explicitly permitted** for selecting the development window and motivating prospective K3/other thresholds, provided that *every design-seed stream (casts, targets, plant-location RNG and conditioning histories) is disjoint from every reference and K1–K5/curve calibration stream*. Publish the complete distinct seed namespaces and all design runs, including candidates that fail. Plant outcomes on K3 calibration seeds, even accidentally reused seeds, must NEVER be used for window selection, threshold adjustment, or late readout decisions.
+
+**Design-only planted signals are permitted to support window selection and prospective threshold rationale.** They must use seeds (including casts, target draws, line positions, reference runs and carried histories) strictly disjoint from ALL K1–K5 calibration and curve seeds. Publish the designated design-seed and held-out calibration-seed namespaces before any design-run execution. No calibration data may enter tuning. 
 
 The window-selection objective and tie-breaking rule must be written **before design runs**. The design record must assess input/rank information retention, per-zone readout variance, C–M separation and recurrent-state saturation, with a held-out design subset. The selection rule may prefer a shorter window preserving synthetic plant sensitivity without collapse, but MUST NOT optimize against K1–K5 evaluation seeds or against real targets. Publish all design candidates, scores, ties and the selected window in a distinct \`v2/design-output/constants.frozen.json\` and include a hash and independent provenance for the selection.
 
@@ -110,13 +113,13 @@ Distinct v2 seeds for reference, design, K1, K2, K3, K4, K5 and curve, with no r
 |---|---|
 | **K1** | At least 1,000 fresh synthetic casts, selected window, numerical per-hexagram positional-bias criterion fixed before K gates; report entropy, quartiles, symmetry, ties and rank diversity |
 | **K2** | 1,000 target-independent synthetic 88-working series, exact-integer P1 and P2 nulls; pre-frozen false-positive ceiling and observed uncertainty |
-| **K3 — DECISIVE** | 200 paired synthetic 88-working series; one random cast line per working forced to the synthetic target's polarity and made nonmoving. Score **both arm C and the raw-cast arm on the identical 200 series** with the same frozen exact integer P1 null. Require **C rejection rate ≥ 0.50 × raw-arm rejection rate**, **C ≥ absolute floor `TO_DESIGN`**, and **raw-arm sensitivity ≥ `TO_DESIGN`**; freeze the two absolute cutoffs and paired decision logic *before* any K calibration. Failure of any condition means **v2 fails regardless of K1/K2/K4/K5** |
+| **K3 — DECISIVE** | 200 paired 88-working synthetic series with an identical target-planted nonmoving line per cast. Apply the exact-integer P1 test to C and Raw using the same planted series. **Raw ≥0.90 (≥180/200); C ≥0.25 (≥50/200); C ≥0.50×Raw (`2*C_hits >= Raw_hits`)**. All three are compulsory, fixed **before parameter selection**. Failure of any condition is a hard NO-GO regardless of other gates. |
 | **K4** | 200 synthetic 88-working series with target-yang line PFM plants in C before cast, not in M; separate C detection minimum, M false-positive ceiling, and matched comparisons fixed prospectively |
 | **K5** | Full 88-working synthetic series, one historical perturbation applied at W1, matched later inputs, C–M divergence; pre-frozen meaningful rank survival threshold at W10/W44/W88, not merely nonzero |
 
 **Descriptive curve:** 200 synthetic 88-working series at **each** planted-working fraction \`0.10, 0.20, 0.30, 0.45, 0.60\`, with fraction sampled independently for each working, and all raw results retained. This is descriptive and not a calibration tuning source.
 
-**K3 paired-relative gate (proposed now):** `R_C >= 0.50 * R_Raw`, where each rate is the count of series with exact-integer P1 p ≤ 0.05 divided by 200 on the **same paired synthetic casts/targets**. This draft's 0.50 multiplier is explicitly proposed *before v2 calibration*; it must either be accepted and frozen prospectively or revised during the separate documented design stage **before any K-gate run**. The absolute C detection floor and minimum raw-arm sensitivity are both `TO_DESIGN`, not yet chosen. The final K3 verdict requires **all three**: C relative to Raw, C absolute floor, and minimum Raw plant sensitivity. If Raw is insensitive, do not score the ratio as a pass. Counts and ratio computations must be deterministic; if `R_Raw=0`, the calibration fails the raw-sensitivity condition. The design-only signal-plant series may be used to justify the absolute floors and selection of window, but all calibration seeds must be withheld. No K3 threshold or gate is adjustable after the first v2 calibration run. K3 failure is a hard NO-GO even if K4 passes.
+**Operator-fixed K3 thresholds, effective before parameter selection:** \`Raw_hits >=180\`, \`C_hits >=50\`, and \`2*C_hits >= Raw_hits\`, all on the same **200** synthetic planted series with exact-integer P1 p ≤0.05. Use integer pass counts to avoid floating threshold ambiguity. No threshold may be revised after seeing any subsequent design or calibration data. K3 is the decisive gate; raw plant sensitivity is an independent requirement, not a zero-denominator bypass.
 
 ## Gate, audit and no-peeking boundaries
 
@@ -129,7 +132,7 @@ Distinct v2 seeds for reference, design, K1, K2, K3, K4, K5 and curve, with no r
 7. Produce \`v2/STAGE_REPORT.md\`, exact source/parameter manifests, K1 per-hexagram tables, per-series p-value numerator/denominator, replay hashes, failed thresholds and provenance.
 8. Operator + independent reviewer acceptance is required **before** any registration of a future OUTSIDE-3 real-target experiment.
 
-**Current authorization:** draft v2 and run explanatory v1 diagnostics only. **Do not execute v2 calibration or generate any real target.**
+**Current authorization:** update and exhaustively unit-test Option A, complete a pre-selection fresh/carried 88-working saturation-margin diagnostic, then run separately declared parameter-selection DESIGN experiments if the diagnostic is adequate. NO v2 K1–K5 calibration, real targets, or registration.
 
 
 ## Operator amendments before any v2 freeze — 19 October 2026
@@ -150,3 +153,8 @@ Provenance: [Stage 1 K3 supplementary result](../diagnostics-v1/fast-output/FAST
 **Interpretation:** A synthetic planted channel is present in the cast, partly represented in the initial orientation, and substantially less detectable after 30 developmental steps. Importantly, K3's planted line is made **nonmoving**, so the original v1 entry pathway never wrote that planted line as one of its moving-line PFM events. This distinguishes loss at history encoding from loss during subsequent development; their relative contributions still require a prospective factorial design.
 
 These post hoc observations motivate but **must not determine** v2 development-window selection or acceptance thresholds. The v2 selection objective, candidate windows and dedicated design seeds must be finalized before design runs. V1 K3/K4 verdicts remain FAILED; registration CLOSED.
+
+
+## Pre-selection amendment dated 19 October 2026
+
+Movement direction Option A, fixed K3 thresholds (Raw 0.90, C 0.25 and C ≥ 0.50×Raw), and pre-freeze Hamming-1 standardized readout-margin requirements were accepted by the operator before parameter selection. This document is still **a design draft, not a registration**.
