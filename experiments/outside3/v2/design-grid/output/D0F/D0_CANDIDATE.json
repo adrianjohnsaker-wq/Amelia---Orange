@@ -1,0 +1,2314 @@
+{
+  "schema": "OUTSIDE3_V2_D0_PARAMETER_DESIGN_CANDIDATE_V1",
+  "candidateId": "D0F",
+  "manifestSha256": "317d709a80bba7f023db2bc786cfb57be6c781b43c3b0a9ca5dd4cf5e71d3299",
+  "scope": "Synthetic D0 design grid candidate, NOT frozen parameters or K1-K5 calibration",
+  "planSha256": "317d709a80bba7f023db2bc786cfb57be6c781b43c3b0a9ca5dd4cf5e71d3299",
+  "fixture": {
+    "yin": 0.01,
+    "yang": 0.165,
+    "movement": 0.046,
+    "phaseCoherence": 0.95,
+    "strainRelaxation": 0.025
+  },
+  "designOnly": true,
+  "notSelected": true,
+  "diagnosticWindows": [
+    1,
+    3,
+    10
+  ],
+  "masks": [
+    0,
+    21
+  ],
+  "historyWorkingCount": 88,
+  "groups": [
+    "FRESH",
+    "W1",
+    "W10",
+    "W44",
+    "W88",
+    "SATURATION_FIXTURE"
+  ],
+  "all192EdgesPerGroupMask": true,
+  "referenceCountPerWindow": 128,
+  "minimumMarginFactorPredeclared": 2,
+  "globalMinimumChangedZoneStandardizedMargin": 0.8939172040361223,
+  "globalMinimumWithinOutputStandardizedScoreMargin": 0.0016232239330483897,
+  "fixtureCriterionSatisfied": false,
+  "noRealTarget": true,
+  "registrationClosed": true,
+  "v2Frozen": false,
+  "calibrationExecuted": false,
+  "groupsOfResults": [
+    {
+      "developmentWindow": 1,
+      "history": "FRESH",
+      "working": 0,
+      "eventCount": 0,
+      "reference": {
+        "referenceSeed": 9303001,
+        "count": 128,
+        "means": [
+          0.5154197027272545,
+          0.4527288915347104,
+          0.3786887173202121,
+          0.4059318800887465,
+          0.34426281946468235,
+          0.2802622580820307
+        ],
+        "sigma": [
+          0.014023275166664854,
+          0.014140664561469526,
+          0.013709214226935103,
+          0.014169621426854354,
+          0.01421536869941838,
+          0.014246401827022682
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 1.956873064405639,
+          "minimumMaxZoneResponseStandardized": 1.956873064405639,
+          "minimumWithinOutputHamming1ScoreMargin": 1.1774025317614976,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 1.956873064405639,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 0,
+            "bit": 6,
+            "mask": 0,
+            "margin": 1.956873064405639,
+            "a": [
+              -1.0660562402382237,
+              -1.037857869847854,
+              -1.203832672449959,
+              -1.3787754337553269,
+              -1.176186113152611,
+              -1.3192371903838045
+            ],
+            "b": [
+              -1.0660562402382237,
+              -1.037857869847854,
+              -1.203832672449959,
+              -1.3787754337553269,
+              -1.176186113152611,
+              0.6376358740218344
+            ]
+          },
+          "worstWithin": {
+            "h": 8,
+            "bit": 1,
+            "mask": 0,
+            "role": "lower",
+            "margin": 1.1774025317614976,
+            "vector": [
+              -1.0660562402382237,
+              -1.037857869847854,
+              -1.203832672449959,
+              0.5887012658807488,
+              -1.176186113152611,
+              -1.3192371903838045
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 1.9341320356414609,
+          "minimumMaxZoneResponseStandardized": 1.9341320356414609,
+          "minimumWithinOutputHamming1ScoreMargin": 0.8011133097086923,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 1.9341320356414609,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 0,
+            "bit": 5,
+            "mask": 21,
+            "margin": 1.9341320356414609,
+            "a": [
+              -0.47458242963249664,
+              -1.037857869847854,
+              -0.5988089371213755,
+              -1.3214227790189175,
+              -0.5927049403892662,
+              -1.2621936354351764
+            ],
+            "b": [
+              -0.47458242963249664,
+              -1.037857869847854,
+              -0.5988089371213755,
+              -1.3214227790189175,
+              1.3414270952521945,
+              -1.2621936354351764
+            ]
+          },
+          "worstWithin": {
+            "h": 2,
+            "bit": 1,
+            "mask": 21,
+            "role": "lower",
+            "margin": 0.8011133097086923,
+            "vector": [
+              -0.47458242963249664,
+              0.9336477746579264,
+              -0.5988089371213755,
+              -1.3214227790189175,
+              -0.40055665485434616,
+              -1.2621936354351764
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 1.9341320356414609,
+      "overallMinScoreMargin": 0.8011133097086923,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 1,
+      "history": "W1",
+      "working": 1,
+      "eventCount": 16,
+      "reference": {
+        "referenceSeed": 9303001,
+        "count": 128,
+        "means": [
+          0.5154197027272545,
+          0.4527288915347104,
+          0.3786887173202121,
+          0.4059318800887465,
+          0.34426281946468235,
+          0.2802622580820307
+        ],
+        "sigma": [
+          0.014023275166664854,
+          0.014140664561469526,
+          0.013709214226935103,
+          0.014169621426854354,
+          0.01421536869941838,
+          0.014246401827022682
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 1.956873064405643,
+          "minimumMaxZoneResponseStandardized": 1.956873064405643,
+          "minimumWithinOutputHamming1ScoreMargin": 0.46265201437973996,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 1.956873064405643,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 0,
+            "bit": 6,
+            "mask": 0,
+            "margin": 1.956873064405643,
+            "a": [
+              -13.934363856546991,
+              -12.278129391265873,
+              -19.160904798268017,
+              -11.511313749488043,
+              -4.621815333462589,
+              -1.725547057215773
+            ],
+            "b": [
+              -13.934363856546991,
+              -12.278129391265873,
+              -19.160904798268017,
+              -11.511313749488043,
+              -4.621815333462589,
+              0.23132600718986998
+            ]
+          },
+          "worstWithin": {
+            "h": 32,
+            "bit": 1,
+            "mask": 0,
+            "role": "lower",
+            "margin": 0.46265201437973996,
+            "vector": [
+              -13.934363856546991,
+              -12.278129391265873,
+              -19.160904798268017,
+              -11.511313749488043,
+              -4.621815333462589,
+              0.23132600718986998
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 1.9341320356414604,
+          "minimumMaxZoneResponseStandardized": 1.9341320356414604,
+          "minimumWithinOutputHamming1ScoreMargin": 0.5704009515049213,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 1.9341320356414604,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 0,
+            "bit": 5,
+            "mask": 21,
+            "margin": 1.9341320356414604,
+            "a": [
+              -13.364796483371094,
+              -12.278129391265873,
+              -18.589493492679914,
+              -11.45608526714928,
+              -4.03833416069924,
+              -1.6716725886531785
+            ],
+            "b": [
+              -13.364796483371094,
+              -12.278129391265873,
+              -18.589493492679914,
+              -11.45608526714928,
+              -2.104202125057779,
+              -1.6716725886531785
+            ]
+          },
+          "worstWithin": {
+            "h": 32,
+            "bit": 1,
+            "mask": 21,
+            "role": "lower",
+            "margin": 0.5704009515049213,
+            "vector": [
+              -13.364796483371094,
+              -12.278129391265873,
+              -18.589493492679914,
+              -11.45608526714928,
+              -4.03833416069924,
+              0.28520047575246066
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 1.9341320356414604,
+      "overallMinScoreMargin": 0.46265201437973996,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 1,
+      "history": "W10",
+      "working": 10,
+      "eventCount": 171,
+      "reference": {
+        "referenceSeed": 9303001,
+        "count": 128,
+        "means": [
+          0.5154197027272545,
+          0.4527288915347104,
+          0.3786887173202121,
+          0.4059318800887465,
+          0.34426281946468235,
+          0.2802622580820307
+        ],
+        "sigma": [
+          0.014023275166664854,
+          0.014140664561469526,
+          0.013709214226935103,
+          0.014169621426854354,
+          0.01421536869941838,
+          0.014246401827022682
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 1.0027085108338119,
+          "minimumMaxZoneResponseStandardized": 1.0027085108338119,
+          "minimumWithinOutputHamming1ScoreMargin": 1.4633838174246905,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 1.0027085108338119,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 0,
+            "bit": 4,
+            "mask": 0,
+            "margin": 1.0027085108338119,
+            "a": [
+              -17.143361885124754,
+              0.7316919087123452,
+              -15.268806875646117,
+              -7.383990665840156,
+              6.037608711067123,
+              2.8535618565682173
+            ],
+            "b": [
+              -17.143361885124754,
+              0.7316919087123452,
+              -15.268806875646117,
+              -6.381282155006344,
+              6.037608711067123,
+              2.8535618565682173
+            ]
+          },
+          "worstWithin": {
+            "h": 0,
+            "bit": 1,
+            "mask": 0,
+            "role": "lower",
+            "margin": 1.4633838174246905,
+            "vector": [
+              -17.143361885124754,
+              0.7316919087123452,
+              -15.268806875646117,
+              -7.383990665840156,
+              6.037608711067123,
+              2.8535618565682173
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9638832469130456,
+          "minimumMaxZoneResponseStandardized": 0.9638832469130456,
+          "minimumWithinOutputHamming1ScoreMargin": 1.4633838174246905,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9638832469130456,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 0,
+            "bit": 1,
+            "mask": 21,
+            "margin": 0.9638832469130456,
+            "a": [
+              -16.853101589179353,
+              0.7316919087123452,
+              -14.747814214668727,
+              -7.523866807711081,
+              6.529245625154755,
+              2.9026826955517615
+            ],
+            "b": [
+              -15.889218342266307,
+              0.7316919087123452,
+              -14.747814214668727,
+              -7.430403222214711,
+              6.529245625154755,
+              2.9026826955517615
+            ]
+          },
+          "worstWithin": {
+            "h": 0,
+            "bit": 1,
+            "mask": 21,
+            "role": "lower",
+            "margin": 1.4633838174246905,
+            "vector": [
+              -16.853101589179353,
+              0.7316919087123452,
+              -14.747814214668727,
+              -7.523866807711081,
+              6.529245625154755,
+              2.9026826955517615
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 0.9638832469130456,
+      "overallMinScoreMargin": 1.4633838174246905,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 1,
+      "history": "W44",
+      "working": 44,
+      "eventCount": 764,
+      "reference": {
+        "referenceSeed": 9303001,
+        "count": 128,
+        "means": [
+          0.5154197027272545,
+          0.4527288915347104,
+          0.3786887173202121,
+          0.4059318800887465,
+          0.34426281946468235,
+          0.2802622580820307
+        ],
+        "sigma": [
+          0.014023275166664854,
+          0.014140664561469526,
+          0.013709214226935103,
+          0.014169621426854354,
+          0.01421536869941838,
+          0.014246401827022682
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9973044543114122,
+          "minimumMaxZoneResponseStandardized": 0.9973044543114122,
+          "minimumWithinOutputHamming1ScoreMargin": 2.1819423052077576,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9973044543114122,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 0,
+            "bit": 6,
+            "mask": 0,
+            "margin": 0.9973044543114122,
+            "a": [
+              -4.736875338747097,
+              -12.406204298947705,
+              -2.4663247837691546,
+              -2.1919226368287594,
+              3.5838606554210424,
+              -7.325793941154406
+            ],
+            "b": [
+              -4.736875338747097,
+              -12.406204298947705,
+              -2.4663247837691546,
+              -2.1919226368287594,
+              3.5838606554210424,
+              -6.328489486842994
+            ]
+          },
+          "worstWithin": {
+            "h": 8,
+            "bit": 1,
+            "mask": 0,
+            "role": "upper",
+            "margin": 2.1819423052077576,
+            "vector": [
+              -3.7237026076169073,
+              -12.406204298947705,
+              -2.4663247837691546,
+              -1.0909711526038788,
+              3.5838606554210424,
+              -7.325793941154406
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9508582074661938,
+          "minimumMaxZoneResponseStandardized": 0.9508582074661938,
+          "minimumWithinOutputHamming1ScoreMargin": 2.1883488863058242,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9508582074661938,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 0,
+            "bit": 5,
+            "mask": 21,
+            "margin": 0.9508582074661938,
+            "a": [
+              -4.44661504280169,
+              -12.406204298947705,
+              -2.1302004863643873,
+              -2.1854575365779962,
+              3.994458517735988,
+              -7.294103077294059
+            ],
+            "b": [
+              -4.44661504280169,
+              -12.406204298947705,
+              -2.1302004863643873,
+              -2.1854575365779962,
+              4.945316725202182,
+              -7.294103077294059
+            ]
+          },
+          "worstWithin": {
+            "h": 8,
+            "bit": 1,
+            "mask": 21,
+            "role": "upper",
+            "margin": 2.1883488863058242,
+            "vector": [
+              -3.4772551865311847,
+              -12.406204298947705,
+              -2.1302004863643873,
+              -1.0941744431529121,
+              3.994458517735988,
+              -7.294103077294059
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 0.9508582074661938,
+      "overallMinScoreMargin": 2.1819423052077576,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 1,
+      "history": "W88",
+      "working": 88,
+      "eventCount": 1537,
+      "reference": {
+        "referenceSeed": 9303001,
+        "count": 128,
+        "means": [
+          0.5154197027272545,
+          0.4527288915347104,
+          0.3786887173202121,
+          0.4059318800887465,
+          0.34426281946468235,
+          0.2802622580820307
+        ],
+        "sigma": [
+          0.014023275166664854,
+          0.014140664561469526,
+          0.013709214226935103,
+          0.014169621426854354,
+          0.01421536869941838,
+          0.014246401827022682
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9940790350782915,
+          "minimumMaxZoneResponseStandardized": 0.9940790350782915,
+          "minimumWithinOutputHamming1ScoreMargin": 3.2205661644186665,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9940790350782915,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 0,
+            "bit": 5,
+            "mask": 0,
+            "margin": 0.9940790350782915,
+            "a": [
+              -9.191449161130583,
+              -2.6965120874466715,
+              7.648828774606106,
+              -5.074107907984435,
+              10.589333166660634,
+              -3.4925500358573776
+            ],
+            "b": [
+              -9.191449161130583,
+              -2.6965120874466715,
+              7.648828774606106,
+              -5.074107907984435,
+              11.583412201738925,
+              -3.4925500358573776
+            ]
+          },
+          "worstWithin": {
+            "h": 2,
+            "bit": 1,
+            "mask": 0,
+            "role": "lower",
+            "margin": 3.2205661644186665,
+            "vector": [
+              -9.191449161130583,
+              -1.6102830822093332,
+              7.648828774606106,
+              -5.074107907984435,
+              10.695199990646818,
+              -3.4925500358573776
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9562608109177049,
+          "minimumMaxZoneResponseStandardized": 0.9562608109177049,
+          "minimumWithinOutputHamming1ScoreMargin": 3.2205661644186665,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9562608109177049,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 2,
+            "bit": 5,
+            "mask": 21,
+            "margin": 0.9562608109177049,
+            "a": [
+              -8.879282427755333,
+              -1.6102830822093332,
+              7.984953072010874,
+              -5.206439831453212,
+              11.01935619773757,
+              -3.460859171997028
+            ],
+            "b": [
+              -8.879282427755333,
+              -1.6102830822093332,
+              7.984953072010874,
+              -5.206439831453212,
+              11.975617008655275,
+              -3.460859171997028
+            ]
+          },
+          "worstWithin": {
+            "h": 2,
+            "bit": 1,
+            "mask": 21,
+            "role": "lower",
+            "margin": 3.2205661644186665,
+            "vector": [
+              -8.879282427755333,
+              -1.6102830822093332,
+              7.984953072010874,
+              -5.206439831453212,
+              11.01935619773757,
+              -3.460859171997028
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 0.9562608109177049,
+      "overallMinScoreMargin": 3.2205661644186665,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 1,
+      "history": "SATURATION_FIXTURE",
+      "working": 88,
+      "eventCount": 1654,
+      "reference": {
+        "referenceSeed": 9303001,
+        "count": 128,
+        "means": [
+          0.5154197027272545,
+          0.4527288915347104,
+          0.3786887173202121,
+          0.4059318800887465,
+          0.34426281946468235,
+          0.2802622580820307
+        ],
+        "sigma": [
+          0.014023275166664854,
+          0.014140664561469526,
+          0.013709214226935103,
+          0.014169621426854354,
+          0.01421536869941838,
+          0.014246401827022682
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9994816385298053,
+          "minimumMaxZoneResponseStandardized": 0.9994816385298053,
+          "minimumWithinOutputHamming1ScoreMargin": 10.802019543107424,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9994816385298053,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 0,
+            "bit": 5,
+            "mask": 0,
+            "margin": 0.9994816385298053,
+            "a": [
+              6.486188063699777,
+              6.017199519168688,
+              5.401009771553712,
+              7.071678510750803,
+              6.961609068273326,
+              7.540683993595515
+            ],
+            "b": [
+              6.486188063699777,
+              6.017199519168688,
+              5.401009771553712,
+              7.071678510750803,
+              7.961090706803131,
+              7.540683993595515
+            ]
+          },
+          "worstWithin": {
+            "h": 0,
+            "bit": 1,
+            "mask": 0,
+            "role": "lower",
+            "margin": 10.802019543107424,
+            "vector": [
+              6.486188063699777,
+              6.017199519168688,
+              5.401009771553712,
+              7.071678510750803,
+              6.961609068273326,
+              7.540683993595515
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9562608109177129,
+          "minimumMaxZoneResponseStandardized": 0.9562608109177129,
+          "minimumWithinOutputHamming1ScoreMargin": 9.992288508491177,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9562608109177129,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 0,
+            "bit": 5,
+            "mask": 21,
+            "margin": 0.9562608109177129,
+            "a": [
+              5.785182065944834,
+              4.996144254245588,
+              5.871583787920389,
+              7.0037049940261715,
+              7.186250460817061,
+              7.304727788815176
+            ],
+            "b": [
+              5.785182065944834,
+              4.996144254245588,
+              5.871583787920389,
+              7.0037049940261715,
+              8.142511271734774,
+              7.304727788815176
+            ]
+          },
+          "worstWithin": {
+            "h": 0,
+            "bit": 1,
+            "mask": 21,
+            "role": "lower",
+            "margin": 9.992288508491177,
+            "vector": [
+              5.785182065944834,
+              4.996144254245588,
+              5.871583787920389,
+              7.0037049940261715,
+              7.186250460817061,
+              7.304727788815176
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 0.9562608109177129,
+      "overallMinScoreMargin": 9.992288508491177,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 3,
+      "history": "FRESH",
+      "working": 0,
+      "eventCount": 0,
+      "reference": {
+        "referenceSeed": 9305001,
+        "count": 128,
+        "means": [
+          0.39785511522742034,
+          0.37959312620455804,
+          0.25875819777925646,
+          0.28794654703941003,
+          0.23628935559394026,
+          0.13087585957905265
+        ],
+        "sigma": [
+          0.019830392798298704,
+          0.020700150563928568,
+          0.02150149242254063,
+          0.0193671149866692,
+          0.020291134964918984,
+          0.021863914682517832
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 1.8363526959675776,
+          "minimumMaxZoneResponseStandardized": 1.8363526959675776,
+          "minimumWithinOutputHamming1ScoreMargin": 0.7299199704829509,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 1.8363526959675776,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 56,
+            "bit": 3,
+            "mask": 0,
+            "margin": 1.8363526959675776,
+            "a": [
+              -1.2450857977749314,
+              -1.2187238248720833,
+              -0.8775998403216743,
+              0.40921625830895136,
+              0.5899296939193123,
+              0.7285008069610264
+            ],
+            "b": [
+              -1.2436746157780343,
+              -1.1769848171849362,
+              0.9587528556459033,
+              0.41206090914931587,
+              0.6294208877799853,
+              1.0342834285771956
+            ]
+          },
+          "worstWithin": {
+            "h": 8,
+            "bit": 1,
+            "mask": 0,
+            "role": "lower",
+            "margin": 0.7299199704829509,
+            "vector": [
+              -1.2657743707164253,
+              -1.4594992736876693,
+              -1.168456682800825,
+              0.36495998524147544,
+              -1.3178466590769053,
+              -1.1253387285953034
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 1.8110573450981697,
+          "minimumMaxZoneResponseStandardized": 1.8110573450981697,
+          "minimumWithinOutputHamming1ScoreMargin": 0.5738658067461277,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 1.8110573450981697,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 56,
+            "bit": 3,
+            "mask": 21,
+            "margin": 1.8110573450981697,
+            "a": [
+              -0.6507178803904636,
+              -1.1289519727398636,
+              -0.32011817289088196,
+              0.5219892392971371,
+              1.1462690873884775,
+              0.8215171227721679
+            ],
+            "b": [
+              -0.6493262459875625,
+              -1.087783493128927,
+              1.4909391722072878,
+              0.5247944680712794,
+              1.1852172137877968,
+              1.1230836240337885
+            ]
+          },
+          "worstWithin": {
+            "h": 58,
+            "bit": 1,
+            "mask": 21,
+            "role": "upper",
+            "margin": 0.5738658067461277,
+            "vector": [
+              1.3446004403104672,
+              0.8080104714329588,
+              -0.2869329033730639,
+              0.8673704338914654,
+              1.4823138863333938,
+              0.827589663642359
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 1.8110573450981697,
+      "overallMinScoreMargin": 0.5738658067461277,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 3,
+      "history": "W1",
+      "working": 1,
+      "eventCount": 16,
+      "reference": {
+        "referenceSeed": 9305001,
+        "count": 128,
+        "means": [
+          0.39785511522742034,
+          0.37959312620455804,
+          0.25875819777925646,
+          0.28794654703941003,
+          0.23628935559394026,
+          0.13087585957905265
+        ],
+        "sigma": [
+          0.019830392798298704,
+          0.020700150563928568,
+          0.02150149242254063,
+          0.0193671149866692,
+          0.020291134964918984,
+          0.021863914682517832
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 1.8320999940659464,
+          "minimumMaxZoneResponseStandardized": 1.8320999940659464,
+          "minimumWithinOutputHamming1ScoreMargin": 0.47294631703191353,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 1.8320999940659464,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 56,
+            "bit": 3,
+            "mask": 0,
+            "margin": 1.8320999940659464,
+            "a": [
+              -5.7234310177689816,
+              -7.088005879529459,
+              -2.304198129429299,
+              -3.454935501773155,
+              -0.6114040779116556,
+              12.43396378807548
+            ],
+            "b": [
+              -5.722011235521981,
+              -7.046911316236316,
+              -0.4720981353633525,
+              -3.452051309782264,
+              -0.5715911422036735,
+              12.738980268840749
+            ]
+          },
+          "worstWithin": {
+            "h": 62,
+            "bit": 1,
+            "mask": 0,
+            "role": "upper",
+            "margin": 0.47294631703191353,
+            "vector": [
+              -3.7231385143384705,
+              -5.113967385506059,
+              -0.4395723568335416,
+              -3.0769888514813477,
+              -0.23647315851595677,
+              12.744929114327416
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 1.8118544075955139,
+          "minimumMaxZoneResponseStandardized": 1.8118544075955139,
+          "minimumWithinOutputHamming1ScoreMargin": 0.0016232239330483897,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 1.8118544075955139,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 56,
+            "bit": 3,
+            "mask": 21,
+            "margin": 1.8118544075955139,
+            "a": [
+              -5.154630542674118,
+              -6.999539500144709,
+              -1.7767399835258573,
+              -3.3383912228220605,
+              -0.0560883511641895,
+              12.521965648141421
+            ],
+            "b": [
+              -5.153226553125382,
+              -6.958894793879248,
+              0.03511442406965653,
+              -3.3355391286219342,
+              -0.016714243386988917,
+              12.823607725605713
+            ]
+          },
+          "worstWithin": {
+            "h": 44,
+            "bit": 1,
+            "mask": 21,
+            "role": "upper",
+            "margin": 0.0016232239330483897,
+            "vector": [
+              -3.236981571614593,
+              -7.1566614350817,
+              -0.0008116119665241948,
+              -3.023048103692157,
+              -1.8772017954862028,
+              12.817006446512755
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 1.8118544075955139,
+      "overallMinScoreMargin": 0.0016232239330483897,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 3,
+      "history": "W10",
+      "working": 10,
+      "eventCount": 171,
+      "reference": {
+        "referenceSeed": 9305001,
+        "count": 128,
+        "means": [
+          0.39785511522742034,
+          0.37959312620455804,
+          0.25875819777925646,
+          0.28794654703941003,
+          0.23628935559394026,
+          0.13087585957905265
+        ],
+        "sigma": [
+          0.019830392798298704,
+          0.020700150563928568,
+          0.02150149242254063,
+          0.0193671149866692,
+          0.020291134964918984,
+          0.021863914682517832
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.96472589360142,
+          "minimumMaxZoneResponseStandardized": 0.96472589360142,
+          "minimumWithinOutputHamming1ScoreMargin": 4.668641620573654,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.96472589360142,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 62,
+            "bit": 1,
+            "mask": 0,
+            "margin": 0.96472589360142,
+            "a": [
+              -6.311320094794067,
+              4.664740622611582,
+              -2.33508106871099,
+              5.036770062320423,
+              13.000222758107443,
+              4.901996370211774
+            ],
+            "b": [
+              -5.346594201192647,
+              4.681822176511766,
+              -2.334320810286827,
+              5.1973502976485335,
+              13.008119680672195,
+              4.9021306257089705
+            ]
+          },
+          "worstWithin": {
+            "h": 62,
+            "bit": 1,
+            "mask": 0,
+            "role": "upper",
+            "margin": 4.668641620573654,
+            "vector": [
+              -5.346594201192647,
+              4.681822176511766,
+              -2.334320810286827,
+              5.1973502976485335,
+              13.008119680672195,
+              4.9021306257089705
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9613522845430733,
+          "minimumMaxZoneResponseStandardized": 0.9613522845430733,
+          "minimumWithinOutputHamming1ScoreMargin": 4.080767008883228,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9613522845430733,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 62,
+            "bit": 1,
+            "mask": 21,
+            "margin": 0.9613522845430733,
+            "a": [
+              -6.085678303187925,
+              4.707201886453881,
+              -2.041123695843444,
+              4.883077921208973,
+              13.276112930437654,
+              4.951194288396729
+            ],
+            "b": [
+              -5.124326018644852,
+              4.723940060976522,
+              -2.040383504441614,
+              5.042072951657177,
+              13.283815267638458,
+              4.951324505527791
+            ]
+          },
+          "worstWithin": {
+            "h": 62,
+            "bit": 1,
+            "mask": 21,
+            "role": "upper",
+            "margin": 4.080767008883228,
+            "vector": [
+              -5.124326018644852,
+              4.723940060976522,
+              -2.040383504441614,
+              5.042072951657177,
+              13.283815267638458,
+              4.951324505527791
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 0.9613522845430733,
+      "overallMinScoreMargin": 4.080767008883228,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 3,
+      "history": "W44",
+      "working": 44,
+      "eventCount": 764,
+      "reference": {
+        "referenceSeed": 9305001,
+        "count": 128,
+        "means": [
+          0.39785511522742034,
+          0.37959312620455804,
+          0.25875819777925646,
+          0.28794654703941003,
+          0.23628935559394026,
+          0.13087585957905265
+        ],
+        "sigma": [
+          0.019830392798298704,
+          0.020700150563928568,
+          0.02150149242254063,
+          0.0193671149866692,
+          0.020291134964918984,
+          0.021863914682517832
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9302573575411106,
+          "minimumMaxZoneResponseStandardized": 0.9302573575411106,
+          "minimumWithinOutputHamming1ScoreMargin": 2.3535790626937163,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9302573575411106,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 56,
+            "bit": 3,
+            "mask": 0,
+            "margin": 0.9302573575411106,
+            "a": [
+              3.0576202537468316,
+              -5.836618781530516,
+              7.812728481717045,
+              2.167937059600088,
+              4.444864120451373,
+              4.636952831444856
+            ],
+            "b": [
+              3.0583817538201856,
+              -5.816050028485532,
+              8.742985839258155,
+              2.169583019946438,
+              4.46525473988851,
+              4.793186147951611
+            ]
+          },
+          "worstWithin": {
+            "h": 0,
+            "bit": 1,
+            "mask": 0,
+            "role": "lower",
+            "margin": 2.3535790626937163,
+            "vector": [
+              2.9228752511282323,
+              -5.979831130517931,
+              7.661100515171047,
+              1.1767895313468582,
+              3.371581121938626,
+              3.6928765001808954
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.8948668525394048,
+          "minimumMaxZoneResponseStandardized": 0.8948668525394048,
+          "minimumWithinOutputHamming1ScoreMargin": 2.4428624404778203,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.8948668525394048,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 56,
+            "bit": 3,
+            "mask": 21,
+            "margin": 0.8948668525394048,
+            "a": [
+              3.3414565400421714,
+              -5.791933191273292,
+              8.121805438432226,
+              2.214125232356199,
+              4.725223246117893,
+              4.688954477423557
+            ],
+            "b": [
+              3.3421890394127893,
+              -5.772145791894592,
+              9.01667229097163,
+              2.215708504298758,
+              4.744838306431837,
+              4.839243032804704
+            ]
+          },
+          "worstWithin": {
+            "h": 0,
+            "bit": 1,
+            "mask": 21,
+            "role": "lower",
+            "margin": 2.4428624404778203,
+            "vector": [
+              3.207968719426539,
+              -5.919630296543981,
+              7.972739479974658,
+              1.2214312202389102,
+              3.7773690453593396,
+              3.745349155797061
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 0.8948668525394048,
+      "overallMinScoreMargin": 2.3535790626937163,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 3,
+      "history": "W88",
+      "working": 88,
+      "eventCount": 1537,
+      "reference": {
+        "referenceSeed": 9305001,
+        "count": 128,
+        "means": [
+          0.39785511522742034,
+          0.37959312620455804,
+          0.25875819777925646,
+          0.28794654703941003,
+          0.23628935559394026,
+          0.13087585957905265
+        ],
+        "sigma": [
+          0.019830392798298704,
+          0.020700150563928568,
+          0.02150149242254063,
+          0.0193671149866692,
+          0.020291134964918984,
+          0.021863914682517832
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9354552621006382,
+          "minimumMaxZoneResponseStandardized": 0.9354552621006382,
+          "minimumWithinOutputHamming1ScoreMargin": 3.243345518664428,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9354552621006382,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 56,
+            "bit": 3,
+            "mask": 0,
+            "margin": 0.9354552621006382,
+            "a": [
+              1.762260677213263,
+              3.0016993143577055,
+              6.130578338275417,
+              7.689417972868599,
+              11.251822380806313,
+              3.229639065150071
+            ],
+            "b": [
+              1.7629886449928025,
+              3.022716883671339,
+              7.0660336003760555,
+              7.691027276907826,
+              11.271685591392423,
+              3.38658615908594
+            ]
+          },
+          "worstWithin": {
+            "h": 0,
+            "bit": 1,
+            "mask": 0,
+            "role": "lower",
+            "margin": 3.243345518664428,
+            "vector": [
+              1.621672759332214,
+              2.868156748278832,
+              5.970905796995994,
+              6.690574334078694,
+              10.260515382747922,
+              2.209599769028754
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.895002829678492,
+          "minimumMaxZoneResponseStandardized": 0.895002829678492,
+          "minimumWithinOutputHamming1ScoreMargin": 3.629766623959681,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.895002829678492,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 56,
+            "bit": 3,
+            "mask": 21,
+            "margin": 0.895002829678492,
+            "a": [
+              1.9543538583145224,
+              3.0444926334820637,
+              6.439524940395766,
+              7.560334163922876,
+              11.533219909651779,
+              3.281565724869913
+            ],
+            "b": [
+              1.9550503028657473,
+              3.0646025077611836,
+              7.334527770074258,
+              7.561873764849976,
+              11.552224408251764,
+              3.4317248180851294
+            ]
+          },
+          "worstWithin": {
+            "h": 0,
+            "bit": 1,
+            "mask": 21,
+            "role": "lower",
+            "margin": 3.629766623959681,
+            "vector": [
+              1.8148833119798404,
+              2.915552545141819,
+              6.280576125408468,
+              6.56000688330736,
+              10.578721390647143,
+              2.2616581807472387
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 0.895002829678492,
+      "overallMinScoreMargin": 3.243345518664428,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 3,
+      "history": "SATURATION_FIXTURE",
+      "working": 88,
+      "eventCount": 1654,
+      "reference": {
+        "referenceSeed": 9305001,
+        "count": 128,
+        "means": [
+          0.39785511522742034,
+          0.37959312620455804,
+          0.25875819777925646,
+          0.28794654703941003,
+          0.23628935559394026,
+          0.13087585957905265
+        ],
+        "sigma": [
+          0.019830392798298704,
+          0.020700150563928568,
+          0.02150149242254063,
+          0.0193671149866692,
+          0.020291134964918984,
+          0.021863914682517832
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9698695448712504,
+          "minimumMaxZoneResponseStandardized": 0.9698695448712504,
+          "minimumWithinOutputHamming1ScoreMargin": 12.20800268597973,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9698695448712504,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 9,
+            "bit": 5,
+            "mask": 0,
+            "margin": 0.9698695448712504,
+            "a": [
+              7.429765829117189,
+              6.626552348802169,
+              6.10521763581213,
+              8.76457918252653,
+              7.436961251774053,
+              7.447627058370257
+            ],
+            "b": [
+              7.440247746396432,
+              6.7467601621606,
+              6.124355348636142,
+              8.786980724908293,
+              8.406830796645304,
+              7.451138022765223
+            ]
+          },
+          "worstWithin": {
+            "h": 0,
+            "bit": 1,
+            "mask": 0,
+            "role": "lower",
+            "margin": 12.20800268597973,
+            "vector": [
+              6.322610641890936,
+              6.597167265796647,
+              6.104001342989865,
+              7.552550053500522,
+              7.40413887161352,
+              7.447422822006409
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.8939172040361223,
+          "minimumMaxZoneResponseStandardized": 0.8939172040361223,
+          "minimumWithinOutputHamming1ScoreMargin": 10.78998884734388,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.8939172040361223,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 56,
+            "bit": 3,
+            "mask": 21,
+            "margin": 0.8939172040361223,
+            "a": [
+              6.445487017952148,
+              5.524132809481982,
+              6.6113378017143605,
+              8.570177233095784,
+              8.474111787989747,
+              8.470644285956158
+            ],
+            "b": [
+              6.446171311463844,
+              5.544372275320154,
+              7.505255005750483,
+              8.57155683673571,
+              8.493262051553625,
+              8.61925018609519
+            ]
+          },
+          "worstWithin": {
+            "h": 0,
+            "bit": 1,
+            "mask": 21,
+            "role": "lower",
+            "margin": 10.78998884734388,
+            "vector": [
+              6.305748868113419,
+              5.39499442367194,
+              6.458639722009291,
+              7.503929572280791,
+              7.518753207266588,
+              7.4903293495427725
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 0.8939172040361223,
+      "overallMinScoreMargin": 10.78998884734388,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 10,
+      "history": "FRESH",
+      "working": 0,
+      "eventCount": 0,
+      "reference": {
+        "referenceSeed": 9312001,
+        "count": 128,
+        "means": [
+          0.3661168773482996,
+          0.2903021985908165,
+          0.06811806301746469,
+          0.30910136005541206,
+          0.33878941614944946,
+          0.21278256142806343
+        ],
+        "sigma": [
+          0.022127371247863667,
+          0.0211386296545502,
+          0.020095304964790048,
+          0.018815913915806448,
+          0.02033895436815711,
+          0.022185280793667033
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 1.847343472302829,
+          "minimumMaxZoneResponseStandardized": 1.847343472302829,
+          "minimumWithinOutputHamming1ScoreMargin": 0.8934685490962017,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 1.847343472302829,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 36,
+            "bit": 1,
+            "mask": 0,
+            "margin": 1.847343472302829,
+            "a": [
+              -1.2454298476541743,
+              -1.3868164868640513,
+              1.2436861979320453,
+              -1.3172908555617207,
+              -1.4538544415570394,
+              1.0895606519008765
+            ],
+            "b": [
+              0.6019136246486547,
+              -1.3374850432620007,
+              1.2470347880124946,
+              -0.7960676734276955,
+              -1.4257874908330097,
+              1.0902868752799058
+            ]
+          },
+          "worstWithin": {
+            "h": 16,
+            "bit": 1,
+            "mask": 0,
+            "role": "lower",
+            "margin": 0.8934685490962017,
+            "vector": [
+              -1.2179423368752824,
+              -1.1497627554681242,
+              -0.9775970023513937,
+              -1.2667446794067305,
+              0.44673427454810083,
+              -1.123740189963885
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 1.8606987537462825,
+          "minimumMaxZoneResponseStandardized": 1.8606987537462825,
+          "minimumWithinOutputHamming1ScoreMargin": 0.13988150021650805,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 1.8606987537462825,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 38,
+            "bit": 1,
+            "mask": 21,
+            "margin": 1.8606987537462825,
+            "a": [
+              -0.6588111787619305,
+              0.6702572013876014,
+              1.8912180226528132,
+              -1.122204176585047,
+              -0.48212210714754566,
+              1.2038248472765865
+            ],
+            "b": [
+              1.2018875749843518,
+              0.7199513160283031,
+              1.8945689548676867,
+              -0.5959417626291528,
+              -0.45411233639743803,
+              1.20455025627468
+            ]
+          },
+          "worstWithin": {
+            "h": 58,
+            "bit": 1,
+            "mask": 21,
+            "role": "upper",
+            "margin": 0.13988150021650805,
+            "vector": [
+              1.5088216974186794,
+              0.9910647617067698,
+              -0.06994075010825403,
+              1.3473698902816982,
+              1.481780140479875,
+              0.8696446320397494
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 1.847343472302829,
+      "overallMinScoreMargin": 0.13988150021650805,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 10,
+      "history": "W1",
+      "working": 1,
+      "eventCount": 16,
+      "reference": {
+        "referenceSeed": 9312001,
+        "count": 128,
+        "means": [
+          0.3661168773482996,
+          0.2903021985908165,
+          0.06811806301746469,
+          0.30910136005541206,
+          0.33878941614944946,
+          0.21278256142806343
+        ],
+        "sigma": [
+          0.022127371247863667,
+          0.0211386296545502,
+          0.020095304964790048,
+          0.018815913915806448,
+          0.02033895436815711,
+          0.022185280793667033
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 1.7752914041696517,
+          "minimumMaxZoneResponseStandardized": 1.7752914041696517,
+          "minimumWithinOutputHamming1ScoreMargin": 4.256874885363014,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 1.7752914041696517,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 2,
+            "bit": 1,
+            "mask": 0,
+            "margin": 1.7752914041696517,
+            "a": [
+              -7.136552133569443,
+              -4.207235041602964,
+              18.9309596899209,
+              2.1539771172361055,
+              -4.880571863557456,
+              2.9770933994876936
+            ],
+            "b": [
+              -5.361260729399791,
+              -4.159463537832343,
+              18.93430395691785,
+              2.575259120533292,
+              -4.854025812823246,
+              2.9778165531248537
+            ]
+          },
+          "worstWithin": {
+            "h": 0,
+            "bit": 1,
+            "mask": 0,
+            "role": "lower",
+            "margin": 4.256874885363014,
+            "vector": [
+              -7.181037495555073,
+              -6.141491953538585,
+              18.883034122603828,
+              2.128437442681507,
+              -5.246706813341364,
+              2.96673919237133
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 1.7549743543957153,
+          "minimumMaxZoneResponseStandardized": 1.7549743543957153,
+          "minimumWithinOutputHamming1ScoreMargin": 4.339518082749206,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 1.7549743543957153,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 54,
+            "bit": 1,
+            "mask": 21,
+            "margin": 1.7549743543957153,
+            "a": [
+              -6.580060378116056,
+              -3.721843956840586,
+              21.962602605017793,
+              2.362121988812678,
+              -2.256361192842871,
+              5.336622385464776
+            ],
+            "b": [
+              -4.825086023720341,
+              -3.6747007419372824,
+              21.9659248083806,
+              2.7790187578423455,
+              -2.23022129668927,
+              5.337340190383542
+            ]
+          },
+          "worstWithin": {
+            "h": 62,
+            "bit": 1,
+            "mask": 21,
+            "role": "upper",
+            "margin": 4.339518082749206,
+            "vector": [
+              -4.559097257954666,
+              -3.6400782911926584,
+              21.968509715210576,
+              4.760854757535863,
+              -2.169759041374603,
+              5.337898985684077
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 1.7549743543957153,
+      "overallMinScoreMargin": 4.256874885363014,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 10,
+      "history": "W10",
+      "working": 10,
+      "eventCount": 171,
+      "reference": {
+        "referenceSeed": 9312001,
+        "count": 128,
+        "means": [
+          0.3661168773482996,
+          0.2903021985908165,
+          0.06811806301746469,
+          0.30910136005541206,
+          0.33878941614944946,
+          0.21278256142806343
+        ],
+        "sigma": [
+          0.022127371247863667,
+          0.0211386296545502,
+          0.020095304964790048,
+          0.018815913915806448,
+          0.02033895436815711,
+          0.022185280793667033
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9011161302875593,
+          "minimumMaxZoneResponseStandardized": 0.9011161302875593,
+          "minimumWithinOutputHamming1ScoreMargin": 0.803327249445923,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9011161302875593,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 54,
+            "bit": 1,
+            "mask": 0,
+            "margin": 0.9011161302875593,
+            "a": [
+              -1.444147130122188,
+              1.795602116799267,
+              19.587013442825885,
+              1.8221246544651908,
+              -2.8293258244295423,
+              5.20925089766825
+            ],
+            "b": [
+              -0.5430309998346287,
+              1.8192125823050271,
+              19.588607534376365,
+              2.0091739756073683,
+              -2.8166380443776533,
+              5.209596922746044
+            ]
+          },
+          "worstWithin": {
+            "h": 62,
+            "bit": 1,
+            "mask": 0,
+            "role": "upper",
+            "margin": 0.803327249445923,
+            "vector": [
+              -0.4016636247229615,
+              1.8376187092074585,
+              19.589966788447928,
+              3.030791240429167,
+              -2.7843119314235767,
+              5.209891766811372
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9043690722552025,
+          "minimumMaxZoneResponseStandardized": 0.9043690722552025,
+          "minimumWithinOutputHamming1ScoreMargin": 0.4866053442349887,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9043690722552025,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 54,
+            "bit": 1,
+            "mask": 21,
+            "margin": 0.9043690722552025,
+            "a": [
+              -2.173457337969561,
+              0.7413029566754886,
+              19.907116546160555,
+              1.6650239608495185,
+              -2.701498194997706,
+              5.265108573111733
+            ],
+            "b": [
+              -1.2690882657143587,
+              0.7648992710158783,
+              19.90871143788428,
+              1.852321718582258,
+              -2.68882674812837,
+              5.265454535366926
+            ]
+          },
+          "worstWithin": {
+            "h": 60,
+            "bit": 1,
+            "mask": 21,
+            "role": "upper",
+            "margin": 0.4866053442349887,
+            "vector": [
+              -1.153870624308085,
+              -0.24330267211749435,
+              19.885258004136357,
+              2.865470244048371,
+              -2.8492072350842887,
+              5.260352351331511
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 0.9011161302875593,
+      "overallMinScoreMargin": 0.4866053442349887,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 10,
+      "history": "W44",
+      "working": 44,
+      "eventCount": 764,
+      "reference": {
+        "referenceSeed": 9312001,
+        "count": 128,
+        "means": [
+          0.3661168773482996,
+          0.2903021985908165,
+          0.06811806301746469,
+          0.30910136005541206,
+          0.33878941614944946,
+          0.21278256142806343
+        ],
+        "sigma": [
+          0.022127371247863667,
+          0.0211386296545502,
+          0.020095304964790048,
+          0.018815913915806448,
+          0.02033895436815711,
+          0.022185280793667033
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9235021309914817,
+          "minimumMaxZoneResponseStandardized": 0.9235021309914817,
+          "minimumWithinOutputHamming1ScoreMargin": 2.1860066312923823,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9235021309914817,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 62,
+            "bit": 1,
+            "mask": 0,
+            "margin": 0.9235021309914817,
+            "a": [
+              4.798015396736163,
+              2.2989522299188994,
+              24.37916803719691,
+              9.013840790463368,
+              -1.3200645009196796,
+              16.1843022186268
+            ],
+            "b": [
+              5.721517527727645,
+              2.3203729699537363,
+              24.38064556945247,
+              9.217348988819232,
+              -1.307289235745276,
+              16.184623511890866
+            ]
+          },
+          "worstWithin": {
+            "h": 0,
+            "bit": 1,
+            "mask": 0,
+            "role": "lower",
+            "margin": 2.1860066312923823,
+            "vector": [
+              4.615243782842144,
+              1.0930033156461911,
+              23.10000675421748,
+              7.935899419008604,
+              -2.6541897744221963,
+              15.021028232578228
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.920044906170884,
+          "minimumMaxZoneResponseStandardized": 0.920044906170884,
+          "minimumWithinOutputHamming1ScoreMargin": 1.7339385176318118,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.920044906170884,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 38,
+            "bit": 1,
+            "mask": 21,
+            "margin": 0.920044906170884,
+            "a": [
+              4.905408810506194,
+              1.8929018017015276,
+              23.709746424378903,
+              7.972035901098324,
+              -2.078081340518588,
+              16.105732082563254
+            ],
+            "b": [
+              5.825453716677078,
+              1.9142964832556617,
+              23.711221178733894,
+              8.175050013401325,
+              -2.0653245250858814,
+              16.106052423529913
+            ]
+          },
+          "worstWithin": {
+            "h": 0,
+            "bit": 1,
+            "mask": 21,
+            "role": "lower",
+            "margin": 1.7339385176318118,
+            "vector": [
+              4.8801221578304625,
+              0.8669692588159059,
+              22.50259130564897,
+              7.9554472236017935,
+              -2.297421257902472,
+              14.956392844127077
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 0.920044906170884,
+      "overallMinScoreMargin": 1.7339385176318118,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 10,
+      "history": "W88",
+      "working": 88,
+      "eventCount": 1537,
+      "reference": {
+        "referenceSeed": 9312001,
+        "count": 128,
+        "means": [
+          0.3661168773482996,
+          0.2903021985908165,
+          0.06811806301746469,
+          0.30910136005541206,
+          0.33878941614944946,
+          0.21278256142806343
+        ],
+        "sigma": [
+          0.022127371247863667,
+          0.0211386296545502,
+          0.020095304964790048,
+          0.018815913915806448,
+          0.02033895436815711,
+          0.022185280793667033
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9232930329669857,
+          "minimumMaxZoneResponseStandardized": 0.9232930329669857,
+          "minimumWithinOutputHamming1ScoreMargin": 2.3487385775110012,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9232930329669857,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 62,
+            "bit": 1,
+            "mask": 0,
+            "margin": 0.9232930329669857,
+            "a": [
+              6.251914879677302,
+              6.657773351722894,
+              8.26655996173472,
+              4.680437961972223,
+              -1.186903158067076,
+              9.78703409517265
+            ],
+            "b": [
+              7.175207912644288,
+              6.677493007582588,
+              8.26789161939093,
+              4.8873043208458675,
+              -1.1743692887555006,
+              9.787324564421175
+            ]
+          },
+          "worstWithin": {
+            "h": 62,
+            "bit": 1,
+            "mask": 0,
+            "role": "upper",
+            "margin": 2.3487385775110012,
+            "vector": [
+              7.175207912644288,
+              6.677493007582588,
+              8.26789161939093,
+              4.8873043208458675,
+              -1.1743692887555006,
+              9.787324564421175
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9239012147320445,
+          "minimumMaxZoneResponseStandardized": 0.9239012147320445,
+          "minimumWithinOutputHamming1ScoreMargin": 1.8168405912347858,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9239012147320445,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 62,
+            "bit": 1,
+            "mask": 21,
+            "margin": 0.9239012147320445,
+            "a": [
+              6.515294068099998,
+              6.669434586702827,
+              7.2892851242381695,
+              4.694825866792774,
+              -0.9211008860298262,
+              9.64771352828542
+            ],
+            "b": [
+              7.439195282832042,
+              6.689205310296331,
+              7.290618407450636,
+              4.907391756590293,
+              -0.9084202956173929,
+              9.648004117167645
+            ]
+          },
+          "worstWithin": {
+            "h": 62,
+            "bit": 1,
+            "mask": 21,
+            "role": "upper",
+            "margin": 1.8168405912347858,
+            "vector": [
+              7.439195282832042,
+              6.689205310296331,
+              7.290618407450636,
+              4.907391756590293,
+              -0.9084202956173929,
+              9.648004117167645
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 0.9232930329669857,
+      "overallMinScoreMargin": 1.8168405912347858,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    },
+    {
+      "developmentWindow": 10,
+      "history": "SATURATION_FIXTURE",
+      "working": 88,
+      "eventCount": 1654,
+      "reference": {
+        "referenceSeed": 9312001,
+        "count": 128,
+        "means": [
+          0.3661168773482996,
+          0.2903021985908165,
+          0.06811806301746469,
+          0.30910136005541206,
+          0.33878941614944946,
+          0.21278256142806343
+        ],
+        "sigma": [
+          0.022127371247863667,
+          0.0211386296545502,
+          0.020095304964790048,
+          0.018815913915806448,
+          0.02033895436815711,
+          0.022185280793667033
+        ]
+      },
+      "scenarios": [
+        {
+          "mask": 0,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9197658162399494,
+          "minimumMaxZoneResponseStandardized": 0.9197658162399494,
+          "minimumWithinOutputHamming1ScoreMargin": 11.183760365035997,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9197658162399494,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 42,
+            "bit": 1,
+            "mask": 0,
+            "margin": 0.9197658162399494,
+            "a": [
+              5.758501015268818,
+              6.769544140377401,
+              7.475293894142164,
+              7.845094056971667,
+              6.750369067208597,
+              8.801820532436572
+            ],
+            "b": [
+              6.678266831508767,
+              6.793641239708484,
+              7.476921093993573,
+              8.049080339508212,
+              6.763057224901585,
+              8.802174622359658
+            ]
+          },
+          "worstWithin": {
+            "h": 0,
+            "bit": 1,
+            "mask": 0,
+            "role": "lower",
+            "margin": 11.183760365035997,
+            "vector": [
+              5.591880182517999,
+              5.719936027960512,
+              7.2574921451655054,
+              6.815802617695893,
+              6.520028386020573,
+              7.7816479061160395
+            ]
+          }
+        },
+        {
+          "mask": 21,
+          "pairs": 192,
+          "minimumChangedZoneResponseStandardized": 0.9222434463537716,
+          "minimumMaxZoneResponseStandardized": 0.9222434463537716,
+          "minimumWithinOutputHamming1ScoreMargin": 11.353525881449508,
+          "variabilityDenominator": 1,
+          "changedZoneMarginToVariability": 0.9222434463537716,
+          "tiedOutputs": 0,
+          "worstInput": {
+            "h": 48,
+            "bit": 1,
+            "mask": 21,
+            "margin": 0.9222434463537716,
+            "a": [
+              5.838605422818639,
+              5.828901423442687,
+              6.998518022607994,
+              6.856949036880927,
+              7.762045893958658,
+              8.750747677150741
+            ],
+            "b": [
+              6.760848869172411,
+              5.853166797744545,
+              7.000159011142146,
+              7.083533495216746,
+              7.775259494730612,
+              8.751103724306247
+            ]
+          },
+          "worstWithin": {
+            "h": 0,
+            "bit": 1,
+            "mask": 21,
+            "role": "lower",
+            "margin": 11.353525881449508,
+            "vector": [
+              5.822692169337535,
+              5.676762940724754,
+              6.778553152435319,
+              6.826523772269403,
+              6.800242419756489,
+              7.730123749365772
+            ]
+          }
+        }
+      ],
+      "overallMinChangedZoneMargin": 0.9197658162399494,
+      "overallMinScoreMargin": 11.183760365035997,
+      "criterion": 2,
+      "provisionalFeasibility": "DOES_NOT_MEET_FIXTURE_MARGIN"
+    }
+  ]
+}
