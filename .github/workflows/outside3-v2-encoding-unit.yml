@@ -1,0 +1,41 @@
+name: OUTSIDE-3 v2 Injectivity Unit Gate — synthetic only
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/outside3/v2/castEncoding.ts'
+      - 'experiments/outside3/v2/castEncoding.test.ts'
+      - '.github/workflows/outside3-v2-encoding-unit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  v2-encoding-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies (repository does not pin package-lock)
+        run: npm install --no-audit --no-fund
+      - name: Verify 4,096 target-blind cast encodings and PFM effective states
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/outside3/v2/unit-output
+          npx tsx experiments/outside3/v2/castEncoding.test.ts 2>&1 | tee experiments/outside3/v2/unit-output/encoding-test.log
+          sha256sum experiments/outside3/v2/castEncoding.ts experiments/outside3/v2/castEncoding.test.ts > experiments/outside3/v2/unit-output/SOURCE_SHA256SUMS.txt
+          echo "$GITHUB_SHA" > experiments/outside3/v2/unit-output/SOURCE_COMMIT.txt
+          printf '%s\n' 'SYNTHETIC UNIT TEST ONLY: NO REAL TARGET, NO REGISTRATION, NO CALIBRATION' > experiments/outside3/v2/unit-output/RESEARCH_BOUNDARY.txt
+      - name: Retain test evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-V2-Synthetic-Injectivity-Unit-Gate
+          path: experiments/outside3/v2/unit-output/
+          if-no-files-found: warn
+          retention-days: 90
