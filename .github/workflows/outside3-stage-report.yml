@@ -1,0 +1,58 @@
+name: OUTSIDE-3 Stage1 Synthetic Calibration Report
+on:
+  workflow_run:
+    workflows: [OUTSIDE-3 Stage1 K1-K5 Synthetic Calibration]
+    types: [completed]
+permissions:
+  actions: read
+  contents: write
+jobs:
+  archive-stage-report:
+    if: github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Download complete synthetic calibration evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: OUTSIDE3-*
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+          merge-multiple: true
+          path: experiments/outside3/calibration-output/
+      - name: Combine without retuning thresholds
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx tsx experiments/outside3/combineCalibration.ts
+          sha256sum experiments/outside3/report-output/CALIBRATION.json experiments/outside3/report-output/STAGE1_REPORT.md > experiments/outside3/report-output/REPORT_SHA256SUMS.txt
+          git diff --check
+      - name: Upload report and observations, retaining negative results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-STAGE1-CALIBRATION-REPORT
+          path: |
+            experiments/outside3/calibration-output/
+            experiments/outside3/report-output/
+          if-no-files-found: warn
+          retention-days: 90
+      - name: Commit archived reports
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/outside3/calibration-output/ experiments/outside3/report-output/
+          git diff --cached --check
+          git commit -m "Record OUTSIDE-3 pre-frozen synthetic K1-K5 outcomes"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
