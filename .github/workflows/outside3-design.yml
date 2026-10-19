@@ -1,0 +1,40 @@
+name: OUTSIDE-3 Stage1 Synthetic Design and Freeze
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/outside3/DESIGN_GATE'
+permissions:
+  contents: write
+jobs:
+  design:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Verify reader tests BEFORE design
+        run: npx tsx experiments/outside3/tests.ts
+      - name: Design-only delta/magnitude sweep and 1000-cast reference
+        run: npx tsx experiments/outside3/design.ts
+      - name: Freeze source and all numerical parameters before calibration
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd experiments/outside3
+          sha256sum design-output/constants.frozen.json design-output/DESIGN_REPORT.md reader.ts design.ts tests.ts > design-output/DESIGN_SHA256SUMS.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add design-output
+          git diff --cached --check
+          git commit -m "Freeze OUTSIDE-3 synthetic design constants and K thresholds before calibration"
+          git push origin HEAD:main
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-Design-Freeze
+          path: experiments/outside3/design-output/
+          retention-days: 90
