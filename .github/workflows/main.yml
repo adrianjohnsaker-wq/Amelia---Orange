@@ -3,6 +3,13 @@ name: Build Amelia Orange Tablet APK
 on:
   push:
     branches: [main]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'index.html'
+      - 'vite.config.ts'
+      - '.github/workflows/main.yml'
   workflow_dispatch:
 
 permissions:
