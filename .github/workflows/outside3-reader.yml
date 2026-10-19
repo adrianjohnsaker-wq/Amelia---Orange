@@ -1,0 +1,34 @@
+name: OUTSIDE-3 Stage1 Reader Smoke (synthetic only)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/outside3/reader.ts'
+      - 'experiments/outside3/tests.ts'
+      - '.github/workflows/outside3-reader.yml'
+permissions:
+  contents: read
+jobs:
+  reader:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Reader smoke and byte replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/outside3/results
+          npx tsx experiments/outside3/tests.ts 2>&1 | tee experiments/outside3/results/reader_smoke.log
+      - name: Upload smoke evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-Reader-Smoke
+          path: experiments/outside3/results/
+          retention-days: 30
