@@ -3,7 +3,7 @@
  * SYNTHETIC UNIT-TEST STAGE ONLY. No chosen constants, calibration,
  * hidden targets, working IDs, external entropy or beacon access.
  *
- * All six lines yield one polarity event at their OWN zone.
+ * All six lines yield one RESULTING-hexagram polarity event at their OWN zone.
  * Old lines append a separate movement event at the same zone.
  * No complementary-zone aliasing is permitted.
  */
@@ -21,6 +21,9 @@ export type TaggedPFMEvent={
     line:number;
     mappedZone:number;
     castValue:LineValue;
+    primaryBit:0|1;
+    resultingBit:0|1;
+    movementFlag:boolean;
     eventKind:EventKindV2;
     ordinal:number;
     localStep:number;
@@ -61,18 +64,22 @@ export function bitsFromCast(cast:readonly number[]) {
 export function encodeCastToPFM(cast:SixLineCast,p:PFMEncodingMagnitudes,localStep:number):TaggedPFMEvent[] {
   validateMagnitudes(p);
   if(!Number.isInteger(localStep)||localStep<0)throw Error('V2_STEP_INVALID');
-  bitsFromCast(cast);
+  const {primary,movingMask,resulting}=bitsFromCast(cast);
   const out:TaggedPFMEvent[]=[];
   for(let i=0;i<6;i++){
-    const value=cast[i],z=LINE_ZONES_V2[i],yang=value===7||value===9;
+    const value=cast[i],z=LINE_ZONES_V2[i];
+    const primaryBit=((primary>>i)&1) as 0|1;
+    const resultingBit=((resulting>>i)&1) as 0|1;
+    const movementFlag=!!(movingMask&(1<<i));
     const events:{kind:EventKindV2;dose:number}[]=[
-      {kind:yang?'CAST_POLARITY_YANG':'CAST_POLARITY_YIN',dose:yang?p.yang:p.yin}
+      {kind:resultingBit?'CAST_POLARITY_YANG':'CAST_POLARITY_YIN',dose:resultingBit?p.yang:p.yin}
     ];
-    if(value===6||value===9)events.push({kind:'CAST_MOVEMENT',dose:p.movement});
+    if(movementFlag)events.push({kind:'CAST_MOVEMENT',dose:p.movement});
     for(const {kind,dose} of events){
       const descriptor={
         schema:'OUTSIDE3_V2_SYNTHETIC_CAST' as const,
         line:i+1,mappedZone:z,castValue:value,
+        primaryBit,resultingBit,movementFlag,
         eventKind:kind,ordinal:out.length,localStep,fluxDelta:dose
       };
       // SHA-256 metadata is an audit marker. The *distinct dose* is what
