@@ -65,6 +65,6 @@ writeFileSync('experiments/outside3/design-output/DESIGN_REPORT.md',
  'Selected delta='+winner.delta+', magnitude='+winner.magnitude+
  ' by lexicographic cast rank-diversity and history-response criterion.\n\n'+
  'Reference mean: '+JSON.stringify(mean)+'\n\n'+
- 'Grid: \n\n'+grid.map(r=>JSON.stringify(r)).join('\n')+'\n\n'+
+ 'Grid:\n\n'+grid.map(r=>JSON.stringify(r)).join('\n')+'\n\n'+
  'Thresholds frozen before K1-K5: '+JSON.stringify(frozen.thresholds)+'\n');
 console.log('DESIGN_COMPLETE',JSON.stringify({selected:winner,mu:mean,thresholds:frozen.thresholds}));
