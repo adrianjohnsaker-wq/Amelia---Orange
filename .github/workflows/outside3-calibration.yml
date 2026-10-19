@@ -1,0 +1,65 @@
+name: OUTSIDE-3 Stage1 K1-K5 Synthetic Calibration
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/outside3/CALIBRATION_GATE'
+permissions:
+  contents: read
+jobs:
+  synthetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        include:
+          - { mode: K1, shard: 0, count: 1 }
+          - { mode: K5, shard: 0, count: 24 }
+          - { mode: CURVE, shard: 0, count: 20 }
+          - { mode: K2, shard: 0, count: 100 }
+          - { mode: K2, shard: 1, count: 100 }
+          - { mode: K2, shard: 2, count: 100 }
+          - { mode: K2, shard: 3, count: 100 }
+          - { mode: K2, shard: 4, count: 100 }
+          - { mode: K2, shard: 5, count: 100 }
+          - { mode: K2, shard: 6, count: 100 }
+          - { mode: K2, shard: 7, count: 100 }
+          - { mode: K2, shard: 8, count: 100 }
+          - { mode: K2, shard: 9, count: 100 }
+          - { mode: K3, shard: 0, count: 100 }
+          - { mode: K4, shard: 0, count: 100 }
+          - { mode: K3, shard: 1, count: 100 }
+          - { mode: K4, shard: 1, count: 100 }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify constants predate calibration
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f experiments/outside3/design-output/constants.frozen.json
+          git log -n1 --format=%H -- experiments/outside3/design-output/constants.frozen.json > /tmp/design_commit
+          git log -n1 --format=%H -- experiments/outside3/CALIBRATION_GATE > /tmp/calibration_commit
+          test "$(cat /tmp/design_commit)" != "$(cat /tmp/calibration_commit)"
+          git merge-base --is-ancestor "$(cat /tmp/design_commit)" "$(cat /tmp/calibration_commit)"
+          grep -q 'OUTSIDE3_DESIGN_FROZEN_V1' experiments/outside3/design-output/constants.frozen.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Run synthetic calibration MODE shard SHARD
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx tsx experiments/outside3/calibration.ts "${{ matrix.mode }}" "${{ matrix.shard }}" "${{ matrix.count }}"
+          cd experiments/outside3/calibration-output
+          sha256sum *.json > SHA256SUMS.txt
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-${{ matrix.mode }}-${{ matrix.shard }}
+          path: experiments/outside3/calibration-output/
+          retention-days: 90
