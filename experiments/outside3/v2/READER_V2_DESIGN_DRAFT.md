@@ -115,3 +115,19 @@ Pre-frozen K3 detection threshold: \`TO_DESIGN\`; do not assign a convenient val
 8. Operator + independent reviewer acceptance is required **before** any registration of a future OUTSIDE-3 real-target experiment.
 
 **Current authorization:** draft v2 and run explanatory v1 diagnostics only. **Do not execute v2 calibration or generate any real target.**
+
+
+## Stage 1 post hoc diagnostics available after this draft
+
+The operator-requested v1 K3 supplement has been completed on the original 200 synthetic K3 series without changing v1's constants or source.
+
+- Raw-cast P1 detection: **197/200 (98.5%)**, mean target rank **25.2039**.
+- C at step 0 (immediately after v1 orientation): **64/200 (32%)**, mean target rank **30.1602**.
+- C after 30 steps (from archived frozen K3 output): **11/200 (5.5%)**, mean target rank **32.3465**.
+- Difference in mean target rank C30 minus C0: **+2.1863** positions (worse at step 30).
+
+Provenance: [Stage 1 K3 supplementary result](../diagnostics-v1/fast-output/FAST_K3_REPORT.md) and [per-series records](../diagnostics-v1/fast-output/FAST_K3_RESULTS.json).
+
+**Interpretation:** A synthetic planted channel is present in the cast, partly represented in the initial orientation, and substantially less detectable after 30 developmental steps. Importantly, K3's planted line is made **nonmoving**, so the original v1 entry pathway never wrote that planted line as one of its moving-line PFM events. This distinguishes loss at history encoding from loss during subsequent development; their relative contributions still require a prospective factorial design.
+
+These post hoc observations motivate but **must not determine** v2 development-window selection or acceptance thresholds. The v2 selection objective, candidate windows and dedicated design seeds must be finalized before design runs. V1 K3/K4 verdicts remain FAILED; registration CLOSED.
