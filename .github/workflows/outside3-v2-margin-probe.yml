@@ -1,0 +1,56 @@
+name: OUTSIDE-3 v2 Preselection Margin Probe (synthetic)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/outside3/v2/preselectionMargin.ts'
+      - '.github/workflows/outside3-v2-margin-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  preselection-margin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run synthetic fresh and W88 carried-memory margin checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/outside3/v2/preselection-output
+          set -o pipefail
+          npx tsx experiments/outside3/v2/preselectionMargin.ts 2>&1 | tee experiments/outside3/v2/preselection-output/MARGIN_PROBE.log
+          cd experiments/outside3/v2/preselection-output
+          sha256sum -c SHA256SUMS.txt
+          echo "$GITHUB_SHA" > SOURCE_COMMIT.txt
+          sha256sum MARGIN_PROBE.log > LOG_SHA256.txt
+      - name: Preserve synthetic feasibility report whether gate meets threshold or not
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-V2-Synthetic-Margin-Probe
+          path: experiments/outside3/v2/preselection-output/
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Commit separate feasibility evidence (never freeze constants)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/outside3/v2/preselection-output/MARGIN_PROBE.json experiments/outside3/v2/preselection-output/MARGIN_PROBE.md experiments/outside3/v2/preselection-output/SHA256SUMS.txt
+          git diff --cached --check
+          git commit -m "Archive synthetic preselection margin measurements without freezing v2 constants"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
