@@ -1,0 +1,57 @@
+name: OUTSIDE-3 v1 K3 Supplement — archive and report
+on:
+  workflow_run:
+    workflows: [OUTSIDE-3 v1 K3 Supplement — synthetic diagnostics only]
+    types: [completed]
+permissions:
+  actions: read
+  contents: write
+jobs:
+  archive:
+    if: github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Retrieve both original diagnostic shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: OUTSIDE3-V1-K3-DIAG-*
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+          merge-multiple: true
+          path: experiments/outside3/diagnostics-v1/output/
+      - name: Verify 200 synthetic K3 series and aggregate post hoc findings
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx tsx experiments/outside3/diagnostics-v1/aggregateK3.ts
+          cd experiments/outside3/diagnostics-v1
+          sha256sum -c SHA256SUMS.txt
+      - name: Preserve diagnostic result artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-V1-K3-SUPPLEMENT-REPORT
+          path: experiments/outside3/diagnostics-v1/
+          if-no-files-found: warn
+          retention-days: 90
+      - name: Commit supplementary evidence only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/outside3/diagnostics-v1/K3_DIAGNOSTIC_RESULTS.json experiments/outside3/diagnostics-v1/STAGE1_K3_SUPPLEMENT.md experiments/outside3/diagnostics-v1/SHA256SUMS.txt
+          git diff --cached --check
+          git commit -m 'Archive post hoc v1 K3 diagnostics; preserve original Stage 1 failures'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
