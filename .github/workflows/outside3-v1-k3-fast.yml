@@ -1,0 +1,50 @@
+name: OUTSIDE-3 v1 K3 Fast Archive Diagnostic
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/outside3/diagnostics-v1/fastK3.ts'
+      - '.github/workflows/outside3-v1-k3-fast.yml'
+permissions:
+  contents: write
+jobs:
+  fast-k3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Derive v1 raw and C0 diagnostic against immutable C30 archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx tsx experiments/outside3/diagnostics-v1/fastK3.ts
+          cd experiments/outside3/diagnostics-v1/fast-output
+          sha256sum FAST_K3_RESULTS.json FAST_K3_REPORT.md > SHA256SUMS.txt
+          sha256sum -c SHA256SUMS.txt
+      - name: Upload immutable diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-V1-K3-FAST-SUPPLEMENT
+          path: experiments/outside3/diagnostics-v1/fast-output/
+          if-no-files-found: warn
+          retention-days: 90
+      - name: Publish v1 supplementary diagnostic only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/outside3/diagnostics-v1/fast-output/
+          git diff --cached --check
+          git commit -m "Archive v1 synthetic raw-versus-step0-versus-30 diagnostic, no recalibration"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
