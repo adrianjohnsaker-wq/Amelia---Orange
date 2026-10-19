@@ -42,7 +42,7 @@ const result={
  schema:'OUTSIDE3_STAGE1_SYNTHETIC_REPORT_V1',
  workOrderSha256:'1b1b0b74b385d607aa5a77a4462bf0809aadb6f26f2f8bd3f8170e4ead0a01ac',
  status:'CALIBRATION_ONLY_NOT_REGISTRATION',realTargetGenerated:false,realWorkingOpened:false,
- frozenDesignSha256:sha(frozenBytes),codeCommit:process.env.GITHUB_SHA??'UNKNOWN',
+ frozenDesignSha256:sha(frozenBytes),codeCommit:process.env.OUTSIDE3_CALIBRATION_SHA??process.env.GITHUB_SHA??'UNKNOWN',
  outcome,allKPassed:outcomeStatus,B_gate:'INDEPENDENT_WORKFLOW_AUDIT_REQUIRED',
  note:'Synthetic implants do not demonstrate hidden-target information access.'
 };
