@@ -55,7 +55,12 @@ jobs:
           open(root+'/target_info.json','w').write(json.dumps({'round':rnd,'chainhash':meta['hash'],'period':period}))
           PY
           round="$(cat "$tmp/round")"
-          "$(go env GOPATH)/bin/tle" -c="$chain" -n="https://api.drand.sh/" -r="$round" -a -o="$tmp/go.asc" "$tmp/payload.json" >/dev/null 2>"$tmp/go_encrypt_stderr"
+          if ! "$(go env GOPATH)/bin/tle" -c="$chain" -n="https://api.drand.sh/" -r="$round" -a -o="$tmp/go.asc" "$tmp/payload.json" >/dev/null 2>"$tmp/go_encrypt_stderr"; then
+            echo "GO_ENCRYPT_FAILURE_DIAGNOSTIC_BEGIN"
+            sed -E 's@[A-Za-z0-9+/]{40,}@[REDACTED]@g' "$tmp/go_encrypt_stderr" | head -10
+            echo "GO_ENCRYPT_FAILURE_DIAGNOSTIC_END"
+            exit 1
+          fi
           node experiments/outside3/tlock-interop.mjs encrypt "$tmp/payload.json" "$tmp/js.asc" "$round" > /dev/null
           if "$(go env GOPATH)/bin/tle" -c="$chain" -n="https://api.drand.sh/" -d -o="$tmp/too_early" "$tmp/go.asc" >/dev/null 2>"$tmp/early_stderr"; then
             echo "B_GATE_FAILURE: Go ciphertext prematurely decryptable"; exit 1
