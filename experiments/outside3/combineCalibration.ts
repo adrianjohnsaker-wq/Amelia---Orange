@@ -60,7 +60,7 @@ const lines=[
 'Unchanged work order SHA-256: '+result.workOrderSha256,
 '',
 '## A — Reader and four arms',
-'All four arms receive identical six-line casts. C carries PFM, M resets only PFM once per working, G uses a fixed degree-preserving rewire, Raw ranks by resulting-hexagram agreement. Thirty unguided steps, 64 doubled mid-ranks. The replay smoke must pass independently.',
+'All four arms receive identical six-line casts. C carries PFM, M resets only PFM once per working, G uses a fixed degree-preserving rewire, Raw ranks by resulting-hexagram agreement. Thirty unguided steps, 64 doubled mid-ranks. Reader replay smoke PASS: https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39301942640',
 '',
 '## B — Time-lock gate',
 'Time-lock gate status: '+(bVerified?'PASS — synthetic Go/TS Quicknet crossover, ciphertext + secret-salt commitment evidence; see TLOCK_FEASIBILITY.md and run #39304200180.':'NOT VERIFIED — registration prohibited.'),
