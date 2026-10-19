@@ -1,7 +1,9 @@
 /** OUTSIDE-3 synthetic Stage 1 calibration consolidation, with fixed thresholds. */
-import {readFileSync,writeFileSync,readdirSync,mkdirSync} from 'node:fs';
+import {readFileSync,writeFileSync,readdirSync,mkdirSync,existsSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 const root='experiments/outside3',dir=root+'/calibration-output';
+const bPath=root+'/TLOCK_FEASIBILITY.md';
+const bVerified=existsSync(bPath)&&readFileSync(bPath,'utf8').includes('Gate outcome: PASS (software demonstration)');
 const frozenBytes=readFileSync(root+'/design-output/constants.frozen.json');
 const frozen=JSON.parse(frozenBytes.toString());
 const files=readdirSync(dir).filter(x=>/^(K[1-5]|CURVE)-[0-9]+\.json$/.test(x));
@@ -43,7 +45,7 @@ const result={
  workOrderSha256:'1b1b0b74b385d607aa5a77a4462bf0809aadb6f26f2f8bd3f8170e4ead0a01ac',
  status:'CALIBRATION_ONLY_NOT_REGISTRATION',realTargetGenerated:false,realWorkingOpened:false,
  frozenDesignSha256:sha(frozenBytes),codeCommit:process.env.OUTSIDE3_CALIBRATION_SHA??process.env.GITHUB_SHA??'UNKNOWN',
- outcome,allKPassed:outcomeStatus,B_gate:'INDEPENDENT_WORKFLOW_AUDIT_REQUIRED',
+ outcome,allKPassed:outcomeStatus,B_gate:bVerified?'PASS_GO_JS_SYNTHETIC_QUICKNET_RUN_39304200180':'NOT_VERIFIED',
  note:'Synthetic implants do not demonstrate hidden-target information access.'
 };
 mkdirSync(root+'/report-output',{recursive:true});
@@ -61,7 +63,7 @@ const lines=[
 'All four arms receive identical six-line casts. C carries PFM, M resets only PFM once per working, G uses a fixed degree-preserving rewire, Raw ranks by resulting-hexagram agreement. Thirty unguided steps, 64 doubled mid-ranks. The replay smoke must pass independently.',
 '',
 '## B — Time-lock gate',
-'SEPARATE QUICKNET FEASIBILITY RUN MUST BE AUDITED; this report does not claim B success. The target-generation protocol uses synthetic test payloads only.',
+'Time-lock gate status: '+(bVerified?'PASS — synthetic Go/TS Quicknet crossover, ciphertext + secret-salt commitment evidence; see TLOCK_FEASIBILITY.md and run #39304200180.':'NOT VERIFIED — registration prohibited.'),
 '',
 '## C — Pre-frozen constants',
 'delta '+frozen.constants.delta+', magnitude '+frozen.constants.magnitude+', steps '+frozen.constants.steps+
