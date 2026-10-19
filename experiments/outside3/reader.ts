@@ -114,6 +114,11 @@ export class Outside3Reader {
     this.G=saved?importRuntime(saved.G):newRuntime(this.graph);
   }
   export() {return {C:canonicalState(this.C),G:canonicalState(this.G)};}
+  /** Calibration-only transplant of synthetic PFM into C; forbidden from production target-reveal code. */
+  importCStateForSyntheticCalibration(state:Record<string,any>){
+    if(!state||!state.memoryState)throw Error('SYNTHETIC_PFM_MISSING');
+    this.C=importRuntime(state);
+  }
   graphInfo(){return {swaps:this.graph.swaps,digest:this.graph.digest};}
   run(cast:Cast):WorkRecord {
     const enc=encode(cast);
