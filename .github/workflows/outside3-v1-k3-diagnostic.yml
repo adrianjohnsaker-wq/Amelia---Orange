@@ -1,0 +1,43 @@
+name: OUTSIDE-3 v1 K3 Supplement — synthetic diagnostics only
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/outside3/diagnostics-v1/k3Supplement.ts'
+      - '.github/workflows/outside3-v1-k3-diagnostic.yml'
+permissions:
+  contents: read
+jobs:
+  k3-supplement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Run frozen-v1 diagnostic against original synthetic K3 observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/outside3/diagnostics-v1/output
+          set -o pipefail
+          npx tsx experiments/outside3/diagnostics-v1/k3Supplement.ts "${{ matrix.shard }}" 100 \
+            2>&1 | tee "experiments/outside3/diagnostics-v1/output/K3-DIAG-${{ matrix.shard }}.log"
+          cd experiments/outside3/diagnostics-v1/output
+          sha256sum *.json *.log > "SHARD-${{ matrix.shard }}-SHA256SUMS.txt"
+      - name: Preserve each synthetic diagnostic shard (including failures)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-V1-K3-DIAG-${{ matrix.shard }}
+          path: experiments/outside3/diagnostics-v1/output/
+          retention-days: 90
+          if-no-files-found: warn
