@@ -92,6 +92,7 @@ outcomeStatus?'K1–K5 meet frozen software thresholds.':'At least one predeclar
 ''
 ];
 writeFileSync(root+'/report-output/STAGE1_REPORT.md',lines.join('\n'));
+writeFileSync(root+'/STAGE1_REPORT.md',lines.join('\n'));
 for(const f of ['CALIBRATION.json','STAGE1_REPORT.md']){
   const bytes=readFileSync(root+'/report-output/'+f);
   writeFileSync(root+'/report-output/'+f+'.sha256',sha(bytes)+'  '+f+'\n');
