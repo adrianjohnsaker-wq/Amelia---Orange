@@ -1,0 +1,107 @@
+{
+  "schema": "OUTSIDE3_V2_D0_SYNTHETIC_DESIGN_GRID_V1",
+  "classification": "DESIGN_ONLY_NOT_CALIBRATION_NOT_SELECTION_FREEZE",
+  "authorization": "Operator allows parameter-selection design runs only after separate pre-freeze margin diagnostic",
+  "priorFeasibility": {
+    "run": "https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39336982499",
+    "fixture": "yin 0.011 yang 0.031 movement 0.008 coherence 0.95 relaxation 0.025",
+    "observedMinStandardizedInputResponse": 0.9238156045083343,
+    "preselectedMarginFactor": 2,
+    "verdict": "FIXTURE_FAILED"
+  },
+  "method": "Six resulting-hexagram polarity PFM events, plus movement-marking events; no transient orientation",
+  "immutableK3Gate": "experiments/outside3/v2/K3_GATE_FIXED.json",
+  "referenceCount": 128,
+  "windows": [
+    1,
+    3,
+    10
+  ],
+  "masks": [
+    0,
+    21
+  ],
+  "oneBitPairsPerMask": 192,
+  "checkpoints": [
+    "FRESH",
+    "W1",
+    "W10",
+    "W44",
+    "W88",
+    "SATURATION_FIXTURE"
+  ],
+  "carriedHistoryWorkingCount": 88,
+  "historyStepsPerWorking": 10,
+  "minimumStandardizedMarginFactor": 2,
+  "minimumWithinScoreMarginStrictlyPositive": true,
+  "tieBreaker": "Among D0 survivors maximize min changed-zone response margin; then min within-readout score margin; then shorter window; then lexicographic candidateId. D0 cannot itself freeze selected values; design-only synthetic plant validation and independent review remain required before later freeze.",
+  "ifAllFail": "NO_D0_CANDIDATE; do not freeze anything, do not relax 2.0 margin; report negative grid.",
+  "seeds": {
+    "reference": 9302001,
+    "history": 9301001,
+    "plantDesign": 9303001,
+    "heldOutDesign": 9401001,
+    "reservedFutureCalibration": {
+      "k1": 9501001,
+      "k2": 9502001,
+      "k3": 9503001,
+      "k4": 9504001,
+      "k5": 9505001,
+      "curve": 9506001
+    }
+  },
+  "candidateComparisonSeedPolicy": "paired common reference/history RNG tapes across all candidate IDs, disjoint from original v1, feasibility and future K1-K5 calibration",
+  "candidates": [
+    {
+      "id": "D0A",
+      "yin": 0.008,
+      "yang": 0.04,
+      "movement": 0.012,
+      "phaseCoherence": 0.95,
+      "strainRelaxation": 0.025
+    },
+    {
+      "id": "D0B",
+      "yin": 0.006,
+      "yang": 0.055,
+      "movement": 0.016,
+      "phaseCoherence": 0.95,
+      "strainRelaxation": 0.025
+    },
+    {
+      "id": "D0C",
+      "yin": 0.012,
+      "yang": 0.075,
+      "movement": 0.021,
+      "phaseCoherence": 0.95,
+      "strainRelaxation": 0.025
+    },
+    {
+      "id": "D0D",
+      "yin": 0.018,
+      "yang": 0.095,
+      "movement": 0.027,
+      "phaseCoherence": 0.95,
+      "strainRelaxation": 0.025
+    },
+    {
+      "id": "D0E",
+      "yin": 0.022,
+      "yang": 0.13,
+      "movement": 0.036,
+      "phaseCoherence": 0.95,
+      "strainRelaxation": 0.025
+    },
+    {
+      "id": "D0F",
+      "yin": 0.01,
+      "yang": 0.165,
+      "movement": 0.046,
+      "phaseCoherence": 0.95,
+      "strainRelaxation": 0.025
+    }
+  ],
+  "noRealTarget": true,
+  "registrationClosed": true,
+  "notes": "These are design candidates, never registered hypotheses or frozen parameters. Coverage of movement masks is an explicit 2-mask screen, not full 4096 dynamic histories. No v2 K1-K5 calibration allowed."
+}
