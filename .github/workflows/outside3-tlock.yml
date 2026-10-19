@@ -1,0 +1,114 @@
+name: OUTSIDE-3 Stage1 Time-lock Quicknet Feasibility — SYNTHETIC ONLY
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/outside3/TLOCK_GATE'
+permissions:
+  contents: read
+jobs:
+  test-tlock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install PINNED Go and JS time-lock implementations
+        shell: bash
+        run: |
+          set -euo pipefail
+          go install github.com/drand/tlock/cmd/tle@v1.2.0
+          npm install --no-save --no-audit --no-fund tlock-js@0.9.0 drand-client@1.2.5
+      - name: Encrypt entirely synthetic short-lived sample and verify pre-reveal denial
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p experiments/outside3/tlock-output
+          tmp="$(mktemp -d /dev/shm/outside3synthetic.XXXXXX)"
+          echo "$tmp" > /tmp/outside3_tlock_tmp_path
+          chain="52db9ba70e0cc0f6eaf7803dd07447a1f5477735fd3f661792ba94600c84e971"
+          curl -fsSL --max-time 30 "https://api.drand.sh/$chain/info" > "$tmp/chaininfo.json"
+          export OUTSIDE3_TEMP="$tmp"
+          python3 - <<'PY'
+          import os, json,hashlib,time
+          root=os.environ['OUTSIDE3_TEMP']
+          meta=json.load(open(root+'/chaininfo.json'))
+          assert str(meta.get('hash','')).lower()=='52db9ba70e0cc0f6eaf7803dd07447a1f5477735fd3f661792ba94600c84e971'
+          assert 'unchained' in str(meta.get('schemeID',meta.get('scheme',''))).lower()
+          period=int(meta['period']);genesis=int(meta['genesis_time'])
+          assert period==3
+          seconds=time.time()+630
+          rnd=int((seconds-genesis)//period)+2
+          open(root+'/round','w').write(str(rnd))
+          payload={'working_id':'STAGE1_SYNTHETIC_ONLY',
+            'target_index':os.urandom(1)[0]%64,
+            'salt':os.urandom(32).hex()}
+          raw=json.dumps(payload,sort_keys=True,separators=(',',':')).encode()
+          open(root+'/payload.json','wb').write(raw)
+          open(root+'/commitment','w').write(hashlib.sha256(raw).hexdigest())
+          open(root+'/target_info.json','w').write(json.dumps({'round':rnd,'chainhash':meta['hash'],'period':period}))
+          PY
+          round="$(cat "$tmp/round")"
+          "$(go env GOPATH)/bin/tle" -c="$chain" -n="https://api.drand.sh/" -r="$round" -a -o="$tmp/go.asc" "$tmp/payload.json" >/dev/null 2>"$tmp/go_encrypt_stderr"
+          node experiments/outside3/tlock-interop.mjs encrypt "$tmp/payload.json" "$tmp/js.asc" "$round" > /dev/null
+          if "$(go env GOPATH)/bin/tle" -c="$chain" -n="https://api.drand.sh/" -d -o="$tmp/too_early" "$tmp/go.asc" >/dev/null 2>"$tmp/early_stderr"; then
+            echo "B_GATE_FAILURE: Go ciphertext prematurely decryptable"; exit 1
+          fi
+          if node experiments/outside3/tlock-interop.mjs decrypt "$tmp/go.asc" "$tmp/js_early" > /dev/null 2>"$tmp/js_early_stderr"; then
+            echo "B_GATE_FAILURE: TS ciphertext prematurely decryptable"; exit 1
+          fi
+          rm -f "$tmp/payload.json" "$tmp/js_early" "$tmp/too_early"
+          echo "BEFORE_ROUND_DENIAL=PASS" > experiments/outside3/tlock-output/feasibility.txt
+          echo "GO_VERSION=v1.2.0" >> experiments/outside3/tlock-output/feasibility.txt
+          echo "JS_VERSION=tlock-js@0.9.0" >> experiments/outside3/tlock-output/feasibility.txt
+          echo "QUICKNET_HASH=$chain" >> experiments/outside3/tlock-output/feasibility.txt
+          echo "TARGET_ROUND=$round" >> experiments/outside3/tlock-output/feasibility.txt
+          cat "$tmp/commitment" | sha256sum | cut -d ' ' -f1 >> experiments/outside3/tlock-output/feasibility.txt
+      - name: Wait for Quicknet round and verify bidirectional interoperability
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp="$(cat /tmp/outside3_tlock_tmp_path)"
+          chain="52db9ba70e0cc0f6eaf7803dd07447a1f5477735fd3f661792ba94600c84e971"
+          # Wait for publication; no plaintext exists after encryption.
+          success=0
+          for i in $(seq 1 260); do
+            if "$(go env GOPATH)/bin/tle" -c="$chain" -n="https://api.drand.sh/" -d -o="$tmp/go_decrypted" "$tmp/go.asc" >/dev/null 2>"$tmp/go_decrypt_stderr"; then success=1; break; fi
+            sleep 3
+          done
+          test "$success" = "1"
+          node experiments/outside3/tlock-interop.mjs decrypt "$tmp/go.asc" "$tmp/js_go_decrypted" > /dev/null
+          "$(go env GOPATH)/bin/tle" -c="$chain" -n="https://api.drand.sh/" -d -o="$tmp/go_js_decrypted" "$tmp/js.asc" >/dev/null 2>"$tmp/go_js_stderr"
+          python3 - <<'PY'
+          import os,hashlib,json
+          root=open('/tmp/outside3_tlock_tmp_path').read().strip()
+          digest=open(root+'/commitment').read().strip()
+          for f in ['go_decrypted','js_go_decrypted','go_js_decrypted']:
+            raw=open(root+'/'+f,'rb').read()
+            assert hashlib.sha256(raw).hexdigest()==digest,'Commitment mismatch'
+            obj=json.loads(raw)
+            assert obj['working_id']=='STAGE1_SYNTHETIC_ONLY'
+            assert 0<=obj['target_index']<64
+            assert len(bytes.fromhex(obj['salt']))==32
+          PY
+          echo "AFTER_ROUND_GO_TO_GO=PASS" >> experiments/outside3/tlock-output/feasibility.txt
+          echo "AFTER_ROUND_GO_TO_JS=PASS" >> experiments/outside3/tlock-output/feasibility.txt
+          echo "AFTER_ROUND_JS_TO_GO=PASS" >> experiments/outside3/tlock-output/feasibility.txt
+          echo "PLAINTEXT_OUTPUT_ARCHIVED=NO" >> experiments/outside3/tlock-output/feasibility.txt
+          echo "B_GATE_STATUS=PASS" >> experiments/outside3/tlock-output/feasibility.txt
+          rm -rf "$tmp"
+          rm /tmp/outside3_tlock_tmp_path
+      - name: Safe artifact only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-Time-Lock-Feasibility
+          path: experiments/outside3/tlock-output/
+          retention-days: 90
+          if-no-files-found: warn
