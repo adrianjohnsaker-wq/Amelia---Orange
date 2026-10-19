@@ -42,6 +42,7 @@ jobs:
           path: |
             experiments/outside3/calibration-output/
             experiments/outside3/report-output/
+            experiments/outside3/STAGE1_REPORT.md
           if-no-files-found: warn
           retention-days: 90
       - name: Commit archived reports
@@ -50,7 +51,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add experiments/outside3/calibration-output/ experiments/outside3/report-output/
+          git add experiments/outside3/calibration-output/ experiments/outside3/report-output/ experiments/outside3/STAGE1_REPORT.md
           git diff --cached --check
           git commit -m "Record OUTSIDE-3 pre-frozen synthetic K1-K5 outcomes"
           git fetch origin main
