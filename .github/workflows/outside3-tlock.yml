@@ -74,7 +74,10 @@ jobs:
           echo "JS_VERSION=tlock-js@0.9.0" >> experiments/outside3/tlock-output/feasibility.txt
           echo "QUICKNET_HASH=$chain" >> experiments/outside3/tlock-output/feasibility.txt
           echo "TARGET_ROUND=$round" >> experiments/outside3/tlock-output/feasibility.txt
-          cat "$tmp/commitment" | sha256sum | cut -d ' ' -f1 >> experiments/outside3/tlock-output/feasibility.txt
+          echo "PAYLOAD_SHA256_COMMITMENT=$(cat "$tmp/commitment")" >> experiments/outside3/tlock-output/feasibility.txt
+          cp "$tmp/go.asc" experiments/outside3/tlock-output/go_cipher.asc
+          cp "$tmp/js.asc" experiments/outside3/tlock-output/js_cipher.asc
+          sha256sum experiments/outside3/tlock-output/*.asc > experiments/outside3/tlock-output/CIPHERTEXT_SHA256SUMS.txt
       - name: Wait for Quicknet round and verify bidirectional interoperability
         shell: bash
         run: |
