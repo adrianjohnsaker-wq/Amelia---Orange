@@ -1,0 +1,56 @@
+{
+  "schema": "PF1_7_CHECK_SYNTHETIC_VERDICT_V1",
+  "gate": [
+    {
+      "id": 1,
+      "question": "C1 live admission/cadence, one-minute mapping, deterministic catch-up",
+      "synthetic": "PASS: synthetic ordered mock rounds, process-restored gap catch-up, duplicated dispatch idempotence",
+      "readiness": "OPEN: live C1 round mapping and actual drand BLS verifier not linked/tested"
+    },
+    {
+      "id": 2,
+      "question": "Cross-invocation state persistence and input-gap recovery",
+      "synthetic": "PASS",
+      "readiness": "Pending deployment storage durability / concurrent commit locking under GitHub"
+    },
+    {
+      "id": 3,
+      "question": "Fork scheduling, 24 future inputs, L₂ and primary-state isolation",
+      "synthetic": "PASS",
+      "readiness": "Admitted-future 24-round cadence and fork queue must be integrated with a production runner"
+    },
+    {
+      "id": 4,
+      "question": "Nine arms: one beacon + eight keyed references, independently carried PFM",
+      "synthetic": "PASS",
+      "readiness": "Freeze and independently review actual C1 KDF/domain separators at genesis"
+    },
+    {
+      "id": 5,
+      "question": "Zero-encounter silent exposure ledger and per-entry timestamp sealing",
+      "synthetic": "PASS: silent ledger plus separately marked synthetic receipt fixture",
+      "readiness": "Per-encounter append-only production journal/incident sealing still requires cross-dispatch test"
+    },
+    {
+      "id": 6,
+      "question": "Fail-closed BLS/RFC3161 checks and provenance",
+      "synthetic": "PARTIAL: simulated bad signatures rejected; real FreeTSA token verified",
+      "readiness": "OPEN: real drand BLS signatures never cryptographically verified in this synthetic harness"
+    },
+    {
+      "id": 7,
+      "question": "Byte-exact replay and duplicate journal/notification suppression",
+      "synthetic": "PASS",
+      "readiness": "Persistent shared-state ledger deduplication under concurrency remains to test"
+    }
+  ],
+  "allSyntheticChecksWithoutFailure": true,
+  "fullLiveReadiness": false,
+  "realBlsVerified": false,
+  "actualC1MappingVerified": false,
+  "realBeaconRounds": 0,
+  "genesis": false,
+  "liveAuthorised": false,
+  "correctedSourceMemoryLaw": "IntegratedMemorySystem",
+  "registrationDraft": "experiments/pf1/PF1_LIVE_START_REGISTRATION_DRAFT.md"
+}
