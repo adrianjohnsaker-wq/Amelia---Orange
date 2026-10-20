@@ -102,6 +102,10 @@ jobs:
           git add experiments/pf1/PF1_DEPLOYMENT_SYNTHETIC_REPORT.md
           git add experiments/pf1/deployment-synthetic-output/seven-check-verdict.json
           git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'PF1_SYNTH_DEPLOY_REPORT_ALREADY_ARCHIVED_NO_CHANGE'
+            exit 0
+          fi
           git commit -m 'Archive PF1 seven synthetic deployment checks: live readiness still pending'
           git fetch origin main
           git rebase origin/main
