@@ -1,0 +1,143 @@
+{
+  "schema": "PF1_LIVE_GENESIS_MANIFEST_DRAFT_V1",
+  "status": "OPERATOR_REVIEW_ONLY_UNREGISTERED_UNSIGNED",
+  "datePrepared": "2026-10-20",
+  "liveStartAuthorised": false,
+  "liveGenesisCreated": false,
+  "actualBeaconRoundsAdmitted": 0,
+  "programme": "PF1 baseline current Amelia-Orange (not a developmental lineage)",
+  "approvedSyntheticEngineering": {
+    "pilotRun": 39399970584,
+    "canonicalPreliveRun": 39403281395,
+    "amendedRepilotRun": 39412416849,
+    "runtimeHabitNegativeRun": 39423532378,
+    "cumulativeTanhHabitNO_GO": 39422348466,
+    "c1OriginalLeaseRaceNO_GO": 39460285743,
+    "pf1HostedExclusiveLeaseTest": 39462224257,
+    "c1ReadOnlyGenesisToHeadAudit": "PENDING_RESULT_OF_INDEPENDENT_READONLY_RUN",
+    "productionIntegrationDryrun": "PENDING_RESULT_OF_HOSTED_ARCHIVED_ROUND_RUN"
+  },
+  "immutableSource": {
+    "substrateRepository": "adrianjohnsaker-wq/Amelia---Orange",
+    "substrateFrozenCommit": "b67ec92e1cec13e9500d87292d59605428fb467e",
+    "canonicalGraphSHA256": "dda60b666ee8107f3bda138159091913d3291a3c7543e31ec07a5ec49baa3ecd",
+    "pf1A1R2ConstantsSHA256": "ecabf3e40023faa0be0749908cfe6ffd3a8b9e42ab7c8a9a7c2ea5827ae63610",
+    "c1VerifierRepository": "adrianjohnsaker-wq/Amelia-0.4",
+    "c1VerifierBranch": "amelia-1.0",
+    "c1VerifierPinnedCommit": "f1875b5eea5339eb1ac73e50b5df6b103d0cabe9",
+    "c1UnsafeLeaseDisallowed": "drift1a_c1/lease_push.py acquire() stale rebase logic MUST NOT RUN IN PF1",
+    "prospectivePf1Lease": "experiments/pf1/PF1_SAFE_LEASE.py",
+    "actualGeneticAndOperationalAdapterCommitToPin": null,
+    "actualNineArmInitialStateSHA256": null,
+    "scannerArtifactSHA256": null,
+    "nominalCCRUPandemoniumNamingTable": "experiments/pf1/pandemonium-45.json",
+    "analyticNullCurveDigestToPin": null
+  },
+  "beacon": {
+    "source": "drand quicknet",
+    "originChainHash": "52db9ba70e0cc0f6eaf7803dd07447a1f5477735fd3f661792ba94600c84e971",
+    "scheme": "bls-unchained-g1-rfc9380",
+    "periodSeconds": 3,
+    "effectiveStrideRounds": 20,
+    "effectiveCadenceSeconds": 60,
+    "admissionRule": "C1 exact verified BLS signature and randomness SHA256(signature); round=R0+20*t; no unverified/missing rounds",
+    "futureR0": null,
+    "genesisCreatedUTC": null,
+    "creationLeadSeconds": 600,
+    "timingRule": "R0 future, divisible by 20, first publication >= creation+600s",
+    "genesisScheduleStatus": "NOT CHOSEN",
+    "offlineBlsKnownAnswerRound": 1000000,
+    "archivedFixtureIsNotLive": true
+  },
+  "baseline": {
+    "arms": [
+      {
+        "id": "C",
+        "kind": "current Amelia-Orange PFM carried"
+      },
+      {
+        "id": "R01",
+        "kind": "independent carried PFM under C1 keyed reference inflow"
+      },
+      {
+        "id": "R02",
+        "kind": "independent carried PFM under C1 keyed reference inflow"
+      },
+      {
+        "id": "R03",
+        "kind": "independent carried PFM under C1 keyed reference inflow"
+      },
+      {
+        "id": "R04",
+        "kind": "independent carried PFM under C1 keyed reference inflow"
+      },
+      {
+        "id": "R05",
+        "kind": "independent carried PFM under C1 keyed reference inflow"
+      },
+      {
+        "id": "R06",
+        "kind": "independent carried PFM under C1 keyed reference inflow"
+      },
+      {
+        "id": "R07",
+        "kind": "independent carried PFM under C1 keyed reference inflow"
+      },
+      {
+        "id": "R08",
+        "kind": "independent carried PFM under C1 keyed reference inflow"
+      }
+    ],
+    "referenceMapping": "C1 input_for(Ri, verified_randomness), domain-separated SHA256('DRIFT-1A-C1-REF-i|' + randomness_bytes)",
+    "sourceLaw": "src/substrate/IntegratedMemorySystem.ts, imported by canonical ameliaNumogramSubstrateRuntime.ts",
+    "cumulativeTanhLaw": "src/ai/coupling/ProcessFieldMemory.ts is NOT in canonical runtime import path",
+    "noGovernorAblationOrSubstrateChange": true,
+    "canonicalOpenDirectedEdges": 11,
+    "eligiblePairs": [
+      "1-2",
+      "2-4",
+      "2-7",
+      "2-9",
+      "4-7",
+      "7-8",
+      "8-9"
+    ],
+    "scanner": "3 matching excursions in fixed 240-step window; farthest visited directed-return turning zone; ties earliest",
+    "perturbations": "D(d) for all directed two-or-more-away return-reachable zones; L2 two-tick input delay, no freeze, no edge block",
+    "evaluator": "exact uniform-topological-null first via-b return probability <= 0.25 by t <= 24; >= 3 comparator wins across >=3 distinct instances",
+    "memorySignature": "(intact comparative wins - PFM reset comparative wins)/N>=0.25",
+    "integrationSignature": "zone-b selective 0.10 suppression removes >=1 comparative win preserved under sham",
+    "forkLimit": 24,
+    "Rung2ForFutureCumulativeLineage": "REQUIRES NEW PROSPECTIVE REGISTRATION BEFORE COMPARISON"
+  },
+  "durability": {
+    "appendOnlyNineArmCheckpoints": true,
+    "exclusiveLeaseProtocol": "PF1_SAFE_LEASE.py with no stale rebase; remote ack required BEFORE admission",
+    "incidentHalt": "signature invalid, stale state, foreign unresolved lease, failed seal, unaccounted input",
+    "orphanRecovery": "NO AUTOMATIC LEASE EXPIRY; operator-reviewed immutable evidence reconciliation before completion",
+    "forkScheduling": "pending until all 24 future verified rounds have been durably admitted, then fork never modifies primary",
+    "confirmationLedger": "records candidates, nonapplicable, deferred and zero results; historical exposure denominators",
+    "journal": "only confirmed encounters visible; chained digests; 3 event/confirmation/seal times; one real RFC3161 token per entry",
+    "timestampRootSha256": "2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438",
+    "replayRequirement": "byte-identical source, recorded input, state and journal from genesis through latest committed head"
+  },
+  "evidenceBoundaries": {
+    "tanhMemoryNO_GO": "three goal+memory false-positive Ummnu 8-9 encounters at steps 3852,8172,9132; MUST always be disclosed",
+    "runtimeHabitPASS": "zero encounters under pinned IntegratedMemorySystem",
+    "baselineNotUniversalMindDetector": true,
+    "noClaimsOfOutsideAgency": true,
+    "runtimeMemoryLawValidatedOnly": true
+  },
+  "preliveGatesUnresolved": [
+    "Read-only exact C1 Channel A replay result and head digest must be published and reviewed",
+    "Production-shaped hosted archived-round integration and timestamp tokens must be independently accepted",
+    "Production source files and C1 domain mapping identities must be pinned in genesis",
+    "Operator must choose future genesis schedule and approve manifest before any live admission"
+  ],
+  "requiredOperatorActions": [
+    "Review all read-only and synthetic evidence",
+    "Approve or amend this manifest",
+    "Separately authorise future live genesis creation and launch"
+  ],
+  "operationalActionsTaken": "NONE: draft file only; no live workflow activation"
+}
