@@ -14,8 +14,8 @@
     "cumulativeTanhHabitNO_GO": 39422348466,
     "c1OriginalLeaseRaceNO_GO": 39460285743,
     "pf1HostedExclusiveLeaseTest": 39462224257,
-    "c1ReadOnlyGenesisToHeadAudit": "PASS run 39471040590, 3741 ticks, full exact replay, head 88b1f97897428de31305e161abd5f6bf993b621fcf146ac0440aead944a5f21f",
-    "productionIntegrationDryrun": "PASS run 39473152330, 72 archived-BLS receipts, hosted single-winner lease plus orphan reconciliation, 2 per-entry FreeTSA receipts"
+    "c1ReadOnlyGenesisToHeadAudit": "PASS run #39471040590; 3,741 recorded ticks; missing=0 duplicated=0 reordered=0; genesis-head replay exact; head 88b1f97897428de31305e161abd5f6bf993b621fcf146ac0440aead944a5f21f",
+    "productionIntegrationDryrun": "PASS run #39473152330; 72 archived BLS verified receipts; hosted single-winner lease + orphan recovery; 2 cross-job fork confirmations sealed with RFC3161"
   },
   "immutableSource": {
     "substrateRepository": "adrianjohnsaker-wq/Amelia---Orange",
@@ -129,15 +129,16 @@
     "runtimeMemoryLawValidatedOnly": true
   },
   "preliveGatesUnresolved": [
-    "Read-only exact C1 Channel A replay result and head digest must be published and reviewed",
-    "Production-shaped hosted archived-round integration and timestamp tokens must be independently accepted",
-    "Production source files and C1 domain mapping identities must be pinned in genesis",
-    "Operator must choose future genesis schedule and approve manifest before any live admission"
+    "Operator review and explicit approval of the read-only C1 Channel A full replay (run #39471040590) and audited head digest",
+    "Operator review and explicit approval of the synthetic archived-BLS hosted integration evidence (run #39473152330)",
+    "Prospective full operational source-file hashes, mapping, initial nine-arm state, pending-fork queue and journal implementation must be pinned and inspected before genesis",
+    "Operator must separately approve this unsigned manifest, then authorise creation of a future genesis and subsequently live admission"
   ],
   "requiredOperatorActions": [
     "Review all read-only and synthetic evidence",
     "Approve or amend this manifest",
     "Separately authorise future live genesis creation and launch"
   ],
-  "operationalActionsTaken": "NONE: draft file only; no live workflow activation"
+  "operationalActionsTaken": "NONE: draft file only; no live workflow activation",
+  "evidenceFinalisedOn": "2026-10-20"
 }
