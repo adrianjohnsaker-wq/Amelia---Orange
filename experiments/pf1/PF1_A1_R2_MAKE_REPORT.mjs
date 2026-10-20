@@ -64,7 +64,7 @@ const md=[
  '| Gate | Result |','|---|---|',
  ...Object.entries(allGates).map(([key,value])=>'| '+key+' | '+(value?'PASS':'FAIL')+' |'),
  '','## Negative-control coverage — report all nine labels separately','',
- '**Original walker:** starts at zone 1 and presents only the **1→8→9→1** circuit. Its detected pair 1–8 (Mur Mur) is NOT among the seven graph-null-eligible pairs. Therefore the original walker by itself supplies no negative specificity evidence on eligible pairs.',
+ '**Original walker:** starts at zone 1 and presents only the **1→8→9→1** circuit. Rotating the anchor of this same circuit produces scanner pairs **1–8 (Mur Mur), 1–9 (Tutagool), and 8–9 (Ummnu)**; only **8–9** is eligible under the sealed null. Count that as actual eligible exposure, but do not treat the three pair labels as independent circuits.',
  '',
  '| Policy | Eligible pairs detected | Perturbation instances probed (on eligible pairs) | Goal-only candidate passes | Complete encounters |',
  '|---|---|---|---:|---:|',
