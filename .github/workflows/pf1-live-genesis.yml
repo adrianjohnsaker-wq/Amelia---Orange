@@ -1,0 +1,82 @@
+name: PF1 Authorised REAL Genesis — C1 Isolated
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf1-live-genesis.yml']
+permissions:
+  contents: write
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+jobs:
+  seal-genesis:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: .pf1-pin-c1
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Enforce operator authorisation and immutable scientific files
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'b48dc2fa512b7e7ee77ea951309b826cb67b63ba728fb6bbeb35d6476d52a699  experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json' | sha256sum -c -
+          echo 'ecabf3e40023faa0be0749908cfe6ffd3a8b9e42ab7c8a9a7c2ea5827ae63610  experiments/pf1/PF1_A1_R2_CONSTANTS.json' | sha256sum -c -
+          test -f experiments/pf1/PF1_OPERATOR_START_AUTHORIZATION_2026-10-20.md
+          test "$(git -C .pf1-pin-c1 rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          test ! -e experiments/pf1/live/GENESIS.json
+      - name: Compile live engine without executing it
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          ./node_modules/.bin/esbuild experiments/pf1/PF1_LIVE_RUN.ts --bundle --platform=node --format=esm --packages=external --outfile=/tmp/pf1-live-preflight.mjs
+          test -s /tmp/pf1-live-preflight.mjs
+      - name: Install genuine pinned C1 BLS/RFC3161 libraries
+        run: python -m pip install -r .pf1-pin-c1/drift1a_c1/requirements.txt
+      - name: Select still-future C1-aligned R0 and seal real genesis, no live inputs
+        env:
+          PYTHONPATH: ${{ github.workspace }}/.pf1-pin-c1
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PF1_GENESIS_OPERATOR_AUTHORISED: 'true'
+          PF1_GENESIS_SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          python experiments/pf1/PF1_LIVE_GENESIS.py
+      - name: Archive attempted signed genesis evidence, including failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PF1-REAL-GENESIS-ATTEMPT-${{ github.run_id }}
+          retention-days: 90
+          if-no-files-found: warn
+          path: experiments/pf1/live/
+      - name: Persist real signed genesis and zero-step nine-arm state
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f experiments/pf1/live/GENESIS.json
+          test -f experiments/pf1/live/genesis_seal/receipt.json
+          git config user.name 'PF1 authorised recorder'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- experiments/pf1/live/
+          git diff --cached --check
+          git commit -m 'PF1 LIVE genesis: signed future C1-aligned R0, nine empty-memory arms, 0 admitted'
+          # No rebase or second genesis: a stale push MUST fail closed.
+          git push origin HEAD:main
+          git fetch origin main
+          test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)"
+          echo PF1_REAL_GENESIS_SIGNED_AND_COMMITTED
