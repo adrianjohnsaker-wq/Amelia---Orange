@@ -126,11 +126,12 @@ const evidence={
   integrationPasses:integrations,completeEncounters:encounters,
   scientificPass:encounters===0},
  eligiblePairCoverage:covered,byPair:perPair,candidates:records,
- measured:{wallSeconds:seconds,secondsPerSimHour:seconds/(10000/60)},
  stopOnEncounter:encounters>0,
  registrationEligible:encounters===0,registrationApproved:false,liveStart:false
 };
 writeFileSync(OUT+'HABIT_MEMORY_EVIDENCE.json',JSON.stringify(evidence,null,2)+'\n');
+writeFileSync(OUT+'RESOURCE_MEASUREMENT.json',JSON.stringify({wallSeconds:seconds,
+ secondsPerSimHour:seconds/(10000/60),measuredSeparateFromReplay:true},null,2)+'\n');
 writeFileSync(OUT+'SILENT_LEDGER.json',JSON.stringify({
  schema:'PF1_A1_R2_HABIT_SILENT_LEDGER_V1',syntheticOnly:true,steps:10000,
  candidates:records.length,probedInstances:compared,failedProbes:0,
