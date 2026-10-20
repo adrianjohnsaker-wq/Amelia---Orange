@@ -51,6 +51,7 @@ jobs:
           PF1_BRANCH: ${{ needs.setup.outputs.branch }}
           WORKER: ${{ matrix.worker }}
           DRIFT_C1_ENABLE_LIVE: 'false'
+          PYTHONDONTWRITEBYTECODE: '1'
         shell: bash
         run: |
           set -euo pipefail
