@@ -49,6 +49,21 @@ def main():
     assert first%20==0 and (first-33158540)%20==0
     assert round_time(first)>now+1199
     # Future round is selected once; genesis body intentionally distinct from approved unactivated draft.
+    # The final live code must be pinned separately from the previously
+    # approved scientific and archived-only integration hashes.
+    live_sources=[
+      'experiments/pf1/PF1_LIVE_GENESIS.py',
+      'experiments/pf1/PF1_LIVE_INTAKE.py',
+      'experiments/pf1/PF1_LIVE_RUN.ts',
+      'experiments/pf1/PF1_LIVE_SEAL.py',
+      'experiments/pf1/PF1_LIVE_CHECK.py',
+      'experiments/pf1/PF1_LIVE_HALT.py',
+      'experiments/pf1/PF1_REFERENCE_INPUT.mjs',
+      'experiments/pf1/PF1_A1_R2_SCORER.mjs',
+      'experiments/pf1/core.mjs',
+      'experiments/pf1/a1-r2-graph-only/EXACT_NULL_CURVES.json'
+    ]
+    live_hashes=[{'path':p,'sha256':sha(pathlib.Path(p).read_bytes())} for p in live_sources]
     body=dict(schema='PF1_LIVE_GENESIS_V1',mode='LIVE',
       operatorAuthorisation='2026-10-20T22:36:51Z explicit: Start! Go! Authorize!',
       created_at=datetime.fromtimestamp(now,timezone.utc).isoformat().replace('+00:00','Z'),
@@ -63,7 +78,7 @@ def main():
       scannerSHA256=m['immutableSource']['scannerArtifactSHA256'],
       exactNullCurvesSHA256=m['immutableSource']['analyticNullCurveDigestToPin'],
       constantsSHA256=m['immutableSource']['pf1A1R2ConstantsSHA256'],
-      c1VerifierSourceCommit=C1,
+      c1VerifierSourceCommit=C1,liveOperationalSourceHashes=live_hashes,
       notificationsEnabled=False,encountersJournalOnly=True,
       genesisDoesNotAdmitRound=True)
     imprint=digest(body)
