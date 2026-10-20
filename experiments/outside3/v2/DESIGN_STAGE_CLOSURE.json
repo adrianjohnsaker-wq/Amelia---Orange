@@ -1,0 +1,66 @@
+{
+  "schema": "OUTSIDE3_V2_DESIGN_STAGE_CLOSURE_2026_10_20",
+  "project": "OUTSIDE-3 Reader v2",
+  "status": "DESIGN_PHASE_COMPLETE_NO_GO",
+  "disposition": "NO_PARAMETER_FREEZE_NO_K1_K5_CALIBRATION_NO_REAL_TARGET_NO_REGISTRATION",
+  "sourceCommitAtAudit": "90424ba1df553778a1bb195602200826d3f43c7c",
+  "evidence": {
+    "originalStage1": {
+      "K3": "FAIL 11/200",
+      "K4": "FAIL C40/200",
+      "preserved": true
+    },
+    "optionA": {
+      "source": "experiments/outside3/v2/castEncoding.ts",
+      "test": "experiments/outside3/v2/castEncoding.test.ts",
+      "ciRun": "https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39336272213",
+      "castPatternsChecked": 4096,
+      "uniqueEventsAndFreshReadouts": true
+    },
+    "preselection": {
+      "report": "experiments/outside3/v2/preselection-output/MARGIN_PROBE.md",
+      "ciRun": "https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39336982499",
+      "requiredSigma": 2,
+      "observedGlobalMinimumSigma": 0.9238156045083343,
+      "criterionPassed": false
+    },
+    "d0": {
+      "manifest": "experiments/outside3/v2/D0_DESIGN_GRID.json",
+      "report": "experiments/outside3/v2/design-grid/D0_GRID_RESULT.md",
+      "ciRun": "https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39337662168",
+      "candidates": 6,
+      "windows": 3,
+      "comparisons": 18,
+      "eligible": 0,
+      "bestWorstCaseSigma": 1.191616982324664,
+      "gateSigma": 2
+    },
+    "structuralReview": {
+      "file": "experiments/outside3/v2/STRUCTURAL_MARGIN_NO_GO_REVIEW.md",
+      "test": "experiments/outside3/v2/structuralMarginBound.test.ts",
+      "ciRun": "https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39352856712",
+      "conclusion": "Balanced-population reference has minimum one-bit effect / input-driven standard deviation <=2; equality nongeneric; finite random reference exception noted",
+      "verification": "PASS"
+    },
+    "exactNull": {
+      "source": "experiments/outside3/v2/exactBigIntNull.ts",
+      "test": "experiments/outside3/v2/exactBigIntNull.test.ts",
+      "ciRun": "https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39352660498",
+      "verified": "Enumeration n=1,2,3; all tied/untied; signed paired P2; exact integer p<=0.05; 88-working P1 exact mass",
+      "completeKSeriesBenchmark": false,
+      "verification": "PASS"
+    }
+  },
+  "fixedK3": {
+    "rawHitsAtLeast": 180,
+    "cHitsAtLeast": 50,
+    "twiceCHitsAtLeastRawHits": true,
+    "seriesCount": 200
+  },
+  "noTweaksAfterObservingD0": true,
+  "v2CalibrationExecuted": false,
+  "realTargetGenerated": false,
+  "workingOpened": false,
+  "registrationClosed": true,
+  "nextStep": "Operator/reviewer approval required for independently versioned design replacing or scientifically reframing the structurally boundary-constrained 2-sigma margin; future disjoint design/calibration seeds and new criteria predeclared."
+}
