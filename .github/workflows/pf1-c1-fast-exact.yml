@@ -1,0 +1,70 @@
+name: PF1 C1 Fast Read-Only Exact Replay — Independent (NO LIVE)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pf1-c1-fast-exact.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  exact:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: orange
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-readonly
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify source identity, never enable live
+        working-directory: c1-readonly
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          python -m pip install -r drift1a_c1/requirements.txt
+      - name: Full deterministic C1 genesis-to-head replay, every recorded SHA256 signature relation
+        working-directory: c1-readonly
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          PYTHONPATH: ${{ github.workspace }}/c1-readonly
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PF1_C1_SOURCE_SHA: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          PF1_C1_FAST_OUTPUT: ${{ github.workspace }}/orange/experiments/pf1/c1-compat-output/C1_FAST_EXACT_REPLAY.json
+        run: |
+          set -euo pipefail
+          python ../orange/experiments/pf1/PF1_C1_FAST_EXACT_REPLAY.py
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PF1-C1-FAST-GENESIS-TO-HEAD-EXACT-REPLAY
+          path: |
+            orange/experiments/pf1/PF1_C1_FAST_EXACT_REPLAY.py
+            orange/experiments/pf1/c1-compat-output/C1_FAST_EXACT_REPLAY.json
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Commit only audit result in Orange, never C1 frozen files
+        if: always()
+        working-directory: orange
+        run: |
+          set -euo pipefail
+          p=experiments/pf1/c1-compat-output/C1_FAST_EXACT_REPLAY.json
+          if [ ! -f "$p" ]; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$p"
+          git diff --cached --check
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'PF1 archive read-only C1 exact deterministic replay, head digest and Channel A continuity'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
