@@ -1,0 +1,153 @@
+{
+  "allTrialsSingleWinner": true,
+  "liveStartAuthorised": false,
+  "mode": "LOCAL_EPHEMERAL_GIT_ONLY",
+  "noGenesis": true,
+  "noLiveBeacon": true,
+  "realGitHubRemoteNotTested": true,
+  "results": [
+    {
+      "acknowledgedAcquisitions": 1,
+      "committedLeaseCount": 1,
+      "committedLeases": [
+        "drift1a_c1/runner_state/leases/2-1.json"
+      ],
+      "trial": 1,
+      "unsafeMultipleAdmissible": false,
+      "workers": [
+        {
+          "code": 1,
+          "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/orange/experiments/pf1/PF1_SAFE_LEASE.py\", line 36, in acquire\n    raise RuntimeError('REMOTE_MOVED: stale lease rejected, NO ADMISSION: '+r.stderr)\nRuntimeError: REMOTE_MOVED: stale lease rejected, NO ADMISSION: To /tmp/pf1-lease-git-race-l_gyzpsd/trial-0/origin.git\n ! [rejected]        HEAD -> amelia-1.0 (fetch first)\nerror: failed to push some refs to '/tmp/pf1-lease-git-race-l_gyzpsd/trial-0/origin.git'\nhint: Updates were rejected because the remote contains work that you do not\nhint: have locally. This is usually caused by another repository pushing to\nhint: the same ref. If you want to integrate the remote changes, use\nhint: 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details.\n\n",
+          "stdout": "",
+          "worker": 0
+        },
+        {
+          "code": 0,
+          "stderr": "",
+          "stdout": "{'status': 'PUSH_CONFIRMED', 'admission_authorized': True, 'identifier': '2-1', 'pushed_commit': '50abcce8ac02b560290f502f2cb5303fa1601255', 'unresolved': ['drift1a_c1/runner_state/leases/2-1.json']}\n",
+          "worker": 1
+        }
+      ]
+    },
+    {
+      "acknowledgedAcquisitions": 1,
+      "committedLeaseCount": 1,
+      "committedLeases": [
+        "drift1a_c1/runner_state/leases/4-1.json"
+      ],
+      "trial": 2,
+      "unsafeMultipleAdmissible": false,
+      "workers": [
+        {
+          "code": 1,
+          "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/orange/experiments/pf1/PF1_SAFE_LEASE.py\", line 36, in acquire\n    raise RuntimeError('REMOTE_MOVED: stale lease rejected, NO ADMISSION: '+r.stderr)\nRuntimeError: REMOTE_MOVED: stale lease rejected, NO ADMISSION: remote: error: cannot lock ref 'refs/heads/amelia-1.0': is at e9a79e2e211f9dd573b0f671d136574a52adb584 but expected 884ee704890ba4566d10028096795a6c6dd75f2d        \nTo /tmp/pf1-lease-git-race-l_gyzpsd/trial-1/origin.git\n ! [remote rejected] HEAD -> amelia-1.0 (incorrect old value provided)\nerror: failed to push some refs to '/tmp/pf1-lease-git-race-l_gyzpsd/trial-1/origin.git'\n\n",
+          "stdout": "",
+          "worker": 0
+        },
+        {
+          "code": 0,
+          "stderr": "",
+          "stdout": "{'status': 'PUSH_CONFIRMED', 'admission_authorized': True, 'identifier': '4-1', 'pushed_commit': 'e9a79e2e211f9dd573b0f671d136574a52adb584', 'unresolved': ['drift1a_c1/runner_state/leases/4-1.json']}\n",
+          "worker": 1
+        }
+      ]
+    },
+    {
+      "acknowledgedAcquisitions": 1,
+      "committedLeaseCount": 1,
+      "committedLeases": [
+        "drift1a_c1/runner_state/leases/5-1.json"
+      ],
+      "trial": 3,
+      "unsafeMultipleAdmissible": false,
+      "workers": [
+        {
+          "code": 0,
+          "stderr": "",
+          "stdout": "{'status': 'PUSH_CONFIRMED', 'admission_authorized': True, 'identifier': '5-1', 'pushed_commit': 'd03dc15b1a8d9c8d429bcf7492626a141387f602', 'unresolved': ['drift1a_c1/runner_state/leases/5-1.json']}\n",
+          "worker": 0
+        },
+        {
+          "code": 1,
+          "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/orange/experiments/pf1/PF1_SAFE_LEASE.py\", line 36, in acquire\n    raise RuntimeError('REMOTE_MOVED: stale lease rejected, NO ADMISSION: '+r.stderr)\nRuntimeError: REMOTE_MOVED: stale lease rejected, NO ADMISSION: To /tmp/pf1-lease-git-race-l_gyzpsd/trial-2/origin.git\n ! [rejected]        HEAD -> amelia-1.0 (fetch first)\nerror: failed to push some refs to '/tmp/pf1-lease-git-race-l_gyzpsd/trial-2/origin.git'\nhint: Updates were rejected because the remote contains work that you do not\nhint: have locally. This is usually caused by another repository pushing to\nhint: the same ref. If you want to integrate the remote changes, use\nhint: 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details.\n\n",
+          "stdout": "",
+          "worker": 1
+        }
+      ]
+    },
+    {
+      "acknowledgedAcquisitions": 1,
+      "committedLeaseCount": 1,
+      "committedLeases": [
+        "drift1a_c1/runner_state/leases/7-1.json"
+      ],
+      "trial": 4,
+      "unsafeMultipleAdmissible": false,
+      "workers": [
+        {
+          "code": 0,
+          "stderr": "",
+          "stdout": "{'status': 'PUSH_CONFIRMED', 'admission_authorized': True, 'identifier': '7-1', 'pushed_commit': '0ea6ed6fc6726f8908db6f64f72039f1c5e137be', 'unresolved': ['drift1a_c1/runner_state/leases/7-1.json']}\n",
+          "worker": 0
+        },
+        {
+          "code": 1,
+          "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/orange/experiments/pf1/PF1_SAFE_LEASE.py\", line 36, in acquire\n    raise RuntimeError('REMOTE_MOVED: stale lease rejected, NO ADMISSION: '+r.stderr)\nRuntimeError: REMOTE_MOVED: stale lease rejected, NO ADMISSION: remote: error: cannot lock ref 'refs/heads/amelia-1.0': is at 0ea6ed6fc6726f8908db6f64f72039f1c5e137be but expected 884ee704890ba4566d10028096795a6c6dd75f2d        \nTo /tmp/pf1-lease-git-race-l_gyzpsd/trial-3/origin.git\n ! [remote rejected] HEAD -> amelia-1.0 (incorrect old value provided)\nerror: failed to push some refs to '/tmp/pf1-lease-git-race-l_gyzpsd/trial-3/origin.git'\n\n",
+          "stdout": "",
+          "worker": 1
+        }
+      ]
+    },
+    {
+      "acknowledgedAcquisitions": 1,
+      "committedLeaseCount": 1,
+      "committedLeases": [
+        "drift1a_c1/runner_state/leases/10-1.json"
+      ],
+      "trial": 5,
+      "unsafeMultipleAdmissible": false,
+      "workers": [
+        {
+          "code": 1,
+          "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/orange/experiments/pf1/PF1_SAFE_LEASE.py\", line 36, in acquire\n    raise RuntimeError('REMOTE_MOVED: stale lease rejected, NO ADMISSION: '+r.stderr)\nRuntimeError: REMOTE_MOVED: stale lease rejected, NO ADMISSION: remote: error: cannot lock ref 'refs/heads/amelia-1.0': is at d7b7a3cdf0b0480cefbaf0cbc753ebe77cb80697 but expected 884ee704890ba4566d10028096795a6c6dd75f2d        \nTo /tmp/pf1-lease-git-race-l_gyzpsd/trial-4/origin.git\n ! [remote rejected] HEAD -> amelia-1.0 (incorrect old value provided)\nerror: failed to push some refs to '/tmp/pf1-lease-git-race-l_gyzpsd/trial-4/origin.git'\n\n",
+          "stdout": "",
+          "worker": 0
+        },
+        {
+          "code": 0,
+          "stderr": "",
+          "stdout": "{'status': 'PUSH_CONFIRMED', 'admission_authorized': True, 'identifier': '10-1', 'pushed_commit': 'd7b7a3cdf0b0480cefbaf0cbc753ebe77cb80697', 'unresolved': ['drift1a_c1/runner_state/leases/10-1.json']}\n",
+          "worker": 1
+        }
+      ]
+    },
+    {
+      "acknowledgedAcquisitions": 1,
+      "committedLeaseCount": 1,
+      "committedLeases": [
+        "drift1a_c1/runner_state/leases/12-1.json"
+      ],
+      "trial": 6,
+      "unsafeMultipleAdmissible": false,
+      "workers": [
+        {
+          "code": 1,
+          "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/orange/experiments/pf1/PF1_SAFE_LEASE.py\", line 36, in acquire\n    raise RuntimeError('REMOTE_MOVED: stale lease rejected, NO ADMISSION: '+r.stderr)\nRuntimeError: REMOTE_MOVED: stale lease rejected, NO ADMISSION: remote: error: cannot lock ref 'refs/heads/amelia-1.0': is at 9a30c4a6c106edf677b52ee903158d479cc4fdd2 but expected 884ee704890ba4566d10028096795a6c6dd75f2d        \nTo /tmp/pf1-lease-git-race-l_gyzpsd/trial-5/origin.git\n ! [remote rejected] HEAD -> amelia-1.0 (incorrect old value provided)\nerror: failed to push some refs to '/tmp/pf1-lease-git-race-l_gyzpsd/trial-5/origin.git'\n\n",
+          "stdout": "",
+          "worker": 0
+        },
+        {
+          "code": 0,
+          "stderr": "",
+          "stdout": "{'status': 'PUSH_CONFIRMED', 'admission_authorized': True, 'identifier': '12-1', 'pushed_commit': '9a30c4a6c106edf677b52ee903158d479cc4fdd2', 'unresolved': ['drift1a_c1/runner_state/leases/12-1.json']}\n",
+          "worker": 1
+        }
+      ]
+    }
+  ],
+  "schema": "PF1_PROSPECTIVE_SAFE_GIT_LEASE_RACE_V1",
+  "scientificConstantsUnchanged": true,
+  "sourcePin": "f1875b5eea5339eb1ac73e50b5df6b103d0cabe9",
+  "trials": 6,
+  "unsafeTrials": 0
+}
