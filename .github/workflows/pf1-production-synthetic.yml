@@ -110,11 +110,11 @@ jobs:
           except Exception as exc:
             result={'refusal':str(exc)[-500:]}
             status='REJECTED'
-          with open('/tmp/pf1-worker-receipt.json','w') as f:
+          with open('/tmp/pf1-worker-'+wid.split('-')[0]+'.json','w') as f:
             json.dump({'worker':wid,'status':status,'detail':result,'live':False},f,indent=2)
           print('PF1_ARCHIVED_RACE_LEASE',status,wid)
           PY
-          if grep -q '"ACKNOWLEDGED"' /tmp/pf1-worker-receipt.json; then
+          if grep -q '"ACKNOWLEDGED"' "/tmp/pf1-worker-$PF1_WORKER.json"; then
             npm install --no-audit --no-fund
             npx tsx experiments/pf1/PF1_PRODUCTION_ARCHIVED_STAGE.ts stage 12
             python -m drift1a_c1.runner complete "$PF1_WORKER-1"
@@ -127,7 +127,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pf1-production-worker-${{ matrix.worker }}
-          path: /tmp/pf1-worker-receipt.json
+          path: /tmp/pf1-worker-*.json
           retention-days: 90
           if-no-files-found: warn
   audit-race:
