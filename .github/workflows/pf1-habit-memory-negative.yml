@@ -1,0 +1,189 @@
+name: PF1 Pre-Live Habit-Memory Negative (SYNTHETIC ONLY)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pf1-habit-memory-negative.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: pf1-habit-memory-negative
+  cancel-in-progress: true
+jobs:
+  habit-negative:
+    runs-on: ubuntu-latest
+    timeout-minutes: 95
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Enforce source pin and untouched SHA-sealed scientific constants
+        shell: bash
+        run: |
+          set -euo pipefail
+          PIN=b67ec92e1cec13e9500d87292d59605428fb467e
+          git cat-file -e "$PIN^{commit}"
+          git diff --quiet "$PIN" HEAD -- \
+            src/ai/coupling/ProcessFieldMemory.ts \
+            src/ai/numogram/AmeliaQabbalaInterface.ts \
+            src/substrate/IntegratedMemorySystem.ts \
+            src/substrate/ameliaNumogramSubstrateRuntime.ts \
+            src/governance/CognitiveGovernor.ts
+          printf '%s\n' \
+            'ecabf3e40023faa0be0749908cfe6ffd3a8b9e42ab7c8a9a7c2ea5827ae63610  experiments/pf1/PF1_A1_R2_CONSTANTS.json' \
+            '7cc89cc99b25b35ec2311ee12e18d5fec60986664e05f156ced7ff33d59763e4  experiments/pf1/core.mjs' \
+            '741cf541e6eda6973118ecb86018f6d1e69978a01603ac985ff6b4d091b08521  experiments/pf1/pandemonium-45.json' |
+            sha256sum -c -
+          test ! -e experiments/pf1/LIVE_GENESIS
+          echo 'PF1_HABIT_PINNED_PROCESSFIELDMEMORY_AND_SCIENCE_CONSTANTS_UNCHANGED'
+      - run: npm install --no-audit --no-fund
+      - name: Verify sealed exact canonical null curves byte-identically before any control
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/pf1-habit-null-proof
+          cp experiments/pf1/a1-r2-graph-only/ELIGIBILITY_45.json /tmp/pf1-habit-null-proof/
+          cp experiments/pf1/a1-r2-graph-only/EXACT_NULL_CURVES.json /tmp/pf1-habit-null-proof/
+          node experiments/pf1/PF1_A1_R2_EXACT_NULL.mjs
+          cmp /tmp/pf1-habit-null-proof/ELIGIBILITY_45.json \
+            experiments/pf1/a1-r2-graph-only/ELIGIBILITY_45.json
+          cmp /tmp/pf1-habit-null-proof/EXACT_NULL_CURVES.json \
+            experiments/pf1/a1-r2-graph-only/EXACT_NULL_CURVES.json
+      - name: Habit-memory walker negative on same PF-1 synthetic tape
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx tsx experiments/pf1/PF1_HABIT_MEMORY_NEGATIVE_RUNNER.mjs
+      - name: Verify BYTE-IDENTICAL synthetic negative evidence and silent ledger replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT=experiments/pf1/habit-memory-control-output
+          mkdir -p /tmp/pf1-habit-replay
+          cp "$OUT/HABIT_MEMORY_EVIDENCE.json" "$OUT/SILENT_LEDGER.json" /tmp/pf1-habit-replay/
+          npx tsx experiments/pf1/PF1_HABIT_MEMORY_NEGATIVE_RUNNER.mjs
+          cmp /tmp/pf1-habit-replay/HABIT_MEMORY_EVIDENCE.json "$OUT/HABIT_MEMORY_EVIDENCE.json"
+          cmp /tmp/pf1-habit-replay/SILENT_LEDGER.json "$OUT/SILENT_LEDGER.json"
+          touch "$OUT/REPLAY_VERIFIED"
+          echo PF1_HABIT_NEGATIVE_SCIENCE_REPLAY_BYTE_IDENTICAL
+      - name: Report all candidate, goal-only, memory and integration counts EVEN IF NEGATIVE FAILS
+        shell: bash
+        run: |
+          set -euo pipefail
+          node experiments/pf1/PF1_HABIT_MEMORY_MAKE_REPORT.mjs
+      - name: Create content-hash manifest and RFC 3161 seal for real timestamp
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT=experiments/pf1/habit-memory-control-output
+          mkdir -p "$OUT/tsa"
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import {createHash} from 'node:crypto';
+          const p='experiments/pf1/habit-memory-control-output/';
+          const paths=[
+           'experiments/pf1/PF1_HABIT_MEMORY_WALKER.mjs',
+           'experiments/pf1/PF1_HABIT_MEMORY_NEGATIVE_RUNNER.mjs',
+           'experiments/pf1/PF1_HABIT_MEMORY_MAKE_REPORT.mjs',
+           'experiments/pf1/PF1_HABIT_MEMORY_REPORT.md',
+           'src/ai/coupling/ProcessFieldMemory.ts',
+           'src/ai/numogram/AmeliaQabbalaInterface.ts',
+           'experiments/pf1/PF1_A1_R2_CONSTANTS.json',
+           'experiments/pf1/a1-r2-graph-only/EXACT_NULL_CURVES.json',
+           p+'HABIT_MEMORY_EVIDENCE.json',p+'SILENT_LEDGER.json',
+           p+'HABIT_VERDICT.json'
+          ];
+          const hash=x=>createHash('sha256').update(fs.readFileSync(x)).digest('hex');
+          const v=JSON.parse(fs.readFileSync(p+'HABIT_VERDICT.json','utf8'));
+          const m={schema:'PF1_HABIT_CONTROL_SEALED_MANIFEST_V1',runId:process.env.GITHUB_RUN_ID,
+           sourceHead:process.env.GITHUB_SHA,operatorAuthorisedSyntheticNegative:true,
+           noLiveInput:true,noGenesis:true,liveStartAuthorised:false,negativePass:v.negativePass,
+           encounters:v.encounters,sourceCommit:'b67ec92e1cec13e9500d87292d59605428fb467e',
+           constantsSha256:'ecabf3e40023faa0be0749908cfe6ffd3a8b9e42ab7c8a9a7c2ea5827ae63610',
+           hashes:paths.map(path=>({path,sha256:hash(path)}))};
+          fs.writeFileSync(p+'HABIT_SEAL_MANIFEST.json',JSON.stringify(m,null,2)+'\n');
+          JS
+          curl -fsSL --retry 3 --max-time 30 https://freetsa.org/files/cacert.pem -o "$OUT/tsa/cacert.pem"
+          printf '%s  %s\n' \
+            2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438 "$OUT/tsa/cacert.pem" |
+            sha256sum -c -
+          curl -fsSL --retry 3 --max-time 30 https://freetsa.org/files/tsa.crt -o "$OUT/tsa/tsa.crt"
+          printf '%s  %s\n' \
+            8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467 "$OUT/tsa/tsa.crt" |
+            sha256sum -c -
+          openssl ts -query -data "$OUT/HABIT_SEAL_MANIFEST.json" -no_nonce -sha256 -cert -out "$OUT/tsa/manifest.tsq"
+          curl -fsSL --retry 3 --retry-all-errors --max-time 60 \
+           -H 'Content-Type: application/timestamp-query' \
+           --data-binary @"$OUT/tsa/manifest.tsq" https://freetsa.org/tsr -o "$OUT/tsa/manifest.tsr"
+          openssl ts -verify -queryfile "$OUT/tsa/manifest.tsq" -in "$OUT/tsa/manifest.tsr" \
+           -CAfile "$OUT/tsa/cacert.pem" -untrusted "$OUT/tsa/tsa.crt" |
+           grep -q 'Verification: OK'
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';import {createHash} from 'node:crypto';
+          const p='experiments/pf1/habit-memory-control-output/';
+          const sha=f=>createHash('sha256').update(fs.readFileSync(p+f)).digest('hex');
+          const v=JSON.parse(fs.readFileSync(p+'HABIT_VERDICT.json','utf8'));
+          const report={
+           schema:'PF1_HABIT_REAL_TSA_VERIFICATION_V1',freeTsaVerified:true,
+           pinnedRootSha256:'2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438',
+           manifestSha256:sha('HABIT_SEAL_MANIFEST.json'),tokenSha256:sha('tsa/manifest.tsr'),
+           controlPass:v.negativePass,encounters:v.encounters,liveStartAuthorized:false};
+          fs.writeFileSync(p+'PRELIVE_VERIFIED_SEAL.json',JSON.stringify(report,null,2)+'\n');
+          JS
+          echo PF1_HABIT_CONTROL_FREETSA_INDEPENDENTLY_VERIFIED
+      - name: Prepare baseline live-start REGISTRATION DRAFT only on zero-encounter PASS
+        shell: bash
+        run: |
+          set -euo pipefail
+          if node -e 'const v=require("./experiments/pf1/habit-memory-control-output/HABIT_VERDICT.json");process.exit(v.negativePass?0:1)'; then
+            node experiments/pf1/PF1_HABIT_PREPARE_REGISTRATION.mjs
+          else
+            echo 'HABIT MEMORY ENCOUNTER: STOP — registration forbidden, amendment required'
+          fi
+      - name: Archive all negative evidence including NO-GO and timestamp receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PF1-HABIT-MEMORY-PRELIVE-NEGATIVE-EVIDENCE
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            experiments/pf1/PF1_HABIT_MEMORY_REPORT.md
+            experiments/pf1/PF1_LIVE_START_REGISTRATION_DRAFT.md
+            experiments/pf1/PF1_HABIT_MEMORY_WALKER.mjs
+            experiments/pf1/PF1_HABIT_MEMORY_NEGATIVE_RUNNER.mjs
+            experiments/pf1/PF1_HABIT_MEMORY_MAKE_REPORT.mjs
+            experiments/pf1/PF1_HABIT_PREPARE_REGISTRATION.mjs
+            experiments/pf1/habit-memory-control-output/
+      - name: Commit report and registration draft if produced (NEVER launch live)
+        shell: bash
+        if: always()
+        run: |
+          set -euo pipefail
+          if test -f experiments/pf1/PF1_HABIT_MEMORY_REPORT.md; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add experiments/pf1/PF1_HABIT_MEMORY_REPORT.md
+            git add experiments/pf1/habit-memory-control-output/*.json
+            git add experiments/pf1/habit-memory-control-output/*.tsr 2>/dev/null || true
+            if test -f experiments/pf1/PF1_LIVE_START_REGISTRATION_DRAFT.md; then
+              git add experiments/pf1/PF1_LIVE_START_REGISTRATION_DRAFT.md
+            fi
+            git diff --cached --check
+            git commit -m 'Archive sealed PF1 habit-memory pre-live negative and conditional baseline registration draft'
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
+          else
+            echo 'No completed report to commit; retained workflow/artifact is the incident evidence'
+          fi
+      - name: Fail closed if the habit walker produced ANY full encounter
+        shell: bash
+        run: |
+          set -euo pipefail
+          node -e 'const v=require("./experiments/pf1/habit-memory-control-output/HABIT_VERDICT.json"); if(!v.negativePass || v.encounters!==0){console.error("HABIT_WALKER_ENCOUNTER_FAIL_NO_LIVE");process.exit(3)}'
+          echo HABIT_WALKER_ZERO_ENCOUNTERS_PASSED_LIVE_STILL_UNAUTHORISED
