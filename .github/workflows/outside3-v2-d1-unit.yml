@@ -1,0 +1,44 @@
+name: OUTSIDE-3 v2 D1 Dual Readout and Exact Null Unit Tests
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/outside3/v2/d1DualReader.ts'
+      - 'experiments/outside3/v2/d1DualReader.test.ts'
+      - 'experiments/outside3/v2/exactIntegerNull.ts'
+      - 'experiments/outside3/v2/exactIntegerNull.test.ts'
+      - '.github/workflows/outside3-v2-d1-unit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  d1-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Execute exhaustive synthetic PFM feature and exact BigInt software tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/outside3/v2/d1/unit-evidence
+          set -o pipefail
+          npx tsx experiments/outside3/v2/d1DualReader.test.ts 2>&1 | tee experiments/outside3/v2/d1/unit-evidence/feature.log
+          npx tsx experiments/outside3/v2/exactIntegerNull.test.ts 2>&1 | tee experiments/outside3/v2/d1/unit-evidence/exact.log
+          sha256sum experiments/outside3/v2/d1DualReader.ts experiments/outside3/v2/exactIntegerNull.ts > experiments/outside3/v2/d1/unit-evidence/SOURCE_SHA256SUMS.txt
+          echo "$GITHUB_SHA" > experiments/outside3/v2/d1/unit-evidence/SOURCE_COMMIT.txt
+      - name: Upload unit evidence, including failed tests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-V2-D1-Unit-Synthetic
+          path: experiments/outside3/v2/d1/unit-evidence/
+          retention-days: 90
+          if-no-files-found: warn
