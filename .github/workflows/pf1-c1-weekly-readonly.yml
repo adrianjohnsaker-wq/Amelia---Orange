@@ -1,4 +1,4 @@
-name: PF1 Weekly C1 and PF1 Status — READ ONLY INPUTS, DATED COMMIT
+name: PF1 Weekly C1 and PF1 Status — READ ONLY / DATED ARCHIVE
 on:
   schedule:
     - cron: '17 08 * * 1'
@@ -8,15 +8,15 @@ on:
     paths:
       - '.github/workflows/pf1-c1-weekly-readonly.yml'
       - 'experiments/pf1/PF1_C1_WEEKLY_READONLY.py'
-      - 'experiments/pf1/PF1_WEEKLY_AUDIT_TEST.py'
-permissions:
-  contents: read
+
 jobs:
-  continuity:
+  inspect:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
       contents: read
+    outputs:
+      report_path: ${{ steps.audit.outputs.report_path }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,88 +31,87 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install original C1 verifier dependencies, no C1 invocation or dispatch
+      - name: Install unchanged original C1 requirements (no intake)
         working-directory: c1-readonly
         run: python -m pip install -r drift1a_c1/requirements.txt
-      - name: Exercise PF1 read-only status contract with temporary synthetic fixtures
+      - id: audit
+        name: Audit latest committed C1 head and PF1 authoritative status WITHOUT DISPATCH
         working-directory: c1-readonly
         env:
           PYTHONDONTWRITEBYTECODE: '1'
           PYTHONPATH: ${{ github.workspace }}/c1-readonly
           DRIFT_C1_ENABLE_LIVE: 'false'
-        run: |
-          set -euo pipefail
-          python ../orange/experiments/pf1/PF1_WEEKLY_AUDIT_TEST.py
-      - name: Read CURRENT C1 chain head and Orange PF1 live-only ledger/status (NO DISPATCH)
-        id: audit
-        working-directory: c1-readonly
-        env:
-          PYTHONDONTWRITEBYTECODE: '1'
-          PYTHONPATH: ${{ github.workspace }}/c1-readonly
           PF1_ORANGE_REPOSITORY: ${{ github.workspace }}/orange
-          DRIFT_C1_ENABLE_LIVE: 'false'
         shell: bash
         run: |
           set -euo pipefail
           test -z "$(git status --porcelain)"
           python ../orange/experiments/pf1/PF1_C1_WEEKLY_READONLY.py
           test -z "$(git status --porcelain)"
-          echo PF1_WEEKLY_CURRENT_C1_READONLY_PASS
-      - name: Archive dated result as secondary copy for audit (no notifications)
+          echo PF1_WEEKLY_READONLY_AUDIT_COMPLETE
+      - name: Secondary artifact copy (no C1 writes or notifications)
         uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: PF1-C1-COMBINED-WEEKLY-${{ github.run_id }}
+          name: PF1-C1-STATUS-WEEKLY-${{ github.run_id }}
           retention-days: 90
-          if-no-files-found: error
+          if-no-files-found: warn
           path: orange/experiments/pf1/weekly-audit/PF1_C1_WEEKLY_*.json
-  commit-report:
-    needs: continuity
+
+  commit-dated-report:
+    needs: inspect
+    if: needs.inspect.result == 'success'
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 8
     permissions:
       contents: write
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: PF1-C1-COMBINED-WEEKLY-${{ github.run_id }}
-          path: report-only
-      - name: Validate exactly one dated PF1 audit and commit using one allowlisted Contents API path
+          name: PF1-C1-STATUS-WEEKLY-${{ github.run_id }}
+          path: weekly-file
+      - name: Strict path-allowlisted create-only GitHub Contents API
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          EXPECTED_PATH: ${{ needs.inspect.outputs.report_path }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
         run: |
           set -euo pipefail
-          test -n "$GH_TOKEN"
           python - <<'PY'
-          import glob,json,os,pathlib,re
-          names=glob.glob('report-only/PF1_C1_WEEKLY_*.json')
-          assert len(names)==1, 'EXPECTED_ONE_DATED_AUDIT_REPORT'
-          p=pathlib.Path(names[0])
-          assert re.fullmatch(r'PF1_C1_WEEKLY_\d{4}-\d{2}-\d{2}T\d{6}Z_run'+re.escape(os.environ['GITHUB_RUN_ID'])+r'\.json',p.name)
-          doc=json.loads(p.read_text('utf-8'))
-          expected='experiments/pf1/weekly-audit/'+p.name
-          assert doc['reportPath']==expected
-          assert doc['schema']=='PF1_C1_COMBINED_WEEKLY_READONLY_V2'
-          assert doc['auditStatus']=='PASS'
-          assert doc['actions']['C1DispatchPerformed'] is False
-          assert doc['actions']['C1FilesModified'] is False
-          assert doc['actions']['liveRoundsAdmitted']==0
-          assert doc['actions']['outboundNotificationsSent']==0
-          assert not pathlib.Path('.git').exists(), 'COMMIT_JOB_MUST_NOT_CHECKOUT_WRITEABLE_REPO'
-          pathlib.Path('report-path.txt').write_text(expected,encoding='utf-8')
-          print('PATH_ALLOWLISTED_FOR_SINGLE_GITHUB_CONTENTS_API_WRITE',expected)
+          import base64,json,os,pathlib,re,subprocess,sys
+          relative=os.environ['EXPECTED_PATH']
+          prefix='experiments/pf1/weekly-audit/'
+          name=relative.removeprefix(prefix)
+          assert relative.startswith(prefix)
+          assert re.fullmatch(r'PF1_C1_WEEKLY_\d{8}T\d{6}Z_run\d+\.json',name), 'PATH_NOT_ALLOWED'
+          assert name.endswith('_run'+os.environ['RUN_ID']+'.json'), 'WRONG_RUN'
+          root=pathlib.Path('weekly-file')
+          items=list(root.iterdir())
+          assert len(items)==1 and items[0].is_file() and items[0].name==name, 'ARTIFACT_PATH_MISMATCH'
+          b=items[0].read_bytes()
+          report=json.loads(b)
+          assert report['reportPath']==relative
+          assert report['schema']=='PF1_C1_COMBINED_WEEKLY_READONLY_V2'
+          assert report['auditStatus']=='PASS'
+          assert report['actions']['C1DispatchPerformed'] is False
+          assert report['actions']['C1FilesModified'] is False
+          assert report['actions']['encounterNotificationsSent']==0
+          assert report['actions']['outboundNotificationsSent']==0
+          assert report['actions']['PF1GenesisCreated'] is False
+          assert report['actions']['liveRoundsAdmitted']==0
+          assert report['C1']['frozenFilesUnchanged'] is True
+          payload={'message':'PF1: commit dated read-only C1 continuity and PF1 status, NO dispatch',
+             'branch':'main','content':base64.b64encode(b).decode()}
+          # Create only; no SHA allows overwriting existing files.
+          proc=subprocess.run(['gh','api','-X','PUT',f'repos/{os.environ["REPO"]}/contents/{relative}',
+             '--input','-'],input=json.dumps(payload),text=True,capture_output=True)
+          print('PF1_WEEKLY_COMMIT_PATH',relative)
+          if proc.returncode:
+             print(proc.stderr,file=sys.stderr)
+             sys.exit(proc.returncode)
+          out=json.loads(proc.stdout)
+          assert out.get('content',{}).get('path')==relative
+          print('PF1_WEEKLY_COMMITTED',out.get('commit',{}).get('sha'))
           PY
-          target="$(cat report-path.txt)"
-          case "$target" in
-            experiments/pf1/weekly-audit/PF1_C1_WEEKLY_*_run"$GITHUB_RUN_ID".json) ;;
-            *) echo PF1_WRITE_PATH_FORBIDDEN >&2; exit 7 ;;
-          esac
-          filename="${target##*/}"
-          content="$(base64 -w0 "report-only/$filename")"
-          gh api -X PUT "repos/$GITHUB_REPOSITORY/contents/$target" \
-            -f message="PF1 weekly READ ONLY C1 continuity and PF1 status report $filename" \
-            -f branch="main" \
-            -f content="$content" \
-            --jq '.content.path' | grep -Fx -- "$target"
-          echo "PF1_DATED_AUDIT_COMMITTED_ONLY_UNDER_WEEKLY_AUDIT_PATH=$target"
-          echo "No encounter notification or C1 dispatch was performed." >> "$GITHUB_STEP_SUMMARY"
