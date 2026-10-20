@@ -13,7 +13,7 @@ import {pf1InputForArm} from './PF1_REFERENCE_INPUT.mjs';
 
 const ROOT='experiments/pf1/';
 const LIVE=ROOT+'live/';
-const sha=x=>createHash('sha256').update(typeof x==='string'?x:JSON.stringify(x)).digest('hex');
+const sha=x=>createHash('sha256').update(Buffer.isBuffer(x)||typeof x==='string'?x:JSON.stringify(x)).digest('hex');
 const read=p=>JSON.parse(readFileSync(p,'utf8'));
 const write=(p,obj)=>writeFileSync(p,JSON.stringify(obj,null,2)+'\n');
 assert.equal(process.env.PF1_LIVE_ADMISSION_OPERATOR_AUTHORISED,'true',
@@ -201,13 +201,13 @@ for(const r of verified.receipts){
   roundTime:r.roundTime,observedAtUTC:r.observedAtUTC,
   verification:'REAL_DRAND_QUICKNET_BLS_VERIFIED_C1_PINNED',
   armExposure:exposure,createdForkIDs:created,previous};
- row.digest=sha(row);
  ledger.rows.push(row);
  state.admittedTicks++;
  state.lastAdmittedRound=r.round;
  state.lastAdmissionAt=r.observedAtUTC;
- state.headDigest=row.digest;
  for(let i=0;i<9;i++)scoreReady(i,exposure[idSet[i]],state.admittedTicks);
+ row.digest=sha(row);
+ state.headDigest=row.digest;
 }
 assert.equal(ledger.rows.length,state.admittedTicks);
 assert.equal(state.lastAdmittedRound,
