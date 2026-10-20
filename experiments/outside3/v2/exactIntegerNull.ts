@@ -53,6 +53,7 @@ function uniform(n:number) {
 function decimalProbability(numerator:bigint,denominator:bigint){
  return Number((numerator*1_000_000_000_000n)/denominator)/1_000_000_000_000;
 }
+const tiedCache=new Map<string,Map<number,bigint>>();
 export function exactP1LowerTail(
  ranksByWorking:readonly (readonly number[])[],
  observedRank2:readonly number[]
@@ -69,14 +70,21 @@ export function exactP1LowerTail(
   else tiedHistograms.push(hist);
  }
  // Only tied distributions need the general BigInt convolution.
- let tiedDistribution=new Map<number,bigint>([[0,1n]]);
- for(const hist of tiedHistograms){
-  const next=new Map<number,bigint>();
-  for(const [s,count] of tiedDistribution)for(const [rank,multiplicity] of hist){
-   const key=s+rank;
-   next.set(key,(next.get(key)||0n)+count*BigInt(multiplicity));
+ const tiedSignature=JSON.stringify(tiedHistograms);
+ let tiedDistribution=tiedCache.get(tiedSignature);
+ if(!tiedDistribution){
+  let dist=new Map<number,bigint>([[0,1n]]);
+  for(const hist of tiedHistograms){
+   const next=new Map<number,bigint>();
+   for(const [score,count] of dist)for(const [rank,multiplicity] of hist){
+    const key=score+rank;
+    next.set(key,(next.get(key)||0n)+count*BigInt(multiplicity));
+   }
+   dist=next;
   }
-  tiedDistribution=next;
+  tiedDistribution=dist;
+  if(tiedCache.size>=32)tiedCache.clear();
+  tiedCache.set(tiedSignature,dist);
  }
  const untied=uniform(untiedCount);
  let numerator=0n,verifiedTiedMass=0n;
