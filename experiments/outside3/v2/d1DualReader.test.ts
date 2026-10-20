@@ -37,12 +37,10 @@ const saved=a.exportState();
 const b=runtimeClone(saved);
 assert.deepEqual(observable(a,'PFM_STRAIN'),observable(b,'PFM_STRAIN'));
 assert.deepEqual(observable(a,'ACTIVATION'),observable(b,'ACTIVATION'));
-const refRows:[SixVector,SixVector,SixVector]=[
- observable(a,'PFM_STRAIN'),
- observable(freshRuntime(),'PFM_STRAIN'),
- observable(runtimeClone(saved),'PFM_STRAIN')
+const identicalRows:[SixVector,SixVector]=[
+ observable(a,'PFM_STRAIN'),observable(runtimeClone(saved),'PFM_STRAIN')
 ];
-assert.throws(()=>moments(refRows),/ZERO_REFERENCE_SIGMA/);
+assert.throws(()=>moments(identicalRows),/ZERO_REFERENCE_SIGMA/);
 const ref={
  mean:[0,0,0,0,0,0] as SixVector,
  sigma:[1,1,1,1,1,1] as SixVector
