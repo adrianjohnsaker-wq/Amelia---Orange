@@ -85,7 +85,7 @@ jobs:
           prefix='experiments/pf1/weekly-audit/'
           name=relative.removeprefix(prefix)
           assert relative.startswith(prefix)
-          assert re.fullmatch(r'PF1_C1_WEEKLY_\d{8}T\d{6}Z_run\d+\.json',name), 'PATH_NOT_ALLOWED'
+          assert re.fullmatch(r'PF1_C1_WEEKLY_\d{4}-\d{2}-\d{2}T\d{6}Z_run\d+\.json',name), 'PATH_NOT_ALLOWED'
           assert name.endswith('_run'+os.environ['RUN_ID']+'.json'), 'WRONG_RUN'
           root=pathlib.Path('weekly-file')
           items=list(root.iterdir())
