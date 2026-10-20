@@ -1,0 +1,87 @@
+name: OUTSIDE-3 D1 Archive Recovery (No Scientific Rerun)
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/outside3-d1-archive-recovery.yml']
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: write
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - name: Download original completed D1 evidence artifact, no design rerun
+        uses: actions/download-artifact@v4
+        with:
+          name: OUTSIDE3-D1-SYNTHETIC-DESIGN-COMPLETE
+          run-id: 39363686421
+          github-token: ${{ github.token }}
+          path: experiments/outside3/v2/d1-output
+      - name: Verify source, all series evidence, selection and frozen G
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,hashlib,pathlib
+          d=pathlib.Path('experiments/outside3/v2/d1-output')
+          selected=json.loads((d/'D1_DESIGN_RESULT.json').read_text())
+          graph=json.loads((d/'D1_G_ENGINEERING.json').read_text())
+          diag=json.loads((d/'D1_READOUT_DIAGNOSTIC.json').read_text())
+          assert selected['schema']=='OUTSIDE3_V2_D1_DESIGN_SELECTION_V1'
+          assert selected['sourceCommit']=='654b1023dfc4e48c9c31f08ddc4b3118b95caff6'
+          assert selected['selected']['id']=='PFM_STRAIN_W1'
+          assert sum(bool(x.get('eligible')) for x in selected['candidates'])==8
+          assert selected['registrationClosed'] and not selected['noRealTarget']==False
+          assert len(selected['files'])==20
+          for item in selected['files']:
+              b=(d/item['filename']).read_bytes()
+              assert hashlib.sha256(b).hexdigest()==item['sha256'],item['filename']
+          assert graph['schema']=='OUTSIDE3_D1_FROZEN_G_ENGINEERING_V1'
+          assert graph['status']=='PASS_DETERMINISTIC_G_REPLAY'
+          assert graph['rewireSeed']==2609 and graph['degreePreserved']
+          assert graph['rewiredGraphDigest']=='4125980b3f3d4cb0976661bdc2351ba3c9540360ab8f88a63e3c9f267c11098c'
+          assert diag['injectiveDescriptorCount']==4096
+          assert diag['injectiveFreshPFMCount']==4096
+          md=d/'D1_DESIGN_RESULT.md'
+          md.write_text(md.read_text().rstrip('\n')+'\n')
+          targets=['D1_DESIGN_RESULT.json','D1_DESIGN_RESULT.md',
+                   'D1_G_ENGINEERING.json','D1_G_ENGINEERING.md',
+                   'D1_READOUT_DIAGNOSTIC.json','D1_READOUT_DIAGNOSTIC.md']
+          manifest=''.join(hashlib.sha256((d/p).read_bytes()).hexdigest()+'  '+p+'\n' for p in targets)
+          (d/'D1_ARCHIVE_RECOVERY_SHA256SUMS.txt').write_text(manifest)
+          print('D1_ARCHIVE_VERIFIED',selected['selected']['id'],'eligible=8','G=PASS')
+          PY
+          cd experiments/outside3/v2/d1-output
+          sha256sum -c D1_ARCHIVE_RECOVERY_SHA256SUMS.txt
+      - name: Upload independently checked compact evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-D1-Verified-Compact-Reports
+          path: |
+            experiments/outside3/v2/d1-output/D1_DESIGN_RESULT.json
+            experiments/outside3/v2/d1-output/D1_DESIGN_RESULT.md
+            experiments/outside3/v2/d1-output/D1_G_ENGINEERING.json
+            experiments/outside3/v2/d1-output/D1_G_ENGINEERING.md
+            experiments/outside3/v2/d1-output/D1_READOUT_DIAGNOSTIC.json
+            experiments/outside3/v2/d1-output/D1_READOUT_DIAGNOSTIC.md
+            experiments/outside3/v2/d1-output/D1_ARCHIVE_RECOVERY_SHA256SUMS.txt
+          retention-days: 90
+      - name: Commit verified D1 evidence; no scientific rerun
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/outside3/v2/d1-output/D1_DESIGN_RESULT.json experiments/outside3/v2/d1-output/D1_DESIGN_RESULT.md
+          git add experiments/outside3/v2/d1-output/D1_G_ENGINEERING.json experiments/outside3/v2/d1-output/D1_G_ENGINEERING.md
+          git add experiments/outside3/v2/d1-output/D1_READOUT_DIAGNOSTIC.json experiments/outside3/v2/d1-output/D1_READOUT_DIAGNOSTIC.md
+          git add experiments/outside3/v2/d1-output/D1_ARCHIVE_RECOVERY_SHA256SUMS.txt
+          git diff --cached --check
+          git commit -m "Archive verified amended D1 design and G replay (format-only incident repair)"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
