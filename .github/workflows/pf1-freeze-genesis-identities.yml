@@ -1,0 +1,76 @@
+name: PF1 Prospective Genesis Source & Nine-Arm Identity Freeze (NO LIVE)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pf1-freeze-genesis-identities.yml'
+      - 'experiments/pf1/PF1_FREEZE_GENESIS_IDENTITIES.ts'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  identities:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Freeze only names/initial states, no genesis, no live source
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'ecabf3e40023faa0be0749908cfe6ffd3a8b9e42ab7c8a9a7c2ea5827ae63610  experiments/pf1/PF1_A1_R2_CONSTANTS.json' | sha256sum -c -
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          npm install --no-audit --no-fund
+          npx tsx experiments/pf1/PF1_FREEZE_GENESIS_IDENTITIES.ts
+          cp experiments/pf1/registration-identities/PF1_NINE_ARM_INITIAL_STATE.json /tmp/pf1-init9.json
+          cp experiments/pf1/registration-identities/PF1_SOURCE_IDENTITIES.json /tmp/pf1-identities.json
+          npx tsx experiments/pf1/PF1_FREEZE_GENESIS_IDENTITIES.ts
+          cmp /tmp/pf1-init9.json experiments/pf1/registration-identities/PF1_NINE_ARM_INITIAL_STATE.json
+          cmp /tmp/pf1-identities.json experiments/pf1/registration-identities/PF1_SOURCE_IDENTITIES.json
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import {createHash} from 'node:crypto';
+          const dir='experiments/pf1/registration-identities/';
+          const ids=JSON.parse(fs.readFileSync(dir+'PF1_SOURCE_IDENTITIES.json','utf8'));
+          const data=JSON.parse(fs.readFileSync(dir+'PF1_NINE_ARM_INITIAL_STATE.json','utf8'));
+          const sha=p=>createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+          assert.equal(ids.initialNineArmStateSHA256,sha(dir+'PF1_NINE_ARM_INITIAL_STATE.json'));
+          assert.equal(ids.scannerArtifactSHA256,sha('experiments/pf1/core.mjs'));
+          assert.equal(ids.analyticNullCurveSHA256,sha('experiments/pf1/a1-r2-graph-only/EXACT_NULL_CURVES.json'));
+          assert.equal(ids.referenceSeparator,'PF1-REF-i|');
+          assert.equal(data.numberOfArms,9);
+          assert.equal(new Set(data.arms.map(x=>x.id)).size,9);
+          assert(data.arms.every(x=>x.initialMemoryEvents===0));
+          assert.equal(ids.noLiveGenesis,true);
+          console.log('PF1_NINE_ARM_IDENTITY_FROZEN',JSON.stringify({
+            initial:ids.initialNineArmStateSHA256,scanner:ids.scannerArtifactSHA256,
+            nullCurves:ids.analyticNullCurveSHA256,ref:ids.referenceSeparator
+          }));
+          JS
+      - name: Archive prospective identity evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PF1-PROSPECTIVE-SOURCE-AND-NINE-ARM-IDENTITIES
+          retention-days: 90
+          if-no-files-found: warn
+          path: experiments/pf1/registration-identities/
+      - name: Commit identities for prospective operator review, NOT genesis
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/pf1/registration-identities/
+          git diff --cached --check
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'PF1 prospective fixed nine-arm initial-state/source SHA256 evidence, no genesis'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
