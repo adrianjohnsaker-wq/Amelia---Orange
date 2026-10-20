@@ -44,6 +44,10 @@ def main():
         entry['digest']=digest(entry)
         journal['entries'].append(entry)
     save(jfile,journal)
+    state_path=ROOT/'STATE.json'
+    state=json.loads(state_path.read_text())
+    state['sealedJournalCount']=len(journal['entries'])
+    save(state_path,state)
     pending.unlink()
     print('PF1_LIVE_JOURNAL_ONLY_SEALED',json.dumps({
       'new':len(p['pending']),'total':len(journal['entries']),
