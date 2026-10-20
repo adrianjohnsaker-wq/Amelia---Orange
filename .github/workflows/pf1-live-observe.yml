@@ -2,6 +2,9 @@ name: PF1 Scheduled LIVE Observation — Nine Arms, Journal-Only
 on:
   schedule:
     - cron: '*/5 * * * *'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf1-live-observe.yml']
   workflow_dispatch:
 permissions:
   contents: read
