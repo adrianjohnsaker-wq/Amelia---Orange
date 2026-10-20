@@ -1,0 +1,3597 @@
+{
+  "schema": "PF1_CANONICAL_PRELIVE_AUDIT_V1",
+  "syntheticOnly": true,
+  "liveStartAuthorized": false,
+  "thresholdSource": "experiments/pf1/core.mjs PILOT (unchanged)",
+  "thresholds": {
+    "schema": "PF1_SYNTHETIC_PILOT_V1",
+    "sourceCommit": "b67ec92e1cec13e9500d87292d59605428fb467e",
+    "windowSteps": 240,
+    "recurrenceCount": 3,
+    "forkSteps": 24,
+    "forksPerCandidate": 24,
+    "perturbations": [
+      "routeBlockFirst",
+      "displacement",
+      "routeBlockSecond",
+      "combined"
+    ],
+    "conditions": [
+      "intact",
+      "reset",
+      "suppress",
+      "sham"
+    ],
+    "memoryMargin": 0.25,
+    "minimumRecoveries": 3,
+    "minimumDistinctRoutes": 2,
+    "syntheticSteps": 10000,
+    "maxCandidatesPerHour": 2,
+    "maxSecondsPerSimulatedHour": 60,
+    "syntheticStartUTC": "2026-10-20T00:00:00.000Z",
+    "liveAuthorized": false
+  },
+  "graph": {
+    "source": "CANONICAL_GATES/fresh Amelia runtime",
+    "edgeCount": 11,
+    "digest": "dda60b666ee8107f3bda138159091913d3291a3c7543e31ec07a5ec49baa3ecd",
+    "edges": [
+      [
+        0,
+        9
+      ],
+      [
+        1,
+        8
+      ],
+      [
+        2,
+        7
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        8,
+        9
+      ],
+      [
+        9,
+        1
+      ]
+    ],
+    "pinnedSubstrate": "b67ec92e1cec13e9500d87292d59605428fb467e"
+  },
+  "negativeControl": {
+    "graphIdenticalToCanonical": true,
+    "originalSourceSha256": "44f3eef4e55fc6b7bc8f86604ddf14b4152394d440db39a95fdf6004e724175b",
+    "sourceEvidence": "experiments/pf1/pilot.ts graph=runtime gates; negTape=recurrenceTape(graph)",
+    "originalCandidates": 21,
+    "originalEncounters": 0
+  },
+  "enumeration": {
+    "allPairs": 45,
+    "perturbationChecks": 180,
+    "directedSimpleExcursions": 14,
+    "pairsWithScannerExcursion": 9,
+    "structurallyPossiblePairs": [
+      "1-8",
+      "2-7"
+    ]
+  },
+  "cycles": [
+    {
+      "a": 1,
+      "b": 8,
+      "key": "1-8",
+      "path": [
+        1,
+        8,
+        9,
+        1
+      ]
+    },
+    {
+      "a": 1,
+      "b": 2,
+      "key": "1-2",
+      "path": [
+        1,
+        2,
+        7,
+        8,
+        9,
+        1
+      ]
+    },
+    {
+      "a": 1,
+      "b": 2,
+      "key": "1-2",
+      "path": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        9,
+        1
+      ]
+    },
+    {
+      "a": 2,
+      "b": 7,
+      "key": "2-7",
+      "path": [
+        2,
+        7,
+        8,
+        9,
+        1,
+        2
+      ]
+    },
+    {
+      "a": 2,
+      "b": 4,
+      "key": "2-4",
+      "path": [
+        2,
+        4,
+        7,
+        8,
+        9,
+        1,
+        2
+      ]
+    },
+    {
+      "a": 4,
+      "b": 7,
+      "key": "4-7",
+      "path": [
+        4,
+        7,
+        8,
+        9,
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "a": 7,
+      "b": 8,
+      "key": "7-8",
+      "path": [
+        7,
+        8,
+        9,
+        1,
+        2,
+        7
+      ]
+    },
+    {
+      "a": 7,
+      "b": 8,
+      "key": "7-8",
+      "path": [
+        7,
+        8,
+        9,
+        1,
+        2,
+        4,
+        7
+      ]
+    },
+    {
+      "a": 8,
+      "b": 9,
+      "key": "8-9",
+      "path": [
+        8,
+        9,
+        1,
+        8
+      ]
+    },
+    {
+      "a": 8,
+      "b": 9,
+      "key": "8-9",
+      "path": [
+        8,
+        9,
+        1,
+        2,
+        7,
+        8
+      ]
+    },
+    {
+      "a": 8,
+      "b": 9,
+      "key": "8-9",
+      "path": [
+        8,
+        9,
+        1,
+        2,
+        4,
+        7,
+        8
+      ]
+    },
+    {
+      "a": 9,
+      "b": 1,
+      "key": "1-9",
+      "path": [
+        9,
+        1,
+        8,
+        9
+      ]
+    },
+    {
+      "a": 9,
+      "b": 2,
+      "key": "2-9",
+      "path": [
+        9,
+        1,
+        2,
+        7,
+        8,
+        9
+      ]
+    },
+    {
+      "a": 9,
+      "b": 2,
+      "key": "2-9",
+      "path": [
+        9,
+        1,
+        2,
+        4,
+        7,
+        8,
+        9
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "key": "0-1",
+      "entity": "Lurgo",
+      "mesh": "Mesh-00",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "0-2",
+      "entity": "Duoddod",
+      "mesh": "Mesh-01",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "0-3",
+      "entity": "Ixix",
+      "mesh": "Mesh-03",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "0-4",
+      "entity": "Krako",
+      "mesh": "Mesh-06",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "0-5",
+      "entity": "Tokhatto",
+      "mesh": "Mesh-10",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "0-6",
+      "entity": "Tchu",
+      "mesh": "Mesh-15",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "0-7",
+      "entity": "Puppo",
+      "mesh": "Mesh-21",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "0-8",
+      "entity": "Minommo",
+      "mesh": "Mesh-28",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "0-9",
+      "entity": "Uttunul",
+      "mesh": "Mesh-36",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "1-2",
+      "entity": "Doogu",
+      "mesh": "Mesh-02",
+      "scannerExcursions": 2,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 2,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 1,
+              "turn": 2,
+              "excursion": [
+                1,
+                2,
+                7,
+                8,
+                9,
+                1
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            },
+            {
+              "anchor": 1,
+              "turn": 2,
+              "excursion": [
+                1,
+                2,
+                4,
+                7,
+                8,
+                9,
+                1
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": true,
+          "totalTemplates": 2,
+          "applicableTemplates": 2,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 1,
+              "turn": 2,
+              "excursion": [
+                1,
+                2,
+                7,
+                8,
+                9,
+                1
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [],
+              "witness": [
+                0,
+                9,
+                1,
+                2,
+                7,
+                8,
+                9,
+                1
+              ]
+            },
+            {
+              "anchor": 1,
+              "turn": 2,
+              "excursion": [
+                1,
+                2,
+                4,
+                7,
+                8,
+                9,
+                1
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [],
+              "witness": [
+                0,
+                9,
+                1,
+                2,
+                7,
+                8,
+                9,
+                1
+              ]
+            }
+          ]
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": true,
+          "totalTemplates": 2,
+          "applicableTemplates": 2,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 1,
+              "turn": 2,
+              "excursion": [
+                1,
+                2,
+                7,
+                8,
+                9,
+                1
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 1,
+              "blockedEdges": [
+                "2>7"
+              ],
+              "witness": [
+                1,
+                2,
+                4,
+                7,
+                8,
+                9,
+                1
+              ]
+            },
+            {
+              "anchor": 1,
+              "turn": 2,
+              "excursion": [
+                1,
+                2,
+                4,
+                7,
+                8,
+                9,
+                1
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 1,
+              "blockedEdges": [
+                "2>4"
+              ],
+              "witness": [
+                1,
+                2,
+                7,
+                8,
+                9,
+                1
+              ]
+            }
+          ]
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 2,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 1,
+              "turn": 2,
+              "excursion": [
+                1,
+                2,
+                7,
+                8,
+                9,
+                1
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            },
+            {
+              "anchor": 1,
+              "turn": 2,
+              "excursion": [
+                1,
+                2,
+                4,
+                7,
+                8,
+                9,
+                1
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        }
+      ],
+      "maxApplicableOnOneExcursion": 2,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "1-3",
+      "entity": "Ixigool",
+      "mesh": "Mesh-04",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "1-4",
+      "entity": "Sukugool",
+      "mesh": "Mesh-07",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "1-5",
+      "entity": "Tukkamu",
+      "mesh": "Mesh-11",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "1-6",
+      "entity": "Djungo",
+      "mesh": "Mesh-16",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "1-7",
+      "entity": "Bubbamu",
+      "mesh": "Mesh-22",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "1-8",
+      "entity": "Mur Mur",
+      "mesh": "Mesh-29",
+      "scannerExcursions": 1,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": true,
+          "totalTemplates": 1,
+          "applicableTemplates": 1,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 1,
+              "turn": 8,
+              "excursion": [
+                1,
+                8,
+                9,
+                1
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 1,
+              "blockedEdges": [
+                "1>8"
+              ],
+              "witness": [
+                1,
+                2,
+                7,
+                8,
+                9,
+                1
+              ]
+            }
+          ]
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": true,
+          "totalTemplates": 1,
+          "applicableTemplates": 1,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 1,
+              "turn": 8,
+              "excursion": [
+                1,
+                8,
+                9,
+                1
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [],
+              "witness": [
+                0,
+                9,
+                1,
+                8,
+                9,
+                1
+              ]
+            }
+          ]
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 1,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 1,
+              "turn": 8,
+              "excursion": [
+                1,
+                8,
+                9,
+                1
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        },
+        {
+          "perturbation": "combined",
+          "applicable": true,
+          "totalTemplates": 1,
+          "applicableTemplates": 1,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 1,
+              "turn": 8,
+              "excursion": [
+                1,
+                8,
+                9,
+                1
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [
+                "1>8"
+              ],
+              "witness": [
+                0,
+                9,
+                1,
+                2,
+                7,
+                8,
+                9,
+                1
+              ]
+            }
+          ]
+        }
+      ],
+      "maxApplicableOnOneExcursion": 3,
+      "possibleWithCurrentThreshold": true
+    },
+    {
+      "key": "1-9",
+      "entity": "Tutagool",
+      "mesh": "Mesh-37",
+      "scannerExcursions": 1,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 1,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 9,
+              "turn": 1,
+              "excursion": [
+                9,
+                1,
+                8,
+                9
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": true,
+          "totalTemplates": 1,
+          "applicableTemplates": 1,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 9,
+              "turn": 1,
+              "excursion": [
+                9,
+                1,
+                8,
+                9
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 2,
+              "blockedEdges": [],
+              "witness": [
+                2,
+                7,
+                8,
+                9,
+                1,
+                8,
+                9
+              ]
+            }
+          ]
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": true,
+          "totalTemplates": 1,
+          "applicableTemplates": 1,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 9,
+              "turn": 1,
+              "excursion": [
+                9,
+                1,
+                8,
+                9
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 9,
+              "blockedEdges": [
+                "1>8"
+              ],
+              "witness": [
+                9,
+                1,
+                2,
+                7,
+                8,
+                9
+              ]
+            }
+          ]
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 1,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 9,
+              "turn": 1,
+              "excursion": [
+                9,
+                1,
+                8,
+                9
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        }
+      ],
+      "maxApplicableOnOneExcursion": 2,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "2-3",
+      "entity": "Ixidod",
+      "mesh": "Mesh-05",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "2-4",
+      "entity": "Skoodu",
+      "mesh": "Mesh-08",
+      "scannerExcursions": 1,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 1,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 2,
+              "turn": 4,
+              "excursion": [
+                2,
+                4,
+                7,
+                8,
+                9,
+                1,
+                2
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": true,
+          "totalTemplates": 1,
+          "applicableTemplates": 1,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 2,
+              "turn": 4,
+              "excursion": [
+                2,
+                4,
+                7,
+                8,
+                9,
+                1,
+                2
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [],
+              "witness": [
+                0,
+                9,
+                1,
+                2,
+                4,
+                7,
+                8,
+                9,
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 1,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 2,
+              "turn": 4,
+              "excursion": [
+                2,
+                4,
+                7,
+                8,
+                9,
+                1,
+                2
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 1,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 2,
+              "turn": 4,
+              "excursion": [
+                2,
+                4,
+                7,
+                8,
+                9,
+                1,
+                2
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        }
+      ],
+      "maxApplicableOnOneExcursion": 1,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "2-5",
+      "entity": "Kuttadid",
+      "mesh": "Mesh-12",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "2-6",
+      "entity": "Djuddha",
+      "mesh": "Mesh-17",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "2-7",
+      "entity": "Oddubb",
+      "mesh": "Mesh-23",
+      "scannerExcursions": 1,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": true,
+          "totalTemplates": 1,
+          "applicableTemplates": 1,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 2,
+              "turn": 7,
+              "excursion": [
+                2,
+                7,
+                8,
+                9,
+                1,
+                2
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 2,
+              "blockedEdges": [
+                "2>7"
+              ],
+              "witness": [
+                2,
+                4,
+                7,
+                8,
+                9,
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": true,
+          "totalTemplates": 1,
+          "applicableTemplates": 1,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 2,
+              "turn": 7,
+              "excursion": [
+                2,
+                7,
+                8,
+                9,
+                1,
+                2
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [],
+              "witness": [
+                0,
+                9,
+                1,
+                2,
+                7,
+                8,
+                9,
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 1,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 2,
+              "turn": 7,
+              "excursion": [
+                2,
+                7,
+                8,
+                9,
+                1,
+                2
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        },
+        {
+          "perturbation": "combined",
+          "applicable": true,
+          "totalTemplates": 1,
+          "applicableTemplates": 1,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 2,
+              "turn": 7,
+              "excursion": [
+                2,
+                7,
+                8,
+                9,
+                1,
+                2
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [
+                "2>7"
+              ],
+              "witness": [
+                0,
+                9,
+                1,
+                2,
+                4,
+                7,
+                8,
+                9,
+                1,
+                2
+              ]
+            }
+          ]
+        }
+      ],
+      "maxApplicableOnOneExcursion": 3,
+      "possibleWithCurrentThreshold": true
+    },
+    {
+      "key": "2-8",
+      "entity": "Nammamad",
+      "mesh": "Mesh-30",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "2-9",
+      "entity": "Unnunddo",
+      "mesh": "Mesh-38",
+      "scannerExcursions": 2,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 2,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 9,
+              "turn": 2,
+              "excursion": [
+                9,
+                1,
+                2,
+                7,
+                8,
+                9
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            },
+            {
+              "anchor": 9,
+              "turn": 2,
+              "excursion": [
+                9,
+                1,
+                2,
+                4,
+                7,
+                8,
+                9
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": true,
+          "totalTemplates": 2,
+          "applicableTemplates": 2,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 9,
+              "turn": 2,
+              "excursion": [
+                9,
+                1,
+                2,
+                7,
+                8,
+                9
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 1,
+              "blockedEdges": [],
+              "witness": [
+                1,
+                2,
+                7,
+                8,
+                9
+              ]
+            },
+            {
+              "anchor": 9,
+              "turn": 2,
+              "excursion": [
+                9,
+                1,
+                2,
+                4,
+                7,
+                8,
+                9
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 1,
+              "blockedEdges": [],
+              "witness": [
+                1,
+                2,
+                7,
+                8,
+                9
+              ]
+            }
+          ]
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 2,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 9,
+              "turn": 2,
+              "excursion": [
+                9,
+                1,
+                2,
+                7,
+                8,
+                9
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            },
+            {
+              "anchor": 9,
+              "turn": 2,
+              "excursion": [
+                9,
+                1,
+                2,
+                4,
+                7,
+                8,
+                9
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        },
+        {
+          "perturbation": "combined",
+          "applicable": true,
+          "totalTemplates": 2,
+          "applicableTemplates": 2,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 9,
+              "turn": 2,
+              "excursion": [
+                9,
+                1,
+                2,
+                7,
+                8,
+                9
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 1,
+              "blockedEdges": [
+                "9>1"
+              ],
+              "witness": [
+                1,
+                2,
+                7,
+                8,
+                9
+              ]
+            },
+            {
+              "anchor": 9,
+              "turn": 2,
+              "excursion": [
+                9,
+                1,
+                2,
+                4,
+                7,
+                8,
+                9
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 1,
+              "blockedEdges": [
+                "9>1"
+              ],
+              "witness": [
+                1,
+                2,
+                7,
+                8,
+                9
+              ]
+            }
+          ]
+        }
+      ],
+      "maxApplicableOnOneExcursion": 2,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "3-4",
+      "entity": "Skarkix",
+      "mesh": "Mesh-09",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "3-5",
+      "entity": "Tikkitix",
+      "mesh": "Mesh-13",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "3-6",
+      "entity": "Djynxx",
+      "mesh": "Mesh-18",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "3-7",
+      "entity": "Pabbakis",
+      "mesh": "Mesh-24",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "3-8",
+      "entity": "Mummumix",
+      "mesh": "Mesh-31",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "3-9",
+      "entity": "Ununuttix",
+      "mesh": "Mesh-39",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "4-5",
+      "entity": "Katak",
+      "mesh": "Mesh-14",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "4-6",
+      "entity": "Tchakki",
+      "mesh": "Mesh-19",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "4-7",
+      "entity": "Ababbatok",
+      "mesh": "Mesh-25",
+      "scannerExcursions": 1,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 1,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 4,
+              "turn": 7,
+              "excursion": [
+                4,
+                7,
+                8,
+                9,
+                1,
+                2,
+                4
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": true,
+          "totalTemplates": 1,
+          "applicableTemplates": 1,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 4,
+              "turn": 7,
+              "excursion": [
+                4,
+                7,
+                8,
+                9,
+                1,
+                2,
+                4
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [],
+              "witness": [
+                0,
+                9,
+                1,
+                2,
+                7,
+                8,
+                9,
+                1,
+                2,
+                4
+              ]
+            }
+          ]
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 1,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 4,
+              "turn": 7,
+              "excursion": [
+                4,
+                7,
+                8,
+                9,
+                1,
+                2,
+                4
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        },
+        {
+          "perturbation": "combined",
+          "applicable": true,
+          "totalTemplates": 1,
+          "applicableTemplates": 1,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 4,
+              "turn": 7,
+              "excursion": [
+                4,
+                7,
+                8,
+                9,
+                1,
+                2,
+                4
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [
+                "4>7"
+              ],
+              "witness": [
+                0,
+                9,
+                1,
+                2,
+                7,
+                8,
+                9,
+                1,
+                2,
+                4
+              ]
+            }
+          ]
+        }
+      ],
+      "maxApplicableOnOneExcursion": 2,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "4-8",
+      "entity": "Numko",
+      "mesh": "Mesh-32",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "4-9",
+      "entity": "Ununak",
+      "mesh": "Mesh-40",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "5-6",
+      "entity": "Tchattuk",
+      "mesh": "Mesh-20",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "5-7",
+      "entity": "Papatakoo",
+      "mesh": "Mesh-26",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "5-8",
+      "entity": "Muntuk",
+      "mesh": "Mesh-33",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "5-9",
+      "entity": "Tukutu",
+      "mesh": "Mesh-41",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "6-7",
+      "entity": "Bobobja",
+      "mesh": "Mesh-27",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "6-8",
+      "entity": "Mommoljo",
+      "mesh": "Mesh-34",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "6-9",
+      "entity": "Unnutchi",
+      "mesh": "Mesh-42",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "7-8",
+      "entity": "Mombbo",
+      "mesh": "Mesh-35",
+      "scannerExcursions": 2,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 2,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 7,
+              "turn": 8,
+              "excursion": [
+                7,
+                8,
+                9,
+                1,
+                2,
+                7
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            },
+            {
+              "anchor": 7,
+              "turn": 8,
+              "excursion": [
+                7,
+                8,
+                9,
+                1,
+                2,
+                4,
+                7
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": true,
+          "totalTemplates": 2,
+          "applicableTemplates": 2,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 7,
+              "turn": 8,
+              "excursion": [
+                7,
+                8,
+                9,
+                1,
+                2,
+                7
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [],
+              "witness": [
+                0,
+                9,
+                1,
+                8,
+                9,
+                1,
+                2,
+                7
+              ]
+            },
+            {
+              "anchor": 7,
+              "turn": 8,
+              "excursion": [
+                7,
+                8,
+                9,
+                1,
+                2,
+                4,
+                7
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [],
+              "witness": [
+                0,
+                9,
+                1,
+                8,
+                9,
+                1,
+                2,
+                7
+              ]
+            }
+          ]
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 2,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 7,
+              "turn": 8,
+              "excursion": [
+                7,
+                8,
+                9,
+                1,
+                2,
+                7
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            },
+            {
+              "anchor": 7,
+              "turn": 8,
+              "excursion": [
+                7,
+                8,
+                9,
+                1,
+                2,
+                4,
+                7
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        },
+        {
+          "perturbation": "combined",
+          "applicable": true,
+          "totalTemplates": 2,
+          "applicableTemplates": 2,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 7,
+              "turn": 8,
+              "excursion": [
+                7,
+                8,
+                9,
+                1,
+                2,
+                7
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [
+                "7>8"
+              ],
+              "witness": [
+                0,
+                9,
+                1,
+                8,
+                9,
+                1,
+                2,
+                7
+              ]
+            },
+            {
+              "anchor": 7,
+              "turn": 8,
+              "excursion": [
+                7,
+                8,
+                9,
+                1,
+                2,
+                4,
+                7
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [
+                "7>8"
+              ],
+              "witness": [
+                0,
+                9,
+                1,
+                8,
+                9,
+                1,
+                2,
+                7
+              ]
+            }
+          ]
+        }
+      ],
+      "maxApplicableOnOneExcursion": 2,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "7-9",
+      "entity": "Nuttubab",
+      "mesh": "Mesh-43",
+      "scannerExcursions": 0,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        },
+        {
+          "perturbation": "combined",
+          "applicable": false,
+          "totalTemplates": 0,
+          "applicableTemplates": 0,
+          "status": "NOT_SCANNER_CANDIDATE",
+          "examples": []
+        }
+      ],
+      "maxApplicableOnOneExcursion": 0,
+      "possibleWithCurrentThreshold": false
+    },
+    {
+      "key": "8-9",
+      "entity": "Ummnu",
+      "mesh": "Mesh-44",
+      "scannerExcursions": 3,
+      "challengeCount": 4,
+      "challenges": [
+        {
+          "perturbation": "routeBlockFirst",
+          "applicable": false,
+          "totalTemplates": 3,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 8,
+              "turn": 9,
+              "excursion": [
+                8,
+                9,
+                1,
+                8
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            },
+            {
+              "anchor": 8,
+              "turn": 9,
+              "excursion": [
+                8,
+                9,
+                1,
+                2,
+                7,
+                8
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            },
+            {
+              "anchor": 8,
+              "turn": 9,
+              "excursion": [
+                8,
+                9,
+                1,
+                2,
+                4,
+                7,
+                8
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        },
+        {
+          "perturbation": "displacement",
+          "applicable": true,
+          "totalTemplates": 3,
+          "applicableTemplates": 3,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 8,
+              "turn": 9,
+              "excursion": [
+                8,
+                9,
+                1,
+                8
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [],
+              "witness": [
+                0,
+                9,
+                1,
+                8
+              ]
+            },
+            {
+              "anchor": 8,
+              "turn": 9,
+              "excursion": [
+                8,
+                9,
+                1,
+                2,
+                7,
+                8
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [],
+              "witness": [
+                0,
+                9,
+                1,
+                8
+              ]
+            },
+            {
+              "anchor": 8,
+              "turn": 9,
+              "excursion": [
+                8,
+                9,
+                1,
+                2,
+                4,
+                7,
+                8
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [],
+              "witness": [
+                0,
+                9,
+                1,
+                8
+              ]
+            }
+          ]
+        },
+        {
+          "perturbation": "routeBlockSecond",
+          "applicable": false,
+          "totalTemplates": 3,
+          "applicableTemplates": 0,
+          "status": "NO_ALTERNATIVE",
+          "examples": [
+            {
+              "anchor": 8,
+              "turn": 9,
+              "excursion": [
+                8,
+                9,
+                1,
+                8
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            },
+            {
+              "anchor": 8,
+              "turn": 9,
+              "excursion": [
+                8,
+                9,
+                1,
+                2,
+                7,
+                8
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            },
+            {
+              "anchor": 8,
+              "turn": 9,
+              "excursion": [
+                8,
+                9,
+                1,
+                2,
+                4,
+                7,
+                8
+              ],
+              "applicable": false,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A",
+              "start": null,
+              "blockedEdges": [],
+              "witness": null
+            }
+          ]
+        },
+        {
+          "perturbation": "combined",
+          "applicable": true,
+          "totalTemplates": 3,
+          "applicableTemplates": 3,
+          "status": "ALTERNATIVE_EXISTS",
+          "examples": [
+            {
+              "anchor": 8,
+              "turn": 9,
+              "excursion": [
+                8,
+                9,
+                1,
+                8
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [
+                "8>9"
+              ],
+              "witness": [
+                0,
+                9,
+                1,
+                8
+              ]
+            },
+            {
+              "anchor": 8,
+              "turn": 9,
+              "excursion": [
+                8,
+                9,
+                1,
+                2,
+                7,
+                8
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [
+                "8>9"
+              ],
+              "witness": [
+                0,
+                9,
+                1,
+                8
+              ]
+            },
+            {
+              "anchor": 8,
+              "turn": 9,
+              "excursion": [
+                8,
+                9,
+                1,
+                2,
+                4,
+                7,
+                8
+              ],
+              "applicable": true,
+              "reason": "VIABLE_CANONICAL_ALTERNATIVE",
+              "start": 0,
+              "blockedEdges": [
+                "8>9"
+              ],
+              "witness": [
+                0,
+                9,
+                1,
+                8
+              ]
+            }
+          ]
+        }
+      ],
+      "maxApplicableOnOneExcursion": 2,
+      "possibleWithCurrentThreshold": false
+    }
+  ],
+  "canonicalPositiveControls": [
+    {
+      "pair": "1-8",
+      "entity": "Mur Mur",
+      "mesh": "Mesh-29",
+      "attempts": 1,
+      "confirmed": true,
+      "checks": [
+        {
+          "excursion": [
+            1,
+            8,
+            9,
+            1
+          ],
+          "scannerDetected": true,
+          "namedPair": "1-8",
+          "name": "Mur Mur",
+          "mesh": "Mesh-29",
+          "namingCorrect": true,
+          "encounter": true,
+          "goal": true,
+          "memory": true,
+          "integration": true,
+          "shamParity": true,
+          "intactRecoveries": 3,
+          "distinctRoutes": 3,
+          "memoryDifference": 1,
+          "forks": 12,
+          "notApplicable": 4,
+          "challengeDetails": [
+            {
+              "perturbation": "routeBlockFirst",
+              "applicable": true,
+              "recovered": true,
+              "route": "1>2>7>8>9>1",
+              "reason": null
+            },
+            {
+              "perturbation": "displacement",
+              "applicable": true,
+              "recovered": true,
+              "route": "0>9>1>2>7>8>9>1",
+              "reason": null
+            },
+            {
+              "perturbation": "routeBlockSecond",
+              "applicable": false,
+              "recovered": false,
+              "route": null,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A"
+            },
+            {
+              "perturbation": "combined",
+              "applicable": true,
+              "recovered": true,
+              "route": "0>9>1>2>4>7>8>9>1",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "pair": "2-7",
+      "entity": "Oddubb",
+      "mesh": "Mesh-23",
+      "attempts": 1,
+      "confirmed": true,
+      "checks": [
+        {
+          "excursion": [
+            2,
+            7,
+            8,
+            9,
+            1,
+            2
+          ],
+          "scannerDetected": true,
+          "namedPair": "2-7",
+          "name": "Oddubb",
+          "mesh": "Mesh-23",
+          "namingCorrect": true,
+          "encounter": true,
+          "goal": true,
+          "memory": true,
+          "integration": true,
+          "shamParity": true,
+          "intactRecoveries": 3,
+          "distinctRoutes": 2,
+          "memoryDifference": 1,
+          "forks": 12,
+          "notApplicable": 4,
+          "challengeDetails": [
+            {
+              "perturbation": "routeBlockFirst",
+              "applicable": true,
+              "recovered": true,
+              "route": "2>4>7>8>9>1>2",
+              "reason": null
+            },
+            {
+              "perturbation": "displacement",
+              "applicable": true,
+              "recovered": true,
+              "route": "0>9>1>2>4>7>8>9>1>2",
+              "reason": null
+            },
+            {
+              "perturbation": "routeBlockSecond",
+              "applicable": false,
+              "recovered": false,
+              "route": null,
+              "reason": "NO_ALTERNATIVE_ROUTE_VIA_B_TO_A"
+            },
+            {
+              "perturbation": "combined",
+              "applicable": true,
+              "recovered": true,
+              "route": "0>9>1>2>4>7>8>9>1>2",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "canonicalConstructedPositivePass": true,
+  "noLiveBeacon": true,
+  "noGenesis": true,
+  "noThresholdChanges": true
+}
