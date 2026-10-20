@@ -14,7 +14,8 @@ jobs:
       branch: ${{ steps.create.outputs.branch }}
     steps:
       - id: create
-        env: {GH_TOKEN: ${{ github.token }}}
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -30,7 +31,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-        with: {path: orange, fetch-depth: 0, ref: ${{ needs.setup.outputs.branch }}}
+        with:
+          path: orange
+          fetch-depth: 0
+          ref: ${{ needs.setup.outputs.branch }}
       - uses: actions/checkout@v4
         with:
           repository: adrianjohnsaker-wq/Amelia-0.4
@@ -38,7 +42,8 @@ jobs:
           path: c1-source
           persist-credentials: false
       - uses: actions/setup-python@v5
-        with: {python-version: '3.12'}
+        with:
+          python-version: '3.12'
       - name: Compete for the single synthetic GitHub remote lease
         working-directory: orange
         env:
@@ -75,7 +80,9 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-        with: {path: orange, fetch-depth: 0}
+        with:
+          path: orange
+          fetch-depth: 0
       - uses: actions/download-artifact@v4
         with:
           pattern: pf1-worker-*
@@ -83,7 +90,8 @@ jobs:
           path: orange/experiments/pf1/c1-compat-output/
       - name: Compare two acknowledgments against the actual synthetic remote lease tree
         working-directory: orange
-        env: {PF1_BRANCH: ${{ needs.setup.outputs.branch }}}
+        env:
+          PF1_BRANCH: ${{ needs.setup.outputs.branch }}
         shell: bash
         run: |
           set -euo pipefail
