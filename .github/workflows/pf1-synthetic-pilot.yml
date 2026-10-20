@@ -1,0 +1,104 @@
+name: PF-1 Pandemonium Synthetic Pilot (NO LIVE START)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pf1-synthetic-pilot.yml'
+      - 'experiments/pf1/core.mjs'
+      - 'experiments/pf1/pilot.ts'
+      - 'experiments/pf1/finalize-journal.mjs'
+      - 'experiments/pf1/seal.sh'
+      - 'experiments/pf1/make-report.mjs'
+      - 'experiments/pf1/pandemonium-45.json'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  synthetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 85
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Ensure original substrate, Governor and PFM have not changed since pin
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e b67ec92e1cec13e9500d87292d59605428fb467e^{commit}
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- \
+            src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          echo PF1_SUBSTRATE_PIN_UNCHANGED
+      - run: npm ci --no-audit --no-fund
+      - name: Synthetic-only 45-name scanner, controls and unchanged Amelia 10000 steps
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx tsx experiments/pf1/pilot.ts
+      - name: Assemble hash-chained journal with real seal request times
+        run: node experiments/pf1/finalize-journal.mjs
+      - name: Independently reconstruct from same synthetic tape and compare complete bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/pf1/output/replay-expected
+          cp experiments/pf1/output/journal.jsonl experiments/pf1/output/replay-expected/journal.jsonl
+          cp experiments/pf1/output/exposure-ledger.json experiments/pf1/output/replay-expected/exposure-ledger.json
+          cp experiments/pf1/output/encounter-prepared.json experiments/pf1/output/replay-expected/encounter-prepared.json
+          npx tsx experiments/pf1/pilot.ts
+          node experiments/pf1/finalize-journal.mjs
+          cmp experiments/pf1/output/journal.jsonl experiments/pf1/output/replay-expected/journal.jsonl
+          cmp experiments/pf1/output/exposure-ledger.json experiments/pf1/output/replay-expected/exposure-ledger.json
+          cmp experiments/pf1/output/encounter-prepared.json experiments/pf1/output/replay-expected/encounter-prepared.json
+          touch experiments/pf1/output/REPLAY_PASS
+          echo PF1_REPLAY_BYTE_IDENTICAL
+      - name: RFC 3161 local per-entry seals and one real pinned FreeTSA seal
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash experiments/pf1/seal.sh
+      - name: Write evidence-bounded pilot report and enforce all engineering gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          node experiments/pf1/make-report.mjs
+      - name: Archive reproducible pilot material even if a check fails
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PF1-SYNTHETIC-PILOT-EVIDENCE
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            experiments/pf1/PF1_SYNTHETIC_PILOT_WORK_ORDER.md
+            experiments/pf1/PILOT_REPORT.md
+            experiments/pf1/pandemonium-45.json
+            experiments/pf1/core.mjs
+            experiments/pf1/pilot.ts
+            experiments/pf1/finalize-journal.mjs
+            experiments/pf1/seal.sh
+            experiments/pf1/make-report.mjs
+            experiments/pf1/output/*.json
+            experiments/pf1/output/*.jsonl
+            experiments/pf1/output/REPLAY_PASS
+            experiments/pf1/output/entries/*.json
+            experiments/pf1/output/tsa/local/*.tsq
+            experiments/pf1/output/tsa/local/*.tsr
+            experiments/pf1/output/tsa/local/*.pem
+            experiments/pf1/output/tsa/local/*.crt
+            experiments/pf1/output/tsa/freetsa/*
+      - name: Commit reviewed synthetic pilot report only on complete gate PASS
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/pf1/PILOT_REPORT.md
+          git diff --cached --check
+          git commit -m 'Archive PF-1 synthetic-only pilot report; no live start'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
