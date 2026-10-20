@@ -54,12 +54,20 @@ class HabitWalker{
   this.zone=to;
  }
 }
-const walker=new HabitWalker(),states=[walker.export()],zones=[walker.zone];
-for(let i=0;i<10000;i++){walker.step(inputs[i]);zones.push(walker.zone);states.push(walker.export())}
+const walker=new HabitWalker(),zones=[walker.zone];
+for(let i=0;i<10000;i++){walker.step(inputs[i]);zones.push(walker.zone)}
 const scan=findCandidates(zones,scope.graph,c.scanner.windowSteps,c.scanner.recurrenceCount);
+// Replay once to copy PFM only at candidate checkpoints, not at every tick.
+const wanted=new Set(scan.candidates.map(c=>c.end)),states=new Map();
+const checkpointReplay=new HabitWalker();
+for(let i=0;i<10000;i++){
+ checkpointReplay.step(inputs[i]);if(wanted.has(i+1))states.set(i+1,checkpointReplay.export());
+}
+assert.equal(checkpointReplay.zone,walker.zone,'HABIT_REPLAY_ZONE_MISMATCH');
+assert.equal(digest(checkpointReplay.export()),digest(walker.export()),'HABIT_REPLAY_STATE_MISMATCH');
 const results=[];
 for(const cand of scan.candidates){
- const snapshot=states[cand.end];
+ const snapshot=states.get(cand.end);
  assert.equal(snapshot.zone,cand.a);
  const future=inputs.slice(cand.end,cand.end+24);
  const probe=evaluate(cand,scope,(_candidate,p,arm)=>{
