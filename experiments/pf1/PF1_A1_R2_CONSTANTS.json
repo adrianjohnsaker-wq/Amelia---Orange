@@ -1,0 +1,135 @@
+{
+  "schema": "PF1_A1_R2_CONSTANTS_V1",
+  "status": "SEALED_FOR_OPERATOR_REVIEW_REPILOT_NOT_AUTHORISED",
+  "issuedUTC": "2026-10-20",
+  "sourceCommit": "b67ec92e1cec13e9500d87292d59605428fb467e",
+  "originalWorkOrder": "experiments/pf1/PF1_SYNTHETIC_PILOT_WORK_ORDER.md",
+  "previousDraft": "experiments/pf1/PF1_A1_AMENDMENT_DRAFT.md",
+  "canonicalGraphSource": "src/ai/numogram/AmeliaQabbalaInterface.ts",
+  "canonicalOpenDirectedEdgeCount": 11,
+  "canonicalGraphSha256": "dda60b666ee8107f3bda138159091913d3291a3c7543e31ec07a5ec49baa3ecd",
+  "nameTable": "experiments/pf1/pandemonium-45.json",
+  "type": "graph-only, no Amelia observations, no live inflow",
+  "perturbation": {
+    "displacement": "Each zone d with finite directed dist(a,d)>=2 AND finite directed dist(d,a). Target order ascending. Start-zone pointer only.",
+    "temporal": "L2",
+    "delayTicks": 2,
+    "delaySemantics": "During ticks 1 and 2 continue autonomous transitions without newly admitted input; queue the two input symbols and resume consumption in original order at tick 3; count all ticks toward 24.",
+    "noFreeze": true,
+    "noEdgeBlocks": true,
+    "postInterventionVisitToTurningZoneRequired": true,
+    "identifyInstanceAs": "ordered anchor a plus perturbation kind and displacement target"
+  },
+  "null": {
+    "kind": "uniform-random topological null",
+    "perStep": "uniform over canonical open outgoing gates, independent of PFM, Governor, input and source activation",
+    "sink": "absorbing dwell",
+    "referenceState": "same displaced/start zone, same 24-tick clock and L2 schedule",
+    "exactCurve": "first post-perturbation visit to turning zone b followed later by anchor a; P(T<=t), t=0..24",
+    "alphaNumerator": 1,
+    "alphaDenominator": 4,
+    "win": "intact via-b first recovery at tick t<=24 with P_null(T<=t)<=1/4",
+    "noSampledWalkers": true
+  },
+  "scanner": {
+    "unchanged": true,
+    "recurrenceCount": 3,
+    "windowSteps": 240,
+    "turningZone": "farthest interior visited zone by shortest directed path back to anchor; ties earliest; unordered pair for naming"
+  },
+  "encounter": {
+    "atLeastIntactNullWins": 3,
+    "atLeastDistinctPerturbationInstances": 3,
+    "routeDiversityRequired": false,
+    "recoveryHorizonTicks": 24,
+    "memory": "(intact comparative-win count - PFM-reset comparative-win count)/N >= 1/4, N all applicable perturbations of that pair; compute against same per-instance analytic null curves",
+    "integration": "at least one comparative win in intact and sham that is abolished by selective suppression under same instance, retaining existing form",
+    "selectiveSuppressionScale": 0.1,
+    "shamScale": 1,
+    "reachDescriptiveOnly": true
+  },
+  "budget": {
+    "ameliaForksPerCandidateMax": 24,
+    "analyticalNullExtraTrajectories": 0,
+    "physicalTrajectoryExtensionWithdrawn": true,
+    "executeAllApplicableInstances": true
+  },
+  "controls": {
+    "pureRecurrenceWalker": "Original fixed first-outgate canonical negative reference; included separately and duplicated within eight-policy family",
+    "fixedMemorylessPolicies": [
+      "000",
+      "001",
+      "010",
+      "011",
+      "100",
+      "101",
+      "110",
+      "111"
+    ],
+    "policyBitsInOrder": [
+      "zone1",
+      "zone2",
+      "zone4"
+    ],
+    "choices": {
+      "zone1": [
+        8,
+        2
+      ],
+      "zone2": [
+        7,
+        4
+      ],
+      "zone4": [
+        5,
+        7
+      ]
+    },
+    "nonBranchingZones": "unique outgoing edge; absorbing dwell at sinks",
+    "negativeRequirement": "zero encounters for each of baseline and all eight policies; independently report goal-only passes",
+    "positiveEligiblePairsExpected": [
+      "1-2",
+      "2-4",
+      "2-7",
+      "2-9",
+      "4-7",
+      "7-8",
+      "8-9"
+    ],
+    "positiveSyntheticSeeds": [
+      101,
+      202,
+      303
+    ],
+    "fixtureCount": 21,
+    "confirmationMinimumCount": 19,
+    "confirmationMinimumFraction": 0.9,
+    "everyEligiblePairRepresented": true,
+    "correctNamingFraction": 1,
+    "shamParity": true
+  },
+  "descriptiveAmelia": {
+    "steps": 10000,
+    "syntheticOnly": true,
+    "carriedMemory": true,
+    "candidateRecordFields": [
+      "ordered anchor",
+      "turning zone",
+      "unordered zone pair",
+      "detection tick",
+      "applicable interventions",
+      "null-qualifying wins",
+      "memory win count delta",
+      "integration",
+      "non-encounter reasons"
+    ],
+    "neverTuneConstantsFromAmelia": true
+  },
+  "provenance": {
+    "rePilotAuthorized": false,
+    "liveStartAuthorized": false,
+    "noLiveBeacon": true,
+    "noLiveGenesis": true,
+    "requiredPreRunReview": "Operator review of committed constants and analytical eligibility curves; no run without further approval"
+  }
+}
