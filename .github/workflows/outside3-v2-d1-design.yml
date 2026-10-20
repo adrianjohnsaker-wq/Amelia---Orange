@@ -1,0 +1,107 @@
+name: OUTSIDE-3 v2 D1 Dual-Readout Synthetic Sensitivity Design
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/outside3/v2/runD1Option.ts'
+      - 'experiments/outside3/v2/aggregateD1.ts'
+      - '.github/workflows/outside3-v2-d1-design.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  design-option:
+    runs-on: ubuntu-latest
+    timeout-minutes: 85
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        candidate: [D0A, D0B, D0C, D0D, D0E, D0F]
+        window: [1, 3, 10]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install source dependencies
+        run: npm install --no-audit --no-fund
+      - name: Execute manifest-pinned paired sensitivity cohort and dual-readout margins
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/outside3/v2/d1/output
+          set -o pipefail
+          npx tsx experiments/outside3/v2/runD1Option.ts "${{ matrix.candidate }}" "${{ matrix.window }}" 2>&1 | tee "experiments/outside3/v2/d1/output/RUN_${{ matrix.candidate }}_W${{ matrix.window }}.log"
+          cd experiments/outside3/v2/d1/output
+          sha256sum -c <(node -e 'const f=require("fs"); const x=JSON.parse(f.readFileSync("D1_${{ matrix.candidate }}_W${{ matrix.window }}.sha256.json","utf8"));console.log(x.summarySha256+"  D1_${{ matrix.candidate }}_W${{ matrix.window }}.json");console.log(x.rawJsonlSha256+"  D1_${{ matrix.candidate }}_W${{ matrix.window }}.jsonl");')
+          echo "$GITHUB_SHA" > "SOURCE_${{ matrix.candidate }}_W${{ matrix.window }}.txt"
+      - name: Archive original series and any negative responses even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-V2-D1-${{ matrix.candidate }}-W${{ matrix.window }}
+          path: |
+            experiments/outside3/v2/d1/output/D1_${{ matrix.candidate }}_W${{ matrix.window }}.json
+            experiments/outside3/v2/d1/output/D1_${{ matrix.candidate }}_W${{ matrix.window }}.jsonl
+            experiments/outside3/v2/d1/output/D1_${{ matrix.candidate }}_W${{ matrix.window }}.sha256.json
+            experiments/outside3/v2/d1/output/RUN_${{ matrix.candidate }}_W${{ matrix.window }}.log
+            experiments/outside3/v2/d1/output/SOURCE_${{ matrix.candidate }}_W${{ matrix.window }}.txt
+          if-no-files-found: warn
+          retention-days: 90
+
+  aggregate:
+    needs: [design-option]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install source dependencies
+        run: npm install --no-audit --no-fund
+      - name: Gather exactly the 18 preregistered design option archives
+        uses: actions/download-artifact@v4
+        with:
+          pattern: OUTSIDE3-V2-D1-*
+          merge-multiple: true
+          path: experiments/outside3/v2/d1/output/
+      - name: Verify complete grid, equal paired tapes and exact BigInt decisions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ needs.design-option.result }}" = success
+          npx tsx experiments/outside3/v2/aggregateD1.ts
+          cd experiments/outside3/v2/d1
+          sha256sum -c SHA256SUMS.txt
+          echo "$GITHUB_SHA" > SOURCE_COMMIT.txt
+      - name: Preserve complete design data and all negative options
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-V2-D1-Complete-Design-Evidence
+          path: experiments/outside3/v2/d1/
+          retention-days: 90
+          if-no-files-found: warn
+      - name: Archive results with evidence hashes, no parameter freeze
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd experiments/outside3/v2/d1/output
+          for f in D1_*.jsonl; do gzip -n -9 "$f"; done
+          cd -
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/outside3/v2/d1/D1_RESULT.json experiments/outside3/v2/d1/D1_REPORT.md experiments/outside3/v2/d1/SHA256SUMS.txt experiments/outside3/v2/d1/output/
+          git diff --cached --check
+          git commit -m "Archive D1 synthetic paired dual-readout sensitivity including negative conditions"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
