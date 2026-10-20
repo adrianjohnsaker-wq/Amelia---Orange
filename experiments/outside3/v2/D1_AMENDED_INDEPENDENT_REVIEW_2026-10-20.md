@@ -16,7 +16,7 @@ This review is written **after** the completed amended design run. It does not c
 
 The amended protocol excludes window 0 regardless of readout. Its precommitted **complete-rank contribution** criteria are mean ordinary-rank displacement C–Raw ≥1.0, C–M ≥0.5, and at least 10% of workings with nonidentical rankings for **each** comparator. Differences only establish that the readout is not a raw or M identity; they **do not imply P2 added predictive value**.
 
-All 8 combinations of ACTIVATE/PFM_STRAIN at windows 1/3/10/30 passed these contribution floors. The selection rule therefore chose **PFM_STRAIN at 1 autonomous step**, maximizing C's exact P1 design-seed detection count. Window 0 was reported but never selectable.
+All 8 combinations of ACTIVATION/PFM_STRAIN at windows 1/3/10/30 passed these contribution floors. The selection rule therefore chose **PFM_STRAIN at 1 autonomous step**, maximizing C's exact P1 design-seed detection count. Window 0 was reported but never selectable.
 
 | Metric | Amended D1 nominee, PFM_STRAIN W1 |
 | --- | ---: |
@@ -43,7 +43,7 @@ However, the PFM_STRAIN W1 readout's matched **one-line changed-zone response ma
 
 These zero responses are **descriptive**, not a resurrection of the retired 2σ eligibility test. They show loss of dynamical distinguishability after historical saturation even while PFM event metadata remains unique. Later design must not equate fresh-history injectivity with carried-history information survival.
 
-An additional diagnostic-quality limitation: window-0 ACTIVATE reference sigma was tiny (approximately 10^-15) rather than explicitly rejected as numerically degenerate, due summation roundoff on identical constant activations. **Window 0 was barred from selection**, so the primary eligibility and winner are unaffected, but window-0 activation rankings/detections are not a meaningful physiological or computational signal. Any future readout freeze must prospectively specify a numerical zero-variance tolerance or exact-constant detection rule rather than accept this roundoff.
+An additional diagnostic-quality limitation: window-0 ACTIVATION reference sigma was tiny (approximately 10^-15) rather than explicitly rejected as numerically degenerate, due summation roundoff on identical constant activations. **Window 0 was barred from selection**, so the primary eligibility and winner are unaffected, but window-0 activation rankings/detections are not a meaningful physiological or computational signal. Any future readout freeze must prospectively specify a numerical zero-variance tolerance or exact-constant detection rule rather than accept this roundoff.
 
 ## Frozen rewired graph G engineering check
 
