@@ -1,0 +1,37 @@
+name: OUTSIDE-3 v2 Structural Margin Audit (synthetic)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/outside3/v2/structuralMarginBound.test.ts'
+      - '.github/workflows/outside3-v2-structural-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mathematical-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Check variance identity, no-go evidence and frozen K3 gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/outside3/v2/structural-audit-output
+          npx tsx experiments/outside3/v2/structuralMarginBound.test.ts 2>&1 | tee experiments/outside3/v2/structural-audit-output/test.log
+          sha256sum experiments/outside3/v2/STRUCTURAL_MARGIN_NO_GO_REVIEW.md experiments/outside3/v2/structuralMarginBound.test.ts experiments/outside3/v2/D0_DESIGN_GRID.json experiments/outside3/v2/K3_GATE_FIXED.json > experiments/outside3/v2/structural-audit-output/SOURCE_SHA256SUMS.txt
+          echo "$GITHUB_SHA" > experiments/outside3/v2/structural-audit-output/SOURCE_COMMIT.txt
+      - name: Archive audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-V2-Structural-Margin-Audit
+          path: experiments/outside3/v2/structural-audit-output/
+          retention-days: 90
+          if-no-files-found: warn
