@@ -1,0 +1,104 @@
+name: PF-1 Seven Synthetic Deployment Checks (NO LIVE START)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pf1-deployment-synthetic.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  dryrun:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Pin canonical substrate and sealed A1 constants; ban any live genesis
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          echo 'ecabf3e40023faa0be0749908cfe6ffd3a8b9e42ab7c8a9a7c2ea5827ae63610  experiments/pf1/PF1_A1_R2_CONSTANTS.json' | sha256sum -c -
+          test ! -e experiments/pf1/LIVE_GENESIS
+          echo PF1_SOURCE_AND_CONSTANTS_FROZEN_LIVE_NOT_AUTHORISED
+      - run: npm install --no-audit --no-fund
+      - name: Start nine-arm synthetic state and initial exposure ledger
+        run: npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts init
+      - name: Independent invocation A - 12 mock rounds
+        run: npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts ingest 12
+      - name: Independent invocation B - duplicate dispatch, no new admission
+        run: npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts ingest 12
+      - name: Independent invocation C - recover unattended interval to 33
+        run: npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts ingest 33
+      - name: Independent invocation D - recover to 72
+        run: npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts ingest 72
+      - name: Reject altered admission proofs, ledger tamper and unverified inflow
+        run: npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts attack
+      - name: Test counterfactual forks, pending-future rule and exact L2 queue
+        run: npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts forks
+      - name: Test empty encounter journal, exposure head and synthetic seal fixture
+        run: npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts silence
+      - name: Independent RFC 3161 validation on synthetic fixture only
+        run: bash experiments/pf1/PF1_DEPLOY_SYNTHETIC_SEAL.sh
+      - name: Verify nine-arm checkpoint and ledger invariants
+        run: npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts verify
+      - name: Byte-identical replay from fresh state and distinct invocations
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PF1_SYNTH_STAGE_DIR=/tmp/pf1-full-replay
+          npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts init
+          npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts ingest 12
+          npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts ingest 12
+          npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts ingest 33
+          npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts ingest 72
+          npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts attack
+          npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts forks
+          npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts silence
+          npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts verify
+          unset PF1_SYNTH_STAGE_DIR
+          root=experiments/pf1/deployment-synthetic-output
+          for file in state.json ledger.json journal.json fork-evidence.json silence-test.json \
+              seal-fixture.json synthetic-rounds.json synthetic-verification.json; do
+            cmp "$root/$file" "/tmp/pf1-full-replay/$file"
+          done
+          touch "$root/REPLAY_BYTE_IDENTICAL"
+          echo PF1_NINE_ARM_MULTIPROCESS_REPLAY_BYTE_IDENTICAL
+      - name: Generate seven-check review report, with explicit unresolved C1/BLS checks
+        run: node experiments/pf1/PF1_DEPLOY_SYNTHETIC_REPORT.mjs
+      - name: Archive ALL synthetic deployment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PF1-SEVEN-PRELIVE-SYNTHETIC-DEPLOYMENT-CHECKS
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            experiments/pf1/PF1_DEPLOYMENT_SYNTHETIC_REPORT.md
+            experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts
+            experiments/pf1/PF1_DEPLOY_SYNTHETIC_SEAL.sh
+            experiments/pf1/PF1_DEPLOY_SYNTHETIC_REPORT.mjs
+            experiments/pf1/deployment-synthetic-output/
+      - name: Publish engineering review only, never create genesis or run live
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f experiments/pf1/PF1_DEPLOYMENT_SYNTHETIC_REPORT.md ]; then
+            echo 'Incomplete synthetic rehearsal — artifact/logs are retained.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/pf1/PF1_DEPLOYMENT_SYNTHETIC_REPORT.md
+          git add experiments/pf1/deployment-synthetic-output/seven-check-verdict.json
+          git diff --cached --check
+          git commit -m 'Archive PF1 seven synthetic deployment checks: live readiness still pending'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
