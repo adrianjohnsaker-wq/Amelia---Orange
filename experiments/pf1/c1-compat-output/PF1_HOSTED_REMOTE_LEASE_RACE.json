@@ -1,25 +1,33 @@
 {
-  "acknowledgedCount": 0,
-  "branch": "pf1-synthetic-lease-39462081864",
-  "durableOutstandingLeases": [],
+  "acknowledgedCount": 1,
+  "branch": "pf1-synthetic-lease-39462224257",
+  "durableOutstandingLeases": [
+    "drift1a_c1/runner_state/leases/2-1.json"
+  ],
   "liveAuthorized": false,
   "realHostedGitHubRemote": true,
-  "safe": false,
+  "safe": true,
   "schema": "PF1_HOSTED_GITHUB_LEASE_RACE_V1",
   "syntheticOnly": true,
   "workers": [
     {
       "detail": {
-        "error": "cannot persist prospective claim: Author identity unknown\n\n*** Please tell me who you are.\n\nRun\n\n  git config --global user.email \"you@example.com\"\n  git config --global user.name \"Your Name\"\n\nto set your account's default identity.\nOmit --global to set the identity only in this repository.\n\nfatal: empty ident name (for <runner@runnervmxehtw.wxuwm22pbllupc1tarnru5qpuc.gx.internal.cloudapp.net>) not allowed\n"
+        "admission_authorized": true,
+        "identifier": "2-1",
+        "pushed_commit": "aa2aa2e3242169eaa6e0a86f19aa9ace5a4a174a",
+        "status": "PUSH_CONFIRMED",
+        "unresolved": [
+          "drift1a_c1/runner_state/leases/2-1.json"
+        ]
       },
       "liveAuthorised": false,
-      "status": "REJECTED_NO_ADMISSION",
+      "status": "ACKNOWLEDGED",
       "syntheticOnly": true,
       "worker": "2"
     },
     {
       "detail": {
-        "error": "cannot persist prospective claim: Author identity unknown\n\n*** Please tell me who you are.\n\nRun\n\n  git config --global user.email \"you@example.com\"\n  git config --global user.name \"Your Name\"\n\nto set your account's default identity.\nOmit --global to set the identity only in this repository.\n\nfatal: empty ident name (for <runner@runnervm8k3b6.1uiqd0vb0kluxp4rlhevztwlth.phxx.internal.cloudapp.net>) not allowed\n"
+        "error": "REMOTE_MOVED: stale lease rejected, NO ADMISSION: To https://github.com/adrianjohnsaker-wq/Amelia---Orange\n ! [remote rejected] HEAD -> pf1-synthetic-lease-39462224257 (cannot lock ref 'refs/heads/pf1-synthetic-lease-39462224257': is at aa2aa2e3242169eaa6e0a86f19aa9ace5a4a174a but expected 436264498654056f18b7b5726909fcfae911d273)\nerror: failed to push some refs to 'https://github.com/adrianjohnsaker-wq/Amelia---Orange'\n"
       },
       "liveAuthorised": false,
       "status": "REJECTED_NO_ADMISSION",
