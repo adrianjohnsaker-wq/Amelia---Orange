@@ -129,8 +129,29 @@ function verify(){
   entries:j.entries.length,checkpointSha256:sha(st),noGenesis:true,scientificConstantsUnchanged:true};
  put('VERIFY.json',proof);console.log('PF1_PRODUCTION_VERIFY',JSON.stringify(proof));
 }
+function replay(){
+ const st=jread('STATE.json'),l=jread('LEDGER.json');
+ const arms=Array.from({length:9},()=>runtime());
+ const rowDigests=[];
+ for(let k=0;k<st.tick;k++){
+  for(let i=0;i<9;i++)arms[i].step(signal(k,i));
+  rowDigests.push(arms.map(rt=>sha(normal(rt))));
+ }
+ assert.equal(rowDigests.length,st.tick);
+ for(let k=0;k<st.tick;k++){
+  assert.deepEqual(rowDigests[k],l.rows[k].armDigests,'INDEPENDENT_REPLAY_ROW_MISMATCH '+k);
+ }
+ for(let i=0;i<9;i++)assert.deepEqual(normal(arms[i]),st.arms[i].state,'STATE_REPLAY_MISMATCH '+i);
+ const journal=jread('JOURNAL.json');
+ assert.equal(journal.entries.length,2,'TWO_INDEPENDENT_PERSISTENT_FIXTURE_CONFIRMATIONS_REQUIRED');
+ console.log('PF1_PRODUCTION_CROSS_JOB_INDEPENDENT_REPLAY',JSON.stringify({
+  rows:l.rows.length,arms:9,allDigestsExact:true,testEntries:journal.entries.length,
+  liveRounds:0}));
+}
+
 if(cmd==='init')init();
 else if(cmd==='stage')stage(Number(process.argv[3]));
 else if(cmd==='confirm')confirm();
 else if(cmd==='verify')verify();
+else if(cmd==='replay')replay();
 else throw Error('usage init|stage 12/48/72|confirm|verify');
