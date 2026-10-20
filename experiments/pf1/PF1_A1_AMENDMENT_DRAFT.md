@@ -116,7 +116,7 @@ A negative walker compared against an identical deterministic walker must achiev
 
 For the same applicable instances, compute **raw-recovery fractions over the same denominator** for intact and memory-reset branches. Keep the accepted memory criterion: `intactRawRecoveryRate − resetRawRecoveryRate ≥ 0.25`. Reset only PFM within the counterfactual fork. Preserve original intervention schedules and all nondisplaced state variables.
 
-**Integration** retains the original form: selective suppression must abolish at least one raw recovery achieved in the intact **and sham** fork under the identical instance, without deleting a gate or making the target topologically unreachable. The runner must record the suppressed contribution and scale factor from the accepted implementation. The neutral sham uses factor `1` and must match intact outcome and full nonperturbative trajectory.
+**Integration** retains the original form: selective suppression must abolish at least one raw recovery achieved in the intact **and sham** fork under the identical instance, without deleting a gate or making the target topologically unreachable. Use the existing PF-1 synthetic implementation's **0.10 multiplicative factor on zone b activation in the selective-suppression fork**; this changes a fork's zone contribution without removing any canonical gate. The runner must record the suppressed contribution and factor `0.10`. The neutral sham uses factor `1` and must match intact outcome and full nonperturbative trajectory.
 
 An **encounter** occurs iff both the new three-instance comparator-relative goal criterion AND (memory **or** integration) qualify, with full sham parity. Reach (latency and zones traversed) remains descriptive only. No new outcome-frequency or score cutoffs are introduced.
 
@@ -138,6 +138,7 @@ Predeclared constants proposed independently of Amelia pilot data:
 | Recovery horizon | 24 ticks | Existing frozen PF-1 constant |
 | Memory difference | ≥ 0.25 | Existing frozen PF-1 constant |
 | Integration | at least one matching intact/sham recovery abolished by suppression | Existing form |
+| Selective suppression factor | 0.10 × zone-b activation, fork only | Preserves previous PF-1 implementation |
 | Route diversity | not required | Explicitly withdrawn |
 | Amelia forks | ≤ 24 per candidate | Retains existing budget |
 | Companion walkers | ≤ 6 per candidate | One per possible intervention instance |
