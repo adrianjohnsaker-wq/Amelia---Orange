@@ -2,7 +2,10 @@ name: PF1 Production-Shaped Archived C1 Synthetic Integration (NO LIVE)
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/pf1-production-synthetic.yml']
+    paths:
+      - '.github/workflows/pf1-production-synthetic.yml'
+      - 'experiments/pf1/PF1_REFERENCE_INPUT.mjs'
+      - 'experiments/pf1/PF1_PRODUCTION_ARCHIVED_STAGE.ts'
   workflow_dispatch:
 permissions:
   contents: write
@@ -60,6 +63,19 @@ jobs:
           git config user.email 'pf1@example.invalid'
           git checkout -B "$branch"
           npm install --no-audit --no-fund
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {createHash} from 'node:crypto';
+          import {pf1InputForArm} from './experiments/pf1/PF1_REFERENCE_INPUT.mjs';
+          const bytes=Buffer.alloc(32);
+          for(let i=1;i<=8;i++){
+            const expected=createHash('sha256').update(Buffer.concat([Buffer.from('PF1-REF-'+i+'|','ascii'),bytes])).digest('hex');
+            assert.equal(pf1InputForArm(bytes.toString('hex'),i),expected);
+            const legacy=createHash('sha256').update(Buffer.concat([Buffer.from('DRIFT-1A-C1-REF-'+i+'|','ascii'),bytes])).digest('hex');
+            assert.notEqual(expected,legacy);
+          }
+          console.log('PF1_DOMAIN_SEPARATION_MATCHES_EXACT_SPECIFICATION_8_OF_8');
+          JS
           npx tsx experiments/pf1/PF1_PRODUCTION_ARCHIVED_STAGE.ts init
           git add experiments/pf1/production-dry-run/
           git diff --cached --check
