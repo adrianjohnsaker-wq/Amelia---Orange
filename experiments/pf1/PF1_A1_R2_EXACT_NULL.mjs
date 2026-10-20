@@ -20,7 +20,7 @@ assert.equal(frozen.encounter.atLeastIntactNullWins,3);
 assert.equal(frozen.encounter.recoveryHorizonTicks,24);
 assert.equal(frozen.budget.ameliaForksPerCandidateMax,24);
 
-const sha=x=>createHash('sha256').update(typeof x==='string'?x:JSON.stringify(x)).digest('hex');
+const sha=x=>createHash('sha256').update(Buffer.isBuffer(x)||typeof x==='string'?x:JSON.stringify(x)).digest('hex');
 const source=readFileSync(frozen.canonicalGraphSource,'utf8');
 const section=source.split('export const CANONICAL_GATES')[1]?.split('];')[0];
 assert(section,'CANONICAL_GATE_SOURCE_NOT_FOUND');
