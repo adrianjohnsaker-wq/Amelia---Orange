@@ -8,6 +8,7 @@ import {createHash} from 'node:crypto';
 import {AmeliaNumogramSubstrateRuntime} from '../../src/substrate/ameliaNumogramSubstrateRuntime';
 import {findCandidates} from './core.mjs';
 import {load,firstRecovery,winAgainstNull,inputsForTick} from './PF1_A1_R2_SCORER.mjs';
+import {pf1InputForArm} from './PF1_REFERENCE_INPUT.mjs';
 const src='experiments/pf1/production-dry-run';
 const out=src+'/output';mkdirSync(out,{recursive:true});
 const verified=JSON.parse(readFileSync(src+'/ARCHIVED_VERIFIED_QUICKNET.json','utf8'));
@@ -19,9 +20,7 @@ function normal(rt){const s=JSON.parse(JSON.stringify(rt.exportState()));for(con
 function runtime(state){const rt=new AmeliaNumogramSubstrateRuntime();rt.setSuppressRelaySteering(true);if(state)rt.importState(state);
  assert.deepEqual(rt.getQabbala().getGates().filter(e=>e.isOpen).map(e=>[e.source,e.target]),scope.eligibility.directedEdges);
  return rt;}
-function signal(k,i){const v=verified.records[k].randomness;assert(/^[a-f0-9]{64}$/.test(v));if(i===0)return v;
- const prefix=Buffer.from('DRIFT-1A-C1-REF-'+i+'|','ascii');
- return createHash('sha256').update(Buffer.concat([prefix,Buffer.from(v,'hex')])).digest('hex');}
+function signal(k,i){return pf1InputForArm(verified.records[k].randomness,i);}
 assert.equal(verified.realBLSVerification,'PASS_ALL_72');
 assert.equal(verified.mode,'ARCHIVED_ONLY_NO_LIVE_ADMISSION');
 assert.equal(verified.records.length,72);
