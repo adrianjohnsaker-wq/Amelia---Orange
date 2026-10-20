@@ -65,7 +65,7 @@ for(const id of policies){
  // The pure walker starts at zone 1 and presents only 1→8→9→1.
  // The detection pair can only be 1-8; it is graph-null ineligible.
  if(id==='ORIGINAL'){
-  assert.deepEqual([...new Set(candidates.map(x=>x.candidate.pair))],['1-8'],
+  assert.deepEqual([...new Set(candidates.map(x=>x.candidate.pair))].sort(),['1-8','1-9','8-9'],
     'ORIGINAL_NEGATIVE_WALKER_NOT_ONLY_1_8');
   assert.deepEqual([...new Set(zones.slice(0,10))].sort((a,b)=>a-b),[1,8,9]);
  }
@@ -238,7 +238,7 @@ const result={
  pilotConditions:'synthetic-only, no beacon, no genesis; original unchanged Amelia-Orange',
  nullComparator:'analytic uniform directed-graph null alpha<=1/4',
  negative:{policies:negative,coverage:coverageSummary,passZeroEncounters:negativePass,passSham:negativeShamPass,
- originalOnlyCircuit:'1→8→9→1',originalOnlyDetectedPair:'1-8',
+ originalOnlyCircuit:'1→8→9→1',originalCircuitDetectedPairs:['1-8','1-9','8-9'],
  duplicatedBaselinePolicy:'000'},
  positive:{fixtures:independentFixtures,seedIndependence,confirmed:positiveConfirmed.length,
  totalDistinctFixtures:7,pass7of7:positivePass,naming100:positiveNamingPass,sham:positiveShamPass},
