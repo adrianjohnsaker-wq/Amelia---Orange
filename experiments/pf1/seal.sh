@@ -40,7 +40,7 @@ for f in entries/entry-*.json; do
  name=$(basename "$f" .json)
  openssl ts -query -data "$f" -sha256 -cert -out "tsa/local/$name.tsq"
  openssl ts -reply -config tsa/local/tsa.cnf -section tsa_config \
-  -queryfile "tsa/local/$name.tsq" -out "tsa/local/$name.tsr" >/dev/null 2>&1
+  -queryfile "tsa/local/$name.tsq" -out "tsa/local/$name.tsr"
  openssl ts -verify -queryfile "tsa/local/$name.tsq" -in "tsa/local/$name.tsr" \
   -CAfile tsa/local/root.pem -untrusted tsa/local/tsa.crt | grep -q 'Verification: OK'
  count=$((count+1))
