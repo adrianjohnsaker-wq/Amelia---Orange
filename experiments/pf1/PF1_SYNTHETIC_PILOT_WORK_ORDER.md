@@ -2,7 +2,7 @@
 
 **Issued:** 20 October 2026, after the operator approved the six PF-1 design decisions.
 
-**Repository:** \`adrianjohnsaker-wq/Amelia---Orange\`, new directory \`experiments/pf1/\`.
+**Repository:** `adrianjohnsaker-wq/Amelia---Orange`, new directory `experiments/pf1/`.
 
 **Purpose:** show, on synthetic inflow only, that the PF-1 machinery can do four things reliably:
 - detect a candidate;
@@ -96,9 +96,9 @@ Reach (the steps and zones traversed) is recorded descriptively only. The pilot 
 
 ## H. Deliverables
 
-1. \`experiments/pf1/\`: code, tests, the naming table and the frozen pilot constants, with their SHA-256 values.
+1. `experiments/pf1/`: code, tests, the naming table and the frozen pilot constants, with their SHA-256 values.
 2. A GitHub Actions run executing A–G, with its artifact archived.
-3. \`experiments/pf1/PILOT_REPORT.md\`, giving:
+3. `experiments/pf1/PILOT_REPORT.md`, giving:
    - the results against section G;
    - the descriptive Amelia run;
    - the proposed window and margins for the live start;
