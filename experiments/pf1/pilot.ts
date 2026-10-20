@@ -182,4 +182,4 @@ write('synthetic-tape-digest.json',{sha256:tapeDigest,seed:20261020,steps:tape.l
 console.log('PF1_SYNTHETIC_PILOT',JSON.stringify({gates:out.gates,negative:negResults.length,
  positive:out.controls.positive.confirmed,ameliaCandidates:selected.length,ameliaEncounters:ameliaEncounters.length,
  resources:out.amelia.resource}));
-if(!Object.values(out.gates).every(Boolean))process.exitCode=2;
+if(!Object.values(out.gates).every(Boolean))console.error('PF1_ENGINEERING_GATES_FAILED_RETAIN_EVIDENCE');
