@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/pf1-a1-r2-seal.yml'
+      - 'experiments/pf1/PF1_A1_R2_EXACT_NULL.mjs'
   workflow_dispatch:
 permissions:
   contents: write
@@ -71,6 +72,7 @@ jobs:
           assert.deepEqual(e.eligiblePairs,expected);
           assert.equal(e.allPairs,45);
           assert.equal(e.eligiblePairCount,7);
+          assert.equal(e.frozenConstantsSha256,sha(base+'PF1_A1_R2_CONSTANTS.json'),'GRAPH_REPORT_CONSTANTS_HASH_MISMATCH');
           assert.equal(e.noAmeliaDataUsed,true);
           assert.equal(e.noExperimentalRun,true);
           assert.equal(e.liveAuthorized,false);
