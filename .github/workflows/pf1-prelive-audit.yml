@@ -1,0 +1,124 @@
+name: PF-1 Canonical Graph Pre-Live Audit (SYNTHETIC ONLY)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pf1-prelive-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify unchanged substrate, work order, pilot thresholds and naming subset
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e b67ec92e1cec13e9500d87292d59605428fb467e^{commit}
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- \
+            src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          printf '%s\n' \
+            '7cc89cc99b25b35ec2311ee12e18d5fec60986664e05f156ced7ff33d59763e4  experiments/pf1/core.mjs' \
+            '44f3eef4e55fc6b7bc8f86604ddf14b4152394d440db39a95fdf6004e724175b  experiments/pf1/pilot.ts' \
+            '741cf541e6eda6973118ecb86018f6d1e69978a01603ac985ff6b4d091b08521  experiments/pf1/pandemonium-45.json' \
+            '714186ede0d031bda4a0862143dd72c0a842d06c9a23c7d58251451057652480  experiments/pf1/PF1_SYNTHETIC_PILOT_WORK_ORDER.md' |
+            sha256sum -c -
+          echo PF1_ORIGINAL_CODE_AND_THRESHOLDS_UNCHANGED
+      - run: npm install --no-audit --no-fund
+      - name: Canonical 45x4 viability and actual-graph constructed controls
+        run: npx tsx experiments/pf1/preliveCanonicalAudit.ts
+      - name: Fetch original PF-1 synthetic evidence for independent graph-digest comparison
+        uses: actions/download-artifact@v4
+        with:
+          name: PF1-SYNTHETIC-PILOT-EVIDENCE
+          run-id: 39399970584
+          github-token: ${{ github.token }}
+          path: experiments/pf1/prelive-source/
+      - name: Compare original negative graph digest and publish complete pre-live report
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import {readFileSync,readdirSync,statSync,writeFileSync} from 'node:fs';
+          import assert from 'node:assert/strict';
+          import {createHash} from 'node:crypto';
+          const root='experiments/pf1/prelive-output';
+          const report=JSON.parse(readFileSync(root+'/CANONICAL_REACHABILITY_45x4.json','utf8'));
+          const candidates=[];
+          function visit(dir){
+           for(const name of readdirSync(dir)){
+            const p=dir+'/'+name;
+            if(statSync(p).isDirectory())visit(p);
+            else if(name==='pilot-evidence.json')candidates.push(p);
+           }
+          }
+          visit('experiments/pf1/prelive-source');
+          assert.equal(candidates.length,1,'ORIGINAL_PILOT_EVIDENCE_UNAVAILABLE');
+          const original=JSON.parse(readFileSync(candidates[0],'utf8'));
+          assert.equal(original.graphDigest,report.graph.digest,'NEGATIVE_CONTROL_GRAPH_MISMATCH');
+          assert.equal(original.controls.negative.detectedCandidates,21);
+          assert.equal(original.controls.negative.encounters,0);
+          assert.notEqual(original.controls.positive.positiveGraphDigest,report.graph.digest);
+          assert.equal(report.enumeration.allPairs,45);
+          assert.equal(report.enumeration.perturbationChecks,180);
+          assert.equal(report.canonicalConstructedPositivePass,true);
+          assert.equal(report.noLiveBeacon,true);
+          assert.equal(report.liveStartAuthorized,false);
+          const m=readFileSync('experiments/pf1/NAMING_CATALOGUE_SCOPE.md','utf8');
+          assert(m.includes('Deliberately omitted descriptive categories'));
+          const sha=p=>createHash('sha256').update(readFileSync(p)).digest('hex');
+          const provenance={
+           schema:'PF1_PRELIVE_PROVENANCE_V1',canonicalGraphDigest:report.graph.digest,
+           originalPilotRun:39399970584,originalPilotGraphDigest:original.graphDigest,
+           originalNegativeCandidates:original.controls.negative.detectedCandidates,
+           originalNegativeEncounters:original.controls.negative.encounters,
+           originalPositiveGraphDifferent:true,
+           reachabilityAuditSha256:sha(root+'/CANONICAL_REACHABILITY_45x4.json'),
+           namingOmissionsSha256:sha('experiments/pf1/NAMING_CATALOGUE_SCOPE.md'),
+           thresholdChanges:false,beaconRounds:0,liveGenesis:false,liveAuthorized:false
+          };
+          writeFileSync(root+'/PRELIVE_PROVENANCE.json',JSON.stringify(provenance,null,2)+'\n');
+          const summary=readFileSync(root+'/CANONICAL_REACHABILITY_REPORT.md','utf8');
+          const md=summary+'\n## Cross-run graph identity and catalogue provenance\n\n'+
+           '- Original sealed pilot artifact: GitHub Actions run 39399970584 (retrieved and checked).\n'+
+           '- Original negative control graph digest matches the pinned 11-edge canonical graph: PASS.\n'+
+           '- Negative control: 21 candidate detections, zero encounters; different synthetic positive graph confirmed.\n'+
+           '- Naming table omissions: experiments/pf1/NAMING_CATALOGUE_SCOPE.md, with individual reasons; canonical JSON unchanged.\n'+
+           '- Reachability JSON SHA-256: '+provenance.reachabilityAuditSha256+'\n'+
+           '- **SCOPE: PRE-LIVE ENGINEERING REVIEW ONLY; LIVE START UNAUTHORISED.**\n';
+          writeFileSync('experiments/pf1/PRELIVE_AUDIT_REPORT.md',md);
+          console.log('PF1_PRELIVE_ORIGINAL_NEGATIVE_GRAPH_VERIFIED',JSON.stringify(report.enumeration));
+          JS
+      - name: Archive complete 45x4 results, including negative cases
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PF1-CANONICAL-45x4-PRELIVE-EVIDENCE
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            experiments/pf1/PRELIVE_AUDIT_REPORT.md
+            experiments/pf1/NAMING_CATALOGUE_SCOPE.md
+            experiments/pf1/preliveCanonicalAudit.ts
+            experiments/pf1/prelive-output/
+      - name: Commit independently verified supplementary pre-live report, without live start
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/pf1/PRELIVE_AUDIT_REPORT.md experiments/pf1/prelive-output/
+          git diff --cached --check
+          git commit -m 'Archive PF-1 canonical 45x4 reachability and controls; no live start'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
