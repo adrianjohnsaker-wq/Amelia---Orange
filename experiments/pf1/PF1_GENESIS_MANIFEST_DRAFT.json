@@ -1,6 +1,6 @@
 {
   "schema": "PF1_LIVE_GENESIS_MANIFEST_DRAFT_V1",
-  "status": "UNSIGNED_DRAFT_READY_FOR_OPERATOR_REVIEW_NO_GENESIS",
+  "status": "UNSIGNED_COMPLETE_REVIEW_DRAFT_NO_GENESIS",
   "datePrepared": "2026-10-20",
   "liveStartAuthorised": false,
   "liveGenesisCreated": false,
@@ -15,7 +15,8 @@
     "c1OriginalLeaseRaceNO_GO": 39460285743,
     "pf1HostedExclusiveLeaseTest": 39462224257,
     "c1ReadOnlyGenesisToHeadAudit": "PASS run #39471040590; 3,741 recorded ticks; missing=0 duplicated=0 reordered=0; genesis-head replay exact; head 88b1f97897428de31305e161abd5f6bf993b621fcf146ac0440aead944a5f21f",
-    "productionIntegrationDryrun": "PASS run #39473152330; 72 archived BLS verified receipts; hosted single-winner lease + orphan recovery; 2 cross-job fork confirmations sealed with RFC3161"
+    "productionIntegrationDryrun": "PASS run #39473152330; 72 archived BLS verified receipts; hosted single-winner lease + orphan recovery; 2 cross-job fork confirmations sealed with RFC3161",
+    "pf1DomainReintegrationRun": "Run #39498351743; check full result before final operator approval; archived only, never live"
   },
   "immutableSource": {
     "substrateRepository": "adrianjohnsaker-wq/Amelia---Orange",
@@ -27,11 +28,59 @@
     "c1VerifierPinnedCommit": "f1875b5eea5339eb1ac73e50b5df6b103d0cabe9",
     "c1UnsafeLeaseDisallowed": "drift1a_c1/lease_push.py acquire() stale rebase logic MUST NOT RUN IN PF1",
     "prospectivePf1Lease": "experiments/pf1/PF1_SAFE_LEASE.py",
-    "actualGeneticAndOperationalAdapterCommitToPin": null,
-    "actualNineArmInitialStateSHA256": null,
-    "scannerArtifactSHA256": null,
+    "actualGeneticAndOperationalAdapterCommitToPin": "69f367aae5c897ce9555070ed03acd23e905ff18",
+    "actualNineArmInitialStateSHA256": "1e7521b671cf2a36328c3041c96e996dd8516c8996a3f84e782fed2564fad76d",
+    "scannerArtifactSHA256": "7cc89cc99b25b35ec2311ee12e18d5fec60986664e05f156ced7ff33d59763e4",
     "nominalCCRUPandemoniumNamingTable": "experiments/pf1/pandemonium-45.json",
-    "analyticNullCurveDigestToPin": null
+    "analyticNullCurveDigestToPin": "a9e1e2666dc691f9c1cf23a076168f6d018b9cd4649bf2801f9d942841853c85",
+    "adapterIdentity": "Tested PF1-specific archived-round nine-arm adapter source snapshot; prospective only, never a live intake authorisation",
+    "nineArmInitialStateArtifact": "experiments/pf1/registration-identities/PF1_NINE_ARM_INITIAL_STATE.json",
+    "scannerArtifactPath": "experiments/pf1/core.mjs",
+    "analyticNullCurveFile": "experiments/pf1/a1-r2-graph-only/EXACT_NULL_CURVES.json",
+    "referenceInputSHA256": "d30768f3f15ab0e1ba1d7ab747e55f26fe5737027db1d54d429e4e0dc0a9be13",
+    "sourceIdentityManifestPath": "experiments/pf1/registration-identities/PF1_SOURCE_IDENTITIES.json",
+    "operationalSourceFileHashes": [
+      {
+        "path": "experiments/pf1/PF1_REFERENCE_INPUT.mjs",
+        "sha256": "d30768f3f15ab0e1ba1d7ab747e55f26fe5737027db1d54d429e4e0dc0a9be13"
+      },
+      {
+        "path": "experiments/pf1/PF1_PRODUCTION_ARCHIVED_STAGE.ts",
+        "sha256": "e4a9b3fb9dce2d55665840bf918995f886d60b0d766184527bad180e8cbad738"
+      },
+      {
+        "path": "experiments/pf1/PF1_PRODUCTION_ARCHIVED_BLS.py",
+        "sha256": "740c2b2789643afec94502375b80cdc2475a1fdb07997c6724117be0c5f76f2e"
+      },
+      {
+        "path": "experiments/pf1/PF1_SAFE_LEASE.py",
+        "sha256": "3400b0b8d4d2adb821bb416f477ce85a0a09c39e65a4710080d263af3e0af65d"
+      },
+      {
+        "path": "experiments/pf1/PF1_PRODUCTION_SEAL.sh",
+        "sha256": "4d80abbbfb08ee152862ff577adf236e5b031df40316284037730ec28f6a9d8f"
+      },
+      {
+        "path": "experiments/pf1/PF1_A1_R2_SCORER.mjs",
+        "sha256": "7c08e59af07a6f869870b79387b8bc5d6087e0564eb970b85c4ead991294a2ff"
+      },
+      {
+        "path": "experiments/pf1/core.mjs",
+        "sha256": "7cc89cc99b25b35ec2311ee12e18d5fec60986664e05f156ced7ff33d59763e4"
+      },
+      {
+        "path": "experiments/pf1/a1-r2-graph-only/EXACT_NULL_CURVES.json",
+        "sha256": "a9e1e2666dc691f9c1cf23a076168f6d018b9cd4649bf2801f9d942841853c85"
+      },
+      {
+        "path": "experiments/pf1/pandemonium-45.json",
+        "sha256": "741cf541e6eda6973118ecb86018f6d1e69978a01603ac985ff6b4d091b08521"
+      },
+      {
+        "path": "experiments/pf1/PF1_A1_R2_CONSTANTS.json",
+        "sha256": "ecabf3e40023faa0be0749908cfe6ffd3a8b9e42ab7c8a9a7c2ea5827ae63610"
+      }
+    ]
   },
   "beacon": {
     "source": "drand quicknet",
@@ -44,10 +93,16 @@
     "futureR0": null,
     "genesisCreatedUTC": null,
     "creationLeadSeconds": 600,
-    "timingRule": "R0 future, divisible by 20, first publication >= creation+600s",
-    "genesisScheduleStatus": "NOT CHOSEN",
+    "timingRule": "Select a still-future R0 on the C1 round grid, R0 = 33158540 + 20*n for integer n, publication >= genesis creation + 600s. Must never backfill into existing C1's recorded timeline.",
+    "genesisScheduleStatus": "PHASE ALIGNED TO C1; START ROUND NOT CHOSEN; NO GENESIS",
     "offlineBlsKnownAnswerRound": 1000000,
-    "archivedFixtureIsNotLive": true
+    "archivedFixtureIsNotLive": true,
+    "R0Alignment": "ALIGNED_TO_C1_GRID_SAME_QUICKNET_SIGNAL",
+    "gridOriginC1R0": 33158540,
+    "gridRemainderMod20": 0,
+    "relativeOffsetRounds": 0,
+    "sharedPhysicalDrandSignalWithC1": true,
+    "alignmentExplanation": "PF1 prospective R0 must satisfy (R0 - C1_genesis_R0) % 20 == 0. At overlapping time slots both observe the SAME archived/verified quicknet round, not an offset grid. Only reference-arm domain separation differs. Future R0 remains unchosen until separate approved genesis."
   },
   "baseline": {
     "arms": [
@@ -57,38 +112,38 @@
       },
       {
         "id": "R01",
-        "kind": "independent carried PFM under C1 keyed reference inflow"
+        "kind": "independent carried PFM under PF1-specific keyed reference inflow; no C1 reference domain"
       },
       {
         "id": "R02",
-        "kind": "independent carried PFM under C1 keyed reference inflow"
+        "kind": "independent carried PFM under PF1-specific keyed reference inflow; no C1 reference domain"
       },
       {
         "id": "R03",
-        "kind": "independent carried PFM under C1 keyed reference inflow"
+        "kind": "independent carried PFM under PF1-specific keyed reference inflow; no C1 reference domain"
       },
       {
         "id": "R04",
-        "kind": "independent carried PFM under C1 keyed reference inflow"
+        "kind": "independent carried PFM under PF1-specific keyed reference inflow; no C1 reference domain"
       },
       {
         "id": "R05",
-        "kind": "independent carried PFM under C1 keyed reference inflow"
+        "kind": "independent carried PFM under PF1-specific keyed reference inflow; no C1 reference domain"
       },
       {
         "id": "R06",
-        "kind": "independent carried PFM under C1 keyed reference inflow"
+        "kind": "independent carried PFM under PF1-specific keyed reference inflow; no C1 reference domain"
       },
       {
         "id": "R07",
-        "kind": "independent carried PFM under C1 keyed reference inflow"
+        "kind": "independent carried PFM under PF1-specific keyed reference inflow; no C1 reference domain"
       },
       {
         "id": "R08",
-        "kind": "independent carried PFM under C1 keyed reference inflow"
+        "kind": "independent carried PFM under PF1-specific keyed reference inflow; no C1 reference domain"
       }
     ],
-    "referenceMapping": "C1 input_for(Ri, verified_randomness), domain-separated SHA256('DRIFT-1A-C1-REF-i|' + randomness_bytes)",
+    "referenceMapping": "SHA256(ASCII(\"PF1-REF-i|\") || raw 32-byte verified randomness), for i=1..8",
     "sourceLaw": "src/substrate/IntegratedMemorySystem.ts, imported by canonical ameliaNumogramSubstrateRuntime.ts",
     "cumulativeTanhLaw": "src/ai/coupling/ProcessFieldMemory.ts is NOT in canonical runtime import path",
     "noGovernorAblationOrSubstrateChange": true,
@@ -108,7 +163,11 @@
     "memorySignature": "(intact comparative wins - PFM reset comparative wins)/N>=0.25",
     "integrationSignature": "zone-b selective 0.10 suppression removes >=1 comparative win preserved under sham",
     "forkLimit": 24,
-    "Rung2ForFutureCumulativeLineage": "REQUIRES NEW PROSPECTIVE REGISTRATION BEFORE COMPARISON"
+    "Rung2ForFutureCumulativeLineage": "REQUIRES NEW PROSPECTIVE REGISTRATION BEFORE COMPARISON",
+    "referenceMappingIsPF1Specific": true,
+    "referenceSourceModule": "experiments/pf1/PF1_REFERENCE_INPUT.mjs",
+    "referenceDomainEncoding": "ASCII PF1-REF-1|, ..., PF1-REF-8|; append exact 32 raw bytes decoded from verified lowercase-hex randomness; SHA256 of concatenation, lowercase 64-hex output",
+    "baselineInflow": "C arm receives raw verified 32-byte randomness, lowercase hex, unchanged"
   },
   "durability": {
     "appendOnlyNineArmCheckpoints": true,
@@ -117,7 +176,7 @@
     "orphanRecovery": "NO AUTOMATIC LEASE EXPIRY; operator-reviewed immutable evidence reconciliation before completion",
     "forkScheduling": "pending until all 24 future verified rounds have been durably admitted, then fork never modifies primary",
     "confirmationLedger": "records candidates, nonapplicable, deferred and zero results; historical exposure denominators",
-    "journal": "only confirmed encounters visible; chained digests; 3 event/confirmation/seal times; one real RFC3161 token per entry",
+    "journal": "only confirmed encounters visible; chained digests; 3 event/confirmation/seal times; one real RFC3161 token per entry; NO automated encounter notifications or operator-facing event notifications",
     "timestampRootSha256": "2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438",
     "replayRequirement": "byte-identical source, recorded input, state and journal from genesis through latest committed head"
   },
@@ -129,16 +188,46 @@
     "runtimeMemoryLawValidatedOnly": true
   },
   "preliveGatesUnresolved": [
-    "Operator review and explicit approval of the read-only C1 Channel A full replay (run #39471040590) and audited head digest",
-    "Operator review and explicit approval of the synthetic archived-BLS hosted integration evidence (run #39473152330)",
-    "Prospective full operational source-file hashes, mapping, initial nine-arm state, pending-fork queue and journal implementation must be pinned and inspected before genesis",
-    "Operator must separately approve this unsigned manifest, then authorise creation of a future genesis and subsequently live admission"
+    "Operator review and sign-off on the completed draft and all four pinned source/data identities",
+    "Operator review of PF1-domain separation integration rerun #39498351743; reject the manifest if it fails",
+    "Separately authorised future genesis creation must assign R0 on the C1-aligned grid with fresh immutable state ledger and register its creation time; this draft performs none",
+    "Any eventual PF1 live admission requires a further explicit operational approval and must never manually dispatch C1"
   ],
   "requiredOperatorActions": [
-    "Review all read-only and synthetic evidence",
-    "Approve or amend this manifest",
-    "Separately authorise future live genesis creation and launch"
+    "Verify PF1 domain mapping and source identities against their archived validation runs",
+    "Review weekly C1 protection and absolute no-encounter-notifications policy",
+    "Approve or amend this prospective unsigned draft; approval does NOT automatically create a genesis",
+    "Only after approval, separately authorise creation of a prospective aligned genesis and subsequent live admission"
   ],
-  "operationalActionsTaken": "NONE: draft file only; no live workflow activation",
-  "evidenceFinalisedOn": "2026-10-20"
+  "operationalActionsTaken": "DRAFT UPDATE AND READ-ONLY AUDITS ONLY: no signed genesis, no PF1 live input, no manual C1 dispatch, no encounter notifications",
+  "evidenceFinalisedOn": "2026-10-20",
+  "incidentNotification": {
+    "encounterJournalOnly": true,
+    "encounterNotificationChannels": [],
+    "pushNotifications": false,
+    "emailNotifications": false,
+    "chatNotifications": false,
+    "GitHubIssues": false,
+    "webhooks": false,
+    "appAutomations": false,
+    "dashboardAlerts": false,
+    "eventDrivenMessages": false,
+    "rule": "Every encounter remains in the hash-chained scientific journal/silent ledger only. NO notification of any kind or active alert. No integrations, triggers, emails, pushes, app messages or monitoring notifications may be emitted because an encounter was detected.",
+    "readOnlyC1WeeklyAuditIsNotAnEncounterNotification": true
+  },
+  "c1Protection": {
+    "standingManualDispatchProhibition": "While C1 cron schedule is active, NEVER manually dispatch C1 workflow actions run or genesis, catch-up or rerun. Escalation requires stopping its schedule and separate operator-approved incident recovery; no exception granted here.",
+    "manualDispatchProhibitedWhileScheduleActive": true,
+    "originalC1Scheduler": "Amelia-0.4 .github/workflows/drift1a-c1.yml on amelia-1.0; cron 17 * * * *",
+    "technicalUIRestriction": false,
+    "noChannelAFileModified": true,
+    "pf1OnlyLeaseRepair": true,
+    "weeklyReadOnlyAuditWorkflow": ".github/workflows/pf1-c1-weekly-readonly.yml",
+    "weeklyAuditSchedule": "17 08 * * 1 (Monday 08:17 UTC)",
+    "weeklyAuditSourceRef": "adrianjohnsaker-wq/Amelia-0.4 branch amelia-1.0, CURRENT head",
+    "weeklyAuditOutputs": "source commit, tick count, missing/duplicate/reordered checks, current C1 head SHA-256 in GitHub Actions summary and artifact",
+    "weeklyAuditNoC1WritesOrDispatch": true,
+    "lastFullC1ReplayHead": "88b1f97897428de31305e161abd5f6bf993b621fcf146ac0440aead944a5f21f",
+    "standingPolicy": "experiments/pf1/PF1_C1_PROTECTION_AND_SILENCE_POLICY.md"
+  }
 }
