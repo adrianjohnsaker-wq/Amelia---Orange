@@ -1,0 +1,100 @@
+name: PF1 C1 Pinned Offline BLS/Cadence Compatibility (NO LIVE)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pf1-c1-offline-compat.yml'
+      - 'experiments/pf1/PF1_C1_OFFLINE_COMPAT.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  offline-fixture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: orange
+      - name: Fetch immutable original C1 source at a pinned commit
+        uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-source
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Require original Orange constants and source pin
+        shell: bash
+        working-directory: orange
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-source rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          echo 'ecabf3e40023faa0be0749908cfe6ffd3a8b9e42ab7c8a9a7c2ea5827ae63610  experiments/pf1/PF1_A1_R2_CONSTANTS.json' | sha256sum -c -
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          echo PF1_C1_OFFLINE_SOURCES_PINNED
+      - name: Install pinned C1 cryptographic verifier dependencies
+        shell: bash
+        working-directory: c1-source
+        run: |
+          set -euo pipefail
+          python -m pip install -r drift1a_c1/requirements.txt
+      - name: Independently verify pre-recorded real BLS known-answer, C1 cadence, leases; block network
+        shell: bash
+        env:
+          PF1_NO_NETWORK: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PF1_PINNED_C1_DIR: ${{ github.workspace }}/c1-source
+          PF1_C1_AUDIT_OUTPUT: ${{ github.workspace }}/orange/experiments/pf1/c1-compat-output/C1_OFFLINE_KAT.json
+          PYTHONPATH: ${{ github.workspace }}/c1-source
+        working-directory: c1-source
+        run: |
+          set -euo pipefail
+          python ../orange/experiments/pf1/PF1_C1_OFFLINE_COMPAT.py
+      - name: Confirm no live execution
+        shell: bash
+        working-directory: orange
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          p=json.load(open('experiments/pf1/c1-compat-output/C1_OFFLINE_KAT.json'))
+          assert p['offline_genuine_BLS_signature_verified']
+          assert p['C1_round_mapping_code_executed']
+          assert p['C1_source_lease_blocks_overlap']
+          assert p['no_network_requests']
+          assert p['no_beacon_rounds_admitted_to_Amelia']
+          assert not p['authorised_PF1_live_start']
+          print('PF1_C1_KAT_PASSED_WITH_NO_LIVE_ADMISSION')
+          PY
+      - name: Archive successful or failed compatibility fixtures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PF1-C1-PINNED-OFFLINE-BLS-AND-CADENCE
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            orange/experiments/pf1/PF1_C1_OFFLINE_COMPAT.py
+            orange/experiments/pf1/c1-compat-output/
+      - name: Commit compatibility data only, without genesis
+        if: always()
+        shell: bash
+        working-directory: orange
+        run: |
+          set -euo pipefail
+          if [ ! -f experiments/pf1/c1-compat-output/C1_OFFLINE_KAT.json ]; then
+            echo 'C1 compatibility incomplete, no results to commit'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/pf1/c1-compat-output/C1_OFFLINE_KAT.json
+          git diff --cached --check
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'PF1: archive pinned offline C1 BLS KAT and cadence fixture, no live admission'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
