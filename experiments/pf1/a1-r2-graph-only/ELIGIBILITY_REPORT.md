@@ -3,7 +3,7 @@
 **Mathematical calculation only. No Amelia data, no re-pilot, no live start.**
 
 - Canonical directed-graph digest: dda60b666ee8107f3bda138159091913d3291a3c7543e31ec07a5ec49baa3ecd
-- Frozen constants SHA-256: eaa16333310c9373df5c56955e768f27868dcae5d261f3ce3887bf018ab6cc8d
+- Frozen constants SHA-256: ecabf3e40023faa0be0749908cfe6ffd3a8b9e42ab7c8a9a7c2ea5827ae63610
 - 45 unordered pairs; 14 elementary directed excursions; 9 scannable pairs.
 - Exact null: uniform choice over open outgoing edges; sink dwell absorbing. Inputs do not change null transitions.
 - Via-b recovery requires b after perturbation followed by a (even when displaced initially to b).
