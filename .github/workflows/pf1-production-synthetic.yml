@@ -49,7 +49,8 @@ jobs:
       - id: create
         name: Create disposable branch containing only synthetic archived proof
         working-directory: orange
-        env: {GH_TOKEN: ${{ github.token }}}
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           branch="pf1-archived-integration-$GITHUB_RUN_ID"
@@ -73,7 +74,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-        with: {path: orange, fetch-depth: 0, ref: ${{ needs.setup.outputs.branch }}}
+        with:
+          path: orange
+          fetch-depth: 0
+          ref: ${{ needs.setup.outputs.branch }}
       - uses: actions/checkout@v4
         with:
           repository: adrianjohnsaker-wq/Amelia-0.4
@@ -131,7 +135,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-        with: {path: orange, fetch-depth: 0, ref: ${{ needs.setup.outputs.branch }}}
+        with:
+          path: orange
+          fetch-depth: 0
+          ref: ${{ needs.setup.outputs.branch }}
       - uses: actions/download-artifact@v4
         with:
           pattern: pf1-production-worker-*
@@ -139,7 +146,8 @@ jobs:
           path: /tmp/pf1-race
       - name: Record durable single lease completion and contender outcomes
         working-directory: orange
-        env: {PF1_BRANCH: ${{ needs.setup.outputs.branch }}}
+        env:
+          PF1_BRANCH: ${{ needs.setup.outputs.branch }}
         run: |
           set -euo pipefail
           git config user.name 'PF1 synthetic integration'
@@ -169,7 +177,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-        with: {path: orange, fetch-depth: 0, ref: ${{ needs.setup.outputs.branch }}}
+        with:
+          path: orange
+          fetch-depth: 0
+          ref: ${{ needs.setup.outputs.branch }}
       - uses: actions/checkout@v4
         with:
           repository: adrianjohnsaker-wq/Amelia-0.4
@@ -201,7 +212,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-        with: {path: orange, fetch-depth: 0, ref: ${{ needs.setup.outputs.branch }}}
+        with:
+          path: orange
+          fetch-depth: 0
+          ref: ${{ needs.setup.outputs.branch }}
       - uses: actions/checkout@v4
         with:
           repository: adrianjohnsaker-wq/Amelia-0.4
@@ -257,7 +271,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-        with: {path: orange, fetch-depth: 0, ref: ${{ needs.setup.outputs.branch }}}
+        with:
+          path: orange
+          fetch-depth: 0
+          ref: ${{ needs.setup.outputs.branch }}
       - uses: actions/checkout@v4
         with:
           repository: adrianjohnsaker-wq/Amelia-0.4
@@ -295,7 +312,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-        with: {path: orange, fetch-depth: 0, ref: ${{ needs.setup.outputs.branch }}}
+        with:
+          path: orange
+          fetch-depth: 0
+          ref: ${{ needs.setup.outputs.branch }}
       - uses: actions/checkout@v4
         with:
           repository: adrianjohnsaker-wq/Amelia-0.4
@@ -333,7 +353,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-        with: {path: orange, fetch-depth: 0, ref: ${{ needs.setup.outputs.branch }}}
+        with:
+          path: orange
+          fetch-depth: 0
+          ref: ${{ needs.setup.outputs.branch }}
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
       - name: Verify full nine-arm archive-driven replay and all durable completed lease records
