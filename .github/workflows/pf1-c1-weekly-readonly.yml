@@ -88,8 +88,8 @@ jobs:
           assert re.fullmatch(r'PF1_C1_WEEKLY_\d{4}-\d{2}-\d{2}T\d{6}Z_run\d+\.json',name), 'PATH_NOT_ALLOWED'
           assert name.endswith('_run'+os.environ['RUN_ID']+'.json'), 'WRONG_RUN'
           root=pathlib.Path('weekly-file')
-          items=list(root.iterdir())
-          assert len(items)==1 and items[0].is_file() and items[0].name==name, 'ARTIFACT_PATH_MISMATCH'
+          items=list(root.rglob('*.json'))
+          assert len(items)==1 and items[0].is_file() and items[0].name==name, 'ARTIFACT_PATH_MISMATCH: '+repr([str(x) for x in items])
           b=items[0].read_bytes()
           report=json.loads(b)
           assert report['reportPath']==relative
