@@ -143,8 +143,14 @@ function forks(){
  const checkpoint=stableState(rt),startingDigest=shaObj(checkpoint);
  if(eligible)assert.equal(rt.getCurrentZone(),eligible.a,'CANDIDATE_CHECKPOINT_INVALID');
  const n=eligible?enumerateInstances(eligible,scope).instances[0]:{kind:'inputDelay',startZone:rt.getCurrentZone(),id:'L2-STAGING'};
- const requiredFuture=Array.from({length:24},(_,i)=>checkpointTick+1+i);
- assert(requiredFuture.every(k=>k<=state.round),'FORKS_MUST_HAVE_ADMITTED_FUTURE');
+ const requireAdmittedFuture=(availableThrough)=>{
+  const required=Array.from({length:24},(_,i)=>checkpointTick+1+i);
+  assert(required.every(k=>k<=availableThrough),'FUTURE_INPUT_UNADMITTED');
+  return required;
+ };
+ // Counterfactual confirmation must defer, not substitute guessed future rounds.
+ assert.throws(()=>requireAdmittedFuture(checkpointTick+20),/FUTURE_INPUT_UNADMITTED/);
+ const requiredFuture=requireAdmittedFuture(state.round);
  const inputs=requiredFuture.map(k=>mappedInput(rounds[k-1],0));
  const simulate=(arm)=>{
   const branch=newRuntime(checkpoint);
@@ -165,9 +171,8 @@ function forks(){
  assert.deepEqual(sham,intact,'SHAM_NOT_PARITY');
  assert.equal(shaObj(checkpoint),startingDigest,'FORK_MUTATED_CHECKPOINT');
  assert.equal(shaObj(state.arms[0].state),mainOriginal,'FORK_MUTATED_LIVE');
- const latencyTest=()=>{const short=requiredFuture.slice(0,20);assert(short.length<24,'NOT_DELAYED')};
- // Challenge availability: 24 actual future rounds must be admitted before confirmation.
- latencyTest();
+ // The two-tick delay is a scheduling intervention, not a freeze.
+ // No future values may be synthesized before their admission.
  const L2=(()=>{
   const p={kind:'inputDelay'};
   return Array.from({length:24},(_,i)=>inputsForTick(p,i+1,inputs)??null);
@@ -199,10 +204,26 @@ function silence(){
  const digestOne=shaObj(body);
  const e={...body,digest:digestOne};
  put('seal-fixture.json',e);
- // Duplicate entry / notification id must not be appended again.
- const once=[e],seen=new Set(once.map(x=>x.digest));
- if(!seen.has(digestOne))once.push(e);
- assert.equal(once.length,1);
+ // A physically separate synthetic fixture journal, never the live encounter journal.
+ // Repeated CLI invocations must not append a duplicate entry or notification.
+ const fixturePath='synthetic-test-journal.json';
+ if(!existsSync(ROOT+fixturePath)){
+  put(fixturePath,{schema:'PF1_TEST_FIXTURE_JOURNAL_NOT_LIVE_V1',
+   entries:[e],notifications:[digestOne]});
+ }
+ const stored=read(fixturePath);
+ assert.equal(stored.entries.length,1);
+ assert.equal(stored.notifications.length,1);
+ assert.equal(stored.entries[0].digest,digestOne);
+ assert.equal(stored.notifications[0],digestOne);
+ // Simulate a repeated append call under a freshly reloaded state.
+ const repeated=canon(stored),seen=new Set(repeated.entries.map(x=>x.digest));
+ if(!seen.has(digestOne)){
+  repeated.entries.push(e);
+  repeated.notifications.push(digestOne);
+  put(fixturePath,repeated);
+ }
+ assert.deepEqual(read(fixturePath),stored,'CROSS_INVOCATION_DUPLICATE_JOURNAL');
  const tampered=canon(e);tampered.pair='7-8';
  assert.notEqual(shaObj(Object.fromEntries(Object.entries(tampered).filter(([k])=>k!=='digest'))),e.digest);
  put('silence-test.json',{schema:'PF1_SYNTH_SILENCE_V1',scannerSteps:state.round,
