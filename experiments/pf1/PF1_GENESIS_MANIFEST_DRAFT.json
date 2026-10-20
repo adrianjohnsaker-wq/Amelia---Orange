@@ -16,7 +16,7 @@
     "pf1HostedExclusiveLeaseTest": 39462224257,
     "c1ReadOnlyGenesisToHeadAudit": "PASS run #39471040590; 3,741 recorded ticks; missing=0 duplicated=0 reordered=0; genesis-head replay exact; head 88b1f97897428de31305e161abd5f6bf993b621fcf146ac0440aead944a5f21f",
     "productionIntegrationDryrun": "PASS run #39473152330; 72 archived BLS verified receipts; hosted single-winner lease + orphan recovery; 2 cross-job fork confirmations sealed with RFC3161",
-    "pf1DomainReintegrationRun": "Run #39498351743; check full result before final operator approval; archived only, never live"
+    "pf1DomainReintegrationRun": "PASS GitHub Actions run #39498351743 at exact source/adapter commit 69f367aae5c897ce9555070ed03acd23e905ff18: 72 genuine archived C1 quicknet BLS receipts; PF1-REF-i| reference input vectors and nine-arm runtime replay; hosted single-winner lease, orphan recovery; two persistent fork confirmations with independently checked RFC3161 timestamps; disposable branch cleaned"
   },
   "immutableSource": {
     "substrateRepository": "adrianjohnsaker-wq/Amelia---Orange",
@@ -80,7 +80,8 @@
         "path": "experiments/pf1/PF1_A1_R2_CONSTANTS.json",
         "sha256": "ecabf3e40023faa0be0749908cfe6ffd3a8b9e42ab7c8a9a7c2ea5827ae63610"
       }
-    ]
+    ],
+    "adapterTestedRun": 39498351743
   },
   "beacon": {
     "source": "drand quicknet",
@@ -188,10 +189,10 @@
     "runtimeMemoryLawValidatedOnly": true
   },
   "preliveGatesUnresolved": [
-    "Operator review and sign-off on the completed draft and all four pinned source/data identities",
-    "Operator review of PF1-domain separation integration rerun #39498351743; reject the manifest if it fails",
-    "Separately authorised future genesis creation must assign R0 on the C1-aligned grid with fresh immutable state ledger and register its creation time; this draft performs none",
-    "Any eventual PF1 live admission requires a further explicit operational approval and must never manually dispatch C1"
+    "Operator review and approval of this unsigned, SHA-256-pinned prospective draft and all four immutable identities",
+    "Operator inspection of completed read-only C1 replay #39471040590, weekly C1 audit #39497981393, and passed PF1-domain archived integration #39498351743",
+    "Following separate operator approval, a future genesis must select and seal R0 on C1's 20-round grid, plus publication time; this draft creates no genesis or round admission",
+    "Live observation still requires distinct explicit authorisation beyond approval of this draft; manual dispatch to scheduled C1 remains prohibited"
   ],
   "requiredOperatorActions": [
     "Verify PF1 domain mapping and source identities against their archived validation runs",
