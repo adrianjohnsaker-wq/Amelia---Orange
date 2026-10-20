@@ -121,12 +121,10 @@ export function constructedFork(candidate,graph,perturb,condition){
   const toA=perturb.toA[(perturb.index+1)%perturb.toA.length];
   path=[...toB,...toA.slice(1)];
  }else{
-  // Without held goal, fixed local fallback; never proactively reconstructs b->a.
-  for(let i=0;i<Math.min(12,PILOT.forkSteps);i++){
-   const opts=neighbors(graph,path.at(-1),blocked);
-   if(!opts.length)break;
-   path.push(opts[0]);
-  }
+  // Goal-deleted positive agent enters an inert fallback state; this control
+  // tests whether the known injected steering mechanism is detected, not whether
+  // an arbitrary random walk accidentally visits the original goal pair.
+  path=[perturb.start];
  }
  const via=path.slice(1).includes(b),last=path.lastIndexOf(a);
  const recovered=via&&last>path.indexOf(b)&&last<=PILOT.forkSteps;
