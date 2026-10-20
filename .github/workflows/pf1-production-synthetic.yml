@@ -1,0 +1,402 @@
+name: PF1 Production-Shaped Archived C1 Synthetic Integration (NO LIVE)
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf1-production-synthetic.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  setup:
+    runs-on: ubuntu-24.04
+    outputs:
+      branch: ${{ steps.create.outputs.branch }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {path: orange, fetch-depth: 0}
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-readonly
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Check sealed scientific constants and pinned C1
+        working-directory: orange
+        run: |
+          set -euo pipefail
+          echo 'ecabf3e40023faa0be0749908cfe6ffd3a8b9e42ab7c8a9a7c2ea5827ae63610  experiments/pf1/PF1_A1_R2_CONSTANTS.json' | sha256sum -c -
+          test "$(git -C ../c1-readonly rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+      - name: Verify 72 genuine ARCHIVED Quicknet BLS signatures via pinned C1 only, no fetch
+        working-directory: c1-readonly
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PF1_OFFLINE_ARCHIVE_ONLY: '1'
+          PF1_C1_SOURCE_SHA: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          PF1_ARCHIVE_FILE: ${{ github.workspace }}/orange/experiments/pf1/production-dry-run/ARCHIVED_VERIFIED_QUICKNET.json
+          PYTHONPATH: ${{ github.workspace }}/c1-readonly
+        run: |
+          set -euo pipefail
+          python -m pip install -r drift1a_c1/requirements.txt
+          python ../orange/experiments/pf1/PF1_PRODUCTION_ARCHIVED_BLS.py
+          test -z "$(git status --porcelain)"
+      - id: create
+        name: Create disposable branch containing only synthetic archived proof
+        working-directory: orange
+        env: {GH_TOKEN: ${{ github.token }}}
+        run: |
+          set -euo pipefail
+          branch="pf1-archived-integration-$GITHUB_RUN_ID"
+          gh api -X POST "repos/$GITHUB_REPOSITORY/git/refs" -f "ref=refs/heads/$branch" -f "sha=$GITHUB_SHA" >/dev/null
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          git config user.name 'PF1 synthetic integration'
+          git config user.email 'pf1@example.invalid'
+          git checkout -B "$branch"
+          npm install --no-audit --no-fund
+          npx tsx experiments/pf1/PF1_PRODUCTION_ARCHIVED_STAGE.ts init
+          git add experiments/pf1/production-dry-run/
+          git diff --cached --check
+          git commit -m 'Synthetic only: archive real BLS-verified C1 receipts and nine-arm initial checkpoint'
+          git push origin "HEAD:$branch"
+          echo PF1_SYNTHETIC_BRANCH_ARCHIVED_CHECKPOINT_READY
+  race:
+    needs: setup
+    strategy:
+      fail-fast: false
+      matrix: {worker: [1, 2]}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: {path: orange, fetch-depth: 0, ref: ${{ needs.setup.outputs.branch }}}
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-readonly
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Compete, winner durably writes 12 ticks PLUS completion in one commit
+        working-directory: orange
+        env:
+          PYTHONPATH: ${{ github.workspace }}/orange/experiments/pf1:${{ github.workspace }}/c1-readonly
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PF1_BRANCH: ${{ needs.setup.outputs.branch }}
+          PF1_WORKER: ${{ matrix.worker }}
+        run: |
+          set -euo pipefail
+          git config user.name 'PF1 synthetic integration'
+          git config user.email 'pf1@example.invalid'
+          python - <<'PY'
+          import json,os
+          from PF1_SAFE_LEASE import acquire
+          wid=os.environ['PF1_WORKER']+'-1'
+          try:
+            result=acquire(wid,branch=os.environ['PF1_BRANCH'])
+            status='ACKNOWLEDGED'
+          except Exception as exc:
+            result={'refusal':str(exc)[-500:]}
+            status='REJECTED'
+          with open('/tmp/pf1-worker-receipt.json','w') as f:
+            json.dump({'worker':wid,'status':status,'detail':result,'live':False},f,indent=2)
+          print('PF1_ARCHIVED_RACE_LEASE',status,wid)
+          PY
+          if grep -q '"ACKNOWLEDGED"' /tmp/pf1-worker-receipt.json; then
+            npm install --no-audit --no-fund
+            npx tsx experiments/pf1/PF1_PRODUCTION_ARCHIVED_STAGE.ts stage 12
+            python -m drift1a_c1.runner complete "$PF1_WORKER-1"
+            git add experiments/pf1/production-dry-run/output/ drift1a_c1/runner_state/
+            git diff --cached --check
+            git commit -m "PF1 archived fixture: 12 event ledger ticks and completed lease atomically worker $PF1_WORKER"
+            git push origin "HEAD:$PF1_BRANCH"
+          fi
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pf1-production-worker-${{ matrix.worker }}
+          path: /tmp/pf1-worker-receipt.json
+          retention-days: 90
+          if-no-files-found: warn
+  audit-race:
+    needs: [setup, race]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: {path: orange, fetch-depth: 0, ref: ${{ needs.setup.outputs.branch }}}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: pf1-production-worker-*
+          merge-multiple: true
+          path: /tmp/pf1-race
+      - name: Record durable single lease completion and contender outcomes
+        working-directory: orange
+        env: {PF1_BRANCH: ${{ needs.setup.outputs.branch }}}
+        run: |
+          set -euo pipefail
+          git config user.name 'PF1 synthetic integration'
+          git config user.email 'pf1@example.invalid'
+          python - <<'PY'
+          import json,glob,pathlib
+          p=pathlib.Path('experiments/pf1/production-dry-run/output')
+          records=[json.load(open(f)) for f in glob.glob('/tmp/pf1-race/*.json')]
+          assert len(records)==2
+          ack=[x for x in records if x['status']=='ACKNOWLEDGED']
+          denied=[x for x in records if x['status']=='REJECTED']
+          leases=list(pathlib.Path('drift1a_c1/runner_state/leases').glob('*.json'))
+          completions=list(pathlib.Path('drift1a_c1/runner_state/completions').glob('*.json'))
+          state=json.load(open(p/'STATE.json'))
+          assert len(ack)==len(denied)==len(leases)==len(completions)==1 and state['tick']==12
+          out={'schema':'PF1_PRODUCTION_HOSTED_RACE_V1','workerCount':2,
+               'acknowledgedCount':1,'rejectedCount':1,'durableLeaseCountAfterClaim':1,
+               'firstLeaseCompleted':True,'contenders':records,'live':False}
+          (p/'WORKER_ACKNOWLEDGEMENTS.json').write_text(json.dumps(out,indent=2,sort_keys=True)+'\n')
+          print('PF1_ARCHIVED_HOSTED_SINGLE_COMPLETE_PASS')
+          PY
+          git add experiments/pf1/production-dry-run/output/WORKER_ACKNOWLEDGEMENTS.json
+          git commit -m 'Record hosted synthetic exclusive admission and completed lease'
+          git push origin "HEAD:$PF1_BRANCH"
+  orphan:
+    needs: [setup, audit-race]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: {path: orange, fetch-depth: 0, ref: ${{ needs.setup.outputs.branch }}}
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-readonly
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Inject synthetic orphan after ACK but before ingestion (no state change)
+        working-directory: orange
+        env:
+          PYTHONPATH: ${{ github.workspace }}/orange/experiments/pf1:${{ github.workspace }}/c1-readonly
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PF1_BRANCH: ${{ needs.setup.outputs.branch }}
+        run: |
+          set -euo pipefail
+          git config user.name 'PF1 synthetic integration'
+          git config user.email 'pf1@example.invalid'
+          python - <<'PY'
+          import os
+          from PF1_SAFE_LEASE import acquire
+          p=acquire('90-1',branch=os.environ['PF1_BRANCH'])
+          assert p['admission_authorized'] is True
+          print('PF1_INTENTIONAL_TEST_ORPHAN_OPEN_WITHOUT_INGESTION')
+          PY
+  recover:
+    needs: [setup, orphan]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: {path: orange, fetch-depth: 0, ref: ${{ needs.setup.outputs.branch }}}
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-readonly
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Block second admission, reconcile unchanged checkpoint with documented orphan completion
+        working-directory: orange
+        env:
+          PYTHONPATH: ${{ github.workspace }}/orange/experiments/pf1:${{ github.workspace }}/c1-readonly
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PF1_BRANCH: ${{ needs.setup.outputs.branch }}
+        run: |
+          set -euo pipefail
+          git config user.name 'PF1 synthetic integration'
+          git config user.email 'pf1@example.invalid'
+          python - <<'PY'
+          import os,json,pathlib,hashlib
+          from PF1_SAFE_LEASE import acquire
+          from drift1a_c1.runner import complete
+          p=pathlib.Path('experiments/pf1/production-dry-run/output')
+          state=p/'STATE.json'
+          digest=lambda:hashlib.sha256(state.read_bytes()).hexdigest()
+          before=digest();s=json.loads(state.read_text());assert s['tick']==12
+          refused=False
+          try:acquire('91-1',branch=os.environ['PF1_BRANCH'])
+          except Exception as e:
+            assert 'already leased' in str(e)
+            refused=True
+          assert refused
+          assert digest()==before
+          complete('drift1a_c1/runner_state','90-1')
+          report={'schema':'PF1_TEST_ORPHAN_RECONCILIATION_V1',
+           'sourceLease':'90-1','noInputsConsumedDuringOrphan':True,
+           'contenderBlockedWhileOrphanOpen':refused,
+           'beforeRecoveryCheckpointSha256':before,
+           'afterRecoveryCheckpointSha256':digest(),
+           'firstCompletedOnRemote':True,
+           'syntheticManualRecoveryNotAutomaticLeaseExpiry':True,'live':False}
+          assert report['beforeRecoveryCheckpointSha256']==report['afterRecoveryCheckpointSha256']
+          (p/'RECOVERY.json').write_text(json.dumps(report,sort_keys=True,indent=2)+'\n')
+          print('PF1_ARCHIVED_ORPHAN_RECONCILED',report)
+          PY
+          git add experiments/pf1/production-dry-run/output/RECOVERY.json drift1a_c1/runner_state/completions/
+          git diff --cached --check
+          git commit -m 'PF1 synthetic orphan: no ingestion, audited completion and unchanged checkpoint'
+          git push origin "HEAD:$PF1_BRANCH"
+  stage48:
+    needs: [setup, recover]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: {path: orange, fetch-depth: 0, ref: ${{ needs.setup.outputs.branch }}}
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-readonly
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Authorised synthetic lease, durable 48 ticks and first per-entry RFC3161
+        working-directory: orange
+        env:
+          PYTHONPATH: ${{ github.workspace }}/orange/experiments/pf1:${{ github.workspace }}/c1-readonly
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PF1_BRANCH: ${{ needs.setup.outputs.branch }}
+        run: |
+          set -euo pipefail
+          git config user.name 'PF1 synthetic integration'
+          git config user.email 'pf1@example.invalid'
+          python -c "from PF1_SAFE_LEASE import acquire; assert acquire('91-1',branch='$PF1_BRANCH')['admission_authorized']"
+          npm install --no-audit --no-fund
+          npx tsx experiments/pf1/PF1_PRODUCTION_ARCHIVED_STAGE.ts stage 48
+          npx tsx experiments/pf1/PF1_PRODUCTION_ARCHIVED_STAGE.ts confirm
+          npx tsx experiments/pf1/PF1_PRODUCTION_ARCHIVED_STAGE.ts verify
+          bash experiments/pf1/PF1_PRODUCTION_SEAL.sh
+          python -m drift1a_c1.runner complete 91-1
+          git add experiments/pf1/production-dry-run/output/ drift1a_c1/runner_state/
+          git diff --cached --check
+          git commit -m 'PF1 archived intake: 48 ticks, completed fork1 with actual FreeTSA seal, lease completion'
+          git push origin "HEAD:$PF1_BRANCH"
+  stage72:
+    needs: [setup, stage48]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: {path: orange, fetch-depth: 0, ref: ${{ needs.setup.outputs.branch }}}
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-readonly
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Second future-confirmed fork, verify BOTH RFC3161 tokens, commit completion
+        working-directory: orange
+        env:
+          PYTHONPATH: ${{ github.workspace }}/orange/experiments/pf1:${{ github.workspace }}/c1-readonly
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PF1_BRANCH: ${{ needs.setup.outputs.branch }}
+        run: |
+          set -euo pipefail
+          git config user.name 'PF1 synthetic integration'
+          git config user.email 'pf1@example.invalid'
+          python -c "from PF1_SAFE_LEASE import acquire; assert acquire('92-1',branch='$PF1_BRANCH')['admission_authorized']"
+          npm install --no-audit --no-fund
+          npx tsx experiments/pf1/PF1_PRODUCTION_ARCHIVED_STAGE.ts stage 72
+          npx tsx experiments/pf1/PF1_PRODUCTION_ARCHIVED_STAGE.ts confirm
+          npx tsx experiments/pf1/PF1_PRODUCTION_ARCHIVED_STAGE.ts verify
+          bash experiments/pf1/PF1_PRODUCTION_SEAL.sh
+          python -m drift1a_c1.runner complete 92-1
+          git add experiments/pf1/production-dry-run/output/ drift1a_c1/runner_state/
+          git diff --cached --check
+          git commit -m 'PF1 archived intake: 72 ticks, second confirmed fork sealed, no live'
+          git push origin "HEAD:$PF1_BRANCH"
+  audit:
+    needs: [setup, stage72]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: {path: orange, fetch-depth: 0, ref: ${{ needs.setup.outputs.branch }}}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Verify full nine-arm archive-driven replay and all durable completed lease records
+        working-directory: orange
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          npx tsx experiments/pf1/PF1_PRODUCTION_ARCHIVED_STAGE.ts replay
+          npx tsx experiments/pf1/PF1_PRODUCTION_ARCHIVED_STAGE.ts verify
+          python - <<'PY'
+          import pathlib,json
+          root=pathlib.Path('drift1a_c1/runner_state')
+          leases=list((root/'leases').glob('*.json'));completions=list((root/'completions').glob('*.json'))
+          assert len(leases)==len(completions)==4 # first winner + orphan + 91-1 + 92-1
+          assert sorted(x.name for x in leases)==sorted(x.name for x in completions)
+          a=json.load(open('experiments/pf1/production-dry-run/output/JOURNAL.json'))
+          assert len(a['entries'])==2
+          print('PF1_ALL_FOUR_LEASES_ATOMICALLY_RECONCILED')
+          PY
+          touch experiments/pf1/production-dry-run/output/REPLAY_EXACT
+          node experiments/pf1/PF1_PRODUCTION_SYNTHETIC_REPORT.mjs
+      - name: Archive complete checked production-shaped synthetic evidence before scratch-branch deletion
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PF1-ARCHIVED-BLS-HOSTED-LEASE-FORK-SEALS-INTEGRATION
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            orange/experiments/pf1/PF1_PRODUCTION_SYNTHETIC_INTEGRATION_REPORT.md
+            orange/experiments/pf1/production-dry-run/
+            orange/drift1a_c1/runner_state/
+      - name: Publish only final review report on main; leave frozen C1 untouched
+        if: always()
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          p=experiments/pf1/PF1_PRODUCTION_SYNTHETIC_INTEGRATION_REPORT.md
+          if [ ! -f "$p" ]; then exit 0; fi
+          cp "$p" /tmp/PF1_PRODUCTION_SYNTHETIC_INTEGRATION_REPORT.md
+          git fetch origin main
+          git checkout -B main origin/main
+          cp /tmp/PF1_PRODUCTION_SYNTHETIC_INTEGRATION_REPORT.md "$p"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$p"
+          git diff --cached --check
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'PF1 archive actual hosted synthetic production integration evidence, no live start'
+          git push origin HEAD:main
+  cleanup:
+    needs: [setup, race, audit-race, orphan, recover, stage48, stage72, audit]
+    if: always() && needs.setup.result == 'success'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Remove only this run's disposable synthetic integration branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PF1_BRANCH: ${{ needs.setup.outputs.branch }}
+        run: |
+          set -euo pipefail
+          test "$PF1_BRANCH" = "pf1-archived-integration-$GITHUB_RUN_ID"
+          gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/$PF1_BRANCH" >/dev/null
+          echo PF1_SYNTHETIC_BRANCH_DELETED
