@@ -26,6 +26,7 @@ serial=tsa/local/serial
 signer_cert=tsa/local/tsa.crt
 certs=tsa/local/root.pem
 signer_key=tsa/local/tsa.key
+signer_digest=sha256
 default_policy=1.3.6.1.4.1.13762.3
 digests=sha256
 accuracy=secs:1
