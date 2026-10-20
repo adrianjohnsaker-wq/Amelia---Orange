@@ -35,8 +35,12 @@ const candidateId=process.argv[2];
 const window=Number(process.argv[3]);
 if(!manifest.candidates.includes(candidateId)||!manifest.windows.includes(window))
  throw Error('D1_MANIFEST_ONLY_CANDIDATE_AND_WINDOW');
-const params=prior.candidates.find((c:any)=>c.id===candidateId) as PFMEncodingMagnitudes & {id:string};
-assert(params);
+const candidateRecord=prior.candidates.find((c:any)=>c.id===candidateId);
+assert(candidateRecord);
+const params:PFMEncodingMagnitudes={
+ yin:candidateRecord.yin,yang:candidateRecord.yang,movement:candidateRecord.movement,
+ phaseCoherence:candidateRecord.phaseCoherence,strainRelaxation:candidateRecord.strainRelaxation
+};
 const names:ReadoutName[]=['ACTIVATION','PFM_STRAIN'];
 const referenceSeed=manifest.reference.seed+window*104729;
 const rr=rng(referenceSeed);
