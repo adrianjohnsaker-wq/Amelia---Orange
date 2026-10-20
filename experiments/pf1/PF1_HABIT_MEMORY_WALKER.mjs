@@ -88,7 +88,10 @@ export class HabitMemoryWalker {
    zoneTrace.push(clone.zone);
   }
   assert(zoneTrace.length===25);
-  return {zones:zoneTrace,digest:digest(zoneTrace),stateDigest:digest(clone.snapshot()),
+  return {zones:zoneTrace,digest:digest(zoneTrace),stateDigest:digest({zone:clone.zone,step:clone.stepCount,
+    pfmDigest:clone.pfm.exportHistoryDigest(),
+    tensor:clone.pfm.getConstitutiveDeformationTensor(),
+    bias:clone.pfm.readMemoryBias().biasVector}),
    schedule:instance.kind==='inputDelay'?'L2':null,
    evidence:{inputDigest:digest(consumed),firstTransitions:transitionEvidence.slice(0,4),
     historyLength:clone.pfm.getHistory().length,
