@@ -1,0 +1,165 @@
+name: PF1-A1 R2 — Seal Graph-Only Constants and Exact Null (NO REPILOT)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pf1-a1-r2-seal.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  graph-only-seal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Require frozen unchanged substrate and earlier experimental code
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e b67ec92e1cec13e9500d87292d59605428fb467e^{commit}
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- \
+            src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          printf '%s\n' \
+            '7cc89cc99b25b35ec2311ee12e18d5fec60986664e05f156ced7ff33d59763e4  experiments/pf1/core.mjs' \
+            '44f3eef4e55fc6b7bc8f86604ddf14b4152394d440db39a95fdf6004e724175b  experiments/pf1/pilot.ts' \
+            '741cf541e6eda6973118ecb86018f6d1e69978a01603ac985ff6b4d091b08521  experiments/pf1/pandemonium-45.json' |
+            sha256sum -c -
+          test ! -e experiments/pf1/PF1_A1_R2_REPILOT_REPORT.md
+          echo PF1_A1_NO_AMELIA_SOURCE_OR_THRESHOLDS_CHANGED
+      - name: Calculate ALL exact 0–24 null curves and graph-only 45 pair eligibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          node experiments/pf1/PF1_A1_R2_EXACT_NULL.mjs
+          mkdir -p /tmp/pf1-a1-r2-proof
+          cp experiments/pf1/a1-r2-graph-only/*.json /tmp/pf1-a1-r2-proof/
+          cp experiments/pf1/a1-r2-graph-only/*.md /tmp/pf1-a1-r2-proof/
+          node experiments/pf1/PF1_A1_R2_EXACT_NULL.mjs
+          cmp /tmp/pf1-a1-r2-proof/ELIGIBILITY_45.json experiments/pf1/a1-r2-graph-only/ELIGIBILITY_45.json
+          cmp /tmp/pf1-a1-r2-proof/EXACT_NULL_CURVES.json experiments/pf1/a1-r2-graph-only/EXACT_NULL_CURVES.json
+          cmp /tmp/pf1-a1-r2-proof/ELIGIBILITY_REPORT.md experiments/pf1/a1-r2-graph-only/ELIGIBILITY_REPORT.md
+          echo PF1_A1_R2_GRAPH_ONLY_BYTE_IDENTICAL
+      - name: Create prospective content-hash seal manifest and verify expected 7 pairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          import {createHash} from 'node:crypto';
+          const base='experiments/pf1/';
+          const dir=base+'a1-r2-graph-only/';
+          const paths=[
+           base+'PF1_A1_R2_CONSTANTS.json',
+           base+'PF1_A1_R2_AMENDMENT.md',
+           base+'PF1_A1_R2_EXACT_NULL.mjs',
+           'src/ai/numogram/AmeliaQabbalaInterface.ts',
+           base+'pandemonium-45.json',
+           dir+'ELIGIBILITY_45.json',
+           dir+'EXACT_NULL_CURVES.json',
+           dir+'ELIGIBILITY_REPORT.md'
+          ];
+          const sha=p=>createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+          const e=JSON.parse(fs.readFileSync(dir+'ELIGIBILITY_45.json','utf8'));
+          const expected=['1-2','2-4','2-7','2-9','4-7','7-8','8-9'];
+          assert.deepEqual(e.eligiblePairs,expected);
+          assert.equal(e.allPairs,45);
+          assert.equal(e.eligiblePairCount,7);
+          assert.equal(e.noAmeliaDataUsed,true);
+          assert.equal(e.noExperimentalRun,true);
+          assert.equal(e.liveAuthorized,false);
+          const curves=JSON.parse(fs.readFileSync(dir+'EXACT_NULL_CURVES.json','utf8'));
+          assert.equal(curves.allCurves.length,e.totalCurves);
+          for(const c of curves.allCurves){
+           assert.equal(c.curve.length,25);
+           assert.equal(c.curve[0].cdfNumerator,0);
+           for(let t=0;t<=24;t++){
+            const point=c.curve[t];
+            assert.equal(point.t,t);
+            assert.equal(point.cdfDenominator,2**t);
+            assert(point.cdfNumerator>=0&&point.cdfNumerator<=point.cdfDenominator);
+           }
+          }
+          const frozen=JSON.parse(fs.readFileSync(base+'PF1_A1_R2_CONSTANTS.json','utf8'));
+          assert.equal(frozen.provenance.rePilotAuthorized,false);
+          assert.equal(frozen.provenance.liveStartAuthorized,false);
+          assert.equal(frozen.null.alphaNumerator,1);
+          assert.equal(frozen.null.alphaDenominator,4);
+          assert.deepEqual(frozen.controls.positiveEligiblePairsExpected,expected);
+          const manifest={
+           schema:'PF1_A1_R2_PROSPECTIVE_CONSTANTS_SEAL_V1',
+           scientificRun:'NOT_AUTHORISED',
+           liveStart:'NOT_AUTHORISED',
+           sealedFromCommit:process.env.GITHUB_SHA,
+           interpretation:'Fixed operator-approved revisions, graph-only math. Separate operator review before repilot.',
+           canonicalGraphDigest:e.canonicalGraphDigest,
+           exactDyadicCurves:true,all45Pairs:true,byteReplay:true,
+           totalInstanceCurves:e.totalCurves,
+           eligiblePairs:expected,positiveFixtures:21,
+           alpha:'1/4',maxTick:24,freezeWithheld:true,
+           maximumAmeliaForks:24,nullReferencePhysicalForks:0,
+           hashes:paths.map(path=>({path,sha256:sha(path)})),
+           beaconRoundsConsumed:0,ameliaDevelopmentStepsExecuted:0
+          };
+          fs.writeFileSync(dir+'PF1_A1_R2_SEAL_MANIFEST.json',JSON.stringify(manifest,null,2)+'\n');
+          console.log('PF1_A1_R2_CONTENT_SEALED_FOR_REVIEW',JSON.stringify({eligible:expected,curves:e.totalCurves,constants:sha(base+'PF1_A1_R2_CONSTANTS.json')}));
+          JS
+      - name: Obtain real RFC3161 token over hash seal manifest, verify offline with PINNED FreeTSA root
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir=experiments/pf1/a1-r2-graph-only
+          mkdir -p "$dir/seal"
+          curl -fsSL --retry 3 --max-time 30 \
+            https://freetsa.org/files/cacert.pem -o "$dir/seal/cacert.pem"
+          printf '%s  %s\n' \
+           2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438 \
+           "$dir/seal/cacert.pem" | sha256sum -c -
+          curl -fsSL --retry 3 --max-time 30 \
+            https://freetsa.org/files/tsa.crt -o "$dir/seal/tsa.crt"
+          printf '%s  %s\n' \
+           8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467 \
+           "$dir/seal/tsa.crt" | sha256sum -c -
+          openssl ts -query -data "$dir/PF1_A1_R2_SEAL_MANIFEST.json" \
+            -no_nonce -sha256 -cert -out "$dir/seal/constants.tsq"
+          curl -fsSL --retry 3 --retry-all-errors --max-time 60 \
+            -H 'Content-Type: application/timestamp-query' \
+            --data-binary @"$dir/seal/constants.tsq" \
+            https://freetsa.org/tsr -o "$dir/seal/constants.tsr"
+          openssl ts -verify -queryfile "$dir/seal/constants.tsq" \
+            -in "$dir/seal/constants.tsr" \
+            -CAfile "$dir/seal/cacert.pem" \
+            -untrusted "$dir/seal/tsa.crt" | grep -q 'Verification: OK'
+          sha256sum "$dir/PF1_A1_R2_SEAL_MANIFEST.json" \
+            "$dir/seal/constants.tsr" > "$dir/seal/VERIFIED_SHA256SUMS.txt"
+          echo PF1_A1_R2_RFC3161_INDEPENDENT_TIMESTAMP_VERIFIED
+      - name: Archive read-only graph maths and prospective RFC3161 seal
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PF1-A1-R2-GRAPH-ONLY-CONSTANTS-SEALED
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            experiments/pf1/PF1_A1_R2_AMENDMENT.md
+            experiments/pf1/PF1_A1_R2_CONSTANTS.json
+            experiments/pf1/PF1_A1_R2_EXACT_NULL.mjs
+            experiments/pf1/a1-r2-graph-only/
+      - name: Commit sealed definitions, all null curves and eligibility report — NEVER run re-pilot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/pf1/a1-r2-graph-only/
+          git diff --cached --check
+          git commit -m 'Seal PF1-A1 R2 exact canonical null and prospective constants (no repilot)'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
