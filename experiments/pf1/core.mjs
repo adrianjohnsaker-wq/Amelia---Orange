@@ -80,11 +80,13 @@ export function findExcursions(zones,graph){
 }
 export function findCandidates(zones,graph,windowSteps=PILOT.windowSteps,required=PILOT.recurrenceCount){
  const excursions=findExcursions(zones,graph);
- const seen=new Set(),candidates=[];
+ const lastDetection=new Map(),candidates=[];
  for(const x of excursions){
   const group=excursions.filter(y=>y.key===x.key&&y.end<=x.end&&y.end>=x.end-windowSteps+1);
-  if(group.length>=required&&!seen.has(x.key)){
-   seen.add(x.key);candidates.push({...x,recurrences:group.length,mostRecent:group.at(-1)});
+  const previous=lastDetection.get(x.key);
+  if(group.length>=required&&(previous===undefined||x.end-previous>=windowSteps)){
+   lastDetection.set(x.key,x.end);
+   candidates.push({...x,recurrences:group.length,mostRecent:group.at(-1)});
   }
  }
  return {excursions,candidates};
