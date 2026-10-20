@@ -1,0 +1,50 @@
+name: PF1 Habit Memory Negative (SYNTHETIC ONLY)
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf1-habit-negative.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  negative:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Verify substrate and sealed A1 constants
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          echo 'ecabf3e40023faa0be0749908cfe6ffd3a8b9e42ab7c8a9a7c2ea5827ae63610  experiments/pf1/PF1_A1_R2_CONSTANTS.json' | sha256sum -c -
+          echo PF1_SEAL_AND_SUBSTRATE_UNCHANGED
+      - run: npm install --no-audit --no-fund
+      - name: Run pinned PFM habit-memory canonical negative, synthetic 10000
+        run: npx tsx experiments/pf1/PF1_HABIT_NEGATIVE.ts
+      - name: Archive regardless of zero-encounter status
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PF1-HABIT-NEGATIVE-EVIDENCE
+          retention-days: 90
+          path: |
+            experiments/pf1/PF1_HABIT_NEGATIVE.ts
+            experiments/pf1/habit-negative/
+      - name: Commit results only, never launch live
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f experiments/pf1/habit-negative/HABIT_NEGATIVE_REPORT.md ]; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/pf1/habit-negative/
+          git diff --cached --check
+          git commit -m 'Archive PF1 habit-memory negative and pinned PFM discrepancy; NO live start'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
