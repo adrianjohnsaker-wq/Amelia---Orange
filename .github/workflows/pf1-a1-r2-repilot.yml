@@ -1,0 +1,119 @@
+name: PF1-A1 R2 Authorised Synthetic Re-Pilot (NO LIVE START)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pf1-a1-r2-repilot.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  synthetic-repilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 95
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Hard invariants—unchanged substrate, original PF1 code, fully pinned sealed A1 constants
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e b67ec92e1cec13e9500d87292d59605428fb467e^{commit}
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- \
+            src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          printf '%s\n' \
+            'ecabf3e40023faa0be0749908cfe6ffd3a8b9e42ab7c8a9a7c2ea5827ae63610  experiments/pf1/PF1_A1_R2_CONSTANTS.json' \
+            '7cc89cc99b25b35ec2311ee12e18d5fec60986664e05f156ced7ff33d59763e4  experiments/pf1/core.mjs' \
+            '44f3eef4e55fc6b7bc8f86604ddf14b4152394d440db39a95fdf6004e724175b  experiments/pf1/pilot.ts' \
+            '741cf541e6eda6973118ecb86018f6d1e69978a01603ac985ff6b4d091b08521  experiments/pf1/pandemonium-45.json' |
+            sha256sum -c -
+          test ! -e experiments/pf1/a1-r2-repilot-output/LIVE_GENESIS
+          echo PF1_A1_R2_SEALED_CONSTANTS_AND_SUBSTRATE_UNCHANGED
+      - run: npm install --no-audit --no-fund
+      - name: Revalidate math-only exact null curves before exposing synthetic Amelia data
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/pf1-a1-null-pinned
+          cp experiments/pf1/a1-r2-graph-only/ELIGIBILITY_45.json /tmp/pf1-a1-null-pinned/
+          cp experiments/pf1/a1-r2-graph-only/EXACT_NULL_CURVES.json /tmp/pf1-a1-null-pinned/
+          cp experiments/pf1/a1-r2-graph-only/ELIGIBILITY_REPORT.md /tmp/pf1-a1-null-pinned/
+          node experiments/pf1/PF1_A1_R2_EXACT_NULL.mjs
+          cmp experiments/pf1/a1-r2-graph-only/ELIGIBILITY_45.json /tmp/pf1-a1-null-pinned/ELIGIBILITY_45.json
+          cmp experiments/pf1/a1-r2-graph-only/EXACT_NULL_CURVES.json /tmp/pf1-a1-null-pinned/EXACT_NULL_CURVES.json
+          cmp experiments/pf1/a1-r2-graph-only/ELIGIBILITY_REPORT.md /tmp/pf1-a1-null-pinned/ELIGIBILITY_REPORT.md
+          echo PF1_A1_R2_EXACT_NULL_BYTE_IDENTICAL
+      - name: Execute nine negative controls, seven distinct constructed positives, then Amelia synthetic 10000 steps
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx tsx experiments/pf1/PF1_A1_R2_REPILOT.ts
+      - name: Assemble synthetic-only hash-chained journal with separate clocks
+        run: node experiments/pf1/PF1_A1_R2_FINALISE.mjs
+      - name: Deterministic replay and byte-identical journal, silent ledger and controls evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT=experiments/pf1/a1-r2-repilot-output
+          mkdir -p /tmp/pf1-r2-replay
+          cp "$OUT/journal.jsonl" "$OUT/exposure-ledger.json" "$OUT/negative-coverage.json" \
+            "$OUT/constructed-positive-fixtures.json" "$OUT/encounter-prepared.json" /tmp/pf1-r2-replay/
+          npx tsx experiments/pf1/PF1_A1_R2_REPILOT.ts
+          node experiments/pf1/PF1_A1_R2_FINALISE.mjs
+          for f in journal.jsonl exposure-ledger.json negative-coverage.json constructed-positive-fixtures.json encounter-prepared.json; do
+            cmp "/tmp/pf1-r2-replay/$f" "$OUT/$f"
+          done
+          touch "$OUT/REPLAY_PASS"
+          echo PF1_A1_R2_ALL_CONTROL_JOURNAL_LEDGER_REPLAY_BYTE_IDENTICAL
+      - name: RFC3161 local per-entry and genuine pinned FreeTSA seals
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash experiments/pf1/PF1_A1_R2_SEAL.sh
+      - name: Publish complete report—NO-GO if any scientific or engineering gate fails
+        shell: bash
+        run: |
+          set -euo pipefail
+          node experiments/pf1/PF1_A1_R2_MAKE_REPORT.mjs
+      - name: Archive all evidence, failed runs too
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PF1-A1-R2-SYNTHETIC-REPILOT-EVIDENCE
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            experiments/pf1/PF1_A1_R2_REPILOT_REPORT.md
+            experiments/pf1/PF1_A1_R2_CONSTANTS.json
+            experiments/pf1/PF1_A1_R2_SCORER.mjs
+            experiments/pf1/PF1_A1_R2_REPILOT.ts
+            experiments/pf1/PF1_A1_R2_FINALISE.mjs
+            experiments/pf1/PF1_A1_R2_MAKE_REPORT.mjs
+            experiments/pf1/PF1_A1_R2_SEAL.sh
+            experiments/pf1/a1-r2-graph-only/ELIGIBILITY_45.json
+            experiments/pf1/a1-r2-graph-only/EXACT_NULL_CURVES.json
+            experiments/pf1/a1-r2-graph-only/PF1_A1_R2_SEAL_MANIFEST.json
+            experiments/pf1/a1-r2-repilot-output/
+      - name: Commit report, all evidence and provenance even for scientific NO-GO
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f experiments/pf1/PF1_A1_R2_REPILOT_REPORT.md ]; then
+            echo "No validated report generated; artifact/logs are the failure evidence."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/pf1/PF1_A1_R2_REPILOT_REPORT.md
+          git add experiments/pf1/a1-r2-repilot-output/*.json
+          git add experiments/pf1/a1-r2-repilot-output/*.jsonl
+          git diff --cached --check
+          git commit -m 'Archive PF1-A1 R2 synthetic repilot, negative specificity coverage, fixture independence; no live start'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
