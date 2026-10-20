@@ -1,0 +1,75 @@
+name: PF1 Prospective Safe Lease Local Git Race (SYNTHETIC NO LIVE)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pf1-safe-lease-race.yml'
+      - 'experiments/pf1/PF1_SAFE_LEASE.py'
+      - 'experiments/pf1/PF1_SAFE_LEASE_RACE.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  isolated-six-races:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: orange
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          persist-credentials: false
+          path: c1-source
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Ensure original C1 history and scientific parameters are untouched
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-source rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          echo 'ecabf3e40023faa0be0749908cfe6ffd3a8b9e42ab7c8a9a7c2ea5827ae63610  experiments/pf1/PF1_A1_R2_CONSTANTS.json' | sha256sum -c -
+          echo UNCHANGED_C1_AND_A1_R2
+      - name: Run six dual-process local Git admission races using prospective fail-closed PF1 lease
+        working-directory: orange
+        shell: bash
+        env:
+          PF1_PINNED_C1_DIR: ${{ github.workspace }}/c1-source
+          PF1_RACE_OUTPUT: ${{ github.workspace }}/orange/experiments/pf1/c1-compat-output/PF1_SAFE_GIT_LEASE_RACE.json
+          PF1_NO_NETWORK: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        run: |
+          set -euo pipefail
+          python experiments/pf1/PF1_SAFE_LEASE_RACE.py
+      - name: Archive outcome, fail-closed if duplicate lease detected
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PF1-PROSPECTIVE-SAFE-LEASE-LOCAL-GIT-RACE
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            orange/experiments/pf1/PF1_SAFE_LEASE.py
+            orange/experiments/pf1/PF1_SAFE_LEASE_RACE.py
+            orange/experiments/pf1/c1-compat-output/PF1_SAFE_GIT_LEASE_RACE.json
+      - name: Commit independent test result, not a live activation
+        if: always()
+        shell: bash
+        working-directory: orange
+        run: |
+          set -euo pipefail
+          p=experiments/pf1/c1-compat-output/PF1_SAFE_GIT_LEASE_RACE.json
+          if [ ! -f "$p" ]; then exit 0; fi
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config user.name 'github-actions[bot]'
+          git add "$p"
+          git diff --cached --check
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Archive local-only PF1 prospective fail-closed lease race (no live admission)'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
