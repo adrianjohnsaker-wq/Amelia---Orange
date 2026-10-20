@@ -1,0 +1,1141 @@
+{
+  "schema": "PF1_A1_GRAPH_ONLY_DRAFT_V0_1",
+  "status": "DRAFT_FOR_OPERATOR_REVIEW_NOT_EXECUTED",
+  "baseSubstrateCommit": "b67ec92e1cec13e9500d87292d59605428fb467e",
+  "sourceCanonicalFile": "src/ai/numogram/AmeliaQabbalaInterface.ts",
+  "sourceMatrixFile": "experiments/pf1/pandemonium-45.json",
+  "canonicalEdges": [
+    [
+      0,
+      9
+    ],
+    [
+      1,
+      8
+    ],
+    [
+      2,
+      7
+    ],
+    [
+      3,
+      6
+    ],
+    [
+      4,
+      5
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      2,
+      4
+    ],
+    [
+      4,
+      7
+    ],
+    [
+      7,
+      8
+    ],
+    [
+      8,
+      9
+    ],
+    [
+      9,
+      1
+    ]
+  ],
+  "distinctEdges": 11,
+  "scannerDefinition": "farthest visited zone by shortest directed return distance to anchor, ties earliest",
+  "directedSimpleCycles": 14,
+  "examples": [
+    {
+      "anchor": 1,
+      "turn": 8,
+      "path": [
+        1,
+        8,
+        9,
+        1
+      ]
+    },
+    {
+      "anchor": 1,
+      "turn": 2,
+      "path": [
+        1,
+        2,
+        7,
+        8,
+        9,
+        1
+      ]
+    },
+    {
+      "anchor": 1,
+      "turn": 2,
+      "path": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        9,
+        1
+      ]
+    },
+    {
+      "anchor": 2,
+      "turn": 7,
+      "path": [
+        2,
+        7,
+        8,
+        9,
+        1,
+        2
+      ]
+    },
+    {
+      "anchor": 2,
+      "turn": 4,
+      "path": [
+        2,
+        4,
+        7,
+        8,
+        9,
+        1,
+        2
+      ]
+    },
+    {
+      "anchor": 4,
+      "turn": 7,
+      "path": [
+        4,
+        7,
+        8,
+        9,
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "anchor": 7,
+      "turn": 8,
+      "path": [
+        7,
+        8,
+        9,
+        1,
+        2,
+        7
+      ]
+    },
+    {
+      "anchor": 7,
+      "turn": 8,
+      "path": [
+        7,
+        8,
+        9,
+        1,
+        2,
+        4,
+        7
+      ]
+    },
+    {
+      "anchor": 8,
+      "turn": 9,
+      "path": [
+        8,
+        9,
+        1,
+        8
+      ]
+    },
+    {
+      "anchor": 8,
+      "turn": 9,
+      "path": [
+        8,
+        9,
+        1,
+        2,
+        7,
+        8
+      ]
+    },
+    {
+      "anchor": 8,
+      "turn": 9,
+      "path": [
+        8,
+        9,
+        1,
+        2,
+        4,
+        7,
+        8
+      ]
+    },
+    {
+      "anchor": 9,
+      "turn": 1,
+      "path": [
+        9,
+        1,
+        8,
+        9
+      ]
+    },
+    {
+      "anchor": 9,
+      "turn": 2,
+      "path": [
+        9,
+        1,
+        2,
+        7,
+        8,
+        9
+      ]
+    },
+    {
+      "anchor": 9,
+      "turn": 2,
+      "path": [
+        9,
+        1,
+        2,
+        4,
+        7,
+        8,
+        9
+      ]
+    }
+  ],
+  "proposedConstants": {
+    "freezeTicks": 2,
+    "delayTicks": 2,
+    "walkerAdvantageMinimumSteps": 2,
+    "recoveryHorizon": 24,
+    "memoryRateMargin": 0.25,
+    "minimumComparatorRelativeRecoveries": 3,
+    "minimumDistinctInstances": 3,
+    "routeDiversityRequired": false,
+    "fullTrajectoriesBudget": 30,
+    "ameliaForkBudget": 24,
+    "walkerComparisonTrajectoriesBudget": 6
+  },
+  "allPairs": 45,
+  "eligibleCount": 9,
+  "eligiblePairs": [
+    "1-2",
+    "1-8",
+    "1-9",
+    "2-4",
+    "2-7",
+    "2-9",
+    "4-7",
+    "7-8",
+    "8-9"
+  ],
+  "rows": [
+    {
+      "key": "0-1",
+      "netSpan": "1::0",
+      "entity": "Lurgo",
+      "mesh": "Mesh-00",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "0-2",
+      "netSpan": "2::0",
+      "entity": "Duoddod",
+      "mesh": "Mesh-01",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "0-3",
+      "netSpan": "3::0",
+      "entity": "Ixix",
+      "mesh": "Mesh-03",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "0-4",
+      "netSpan": "4::0",
+      "entity": "Krako",
+      "mesh": "Mesh-06",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "0-5",
+      "netSpan": "5::0",
+      "entity": "Tokhatto",
+      "mesh": "Mesh-10",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "0-6",
+      "netSpan": "6::0",
+      "entity": "Tchu",
+      "mesh": "Mesh-15",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "0-7",
+      "netSpan": "7::0",
+      "entity": "Puppo",
+      "mesh": "Mesh-21",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "0-8",
+      "netSpan": "8::0",
+      "entity": "Minommo",
+      "mesh": "Mesh-28",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "0-9",
+      "netSpan": "9::0",
+      "entity": "Uttunul",
+      "mesh": "Mesh-36",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "1-2",
+      "netSpan": "2::1",
+      "entity": "Doogu",
+      "mesh": "Mesh-02",
+      "scannerExcursions": 2,
+      "anchors": [
+        1
+      ],
+      "instances": [
+        {
+          "id": "D-1-4",
+          "kind": "displace",
+          "anchor": 1,
+          "target": 4,
+          "graphDistanceFromAnchor": 2,
+          "returnDistance": 4
+        },
+        {
+          "id": "D-1-7",
+          "kind": "displace",
+          "anchor": 1,
+          "target": 7,
+          "graphDistanceFromAnchor": 2,
+          "returnDistance": 3
+        },
+        {
+          "id": "D-1-9",
+          "kind": "displace",
+          "anchor": 1,
+          "target": 9,
+          "graphDistanceFromAnchor": 2,
+          "returnDistance": 1
+        },
+        {
+          "id": "F-1-2",
+          "kind": "freeze",
+          "anchor": 1,
+          "ticks": 2
+        },
+        {
+          "id": "L-1-2",
+          "kind": "inputDelay",
+          "anchor": 1,
+          "ticks": 2
+        }
+      ],
+      "distinctInstanceCount": 5,
+      "structuralEligible": true
+    },
+    {
+      "key": "1-3",
+      "netSpan": "3::1",
+      "entity": "Ixigool",
+      "mesh": "Mesh-04",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "1-4",
+      "netSpan": "4::1",
+      "entity": "Sukugool",
+      "mesh": "Mesh-07",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "1-5",
+      "netSpan": "5::1",
+      "entity": "Tukkamu",
+      "mesh": "Mesh-11",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "1-6",
+      "netSpan": "6::1",
+      "entity": "Djungo",
+      "mesh": "Mesh-16",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "1-7",
+      "netSpan": "7::1",
+      "entity": "Bubbamu",
+      "mesh": "Mesh-22",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "1-8",
+      "netSpan": "8::1",
+      "entity": "Mur Mur",
+      "mesh": "Mesh-29",
+      "scannerExcursions": 1,
+      "anchors": [
+        1
+      ],
+      "instances": [
+        {
+          "id": "D-1-4",
+          "kind": "displace",
+          "anchor": 1,
+          "target": 4,
+          "graphDistanceFromAnchor": 2,
+          "returnDistance": 4
+        },
+        {
+          "id": "D-1-7",
+          "kind": "displace",
+          "anchor": 1,
+          "target": 7,
+          "graphDistanceFromAnchor": 2,
+          "returnDistance": 3
+        },
+        {
+          "id": "D-1-9",
+          "kind": "displace",
+          "anchor": 1,
+          "target": 9,
+          "graphDistanceFromAnchor": 2,
+          "returnDistance": 1
+        },
+        {
+          "id": "F-1-2",
+          "kind": "freeze",
+          "anchor": 1,
+          "ticks": 2
+        },
+        {
+          "id": "L-1-2",
+          "kind": "inputDelay",
+          "anchor": 1,
+          "ticks": 2
+        }
+      ],
+      "distinctInstanceCount": 5,
+      "structuralEligible": true
+    },
+    {
+      "key": "1-9",
+      "netSpan": "9::1",
+      "entity": "Tutagool",
+      "mesh": "Mesh-37",
+      "scannerExcursions": 1,
+      "anchors": [
+        9
+      ],
+      "instances": [
+        {
+          "id": "D-9-2",
+          "kind": "displace",
+          "anchor": 9,
+          "target": 2,
+          "graphDistanceFromAnchor": 2,
+          "returnDistance": 3
+        },
+        {
+          "id": "D-9-4",
+          "kind": "displace",
+          "anchor": 9,
+          "target": 4,
+          "graphDistanceFromAnchor": 3,
+          "returnDistance": 3
+        },
+        {
+          "id": "D-9-7",
+          "kind": "displace",
+          "anchor": 9,
+          "target": 7,
+          "graphDistanceFromAnchor": 3,
+          "returnDistance": 2
+        },
+        {
+          "id": "D-9-8",
+          "kind": "displace",
+          "anchor": 9,
+          "target": 8,
+          "graphDistanceFromAnchor": 2,
+          "returnDistance": 1
+        },
+        {
+          "id": "F-9-2",
+          "kind": "freeze",
+          "anchor": 9,
+          "ticks": 2
+        },
+        {
+          "id": "L-9-2",
+          "kind": "inputDelay",
+          "anchor": 9,
+          "ticks": 2
+        }
+      ],
+      "distinctInstanceCount": 6,
+      "structuralEligible": true
+    },
+    {
+      "key": "2-3",
+      "netSpan": "3::2",
+      "entity": "Ixidod",
+      "mesh": "Mesh-05",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "2-4",
+      "netSpan": "4::2",
+      "entity": "Skoodu",
+      "mesh": "Mesh-08",
+      "scannerExcursions": 1,
+      "anchors": [
+        2
+      ],
+      "instances": [
+        {
+          "id": "D-2-1",
+          "kind": "displace",
+          "anchor": 2,
+          "target": 1,
+          "graphDistanceFromAnchor": 4,
+          "returnDistance": 1
+        },
+        {
+          "id": "D-2-8",
+          "kind": "displace",
+          "anchor": 2,
+          "target": 8,
+          "graphDistanceFromAnchor": 2,
+          "returnDistance": 3
+        },
+        {
+          "id": "D-2-9",
+          "kind": "displace",
+          "anchor": 2,
+          "target": 9,
+          "graphDistanceFromAnchor": 3,
+          "returnDistance": 2
+        },
+        {
+          "id": "F-2-2",
+          "kind": "freeze",
+          "anchor": 2,
+          "ticks": 2
+        },
+        {
+          "id": "L-2-2",
+          "kind": "inputDelay",
+          "anchor": 2,
+          "ticks": 2
+        }
+      ],
+      "distinctInstanceCount": 5,
+      "structuralEligible": true
+    },
+    {
+      "key": "2-5",
+      "netSpan": "5::2",
+      "entity": "Kuttadid",
+      "mesh": "Mesh-12",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "2-6",
+      "netSpan": "6::2",
+      "entity": "Djuddha",
+      "mesh": "Mesh-17",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "2-7",
+      "netSpan": "7::2",
+      "entity": "Oddubb",
+      "mesh": "Mesh-23",
+      "scannerExcursions": 1,
+      "anchors": [
+        2
+      ],
+      "instances": [
+        {
+          "id": "D-2-1",
+          "kind": "displace",
+          "anchor": 2,
+          "target": 1,
+          "graphDistanceFromAnchor": 4,
+          "returnDistance": 1
+        },
+        {
+          "id": "D-2-8",
+          "kind": "displace",
+          "anchor": 2,
+          "target": 8,
+          "graphDistanceFromAnchor": 2,
+          "returnDistance": 3
+        },
+        {
+          "id": "D-2-9",
+          "kind": "displace",
+          "anchor": 2,
+          "target": 9,
+          "graphDistanceFromAnchor": 3,
+          "returnDistance": 2
+        },
+        {
+          "id": "F-2-2",
+          "kind": "freeze",
+          "anchor": 2,
+          "ticks": 2
+        },
+        {
+          "id": "L-2-2",
+          "kind": "inputDelay",
+          "anchor": 2,
+          "ticks": 2
+        }
+      ],
+      "distinctInstanceCount": 5,
+      "structuralEligible": true
+    },
+    {
+      "key": "2-8",
+      "netSpan": "8::2",
+      "entity": "Nammamad",
+      "mesh": "Mesh-30",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "2-9",
+      "netSpan": "9::2",
+      "entity": "Unnunddo",
+      "mesh": "Mesh-38",
+      "scannerExcursions": 2,
+      "anchors": [
+        9
+      ],
+      "instances": [
+        {
+          "id": "D-9-2",
+          "kind": "displace",
+          "anchor": 9,
+          "target": 2,
+          "graphDistanceFromAnchor": 2,
+          "returnDistance": 3
+        },
+        {
+          "id": "D-9-4",
+          "kind": "displace",
+          "anchor": 9,
+          "target": 4,
+          "graphDistanceFromAnchor": 3,
+          "returnDistance": 3
+        },
+        {
+          "id": "D-9-7",
+          "kind": "displace",
+          "anchor": 9,
+          "target": 7,
+          "graphDistanceFromAnchor": 3,
+          "returnDistance": 2
+        },
+        {
+          "id": "D-9-8",
+          "kind": "displace",
+          "anchor": 9,
+          "target": 8,
+          "graphDistanceFromAnchor": 2,
+          "returnDistance": 1
+        },
+        {
+          "id": "F-9-2",
+          "kind": "freeze",
+          "anchor": 9,
+          "ticks": 2
+        },
+        {
+          "id": "L-9-2",
+          "kind": "inputDelay",
+          "anchor": 9,
+          "ticks": 2
+        }
+      ],
+      "distinctInstanceCount": 6,
+      "structuralEligible": true
+    },
+    {
+      "key": "3-4",
+      "netSpan": "4::3",
+      "entity": "Skarkix",
+      "mesh": "Mesh-09",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "3-5",
+      "netSpan": "5::3",
+      "entity": "Tikkitix",
+      "mesh": "Mesh-13",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "3-6",
+      "netSpan": "6::3",
+      "entity": "Djynxx",
+      "mesh": "Mesh-18",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "3-7",
+      "netSpan": "7::3",
+      "entity": "Pabbakis",
+      "mesh": "Mesh-24",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "3-8",
+      "netSpan": "8::3",
+      "entity": "Mummumix",
+      "mesh": "Mesh-31",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "3-9",
+      "netSpan": "9::3",
+      "entity": "Ununuttix",
+      "mesh": "Mesh-39",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "4-5",
+      "netSpan": "5::4",
+      "entity": "Katak",
+      "mesh": "Mesh-14",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "4-6",
+      "netSpan": "6::4",
+      "entity": "Tchakki",
+      "mesh": "Mesh-19",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "4-7",
+      "netSpan": "7::4",
+      "entity": "Ababbatok",
+      "mesh": "Mesh-25",
+      "scannerExcursions": 1,
+      "anchors": [
+        4
+      ],
+      "instances": [
+        {
+          "id": "D-4-1",
+          "kind": "displace",
+          "anchor": 4,
+          "target": 1,
+          "graphDistanceFromAnchor": 4,
+          "returnDistance": 2
+        },
+        {
+          "id": "D-4-2",
+          "kind": "displace",
+          "anchor": 4,
+          "target": 2,
+          "graphDistanceFromAnchor": 5,
+          "returnDistance": 1
+        },
+        {
+          "id": "D-4-8",
+          "kind": "displace",
+          "anchor": 4,
+          "target": 8,
+          "graphDistanceFromAnchor": 2,
+          "returnDistance": 4
+        },
+        {
+          "id": "D-4-9",
+          "kind": "displace",
+          "anchor": 4,
+          "target": 9,
+          "graphDistanceFromAnchor": 3,
+          "returnDistance": 3
+        },
+        {
+          "id": "F-4-2",
+          "kind": "freeze",
+          "anchor": 4,
+          "ticks": 2
+        },
+        {
+          "id": "L-4-2",
+          "kind": "inputDelay",
+          "anchor": 4,
+          "ticks": 2
+        }
+      ],
+      "distinctInstanceCount": 6,
+      "structuralEligible": true
+    },
+    {
+      "key": "4-8",
+      "netSpan": "8::4",
+      "entity": "Numko",
+      "mesh": "Mesh-32",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "4-9",
+      "netSpan": "9::4",
+      "entity": "Ununak",
+      "mesh": "Mesh-40",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "5-6",
+      "netSpan": "6::5",
+      "entity": "Tchattuk",
+      "mesh": "Mesh-20",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "5-7",
+      "netSpan": "7::5",
+      "entity": "Papatakoo",
+      "mesh": "Mesh-26",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "5-8",
+      "netSpan": "8::5",
+      "entity": "Muntuk",
+      "mesh": "Mesh-33",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "5-9",
+      "netSpan": "9::5",
+      "entity": "Tukutu",
+      "mesh": "Mesh-41",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "6-7",
+      "netSpan": "7::6",
+      "entity": "Bobobja",
+      "mesh": "Mesh-27",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "6-8",
+      "netSpan": "8::6",
+      "entity": "Mommoljo",
+      "mesh": "Mesh-34",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "6-9",
+      "netSpan": "9::6",
+      "entity": "Unnutchi",
+      "mesh": "Mesh-42",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "7-8",
+      "netSpan": "8::7",
+      "entity": "Mombbo",
+      "mesh": "Mesh-35",
+      "scannerExcursions": 2,
+      "anchors": [
+        7
+      ],
+      "instances": [
+        {
+          "id": "D-7-1",
+          "kind": "displace",
+          "anchor": 7,
+          "target": 1,
+          "graphDistanceFromAnchor": 3,
+          "returnDistance": 2
+        },
+        {
+          "id": "D-7-2",
+          "kind": "displace",
+          "anchor": 7,
+          "target": 2,
+          "graphDistanceFromAnchor": 4,
+          "returnDistance": 1
+        },
+        {
+          "id": "D-7-4",
+          "kind": "displace",
+          "anchor": 7,
+          "target": 4,
+          "graphDistanceFromAnchor": 5,
+          "returnDistance": 1
+        },
+        {
+          "id": "D-7-9",
+          "kind": "displace",
+          "anchor": 7,
+          "target": 9,
+          "graphDistanceFromAnchor": 2,
+          "returnDistance": 3
+        },
+        {
+          "id": "F-7-2",
+          "kind": "freeze",
+          "anchor": 7,
+          "ticks": 2
+        },
+        {
+          "id": "L-7-2",
+          "kind": "inputDelay",
+          "anchor": 7,
+          "ticks": 2
+        }
+      ],
+      "distinctInstanceCount": 6,
+      "structuralEligible": true
+    },
+    {
+      "key": "7-9",
+      "netSpan": "9::7",
+      "entity": "Nuttubab",
+      "mesh": "Mesh-43",
+      "scannerExcursions": 0,
+      "anchors": [],
+      "instances": [],
+      "distinctInstanceCount": 0,
+      "structuralEligible": false
+    },
+    {
+      "key": "8-9",
+      "netSpan": "9::8",
+      "entity": "Ummnu",
+      "mesh": "Mesh-44",
+      "scannerExcursions": 3,
+      "anchors": [
+        8
+      ],
+      "instances": [
+        {
+          "id": "D-8-1",
+          "kind": "displace",
+          "anchor": 8,
+          "target": 1,
+          "graphDistanceFromAnchor": 2,
+          "returnDistance": 1
+        },
+        {
+          "id": "D-8-2",
+          "kind": "displace",
+          "anchor": 8,
+          "target": 2,
+          "graphDistanceFromAnchor": 3,
+          "returnDistance": 2
+        },
+        {
+          "id": "D-8-4",
+          "kind": "displace",
+          "anchor": 8,
+          "target": 4,
+          "graphDistanceFromAnchor": 4,
+          "returnDistance": 2
+        },
+        {
+          "id": "D-8-7",
+          "kind": "displace",
+          "anchor": 8,
+          "target": 7,
+          "graphDistanceFromAnchor": 4,
+          "returnDistance": 1
+        },
+        {
+          "id": "F-8-2",
+          "kind": "freeze",
+          "anchor": 8,
+          "ticks": 2
+        },
+        {
+          "id": "L-8-2",
+          "kind": "inputDelay",
+          "anchor": 8,
+          "ticks": 2
+        }
+      ],
+      "distinctInstanceCount": 6,
+      "structuralEligible": true
+    }
+  ],
+  "methodologicalLimit": "Topology-only necessary viability. Not a result of comparison with walker or Amelia; never used Amelia trajectories or experimental outcome rates."
+}
