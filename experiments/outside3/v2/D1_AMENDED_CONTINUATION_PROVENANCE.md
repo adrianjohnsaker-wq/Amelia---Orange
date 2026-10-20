@@ -1,0 +1,13 @@
+# OUTSIDE-3 D1 amended continuation — provenance distinction
+
+**Documented after the amended workflow was launched, for chronology only. This document does not amend its objective, code, seeds or thresholds.**
+
+An earlier, separate D1 study was completed before the operator's 20 October 2026, 03:09 UTC amendment. Its prospective source was `D1_MANIFEST.json` (manifest SHA-256 `e5568cb5cbf5c1c8390024be58a76b776ccf89b2ae70f271ce41f98ac97f297c`); its successful workflow was [39356622075](https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39356622075). That study compared 6 magnitudes × 3 windows × 2 readouts using **24 selection** and **12 held-out** design series, and selected D0B/W1/PFM_STRAIN within its precommitted preference only. It recorded **C 6/24 on selection and 0/12 held out** and was independently reviewed as **NO FREEZE / NO CALIBRATION / NO REGISTRATION**. Neither these results nor its manifests may be reinterpreted or replaced.
+
+The operator subsequently required nonzero selectable windows, measurable C–Raw and C–M contribution thresholds, and an engineering replay on frozen G. These requirements were committed in `D1_PRE_RUN_PROTOCOL.md` (commit `75ba13690f8cecaf0475c801b750493c8056978f`; G seed clarified in commit `0ac03d5e1c3af0c4caac4b9d4bea340fd77bbefb`), **before the separate amended-run workflow was launched** as [39363686421](https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39363686421).
+
+The amended-run design uses a new, independent 200-series per-window RNG cohort `9601001 + series*1009`, distinct from the earlier D1 `9704001 + series*10007` and `9804001 + series*10007` series. It tests the D0A magnitudes as a predeclared design-only fixture, windows 0/1/3/10/30 with **window 0 diagnostic-only**, both standardized readouts, exact integer P1, and contributions to both Raw and M. This **does not** retroactively modify the earlier D1 design or its 0/12 holdout. It is a supplementary amended design run, not confirmation or calibration.
+
+The amended-run primary selection rule was committed before execution: among candidates with ≥1 autonomous step, `meanD(C,Raw)≥1.0`, `meanD(C,M)≥0.5`, and ≥10% of workings with nonidentical ranks for *each* comparator, maximize C's 200-series plant detection count, with the prospective tie order in the amended protocol. A preferred option remains subject to deterministic G replay, independent review, and future calibration. The fixed prospective K3 thresholds remain **Raw≥180/200; C≥50/200; 2C≥Raw**.
+
+**Original v1 K3/K4 failures, D0 negatives and earlier D1 negatives all remain in the archive. No real target, revelation, registration, or K calibration authorized.**
