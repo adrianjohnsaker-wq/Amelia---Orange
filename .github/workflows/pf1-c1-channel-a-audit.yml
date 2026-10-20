@@ -41,6 +41,7 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
           DRIFT_C1_ENABLE_LIVE: 'false'
+          PYTHONPATH: ${{ github.workspace }}/c1-readonly
           PF1_C1_SOURCE_SHA: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
           PF1_C1_READ_ONLY_OUTPUT: ${{ github.workspace }}/orange/experiments/pf1/c1-compat-output/C1_CHANNEL_A_HEAD_AUDIT.json
         shell: bash
