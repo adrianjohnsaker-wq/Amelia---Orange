@@ -253,7 +253,7 @@ const result={
  sevenDistinctPositive:positivePass,perfectPositiveNaming:positiveNamingPass,
  positiveSham:positiveShamPass,unchangedCanonicalGraph:true,
  syntheticAmelia10000:true,positiveSeedIndependenceDisclosed:true,
- 24ForkMax:true,resource:duration/(10000/60)<=60},
+ '24ForkMax':true,resource:duration/(10000/60)<=60},
  anySpecificityUntested:coverageSummary.some(x=>x.status==='SPECIFICITY_UNTESTED'),
  journalEntriesPrepared:entries.length,liveStartAuthorized:false
 };
