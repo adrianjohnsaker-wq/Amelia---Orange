@@ -1,0 +1,40 @@
+name: OUTSIDE-3 v2 Exact BigInt Null Unit Gate
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/outside3/v2/exactBigIntNull.ts'
+      - 'experiments/outside3/v2/exactBigIntNull.test.ts'
+      - '.github/workflows/outside3-v2-exact-null.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-exact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run exact integer null checks with independent enumeration
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/outside3/v2/exact-null-evidence
+          set -o pipefail
+          npx tsx experiments/outside3/v2/exactBigIntNull.test.ts 2>&1 | tee experiments/outside3/v2/exact-null-evidence/test.log
+          sha256sum experiments/outside3/v2/exactBigIntNull.ts experiments/outside3/v2/exactBigIntNull.test.ts > experiments/outside3/v2/exact-null-evidence/SOURCE_SHA256SUMS.txt
+          echo "$GITHUB_SHA" > experiments/outside3/v2/exact-null-evidence/SOURCE_COMMIT.txt
+          echo 'Synthetic-only exact probability software tests; no calibration or real target' > experiments/outside3/v2/exact-null-evidence/SCOPE.txt
+      - name: Upload exact-null unit evidence even if failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OUTSIDE3-V2-Exact-Null-Unit-Evidence
+          path: experiments/outside3/v2/exact-null-evidence/
+          retention-days: 90
+          if-no-files-found: warn
