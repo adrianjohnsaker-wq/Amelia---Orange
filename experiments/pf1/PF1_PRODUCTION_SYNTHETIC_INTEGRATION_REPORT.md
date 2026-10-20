@@ -35,7 +35,7 @@ This test used genuine **previously archived** DRIFT-1A C1 Quicknet signatures f
 - Durable sole outstanding lease immediately after acquisition: 1.
 - Acknowledged worker committed the first 12 tick checkpoints **and its lease completion together**.
 - An isolated test lease was intentionally left open **without any ingestion**; the subsequent admission attempt was refused while it remained open.
-- Manual synthetic recovery reconciled that abandoned claim without a checkpoint change. Before/after SHA-256: 9f8b689fba44991492e527ab4073b6432ac2d4cc41d1402c714b829949b0fc2a.
+- Manual synthetic recovery reconciled that abandoned claim without a checkpoint change. Before/after SHA-256: 3fe03f7053ea5ec6f62c924266816346defd50f7b5342d022260ebb375ad626a.
 - Following that recovery, separate hosted jobs advanced the nine arms to ticks 48 and 72 under new remote-acknowledged leases.
 - Replayed primary/auxiliary states are stored in the disposable Git branch and archived as an artifact.
 
@@ -47,12 +47,12 @@ This test used genuine **previously archived** DRIFT-1A C1 Quicknet signatures f
 - Both entries are explicitly **non-encounter integration test fixtures**; no scientific PF1 encounter has been added.
 - Journal entries: 2; each independently hash-chained and stamped with a distinct RFC 3161 token.
 - Offline verified FreeTSA receipts against pinned CA: 2.
-- Ledger head: 5b90f5b2bf87d23f2001636ffaee3c61e7d76cfcf592928239463adc7bdd3213. Journal head: c014577c6f0294f197c425a2553e41fa63b4f5023a6d4761ee29423ac0f80794.
+- Ledger head: 0e60ed74b01a20049a3386381fae199ec680f6bb0d939124c4d6ac875527fe98. Journal head: c014577c6f0294f197c425a2553e41fa63b4f5023a6d4761ee29423ac0f80794.
 - Independently recomputed full 72-step, nine-arm replay across a fresh hosted checkout: true.
 
 ## Exposure and boundaries
 
-- Stored nine-arm checkpoint SHA-256: 36458799dcad088d31ea40254e2af8b9dde1259e0276c94a193aaeabfbd8c9fb.
+- Stored nine-arm checkpoint SHA-256: 510a56c8862a4b5562b088c9fdd680fc4a38caa15161f746276aafbb29dd0edd.
 - Actual live rounds consumed: **ZERO**. Live genesis: **NONE**.
 - Source constants SHA-256: ecabf3e40023faa0be0749908cfe6ffd3a8b9e42ab7c8a9a7c2ea5827ae63610.
 - Original C1 frozen files were never modified. The repaired lease exists only in PF1.
