@@ -33,7 +33,7 @@ jobs:
           git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- \
             src/substrate src/governance src/ai/numogram src/types/amelia.ts
           echo PF1_SUBSTRATE_PIN_UNCHANGED
-      - run: npm ci --no-audit --no-fund
+      - run: npm install --no-audit --no-fund
       - name: Synthetic scanner and control unit gate
         run: node --test experiments/pf1/tests.mjs
       - name: Synthetic-only 45-name scanner, controls and unchanged Amelia 10000 steps
