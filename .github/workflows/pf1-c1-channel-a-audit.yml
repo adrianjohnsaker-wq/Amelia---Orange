@@ -1,0 +1,77 @@
+name: PF1 DRIFT1A C1 Channel A Read-Only Full Replay Audit (NO LIVE)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pf1-c1-channel-a-audit.yml'
+      - 'experiments/pf1/PF1_C1_CHANNEL_A_READONLY_AUDIT.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  sealed-c1-read-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: orange
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          persist-credentials: false
+          path: c1-readonly
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Assert pinned C1 head and no edits
+        working-directory: c1-readonly
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          test -z "$(git status --porcelain)"
+      - name: Install original C1 dependencies
+        working-directory: c1-readonly
+        run: python -m pip install -r drift1a_c1/requirements.txt
+      - name: Full C1 genesis-to-chain-head replay, verified BLS, no writes to C1
+        working-directory: c1-readonly
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PF1_C1_SOURCE_SHA: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          PF1_C1_READ_ONLY_OUTPUT: ${{ github.workspace }}/orange/experiments/pf1/c1-compat-output/C1_CHANNEL_A_HEAD_AUDIT.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          python ../orange/experiments/pf1/PF1_C1_CHANNEL_A_READONLY_AUDIT.py
+          test -z "$(git status --porcelain)"
+      - name: Archive results, including failure logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PF1-C1-CHANNEL-A-READONLY-HEAD-REPLAY
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            orange/experiments/pf1/PF1_C1_CHANNEL_A_READONLY_AUDIT.py
+            orange/experiments/pf1/c1-compat-output/C1_CHANNEL_A_HEAD_AUDIT.json
+      - name: Commit ONLY PF1 audit report into Orange, NEVER into frozen C1
+        if: always()
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          p=experiments/pf1/c1-compat-output/C1_CHANNEL_A_HEAD_AUDIT.json
+          if [ ! -f "$p" ]; then echo 'C1 REPLAY INCOMPLETE'; exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$p"
+          git diff --cached --check
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'PF1 read-only Channel A C1 full replay head audit, no frozen-file changes'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
