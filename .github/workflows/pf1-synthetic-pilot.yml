@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/pf1-synthetic-pilot.yml'
       - 'experiments/pf1/core.mjs'
+      - 'experiments/pf1/tests.mjs'
       - 'experiments/pf1/pilot.ts'
       - 'experiments/pf1/finalize-journal.mjs'
       - 'experiments/pf1/seal.sh'
@@ -33,6 +34,8 @@ jobs:
             src/substrate src/governance src/ai/numogram src/types/amelia.ts
           echo PF1_SUBSTRATE_PIN_UNCHANGED
       - run: npm ci --no-audit --no-fund
+      - name: Synthetic scanner and control unit gate
+        run: node --test experiments/pf1/tests.mjs
       - name: Synthetic-only 45-name scanner, controls and unchanged Amelia 10000 steps
         shell: bash
         run: |
@@ -77,6 +80,7 @@ jobs:
             experiments/pf1/PILOT_REPORT.md
             experiments/pf1/pandemonium-45.json
             experiments/pf1/core.mjs
+            experiments/pf1/tests.mjs
             experiments/pf1/pilot.ts
             experiments/pf1/finalize-journal.mjs
             experiments/pf1/seal.sh
