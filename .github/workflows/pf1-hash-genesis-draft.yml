@@ -1,0 +1,87 @@
+name: PF1 Unsigned Genesis Manifest SHA256 — REVIEW ONLY
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  hash-manifest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify four prospective SHA pins, PF1 domain, C1 grid and no-live policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,hashlib,re,pathlib,subprocess
+          root=pathlib.Path('experiments/pf1')
+          m=json.loads((root/'PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          p=json.loads((root/'registration-identities/PF1_SOURCE_IDENTITIES.json').read_text())
+          sha=lambda x:hashlib.sha256(pathlib.Path(x).read_bytes()).hexdigest()
+          src=m['immutableSource']
+          assert re.fullmatch('[a-f0-9]{40}',src['actualGeneticAndOperationalAdapterCommitToPin'])
+          assert src['actualNineArmInitialStateSHA256']==p['initialNineArmStateSHA256']==sha(root/'registration-identities/PF1_NINE_ARM_INITIAL_STATE.json')
+          assert src['scannerArtifactSHA256']==p['scannerArtifactSHA256']==sha(root/'core.mjs')
+          assert src['analyticNullCurveDigestToPin']==p['analyticNullCurveSHA256']==sha(root/'a1-r2-graph-only/EXACT_NULL_CURVES.json')
+          assert src['pf1A1R2ConstantsSHA256']==p['constantsSHA256']==sha(root/'PF1_A1_R2_CONSTANTS.json')
+          assert m['baseline']['referenceMapping']=='SHA256(ASCII("PF1-REF-i|") || raw 32-byte verified randomness), for i=1..8'
+          assert m['beacon']['R0Alignment']=='ALIGNED_TO_C1_GRID_SAME_QUICKNET_SIGNAL'
+          assert m['beacon']['futureR0'] is None
+          assert m['beacon']['genesisCreatedUTC'] is None
+          assert m['incidentNotification']['encounterNotificationChannels']==[]
+          assert m['incidentNotification']['encounterJournalOnly'] is True
+          assert m['c1Protection']['manualDispatchProhibitedWhileScheduleActive'] is True
+          assert pathlib.Path('.github/workflows/pf1-c1-weekly-readonly.yml').is_file()
+          assert m['liveStartAuthorised'] is False and m['liveGenesisCreated'] is False
+          assert m['actualBeaconRoundsAdmitted']==0
+          subprocess.run(['git','cat-file','-e',src['actualGeneticAndOperationalAdapterCommitToPin']+'^{commit}'],check=True)
+          for item in p['sourceFileSHA256']:
+              assert sha(item['path'])==item['sha256'],item['path']
+          print('PF1_DRAFT_IDENTITY_AND_SILENCE_POLICY_VALIDATED')
+          PY
+      - name: SHA-256 over EXACT complete UTF-8 draft bytes; sidecar outside hashed content
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd experiments/pf1
+          sha256sum PF1_GENESIS_MANIFEST_DRAFT.json > PF1_GENESIS_MANIFEST_DRAFT.sha256
+          sha256sum -c PF1_GENESIS_MANIFEST_DRAFT.sha256
+          {
+            echo '## PF1 unsigned genesis manifest'
+            echo
+            echo 'Status: **FOR OPERATOR REVIEW ONLY — NO GENESIS, NO LIVE ADMISSION**'
+            echo
+            echo '```'
+            cat PF1_GENESIS_MANIFEST_DRAFT.sha256
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          cat PF1_GENESIS_MANIFEST_DRAFT.sha256
+      - name: Archive manifest and SHA identity
+        uses: actions/upload-artifact@v4
+        with:
+          name: PF1-UNSIGNED-GENESIS-MANIFEST-SHA256
+          retention-days: 90
+          path: |
+            experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json
+            experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.sha256
+            experiments/pf1/registration-identities/PF1_SOURCE_IDENTITIES.json
+      - name: Commit digest sidecar only — NEVER create genesis
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.sha256
+          git diff --cached --check
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'PF1 prospective operator-review manifest SHA256 only; no genesis'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
