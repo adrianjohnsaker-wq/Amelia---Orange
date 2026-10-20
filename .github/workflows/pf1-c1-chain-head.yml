@@ -1,0 +1,63 @@
+name: PF1 C1 Read-Only Chain Head and Tick Integrity (NO LIVE)
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf1-c1-chain-head.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  read-head:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: orange
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-readonly
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Inspect pinned C1 genesis and every chunk read-only
+        working-directory: c1-readonly
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PYTHONPATH: ${{ github.workspace }}/c1-readonly
+          PF1_C1_SOURCE_SHA: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          PF1_C1_CHAIN_ATTEST: ${{ github.workspace }}/orange/experiments/pf1/c1-compat-output/C1_CHAIN_HEAD_ONLY.json
+        run: |
+          set -euo pipefail
+          python -m pip install -r drift1a_c1/requirements.txt
+          python ../orange/experiments/pf1/PF1_C1_CHAIN_HEAD_ATTEST.py
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PF1-C1-CHANNEL-A-READONLY-CHUNK-HEAD
+          path: |
+            orange/experiments/pf1/PF1_C1_CHAIN_HEAD_ATTEST.py
+            orange/experiments/pf1/c1-compat-output/C1_CHAIN_HEAD_ONLY.json
+          if-no-files-found: warn
+      - name: Archive only chain-head audit in Orange
+        if: always()
+        working-directory: orange
+        run: |
+          set -euo pipefail
+          p=experiments/pf1/c1-compat-output/C1_CHAIN_HEAD_ONLY.json
+          if [ ! -f "$p" ]; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$p"
+          git diff --cached --check
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Archive C1 Channel A read-only head digest and tick-chain audit'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
