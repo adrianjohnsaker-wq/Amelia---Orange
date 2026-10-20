@@ -1,0 +1,95 @@
+{
+  "schema": "OUTSIDE3_V2_D1_DESIGN_MANIFEST_V1",
+  "status": "PRECOMMITTED_DESIGN_ONLY_NO_CALIBRATION",
+  "authorizedChangeDocument": "experiments/outside3/v2/D0_CLOSURE_D1_RULE_CHANGE.md",
+  "originalD0Manifest": "experiments/outside3/v2/D0_DESIGN_GRID.json",
+  "originalD0Disposition": "D0_NO_CANDIDATE_PASSED_MARGIN_NO_FREEZE",
+  "originalV1K3Failure": "11/200",
+  "originalV1K4Failure": "40/200",
+  "approach": "All six Option A resulting-polarity cast base events plus separately tagged moving-line events enter ordinary PFM before development. C carries PFM across 88 workings. Reader gets no target or plant labels.",
+  "readouts": [
+    "ACTIVATION",
+    "PFM_STRAIN"
+  ],
+  "windows": [
+    1,
+    3,
+    10
+  ],
+  "candidateSource": "D0_DESIGN_GRID.json",
+  "candidates": [
+    "D0A",
+    "D0B",
+    "D0C",
+    "D0D",
+    "D0E",
+    "D0F"
+  ],
+  "reference": {
+    "seed": 9701001,
+    "sampleCountPerCandidateWindow": 256,
+    "startState": "fresh canonical separately for each reference cast",
+    "independentOfPlantDesign": true,
+    "standardDeviation": "population sqrt(mean squared deviation), measured separately for every zone and readout",
+    "zeroSigma": "STOP for that candidate/readout/window; no floor or post-hoc replacement"
+  },
+  "margin": {
+    "eligibility": false,
+    "descriptive": true,
+    "carriedHistories": [
+      "FRESH",
+      "W88"
+    ],
+    "masks": [
+      0,
+      21
+    ],
+    "edgePairsPerMask": 192,
+    "historySeed": 9702001,
+    "historyStepsPerWorking": 10,
+    "record": "min changed-zone standardized feature difference; min within-output Hamming-1 score difference; number of tied score vectors; strain saturation; zero effects",
+    "retiredTwoSigma": "Retired as D1 eligibility, NOT erased from D0 evidence"
+  },
+  "plantedSignal": {
+    "cohorts": {
+      "selection": 24,
+      "heldOutDesign": 12
+    },
+    "workingsPerSeries": 88,
+    "selectionSeriesSeedBase": 9704001,
+    "heldOutSeriesSeedBase": 9804001,
+    "seriesSeedStride": 10007,
+    "syntheticCast": "fair three-coin 6/7/8/9, one of six lines chosen uniformly then forced to uniform synthetic target resulting bit and made young (7 or 8)",
+    "target": "uniform synthetic hexagram 0-63, never passed to reader",
+    "paired": "Identical casts, target, planted-line choice across all candidate/window/readout comparisons",
+    "P1": "exact BigInt integer-frequency convolution of conditional 64-way doubled midrank histograms, one-sided rank-sum lower tail, p <= 1/20",
+    "raw": "same resulting-hexagram agreement readout for every condition",
+    "selectionRule": [
+      "highest number of design selection series rejecting P1 exact at alpha 0.05 (C)",
+      "smallest mean planted-target ordinary midrank across design selection series",
+      "largest DESCRIPTIVE minimum changed-zone standardized margin at FRESH/W88",
+      "shortest development window",
+      "lexicographic candidate id",
+      "lexicographic readout id"
+    ],
+    "holdoutPolicy": "Evaluate separate 12 disjoint held-out design series AFTER selection, report without revising selected design option or constants",
+    "noRejectionRequirement": "No D1 sensitivity cutoff and no margin gate; if all candidates at/below raw null baseline or low detection, report selection candidate as exploratory with NO-GO for freezing"
+  },
+  "fixedK3Calibration": {
+    "source": "experiments/outside3/v2/K3_GATE_FIXED.json",
+    "rawHitsAtLeast": 180,
+    "cHitsAtLeast": 50,
+    "twiceCHitsAtLeastRaw": true,
+    "calibrationSeries": 200,
+    "warning": "These later calibration gates are never applied to D1 design data and cannot be modified"
+  },
+  "sourceFreeze": "D1 analysis code and all constants committed before GitHub D1 execution. Changes after outputs require documented incident and fresh design-series identifier; no silent threshold repair.",
+  "forbidden": [
+    "v2 K1–K5 calibration",
+    "real target creation",
+    "drand reveal",
+    "OUTSIDE-3 working opened",
+    "registration",
+    "promotion of tested constants as frozen production parameters"
+  ]
+}
