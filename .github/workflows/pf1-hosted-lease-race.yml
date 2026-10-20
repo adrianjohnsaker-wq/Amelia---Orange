@@ -1,0 +1,143 @@
+name: PF1 Hosted Two-Worker Lease Race (SYNTHETIC ONLY)
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf1-hosted-lease-race.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  setup:
+    runs-on: ubuntu-24.04
+    outputs:
+      branch: ${{ steps.create.outputs.branch }}
+    steps:
+      - id: create
+        env: {GH_TOKEN: ${{ github.token }}}
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="pf1-synthetic-lease-$GITHUB_RUN_ID"
+          gh api -X POST "repos/$GITHUB_REPOSITORY/git/refs" -f "ref=refs/heads/$branch" -f "sha=$GITHUB_SHA" >/dev/null
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+  contenders:
+    needs: setup
+    strategy:
+      fail-fast: false
+      matrix:
+        worker: [1, 2]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: {path: orange, fetch-depth: 0, ref: ${{ needs.setup.outputs.branch }}}
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-source
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Compete for the single synthetic GitHub remote lease
+        working-directory: orange
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-source:${{ github.workspace }}/orange/experiments/pf1
+          PF1_BRANCH: ${{ needs.setup.outputs.branch }}
+          WORKER: ${{ matrix.worker }}
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,json
+          from PF1_SAFE_LEASE import acquire
+          w=os.environ['WORKER']
+          try:
+            v=acquire(w+'-1',branch=os.environ['PF1_BRANCH'])
+            status='ACKNOWLEDGED'
+          except Exception as e:
+            v={'error':str(e)[-500:]}
+            status='REJECTED_NO_ADMISSION'
+          x={'worker':w,'status':status,'detail':v,'syntheticOnly':True,'liveAuthorised':False}
+          open('pf1-worker-'+w+'.json','w').write(json.dumps(x,sort_keys=True,indent=2)+'\n')
+          print('PF1_HOSTED_WORKER',json.dumps(x))
+          PY
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pf1-worker-${{ matrix.worker }}
+          path: orange/pf1-worker-${{ matrix.worker }}.json
+          retention-days: 90
+  audit:
+    needs: [setup, contenders]
+    if: always() && needs.setup.result == 'success'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: {path: orange, fetch-depth: 0}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: pf1-worker-*
+          merge-multiple: true
+          path: orange/experiments/pf1/c1-compat-output/
+      - name: Compare two acknowledgments against the actual synthetic remote lease tree
+        working-directory: orange
+        env: {PF1_BRANCH: ${{ needs.setup.outputs.branch }}}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "refs/heads/$PF1_BRANCH:refs/remotes/origin/$PF1_BRANCH"
+          git ls-tree -r --name-only "refs/remotes/origin/$PF1_BRANCH" > experiments/pf1/c1-compat-output/hosted-tree.txt
+          python - <<'PY'
+          import glob,json,os
+          p='experiments/pf1/c1-compat-output/'
+          a=[json.load(open(f)) for f in glob.glob(p+'pf1-worker-*.json')]
+          paths=open(p+'hosted-tree.txt').read().splitlines()
+          leases=[x for x in paths if x.startswith('drift1a_c1/runner_state/leases/') and x.endswith('.json')]
+          winners=[x for x in a if x['status']=='ACKNOWLEDGED']
+          ok=len(a)==2 and len(winners)==1 and len(leases)==1
+          body={'schema':'PF1_HOSTED_GITHUB_LEASE_RACE_V1','workers':a,'acknowledgedCount':len(winners),
+                'durableOutstandingLeases':leases,'safe':ok,'branch':os.environ['PF1_BRANCH'],
+                'realHostedGitHubRemote':True,'syntheticOnly':True,'liveAuthorized':False}
+          open(p+'PF1_HOSTED_REMOTE_LEASE_RACE.json','w').write(json.dumps(body,indent=2,sort_keys=True)+'\n')
+          print('PF1_HOSTED_RACE_VERDICT',json.dumps({'safe':ok,'ack':len(winners),'leases':len(leases)}))
+          if not ok:raise SystemExit(4)
+          PY
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PF1-HOSTED-SYNTHETIC-LEASE-EVIDENCE
+          path: orange/experiments/pf1/c1-compat-output/
+          retention-days: 90
+      - if: always()
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          p=experiments/pf1/c1-compat-output/PF1_HOSTED_REMOTE_LEASE_RACE.json
+          if [ ! -f "$p" ]; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$p"
+          if git diff --cached --quiet; then exit 0; fi
+          git diff --cached --check
+          git commit -m 'PF1 archive hosted synthetic two-worker lease race'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
+  cleanup:
+    needs: [setup, contenders, audit]
+    if: always() && needs.setup.result == 'success'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Remove only this workflow's disposable branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ needs.setup.outputs.branch }}
+        run: |
+          set -euo pipefail
+          test "$BRANCH" = "pf1-synthetic-lease-$GITHUB_RUN_ID"
+          gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/$BRANCH" >/dev/null
+          echo PF1_SYNTHETIC_BRANCH_CLEANED
