@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/pf1-deployment-synthetic.yml'
+      - 'experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts'
   workflow_dispatch:
 permissions:
   contents: write
@@ -43,6 +44,8 @@ jobs:
         run: npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts forks
       - name: Test empty encounter journal, exposure head and synthetic seal fixture
         run: npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts silence
+      - name: Reattempt synthetic fixture journal and notification from a separate process
+        run: npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts silence
       - name: Independent RFC 3161 validation on synthetic fixture only
         run: bash experiments/pf1/PF1_DEPLOY_SYNTHETIC_SEAL.sh
       - name: Verify nine-arm checkpoint and ledger invariants
@@ -60,10 +63,11 @@ jobs:
           npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts attack
           npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts forks
           npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts silence
+          npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts silence
           npx tsx experiments/pf1/PF1_DEPLOY_SYNTHETIC.ts verify
           unset PF1_SYNTH_STAGE_DIR
           root=experiments/pf1/deployment-synthetic-output
-          for file in state.json ledger.json journal.json fork-evidence.json silence-test.json \
+          for file in state.json ledger.json journal.json synthetic-test-journal.json fork-evidence.json silence-test.json \
               seal-fixture.json synthetic-rounds.json synthetic-verification.json; do
             cmp "$root/$file" "/tmp/pf1-full-replay/$file"
           done
