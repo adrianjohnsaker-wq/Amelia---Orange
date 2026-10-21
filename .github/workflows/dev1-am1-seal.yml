@@ -1,0 +1,165 @@
+name: DEV1 AM1 prospective stone-tape SHA256 and RFC3161 seal
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/dev1-am1-seal.yml']
+permissions:
+  contents: read
+jobs:
+  register-and-seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gate base immutability and prove NO lineage experimental data before AM1 seal
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:experiments/dev1/DEV1_CONSTANTS.json)" = d862d3afc0cfd334b5bc88b9541c687fa28ee16c
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import pathlib,json,hashlib,re,datetime
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          dev=pathlib.Path('experiments/dev1')
+          g=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          p=pathlib.Path('experiments/pf1')
+          m=json.loads((p/'PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          assert sha(p/'PF1_GENESIS_MANIFEST_DRAFT.json')==g['approvedManifestSHA256']
+          assert sha(p/'PF1_A1_R2_CONSTANTS.json')==g['constantsSHA256']
+          for x in g['liveOperationalSourceHashes']+m['immutableSource']['operationalSourceFileHashes']:
+              assert sha(x['path'])==x['sha256'],x['path']
+          base=json.loads((dev/'DEV1_CONSTANTS.json').read_text())
+          am=json.loads((dev/'amendments/am1/AM1_CONSTANTS.json').read_text())
+          manifest=json.loads((dev/'DEV1_CONSTANTS_MANIFEST.json').read_text())
+          assert base['schema']=='DEV1_STAGE1_SYNTHETIC_CONSTANTS_V1'
+          assert am['schema']=='DEV1_AM1_STONE_TAPE_CONSTANTS_V1'
+          assert manifest['schema']=='DEV1_CONSTANTS_MANIFEST_V2_ADDENDUM_AM1'
+          assert am['syntheticOnly'] and am['liveInflowProhibited']
+          add=am['additions']
+          assert add['arms']==['LS','LSY']
+          assert base['armsOrder']==manifest['versionInvariant']['baseArmsUnaffected']
+          assert add['placeRecord']['canonicalGateCount']==11
+          assert add['placeRecord']['writeWindowTransitions']==24
+          assert add['placeRecord']['writeDuringLife'] is False
+          assert add['placeRecord']['writeFormula']=='T(e) <- T(e) + (-1 - T(e))/8'
+          assert add['read']['w_T']==manifest['additionalArmConstants']['T']['w_T']==0.5
+          assert add['read']['equalToExisting_w_V']==base['mechanisms']['consequenceWeight']['value']
+          assert add['lineage']['tapes']==32 and add['lineage']['capGenerations']==50
+          assert add['lineage']['capTotalSteps']==100000
+          assert add['outcomes']['O1_LS_directional']['holmFamilySize']==2
+          assert add['outcomes']['O1_LS_directional']['holmAlpha']==0.05
+          assert add['hardGates']['am1Rfc3161RequiredBeforeAnyLineage']
+          assert (dev/'amendments/am1/AM1_STONE_TAPE_REGISTRATION.md').is_file()
+          suspicious=[]
+          for item in dev.rglob('*'):
+              if not item.is_file(): continue
+              name=item.name.upper()
+              if re.match(r'DEV1_(?:L|LY|L0|LS|LSY)(?:_|-)',name) and re.search(r'(?:RESULT|DATA|OBSERV|COHORT|TRAJECTOR|ROUTE|GENERATION)',name):
+                  suspicious.append(str(item))
+              if item.suffix.lower() in ('.json','.jsonl','.csv','.parquet') and any(a in name for a in ('LINEAGE_RESULT','LINEAGE_OBSERVATION','LS_RESULT','LSY_RESULT','L0_RESULT','LY_RESULT')):
+                  suspicious.append(str(item))
+          assert not suspicious,'LINEAGE_DATA_EXISTS_BEFORE_SEAL: '+repr(suspicious)
+          print('DEV1_AM1_NO_LINEAGE_DATA_AT_SEAL_GATE_PASS',json.dumps({'detectedLineageFiles':0,'atUTC':datetime.datetime.now(datetime.timezone.utc).isoformat()}))
+          print('DEV1_AM1_SEAL_INPUT_SHA256',json.dumps({str(q):sha(dev/q) for q in [
+           'DEV1_CONSTANTS.json','DEV1_CONSTANTS_MANIFEST.json',
+           'amendments/am1/AM1_STONE_TAPE_REGISTRATION.md','amendments/am1/AM1_CONSTANTS.json']}))
+          PY
+      - name: Require original DEV1 constants genuine RFC3161 provenance first
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/dev1-am1
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/cacert.pem -o /tmp/dev1-am1/cacert.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/dev1-am1/cacert.pem' | sha256sum -c -
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/tsa.crt -o /tmp/dev1-am1/tsa.crt
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467  /tmp/dev1-am1/tsa.crt' | sha256sum -c -
+          openssl ts -verify -data experiments/dev1/DEV1_CONSTANTS.json -in experiments/dev1/seal/DEV1_CONSTANTS.tsr -CAfile /tmp/dev1-am1/cacert.pem -untrusted /tmp/dev1-am1/tsa.crt | grep -q 'Verification: OK'
+          echo DEV1_AM1_BASE_CONSTANTS_ORIGINAL_SIGNED_SEAL_PASS
+      - name: Timestamp registration, additive constants and additive manifest independently
+        shell: bash
+        run: |
+          set -euo pipefail
+          src=experiments/dev1
+          paths=("$src/amendments/am1/AM1_STONE_TAPE_REGISTRATION.md" "$src/amendments/am1/AM1_CONSTANTS.json" "$src/DEV1_CONSTANTS_MANIFEST.json")
+          names=("AM1_REGISTRATION" "AM1_CONSTANTS" "AM1_MANIFEST")
+          for idx in 0 1 2; do
+            p="${paths[$idx]}"
+            id="${names[$idx]}"
+            openssl ts -query -data "$p" -sha256 -cert -no_nonce -out "/tmp/dev1-am1/$id.tsq"
+            curl -fsSL --retry 5 --retry-all-errors --retry-delay 1 --max-time 75 -H 'Content-Type: application/timestamp-query' --data-binary "@/tmp/dev1-am1/$id.tsq" https://freetsa.org/tsr -o "/tmp/dev1-am1/$id.tsr"
+            openssl ts -verify -data "$p" -in "/tmp/dev1-am1/$id.tsr" -CAfile /tmp/dev1-am1/cacert.pem -untrusted /tmp/dev1-am1/tsa.crt | grep -q 'Verification: OK'
+            openssl ts -reply -in "/tmp/dev1-am1/$id.tsr" -text > "/tmp/dev1-am1/$id.timestamp.txt"
+            echo DEV1_AM1_GENUINE_RFC3161_PASS "$id" "$(sha256sum "$p")" "$(sha256sum "/tmp/dev1-am1/$id.tsr")"
+          done
+      - name: Construct immutable receipt with original-source and signed-token SHA256
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,hashlib,pathlib,os,datetime
+          root=pathlib.Path('experiments/dev1')
+          out=pathlib.Path('/tmp/dev1-am1')
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          mapping={'registration':'amendments/am1/AM1_STONE_TAPE_REGISTRATION.md',
+            'constants':'amendments/am1/AM1_CONSTANTS.json',
+            'manifest':'DEV1_CONSTANTS_MANIFEST.json'}
+          receipt={'schema':'DEV1_AM1_THREE_FILE_RFC3161_VERIFIED_RECEIPT_V1',
+           'status':'PASS','verifiedAtUTC':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+           'priorLineageDataDetected':False,'priorBaseConstantsVerified':True,
+           'baseConstantsSHA256':sha(root/'DEV1_CONSTANTS.json'),
+           'baseConstantsBlobSHA':'d862d3afc0cfd334b5bc88b9541c687fa28ee16c',
+           'frozenScientificFilesUnchanged':True,
+           'tsaRootSHA256':'2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438',
+           'tsaCertSHA256':'8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467',
+           'items':{}}
+          ids={'registration':'AM1_REGISTRATION','constants':'AM1_CONSTANTS','manifest':'AM1_MANIFEST'}
+          for key,rel in mapping.items():
+            stem=ids[key]
+            receipt['items'][key]={'path':str(root/rel),'sha256':sha(root/rel),
+                'tokenPath':'experiments/dev1/amendments/am1/seal/'+stem+'.tsr',
+                'tokenSha256':sha(out/(stem+'.tsr')),
+                'queryPath':'experiments/dev1/amendments/am1/seal/'+stem+'.tsq',
+                'querySha256':sha(out/(stem+'.tsq')),
+                'verification':'RFC3161 timestamp signed by pinned FreeTSA chain, file imprint matches: Verification: OK'}
+          (out/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          print('DEV1_AM1_FULL_RECEIPT_VERIFIED',json.dumps(receipt))
+          PY
+      - name: Preserve signed request, response and receipt independently of repository archival
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DEV1-AM1-GENUINE-RFC3161
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            /tmp/dev1-am1/*.tsq
+            /tmp/dev1-am1/*.tsr
+            /tmp/dev1-am1/*.timestamp.txt
+            /tmp/dev1-am1/receipt.json
+      - name: Publish create-only immutable RFC3161 token bytes and verified receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,json,base64,pathlib,subprocess,hashlib
+          folder=pathlib.Path('/tmp/dev1-am1')
+          files=[(stem+'.'+ext,folder/(stem+'.'+ext)) for stem in ('AM1_REGISTRATION','AM1_CONSTANTS','AM1_MANIFEST') for ext in ('tsq','tsr')]
+          files.append(('receipt.json',folder/'receipt.json'))
+          for name,p in files:
+            raw=p.read_bytes()
+            dest='experiments/dev1/amendments/am1/seal/'+name
+            payload={'message':'DEV1 AM1 externally verified RFC3161 frozen registration/constants/manifest '+name,
+               'branch':'main','content':base64.b64encode(raw).decode()}
+            z=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dest,
+                '--input','-'],input=json.dumps(payload),text=True,capture_output=True)
+            if z.returncode:raise RuntimeError('AM1_SEAL_ARCHIVE_FAILED '+name+' '+z.stderr)
+            assert json.loads(z.stdout)['content']['path']==dest
+            print('DEV1_AM1_SEALED_CREATE_ONLY',dest,hashlib.sha256(raw).hexdigest())
+          PY
