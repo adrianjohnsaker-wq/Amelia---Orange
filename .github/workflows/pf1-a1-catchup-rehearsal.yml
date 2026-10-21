@@ -19,6 +19,24 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Isolated exact A1 prelease toolchain install: no generated lockfile or bytecode
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          python - <<'PY'
+          import ast,pathlib
+          p=pathlib.Path('experiments/pf1/operations/PF1_A1_CATCHUP.py')
+          ast.parse(p.read_text(),filename=str(p))
+          print('PF1_A1_PRELEASE_NONWRITING_SYNTAX_PASS')
+          PY
+          echo 'PF1_A1_PRELEASE_WORKTREE_STATUS:'
+          git status --porcelain --untracked-files=all
+          test -z "$(git status --porcelain --untracked-files=all)"
+          echo PF1_A1_PRELEASE_WORKTREE_CLEAN_PASS
       - name: Assert genuine approval and all live pinned source hashes unchanged
         shell: bash
         run: |
