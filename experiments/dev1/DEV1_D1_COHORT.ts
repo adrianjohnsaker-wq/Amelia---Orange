@@ -106,12 +106,7 @@ function one(k:number):D1Row {
   for(let j=pending.length-1;j>=0;j--){
    const p=pending[j];
    if(enteredAbsorption || p.afterEdges.length===H){
-    const outcome=consequenceOutcome(enteredAbsorption,new Set(Array(p.beforeDistinct).fill(0)).size,
-         new Set(p.afterEdges).size);
-    // Use the saved number of distinct preceding edges (not a padded array).
-    const o=enteredAbsorption?-1:Math.max(-1,Math.min(1,
-      (new Set(p.afterEdges).size-p.beforeDistinct)/11));
-    assert(Math.abs(o-(enteredAbsorption?-1:consequenceOutcome(false,p.beforeDistinct,new Set(p.afterEdges).size)))<1e-12);
+    const o=consequenceOutcome(enteredAbsorption,p.beforeDistinct,new Set(p.afterEdges).size);
     values[p.edge]=updateEdgeValue(values[p.edge],o);
     updates++; if(o===-1)negativeUpdates++; else movingUpdates++;
     pending.splice(j,1);
