@@ -1,0 +1,93 @@
+name: DEV1 AM2 sealed measurement-only logging tests and joint AM1 token verification
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/dev1-am2-unit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  constructed-only-unit-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: A0 independent original plus joint RFC3161 signed bytes, science identity, no lineage outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:experiments/dev1/DEV1_CONSTANTS.json)" = d862d3afc0cfd334b5bc88b9541c687fa28ee16c
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import pathlib,json,hashlib,re
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          root=pathlib.Path('experiments/dev1')
+          a=json.loads((root/'amendments/am1/seal/receipt.json').read_text())
+          r=json.loads((root/'amendments/am2/seal/receipt.json').read_text())
+          bundle=json.loads((root/'amendments/am2/seal/AM1_AM2_JOINT_BUNDLE.json').read_text())
+          assert r['status']=='PASS' and r['noLineageDataAtSeal']
+          assert a['status']=='PASS' and a['priorLineageDataDetected'] is False
+          assert r['AM1ScientificAndConstantFilesUnchanged'] and r['baseAndAM1OriginalSignedTokensReverified']
+          assert sha(root/'DEV1_CONSTANTS.json')==a['baseConstantsSHA256']
+          assert bundle['schema']=='DEV1_AM1_AM2_JOINT_FINGERPRINT_BUNDLE_V1'
+          assert bundle['preLineageDataAbsent'] and bundle['noScientificSourceMutation']
+          for item in bundle['files']:
+            assert sha(item['path'])==item['sha256'],'JOINT_BUNDLE_BYTE_MISMATCH '+item['path']
+          for key,p in a['items'].items():
+            assert sha(p['path'])==p['sha256']
+            assert sha(p['tokenPath'])==p['tokenSha256']==bundle['previousAM1TokenSHA256'][key]
+          assert sha(root/'seal/DEV1_CONSTANTS.tsr')==bundle['originalDev1TokenSHA256']
+          for key,item in r['items'].items():
+            assert sha(item['filePath'])==item['fileSHA256']
+            assert sha(item['tokenPath'])==item['tokenSHA256']
+          g=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          m=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          assert sha('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json')==g['approvedManifestSHA256']
+          for item in g['liveOperationalSourceHashes']+m['immutableSource']['operationalSourceFileHashes']:
+            assert sha(item['path'])==item['sha256']
+          for f in root.rglob('*'):
+            if not f.is_file():continue
+            n=f.name.upper()
+            assert not (re.match(r'DEV1_(?:L|LY|L0|LS|LSY)(?:_|-)',n) and re.search(r'(?:RESULT|DATA|OBSERV|COHORT|TRAJECTOR|GENERATION)',n)),'LINEAGE_DATA_DETECTED'
+          print('DEV1_AM2_JOINT_HASH_AND_NO_LINEAGE_DATA_GATE_PASS')
+          PY
+          mkdir -p /tmp/am2verify
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/cacert.pem -o /tmp/am2verify/root.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/am2verify/root.pem' | sha256sum -c -
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/tsa.crt -o /tmp/am2verify/tsa.crt
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467  /tmp/am2verify/tsa.crt' | sha256sum -c -
+          openssl ts -verify -data experiments/dev1/DEV1_CONSTANTS.json -in experiments/dev1/seal/DEV1_CONSTANTS.tsr -CAfile /tmp/am2verify/root.pem -untrusted /tmp/am2verify/tsa.crt | grep -q 'Verification: OK'
+          for id in AM1_REGISTRATION AM1_CONSTANTS AM1_MANIFEST; do
+            case "$id" in
+             AM1_REGISTRATION) p=experiments/dev1/amendments/am1/AM1_STONE_TAPE_REGISTRATION.md ;;
+             AM1_CONSTANTS) p=experiments/dev1/amendments/am1/AM1_CONSTANTS.json ;;
+             AM1_MANIFEST) p=experiments/dev1/DEV1_CONSTANTS_MANIFEST.json ;;
+            esac
+            openssl ts -verify -data "$p" -in "experiments/dev1/amendments/am1/seal/$id.tsr" -CAfile /tmp/am2verify/root.pem -untrusted /tmp/am2verify/tsa.crt | grep -q 'Verification: OK'
+          done
+          for id in AM2_REGISTRATION AM2_JOINT_MANIFEST AM1_AM2_JOINT_BUNDLE; do
+            case "$id" in
+             AM2_REGISTRATION) p=experiments/dev1/amendments/am2/AM2_REGISTERED.md ;;
+             AM2_JOINT_MANIFEST) p=experiments/dev1/amendments/am2/AM2_AM1_JOINT_MANIFEST.json ;;
+             AM1_AM2_JOINT_BUNDLE) p=experiments/dev1/amendments/am2/seal/AM1_AM2_JOINT_BUNDLE.json ;;
+            esac
+            openssl ts -verify -data "$p" -in "experiments/dev1/amendments/am2/seal/$id.tsr" -CAfile /tmp/am2verify/root.pem -untrusted /tmp/am2verify/tsa.crt | grep -q 'Verification: OK'
+            echo DEV1_AM2_RFC3161_AND_JOINT_AM1_IMPRINT_PASS "$id"
+          done
+      - name: A1 constructed cue, compliance, uncued exclusion and read-only scanner tests
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          npx tsx experiments/dev1/amendments/am2/AM2_LOGGING_UNIT.ts
+          git diff --exit-code -- src/substrate src/governance src/ai/numogram src/types/amelia.ts experiments/pf1/
+          test ! -e experiments/dev1/DEV1_LS_RESULT.json
+          test ! -e experiments/dev1/DEV1_LSY_RESULT.json
+          echo DEV1_AM2_CONSTRUCTED_UNIT_ONLY_PASS_NO_LINEAGE_RUN
