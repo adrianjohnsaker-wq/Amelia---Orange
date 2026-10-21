@@ -1,0 +1,37 @@
+name: PF1 P1 RFC3161 one-time seal
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf1-p1-rfc3161-seal.yml']
+permissions:
+  contents: write
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify cutoff, science and request external token
+        shell: bash
+        run: |
+          set -euo pipefail
+          p=experiments/pf1/predictions/P1_2026-10-21_REGISTERED.md
+          test -s "$p"
+          echo 'ecabf3e40023faa0be0749908cfe6ffd3a8b9e42ab7c8a9a7c2ea5827ae63610  experiments/pf1/PF1_A1_R2_CONSTANTS.json' | sha256sum -c -
+          mkdir -p /tmp/pf1seal
+          openssl ts -query -data "$p" -sha256 -cert -no_nonce -out /tmp/pf1seal/P1.tsq
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/cacert.pem -o /tmp/pf1seal/root.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/pf1seal/root.pem' | sha256sum -c -
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/tsa.crt -o /tmp/pf1seal/tsa.crt
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467  /tmp/pf1seal/tsa.crt' | sha256sum -c -
+          curl -fsSL --retry 3 --retry-all-errors --max-time 70 -H 'Content-Type: application/timestamp-query' --data-binary @/tmp/pf1seal/P1.tsq https://freetsa.org/tsr -o /tmp/pf1seal/P1.tsr
+          openssl ts -verify -queryfile /tmp/pf1seal/P1.tsq -in /tmp/pf1seal/P1.tsr -CAfile /tmp/pf1seal/root.pem -untrusted /tmp/pf1seal/tsa.crt | grep -q 'Verification: OK'
+          echo PF1_P1_EXTERNAL_RFC3161_PASS
+      - name: Archive externally timestamped request and response
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PF1-P1-RFC3161
+          retention-days: 90
+          if-no-files-found: warn
+          path: /tmp/pf1seal/P1.*
