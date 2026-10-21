@@ -1,0 +1,116 @@
+{
+  "schema": "DEV1_AM5_ADDITIVE_SEALED_MANIFEST_V1",
+  "issuedUTC": "2026-10-21T20:38:19Z",
+  "sourceOriginal": "experiments/dev1/amendments/DEV1_STAGE1_SYNTHETIC_WORK_ORDER.md",
+  "registration": "experiments/dev1/amendments/am5/AM5_REGISTERED.md",
+  "originalCohortsAtSeal": [
+    "B",
+    "D1",
+    "D1″"
+  ],
+  "noLaterCorrectedDataBeforeSeal": true,
+  "replacesOnly": "AM4 tStar definition and Stage1 D2/D3/D4/Y ambiguities, while original signed AM3 unchanged for within-life",
+  "AM4FinalDeparture": {
+    "searchWindowSteps": 24,
+    "tStar": "earliest t in [max(0,ta-24),ta-1] such that z[t+1] not in Theta_t AND for ALL s=t+1..ta, z[s] not in Theta_t",
+    "distinctFinalExcursionEdges": true,
+    "VandTPerDistinctDeathCreditOnce": true,
+    "otherPendingOutcomeZero": true,
+    "AM4OriginalFailedTestsRetained": true
+  },
+  "D2": {
+    "refrainSource": "AM3 original o″ with original within-life death window and vUpdate: V+(o″-V)/8",
+    "fastTau": 48,
+    "slowTau": 2400,
+    "alphaFast": "1-exp(-1/48)",
+    "alphaSlow": "1-exp(-1/2400)",
+    "traceInitialization": "all zero vectors of 10 zones",
+    "traceUpdate": "after each completed step: F/S <- (1-alpha)*trace + alpha*onehot(destination)",
+    "normalization": "Fhat=F/sum(F), Shat=S/sum(S), zero until nonzero",
+    "selectorBias": "(Fhat+Shat)/2 REPLACES canonical PFM selector bias only [Clarification]",
+    "traitEvolutionBias": "canonical PFM bias always, unchanged [Clarification]",
+    "consolidateAfterStepIndices": "every one-based multiple of 48, including 48; call only getMemory().consolidateStrain, never triggerConsolidation [Clarification]",
+    "canonicalWeights": {
+      "bias": 0.4,
+      "act": 0.2,
+      "phase": 0.1,
+      "input": 0.35,
+      "V": 0.5
+    },
+    "gateEvolution": "canonical gate, zone dynamics as original runtime; only selector trace bias replacement and 0.5V",
+    "sameOriginalTapes": true,
+    "lifeMaxSteps": 10000
+  },
+  "D3": {
+    "essential1": ">=3 distinct directed gates, last 48, only assessed after first 48",
+    "essential2": "Governor.deformationFieldTension within [0.14,0.65] after audit",
+    "badConsecutive": 24,
+    "refractorySteps": 24,
+    "redrawWeights": [
+      "bias",
+      "act",
+      "phase",
+      "input"
+    ],
+    "uniformRanges": "[0,2*canonicalWeight]",
+    "neverRedrawV": true,
+    "seed": "first 8 bytes SHA256('DEV1-D3-DRAW-'+k) [Clarification]",
+    "prngIdentification": "NOT IDENTIFIED in original Stage1 source; D3 arm cannot run without identifying and pinning implementation",
+    "redrawLog": [
+      "step",
+      "triggerVariable",
+      "oldWeights",
+      "newWeights"
+    ]
+  },
+  "D4": {
+    "dampingStep": 0.01,
+    "dampingMin": 0.45,
+    "dampingMax": 0.99,
+    "low": 0.14,
+    "high": 0.65,
+    "apply": "after every step audit via existing setter"
+  },
+  "Y": {
+    "pair": "D4″ on same tape",
+    "ownEdgePartnerOutcome": "D4″ o″ for same step index",
+    "missingPartner": "0 after partner absorption",
+    "ownOutcomeForbidden": true,
+    "terminalYokedByStepIndex": true
+  },
+  "unitGates": {
+    "AM4CorrectedFiveAllPassBeforeLineage": true,
+    "AM5SixAllPassBeforeD2": true,
+    "AM5Six": [
+      "normalised fast/slow known alpha",
+      "consolidate exactly multiples48 without extra events",
+      "canonical TraitEvolution bias equality and equal paths",
+      "D3 24-streak and refractory, replay deterministic",
+      "D4 damping exact and bounded",
+      "Y partner outcome index and zero after absorption"
+    ]
+  },
+  "report": {
+    "O1": true,
+    "O4": true,
+    "O2": true,
+    "absorptionRoutes": true,
+    "allThreeCueShares": true,
+    "finalVTable32x11": true,
+    "Bunmodified": true,
+    "onlyArmNext": "D2″",
+    "stopAfterD2UntilOperatorReview": true
+  },
+  "immutableReferences": {
+    "base": "experiments/dev1/DEV1_CONSTANTS.json",
+    "am3": "experiments/dev1/DEV1_CONSTANTS_MANIFEST_AM3.json",
+    "am4": "experiments/dev1/DEV1_CONSTANTS_MANIFEST_AM4.json",
+    "originalD1": "experiments/dev1/DEV1_D1_RESULT.json",
+    "D1DoublePrime": "experiments/dev1/DEV1_AM3_D1PP_RESULT.json",
+    "AM1": "experiments/dev1/amendments/am1/seal/receipt.json",
+    "AM2": "experiments/dev1/amendments/am2/seal/receipt.json",
+    "AM3": "experiments/dev1/amendments/am3/seal/receipt.json",
+    "AM4": "experiments/dev1/amendments/am4/seal/receipt.json"
+  },
+  "disclosure": "AM5 motivated by AM4 correctly failed units, which were prompted by D1″ final V; no D2″ or lineage data informed these corrected choices"
+}
