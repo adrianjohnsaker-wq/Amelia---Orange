@@ -1,0 +1,135 @@
+{
+  "schema": "DEV1_AM1_STONE_TAPE_CONSTANTS_V1",
+  "approvedUTC": "2026-10-21T11:27:35Z",
+  "syntheticOnly": true,
+  "liveInflowProhibited": true,
+  "allowLineageDataBeforeSeal": false,
+  "sourceRegistration": "experiments/dev1/amendments/am1/AM1_STONE_TAPE_REGISTRATION.md",
+  "additions": {
+    "arms": [
+      "LS",
+      "LSY"
+    ],
+    "existingArmsUnaffected": [
+      "B",
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "Y",
+      "L",
+      "LY",
+      "L0"
+    ],
+    "placeRecord": {
+      "symbol": "T(e)",
+      "location": "separate developmental wrapper map",
+      "keying": "canonical gate id",
+      "canonicalGateCount": 11,
+      "canonicalObjectMutation": false,
+      "topologyChange": false,
+      "initial": 0,
+      "bounds": [
+        -1,
+        0
+      ],
+      "scope": "per lineage, not per individual",
+      "writeTrigger": "only once on terminal absorption",
+      "writeWindowTransitions": 24,
+      "includeTerminalEntry": true,
+      "dedupe": "one update per distinct gate id in last 24 transitions",
+      "writeFormula": "T(e) <- T(e) + (-1 - T(e))/8",
+      "writeDuringLife": false,
+      "writingRateDenominator": 8,
+      "basis": "same terminal update as L V(e); inherited H=24"
+    },
+    "read": {
+      "when": "every choice across outgoing open gates",
+      "additiveScore": "w_T*T(gate_id)",
+      "w_T": 0.5,
+      "equalToExisting_w_V": 0.5,
+      "basis": "operator AM1: value weight exceeds maximum canonical choice-point flux gap (reported 0.287)"
+    },
+    "individual": {
+      "type": "fresh D4 every generation",
+      "startingZone": 0,
+      "personalVInitial": 0,
+      "initialFastTrace": "fresh",
+      "initialSlowTrace": "fresh",
+      "inheritedPersonalMemory": false,
+      "personalMemoryResetAtEveryBirth": true,
+      "initialDamping": 0.88,
+      "canonicalWeights": true,
+      "personalD4MechanismsWithinLife": true
+    },
+    "lineage": {
+      "tapes": 32,
+      "capGenerations": 50,
+      "capTotalSteps": 100000,
+      "syntheticTapeExpression": "SHA256('DEV1-TAPE-'+k+'|'+i)",
+      "seedIndicesOneBased": true
+    },
+    "LS": {
+      "successorPersonalInheritance": "none",
+      "successorT": "own lineage prior absorption marks",
+      "transmitted": "T only"
+    },
+    "LSY": {
+      "successorPersonalInheritance": "none",
+      "successorT": "same-generation donor lineage (k mod 32)+1, with k one-based",
+      "donorMap": "1->2,...,31->32,32->1",
+      "sync": "freeze donor snapshot before recipient generation begins; never future or mutable shared reference",
+      "overrideLocalTAtEachBirth": true,
+      "donorSource": "same-generation LS record; no LS personal history passed",
+      "interpretation": "wrong-deaths contingency control"
+    },
+    "outcomes": {
+      "O1_LS_directional": {
+        "statistic": "per-lineage Spearman rank slope of log survival against generation",
+        "comparisons": [
+          "LS > L0",
+          "LS > LSY"
+        ],
+        "test": "permutation",
+        "family": "secondary",
+        "holmAlpha": 0.05,
+        "holmFamilySize": 2
+      },
+      "O1_L_vs_LS": {
+        "type": "descriptive",
+        "sidedness": "two-sided",
+        "notPrimary": true
+      },
+      "O2_T": {
+        "definition": "share of LS branch choices changing after only T term removed in identical post-evolution state",
+        "eligibleAfterTNonzero": true,
+        "gate": "strictly > 0; else mechanism failure"
+      },
+      "O7_routes": {
+        "detail": "ordered edge IDs from final 24 traversals before absorption, each lineage+generation",
+        "edgesOfInterest": [
+          "gate-2-4",
+          "gate-4-5",
+          "gate-1-8",
+          "gate-8-9",
+          "gate-9-1"
+        ],
+        "retuning": "forbidden without new sealed amendment"
+      },
+      "originalPrimaryFamilyUnaffected": [
+        "D4 > B",
+        "D4 > Y",
+        "L > LY"
+      ]
+    },
+    "hardGates": {
+      "am1Rfc3161RequiredBeforeAnyLineage": true,
+      "readOnlyCanonicalAndPF1": true,
+      "c1Untouched": true,
+      "seededDeterminism": true,
+      "byteIdenticalReplay": true,
+      "additionalExperimentalArmsProhibitedUntilReview": true,
+      "unitTestsRequiredBeforeLineage": true
+    }
+  }
+}
