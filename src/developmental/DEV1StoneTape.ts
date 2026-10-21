@@ -54,10 +54,13 @@ export class StoneTapeLife {
  private recent:StoneGateId[]=[];
  private absorbed=false;
  private writes=0;
+ private position=0;
  constructor(private readonly place:StoneTapePlaceMemory){}
  observeTransition(from:number,to:number):void{
   if(this.absorbed)throw Error('AM1_TRANSITION_AFTER_DEATH');
+  if(from!==this.position)throw Error('AM1_NONCONTIGUOUS_PERSONAL_ROUTE');
   const id=gateIdForTraversal(from,to);
+  this.position=to;
   this.recent.push(id);
   if(this.recent.length>AM1_H)this.recent.shift();
   const terminal=to===5 && !CANONICAL_GATES.some(g=>g.isOpen&&g.source===5);
