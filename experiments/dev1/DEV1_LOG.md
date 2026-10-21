@@ -20,3 +20,14 @@
 | 2026-10-21 | Seal / execution workflow | One-way gate implemented: frozen science identity and C1 read-only pin; actual FreeTSA RFC3161 token checked against fixed trust-anchor fingerprints; archive seal; only then B tests, B calibration and byte-for-byte replay. No D arm command exists in the workflow. | `5ab69e5c2a3b1a6f20ca099630fe9d900b9f5ad1`; [Actions run 39580807013](https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39580807013) | SEAL AND UNIT TEST PASS; B IN PROGRESS AT THIS UPDATE |
 
 **Audit note:** successful timestamp and isolated unit-test gates are not evidence of baseline calibration success; no absorption summary, permutation inference, or D-arm result is asserted until the B calibration and byte-identical replay complete.
+
+## Resource/engineering amendment — no constant or dynamics change
+
+| UTC date | Kind | Decision / observation | Commit / evidence | Status |
+|---|---|---|---|---|
+| 2026-10-21 | Resource diagnosis | The first 32×10,000 B job remained in progress with canon's full-history SHA-256 regeneration on each step. No B outcome read or threshold changed. Preserve original run instead of suppressing it. | [Run 39580807013](https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39580807013) | ORIGINAL EVIDENCE RETAINED |
+| 2026-10-21 | Assay-only optimisation | Implement a DEV1-only incremental SHA-256 streaming wrapper for the **same exact** canonical JSON-array history digest. Dynamic PFM, zones, input, selector and Governor are original. Check equality with canonical full recomputation on empty memory, first 24 steps and step 10,000 for **each** tape. This changes computational bookkeeping only; no effect on transitions or scientific constants. | `70562c67023e1bdd9c7dc83eed8be42d7527db66`, `05f1185158183181ababd77ec72c09d95277bc13` | APPLIED TO NEW B RUN |
+| 2026-10-21 | Execution isolation | Rerun sealed-constants and identity gates, isolated unit tests, 32×10,000 B calibration and full byte-identical replay. Still no D arms. | `f612f372f88c39b1ecad16b7e4f90b2864fa083d`; [run 39581846789](https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39581846789) | STARTED |
+| 2026-10-21 | Work-order identity | Exact attached work-order SHA-256 (before any assay): `74bff57831b56facff30b8184fe41467766a0e9cbd3f7a64d6dce40733827aca`, length 6,079 bytes. | operator attachment | RECORDED |
+
+**Deviation classification:** The accelerated digest is an implementation optimisation permitted by the work order's import-and-wrap rule, *not* an approved change to a canonical class or a numerical parameter. The exact-hash check must PASS. If it fails, the resulting run is a gate failure and its output cannot calibrate B.
