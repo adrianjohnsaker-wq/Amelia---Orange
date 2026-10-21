@@ -31,3 +31,16 @@
 | 2026-10-21 | Work-order identity | Exact attached work-order SHA-256 (before any assay): `74bff57831b56facff30b8184fe41467766a0e9cbd3f7a64d6dce40733827aca`, length 6,079 bytes. | operator attachment | RECORDED |
 
 **Deviation classification:** The accelerated digest is an implementation optimisation permitted by the work order's import-and-wrap rule, *not* an approved change to a canonical class or a numerical parameter. The exact-hash check must PASS. If it fails, the resulting run is a gate failure and its output cannot calibrate B.
+
+## B baseline completed — factual closure (21 October 2026)
+
+| Kind | Evidence | Decision / result |
+|---|---|---|
+| External constants timestamp | [Action 39581846789](https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39581846789) | Genuine FreeTSA RFC3161 request/response verified before B; identity and mechanism unit tests PASS. |
+| B / unmodified runtime | [Original action 39580807013](https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39580807013) | B2 32×10,000 **PASS**, B3 independent byte-identical replay **PASS**; median 1393; range 96–5729; 32/32 absorbed; moving-selector ablation 124/54496. Original JSON SHA-256 `1444ae773c90ba59132ff8bdeb116fabde6756c489f129d65bf077734d85fb06`. |
+| B / exact-digest wrapped runtime | [Action 39581846789](https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39581846789) | All gates, original-history-digest comparison checkpoints and second byte-identical replay PASS; **same 32 individual absorption steps**, identical calibration totals. JSON SHA-256 `b3d7ccc1f745f0483c766e184dbe0e8a19d01b84ecee6affecdfbb384dc694b5`; differs from original only in recorded source/provenance description. |
+| Archive failure on original workflow | Run 39580807013, step B4; GitHub API HTTP 422 `sha wasn't supplied`. | Expected **create-only collision**: accelerated B run already published the same report path, and older B workflow was forbidden to overwrite it. This marks the *original workflow as failed overall*, although its B2/B3 scientific gates passed. The failure is **retained**; no overwrite, threshold change or retrial masking. |
+| Baseline interpretation | `experiments/dev1/DEV1_STAGE1_REPORT.md` | Thirty-two of 32 absorbed by 10,000; median 1,393, range 96–5,729; selector-only memory term changed 124/54,496 moving exit selections (0.2275%) and 124/18,594 branching choices (0.6669%). The prior 24-tape median 1,134, range 56–7,116 is descriptive reference only, not the same-tape reproduction. |
+| Order gate | Stage 1 work order §B | Report B **before** any developmental arm. D1–D4, Y, L, LY, L0 **NOT RUN** at this closure. No live inflow; no C1 or PF1 dispatch. |
+
+**Remaining work:** Implement and independently test D-arm integration, then run the prespecified D/E arms strictly in order. The present baseline report must not be misrepresented as a completed full Stage 1 developmental study.
