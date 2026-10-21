@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {AmeliaNumogramSubstrateRuntime} from '../../src/substrate/ameliaNumogramSubstrateRuntime';
+import {accelerateExactHistoryDigest} from '../../src/developmental/DEV1ExactDigestAdapter';
 
 const ROOT='experiments/dev1/';
 const C=JSON.parse(readFileSync(ROOT+'DEV1_CONSTANTS.json','utf8'));
@@ -21,6 +22,7 @@ type Result={tape:number;absorptionStep:number|null;status:string;
    memoryTermChangedBranch:number;lastZone:number;firstZones:number[]};
 function runTape(k:number):Result {
   const rt=new AmeliaNumogramSubstrateRuntime();
+  const exactDigest=accelerateExactHistoryDigest(rt.getMemory());
   rt.setSuppressRelaySteering(true);
   let firstAbsorption:number|null=null;
   let moving=0,branched=0,changed=0,changedBranch=0;
@@ -32,6 +34,7 @@ function runTape(k:number):Result {
     const inputHash=hex(input);
     const inputZone=parseInt(inputHash.slice(0,2),16)%10;
     rt.step(input);
+    if(i<24||i===9999) exactDigest.validateCanonical();
     const afterZone=rt.getCurrentZone();
     if(i<8)firstZones.push(afterZone);
     const gates=rt.getQabbala().getGates().filter(g=>g.isOpen&&g.source===beforeZone);
@@ -93,7 +96,7 @@ const payload={
  localSelectorMemoryAblation:{changedExitChoices:changed,exitChoices:total,share:total?changed/total:null,
  changedBranchChoices:branchChanged,branchChoices:branches,branchShare:branches?branchChanged/branches:null,
  method:C.baseline.choiceAblationDefinition},
- source:'unchanged AmeliaNumogramSubstrateRuntime; suppressRelaySteering(true) as PF1; 32 separate fresh states',
+ source:'unchanged AmeliaNumogramSubstrateRuntime dynamics; synthetic-only byte-identical incremental history-digest adapter validated against original at first 24 and step 10000 on every tape; suppressRelaySteering(true) as PF1; 32 fresh states',
  rows
 };
 const body=JSON.stringify(payload,null,2)+'\n';
@@ -120,7 +123,7 @@ const md=[
  '',
  '## Identity and scope',
  '',
- 'Synthetic only: no live inflow, no PF-1 or C1 dispatch, no genesis; frozen science and operational source files unchanged. Identity and externally signed constants gates are enforced by the workflow.',
+ 'Synthetic only: no live inflow, no PF-1 or C1 dispatch, no genesis; frozen science and operational source files unchanged. Assay-only accelerated history digest is byte-identical to the canonical full-history SHA-256 at audited checkpoints. Identity and externally signed constants gates are enforced by the workflow.',
  '',
  '## Next gate',
  '',
