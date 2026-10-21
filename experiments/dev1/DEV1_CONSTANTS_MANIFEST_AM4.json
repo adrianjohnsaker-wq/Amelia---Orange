@@ -1,0 +1,53 @@
+{
+  "schema": "DEV1_AM4_ADDITIVE_LINEAGE_CONSTANTS_V1",
+  "issuedUTC": "2026-10-21T18:59:42Z",
+  "approved": true,
+  "scope": "lineage-only correction at absorption of inherited V or T; within-life unchanged AM3",
+  "registration": "experiments/dev1/amendments/am4/AM4_REGISTERED.md",
+  "am3Manifest": "experiments/dev1/DEV1_CONSTANTS_MANIFEST_AM3.json",
+  "am3Receipt": "experiments/dev1/amendments/am3/seal/receipt.json",
+  "am1Receipt": "experiments/dev1/amendments/am1/seal/receipt.json",
+  "am2Receipt": "experiments/dev1/amendments/am2/seal/receipt.json",
+  "literalDefinition": {
+    "sink": 5,
+    "absorptionStep": "first t_a with z[t_a]=5",
+    "territory": "Θ_t = distinct zones from z[max(0,t-24)] through z[t-1], including initial z0 at t0",
+    "searchWindow": "t ∈ [max(0,t_a−24),t_a−1]",
+    "tStar": "last t in search window with z[t+1] not in Θ_t; fallback t_a−1",
+    "finalExcursion": "distinct directed edges e[tStar]…e[t_a−1]",
+    "terminalV": "once per distinct excursion edge: V←V+(−1−V)/8; all other pending final24 abolition o″ neutral 0",
+    "terminalT": "once per distinct excursion edge: T←T+(−1−T)/8; others unmarked",
+    "unchanged": [
+      "refrain o″ rule 2",
+      "neutral o″ rule 3",
+      "H=24",
+      "rate denominator=8",
+      "wV=0.5",
+      "wT=0.5",
+      "all registered predictions",
+      "all arm inference families"
+    ]
+  },
+  "unitTests": [
+    "circuit then 1→2→4→5 must mark 3 pitward gates once; loop untouched",
+    "with zone2 in territory, final departure 2→4 must mark 2→4 and 4→5",
+    "repeated final-excursion edge once",
+    "T and V terminal marks same for each test",
+    "successor loop V(1→8)=0, same uncued exit as B"
+  ],
+  "recognizedConflict": {
+    "blockLineage": true,
+    "reason": "For first arrival at terminal zone5, z[t_a]=5 is never in Θ_[t_a−1]. Thus literal last departure t*=t_a−1 always, and only 4→5 marked, contradicting mandatory unit tests 1,2. Any change requires prospective operator-signed correction.",
+    "allowWithinLifeAM3": true
+  },
+  "provenance": {
+    "D1PPAccepted": true,
+    "originalD1Unchanged": true,
+    "diagnosis": "reviewer specification fault, not implementation",
+    "allEarlierSealBytesImmutable": true,
+    "designRule": "abolition belongs to the line of flight that does not return, not to the territory it left",
+    "D2PrimeAuthorisedUnderAM3": true,
+    "currentLaterCorrectedReviewGate": "D2″ report/review before D3″",
+    "lineageNotAuthorisedBeforeAM4UnitsPass": true
+  }
+}
