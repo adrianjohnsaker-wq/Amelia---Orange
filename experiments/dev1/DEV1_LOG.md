@@ -44,3 +44,11 @@
 | Order gate | Stage 1 work order §B | Report B **before** any developmental arm. D1–D4, Y, L, LY, L0 **NOT RUN** at this closure. No live inflow; no C1 or PF1 dispatch. |
 
 **Remaining work:** Implement and independently test D-arm integration, then run the prespecified D/E arms strictly in order. The present baseline report must not be misrepresented as a completed full Stage 1 developmental study.
+
+## D1 unit gate and cohort setup — 2026-10-21
+- Operator approved D1 only; B baseline accepted: 32/32, median 1393, O2 branch reference 124/18594 = 0.667%.
+- Sealed constants external timestamp and unchanged science verified, mandatory isolated D1 unit run https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39586471562 PASS before any D1 cohort.
+- Flux-score gap on 4->5 versus 4->7 is 0.0093; V(4->7)=0.1 times wV=0.5 gives 0.05 and reverses the chosen exit. Real unchanged runtime integration also passed. No canonical source edits.
+- D1 only: synthetic 32 tapes, H=24, V updated by (o-V)/8, O1 RMST up to 10000 and O2 branch-choice ablations plus absorption routes. Stops terminal individual at absorbing zone 5; this is a computational shortcut after an irreversible event.
+- Pre-run engineering cleanup: remove unused delayed-credit expression, invoke sealed consequenceOutcome directly, commit ea162b1cafdbbeff8d46a9835940bf733275a485. No constants changed.
+- D2, D3, D4, Y, L, LY, L0 not authorised to run until D1 reviewed.
