@@ -5,14 +5,14 @@
  */
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {CANONICAL_GATES} from '../../src/ai/numogram/AmeliaQabbalaInterface';
-import {AmeliaNumogramSubstrateRuntime} from '../../src/substrate/ameliaNumogramSubstrateRuntime';
+import {CANONICAL_GATES} from '../../../../src/ai/numogram/AmeliaQabbalaInterface';
+import {AmeliaNumogramSubstrateRuntime} from '../../../../src/substrate/ameliaNumogramSubstrateRuntime';
 import {blankStoneMarks,StoneTapePlaceMemory,stoneTapeChooseExit,
  stoneTapeSelectorOverlay,AM1_IDS,AM1_W_T,AM1_H,terminalStoneUpdate}
- from '../../src/developmental/DEV1StoneTape';
+ from '../../../../src/developmental/DEV1StoneTape';
 import {newStoneLineagePlace,beginLSGeneration,beginLSYGeneration,
  lsWrongDeathDonor,freezeAgeMatchedDonors,enforceStoneLineageLimits}
- from '../../src/developmental/DEV1StoneLineage';
+ from '../../../../src/developmental/DEV1StoneLineage';
 
 const base=JSON.parse(readFileSync('experiments/dev1/DEV1_CONSTANTS.json','utf8'));
 const am=JSON.parse(readFileSync('experiments/dev1/amendments/am1/AM1_CONSTANTS.json','utf8'));
