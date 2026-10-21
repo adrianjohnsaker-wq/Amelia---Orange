@@ -41,15 +41,19 @@ export function am4LiteralFinalExcursion(zones:readonly number[]):AM4Excursion{
 /** One distinct gate update per observed terminal excursion, same for V or T.
  * Other unresolved last24 consequences neutral. It is NOT used by within-life
  * runs, as only lineage would use inherited terminal marks. */
-export function am4TerminalMarks(zones:readonly number[]){
- const excursion=am4LiteralFinalExcursion(zones);
+export function applyAM4DistinctMarks(edgeSequence:readonly string[]){
  const V:Object=Object.fromEntries(D1_CANONICAL_EDGES.map(x=>[x,0]));
  const T=blankStoneMarks();
- for(const e of excursion.finalExcursionEdges){
+ for(const e of new Set(edgeSequence)){
+  if(!D1_CANONICAL_EDGES.includes(e))throw Error('AM4_NONCANONICAL_MARK');
   (V as Record<string,number>)[e]=updateEdgeValue((V as Record<string,number>)[e],-1);
   const id='gate-'+e.replace('->','-');
   if(!(id in T))throw Error('AM4_MARK_ID_MISSING');
   T[id]=updateEdgeValue(T[id],-1);
  }
- return {excursion,V:V as Record<string,number>,T};
+ return {V:V as Record<string,number>,T};
+}
+export function am4TerminalMarks(zones:readonly number[]){
+ const excursion=am4LiteralFinalExcursion(zones);
+ return {excursion,...applyAM4DistinctMarks(excursion.finalExcursionEdges)};
 }
