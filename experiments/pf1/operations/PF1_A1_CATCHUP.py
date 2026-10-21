@@ -140,19 +140,18 @@ def main():
     assert_authorised_environment()
     cmd("git","-C","../c1-pin","rev-parse","HEAD")
     assert cmd("git","-C","../c1-pin","rev-parse","HEAD").stdout.strip()==PIN
-    cmd("sha256sum","-c", "-",check=False) if False else None
     import hashlib
     assert hashlib.sha256((ROOT/"PF1_GENESIS_MANIFEST_DRAFT.json").read_bytes()).hexdigest()==MANIFEST_SHA
     gen,started=info()
     from PF1_SAFE_LEASE import acquire
     lease=os.environ["PF1_LEASE"]
+    git("config","user.name","PF1 authorised A1 recorder")
+    git("config","user.email","41898282+github-actions[bot]@users.noreply.github.com")
     begin=time.monotonic()
     result=acquire(lease,branch="main")
     assert result["status"]=="PUSH_CONFIRMED" and result["admission_authorized"]
     os.environ["PF1_REMOTE_LEASE_ACKNOWLEDGED"]="true"
     assert_remote_head()
-    git("config","user.name","PF1 authorised A1 recorder")
-    git("config","user.email","41898282+github-actions[bot]@users.noreply.github.com")
     print("PF1_A1_REMOTE_LEASE_ACQUIRED",json.dumps({"lease":lease,"startTick":started["admittedTicks"],"head":result["pushed_commit"],"UTC":utc()}),flush=True)
     batches=0
     accepted=0
