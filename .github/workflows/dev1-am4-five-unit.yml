@@ -1,0 +1,67 @@
+name: DEV1 AM4 five sealed constructed lineage-mechanism tests no lineage cohort
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/dev1-am4-five-unit.yml']
+permissions:
+  contents: read
+jobs:
+  test-five-prospective-expectations:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify AM4 triple genuine seal and unchanged scientific sources before unit gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:experiments/dev1/DEV1_CONSTANTS.json)" = d862d3afc0cfd334b5bc88b9541c687fa28ee16c
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import json,hashlib,pathlib,re
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          d=pathlib.Path('experiments/dev1')
+          a=json.loads((d/'amendments/am4/seal/receipt.json').read_text())
+          bundle=json.loads((d/'amendments/am4/seal/AM4_PROVENANCE_BUNDLE.json').read_text())
+          assert a['status']=='PASS' and a['lineageResultsBeforeSeal']==0
+          assert a['lineageBlockedByContradictoryFinalDeparture']
+          assert bundle['schema']=='DEV1_AM4_PROSPECTIVE_PRELINEAGE_SEAL_BUNDLE_V1'
+          for item in bundle['sources']+bundle['tokens']:
+            assert sha(item['path'])==item['sha256']
+          for label,v in a['items'].items():
+            p='experiments/dev1/amendments/am4/seal/AM4_PROVENANCE_BUNDLE.json' if label=='AM4_PROVENANCE_BUNDLE' else v['originalPath']
+            assert sha(p)==v['sourceSHA256']
+            assert sha(v['tokenPath'])==v['tokenSHA256']
+          for p in d.rglob('*'):
+            if p.is_file() and re.match(r'DEV1_(?:L|LY|L0|LS|LSY)',p.name,re.I) and re.search(r'(?:RESULT|COHORT|OBSERV|DATA)',p.name,re.I):
+              raise AssertionError('AM4_LINEAGE_DATA_EXISTS '+str(p))
+          print('AM4_PREUNIT_SHA256_FROZEN_AND_NO_LINEAGE_DATA_PASS')
+          PY
+          mkdir -p /tmp/am4unit
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/cacert.pem -o /tmp/am4unit/root.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/am4unit/root.pem' | sha256sum -c -
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/tsa.crt -o /tmp/am4unit/tsa.crt
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467  /tmp/am4unit/tsa.crt' | sha256sum -c -
+          for id in AM4_REGISTRATION AM4_MANIFEST AM4_PROVENANCE_BUNDLE; do
+            case "$id" in
+              AM4_REGISTRATION) p=experiments/dev1/amendments/am4/AM4_REGISTERED.md ;;
+              AM4_MANIFEST) p=experiments/dev1/DEV1_CONSTANTS_MANIFEST_AM4.json ;;
+              AM4_PROVENANCE_BUNDLE) p=experiments/dev1/amendments/am4/seal/AM4_PROVENANCE_BUNDLE.json ;;
+            esac
+            openssl ts -verify -data "$p" -in "experiments/dev1/amendments/am4/seal/$id.tsr" -CAfile /tmp/am4unit/root.pem -untrusted /tmp/am4unit/tsa.crt | grep -q 'Verification: OK'
+          done
+      - name: Run all five AM4 constructed tests with LS lineage birth fixture, fail if expectations conflict
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          npx tsx experiments/dev1/amendments/am4/AM4_FIVE_UNIT.ts
+          git diff --exit-code -- src/substrate src/governance src/ai/numogram src/types/amelia.ts experiments/pf1/
+          echo AM4_ALL_FIVE_LINEAGE_UNITS_PASS
