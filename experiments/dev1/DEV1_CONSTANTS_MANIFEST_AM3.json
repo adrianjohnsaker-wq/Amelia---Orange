@@ -1,0 +1,151 @@
+{
+  "schema": "DEV1_AM3_ADDITIVE_CONSTANTS_MANIFEST_V3",
+  "approvedUTC": "2026-10-21T18:05:23Z",
+  "base": "experiments/dev1/DEV1_CONSTANTS.json",
+  "baseSha256": "c5a82e34c6b3509286e515c51784b7e05c89e1541a0e0aa90782be88a948ea92",
+  "am1Receipt": "experiments/dev1/amendments/am1/seal/receipt.json",
+  "am2Receipt": "experiments/dev1/amendments/am2/seal/receipt.json",
+  "am3Registration": "experiments/dev1/amendments/am3/AM3_REGISTERED.md",
+  "onlyExistingCohorts": [
+    "B",
+    "D1"
+  ],
+  "originalD1Accepted": true,
+  "retiredUnrun": [
+    "D2",
+    "D3",
+    "D4",
+    "Y",
+    "L",
+    "LY",
+    "L0",
+    "LS",
+    "LSY"
+  ],
+  "correctedOrder": [
+    "D1″",
+    "D2″",
+    "D3″",
+    "D4″",
+    "Y″",
+    "L″",
+    "LY″",
+    "L0″",
+    "LS″",
+    "LSY″"
+  ],
+  "referenceBUnchanged": true,
+  "signal": {
+    "name": "refrain o″",
+    "horizon": 24,
+    "territory": "Θ_t zones z[max(0,t−24)]…z[t−1], with birth zone 0 for early steps and at t=0",
+    "absorptionPrecedence": "-1 for each edge when a sink is entered within t+1…t+24",
+    "refrain": "z[t+1] outside Θ_t AND first return to Θ_t among z[t+2]…z[t+24]",
+    "refrainReward": "cardinality(E_exc minus E_prev) / 11",
+    "E_exc": "distinct edges from e[t] up to and including edge arriving at first return",
+    "E_prev": "distinct edges e[max(0,t−24)]…e[t−1]",
+    "repetitionInTerritoryNoReturn": 0,
+    "initialV": 0,
+    "boundsV": [
+      -1,
+      1
+    ],
+    "wV": 0.5,
+    "Vupdate": "V <- V +(o″−V)/8",
+    "originalAM1TUnchanged": true
+  },
+  "coPrimary": {
+    "alpha": 0.05,
+    "nPermutations": 100000,
+    "multipleTesting": "Holm",
+    "withinLife": "paired tape sign-flip",
+    "lineage": "whole-lineage permutation",
+    "tests": [
+      [
+        "D4″ > B",
+        "O4",
+        "one-sided"
+      ],
+      [
+        "D4″ vs B",
+        "O1",
+        "two-sided"
+      ],
+      [
+        "D4″ > Y″",
+        "O4",
+        "one-sided"
+      ],
+      [
+        "D4″ vs Y″",
+        "O1",
+        "two-sided"
+      ],
+      [
+        "L″ > LY″",
+        "O1",
+        "one-sided"
+      ],
+      [
+        "L″ > LY″",
+        "O4",
+        "one-sided"
+      ]
+    ]
+  },
+  "outcomes": {
+    "O1WithinLife": "RMST up to 10000",
+    "O1Lineage": "lineage Spearman slope(log survival,generation)",
+    "O4WithinLife": "distinct directed edges *1000 / moving steps",
+    "O4Lineage": "lineage mean across generation2+",
+    "O2": "same registered local selector memory ablation; compare B",
+    "choicePoints": [
+      "1→2",
+      "2→4",
+      "4→5"
+    ],
+    "cueStrata": [
+      "pitwardCue",
+      "otherCue",
+      "uncued"
+    ]
+  },
+  "independentFamilies": {
+    "AM1": [
+      "LS″ > L0″",
+      "LS″ > LSY″"
+    ],
+    "AM2": [
+      "L″ < LS″",
+      "L″ < L0″"
+    ],
+    "correction": "Holm separately per family"
+  },
+  "predictionLabels": [
+    "P3-1",
+    "P3-2",
+    "P3-3"
+  ],
+  "unitTests": [
+    "steady-state repeated circuit reward0",
+    "return excursion 1→2 and 2→7 positive, 7→8 zero",
+    "repeat refrain within24 reward0",
+    "absorption preceding 24 edges -1",
+    "no return no absorption zero",
+    "early history territory correct",
+    "nonzero V flips canonical score when flux gap < wV|V|"
+  ],
+  "mandatoryGates": {
+    "sha256AndRFC3161BeforeFirstCorrected": true,
+    "atSealingOnlyExisting": [
+      "B",
+      "D1"
+    ],
+    "sevenUnitsBeforeD1DoublePrime": true,
+    "replayByteIdentical": true,
+    "stopAfterD1DoublePrimeUntilReview": true,
+    "baseAM1AM2Immutable": true
+  },
+  "operatorDesignRule": "adaptive signals distinguish lines of flight that return from lines of abolition; they do not penalise novelty.",
+  "disclosure": "D1 diagnosed flawed original mobility-change signal; amendment D1-motivated not based on corrected outcomes"
+}
