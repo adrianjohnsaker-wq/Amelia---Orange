@@ -1,0 +1,141 @@
+name: DEV1 AM3 first corrected D1-double-prime 32 tapes ONLY
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/dev1-am3-d1pp.yml']
+permissions:
+  contents: read
+jobs:
+  first-corrected-arm:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: D0 fail-closed pre-arm signed AM3 receipt, original evidence identity, and seven unit run PASS
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:experiments/dev1/DEV1_CONSTANTS.json)" = d862d3afc0cfd334b5bc88b9541c687fa28ee16c
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import pathlib,json,hashlib,re
+          root=pathlib.Path('experiments/dev1')
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          a=json.loads((root/'amendments/am3/seal/receipt.json').read_text())
+          m=json.loads((root/'DEV1_CONSTANTS_MANIFEST_AM3.json').read_text())
+          signed=json.loads((root/'amendments/am3/seal/AM3_JOINT_SOURCE_DIGESTS.json').read_text())
+          assert a['status']=='PASS' and a['onlyPreviousCohortsBAndD1AtSeal']
+          assert a['allEarlierSignedTokensReverified']
+          assert m['correctedOrder'][0]=='D1″'
+          assert m['retiredUnrun']==['D2','D3','D4','Y','L','LY','L0','LS','LSY']
+          assert len(m['unitTests'])==7
+          assert sha(root/'DEV1_CONSTANTS.json')==m['baseSha256']
+          for item in signed['sources']+signed['priorRfc3161TokenDigests']:
+            assert sha(item['path'])==item['sha256'],'PINNED_AM3_PRIOR_DIGEST_CHANGED '+item['path']
+          for label,item in a['items'].items():
+            p=root/'amendments/am3/seal/AM3_JOINT_SOURCE_DIGESTS.json' if label=='bundle' else pathlib.Path(item['sourcePath'])
+            assert sha(p)==item['sourceSHA256'] and sha(item['tokenPath'])==item['tokenSHA256']
+          b=json.loads((root/'DEV1_BASELINE_CALIBRATION.json').read_text())
+          d=json.loads((root/'DEV1_D1_RESULT.json').read_text())
+          assert b['absorbedCount']==d['O1']['absorbed']==32
+          assert sha(root/'DEV1_D1_RESULT.json')=='0fb3269e1c52d9f0613a8d2b2b96abdca98e41ff023ca5f6f8a2c1682436997c'
+          orig=json.loads((root/'DEV1_D1_CHOICE_POINT_AUDIT.json').read_text())
+          assert len(orig['pairs'])==32
+          for p in root.rglob('*'):
+            if not p.is_file():continue
+            n=p.name.upper()
+            if re.match(r'DEV1_(?:D2|D3|D4|Y|L|LY|L0|LS|LSY|D1PP)',n) and re.search(r'(?:RESULT|COHORT|OBSERV|DATA|TRAJECTOR)',n):
+              raise AssertionError('CORRECTED_OR_RETIRED_OUTCOME_ALREADY_EXISTS '+str(p))
+          g=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          gp=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          for p in g['liveOperationalSourceHashes']+gp['immutableSource']['operationalSourceFileHashes']:
+            assert sha(p['path'])==p['sha256']
+          print('DEV1_AM3_D1PP_ONLY_DATA_AND_IDENTITIES_GATE_PASS')
+          PY
+          actual=$(gh api "repos/$REPO/actions/runs/39650536000" --jq '.conclusion')
+          test "$actual" = success
+          echo DEV1_AM3_PRECEDING_SEVEN_UNIT_RUN_CONFIRMED_SUCCESS_39650536000
+          mkdir -p /tmp/am3d1
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/cacert.pem -o /tmp/am3d1/root.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/am3d1/root.pem' | sha256sum -c -
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/tsa.crt -o /tmp/am3d1/tsa.crt
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467  /tmp/am3d1/tsa.crt' | sha256sum -c -
+          for id in AM3_REGISTRATION AM3_CONSTANTS_MANIFEST AM3_JOINT_SOURCE_DIGESTS; do
+            case "$id" in
+              AM3_REGISTRATION) p=experiments/dev1/amendments/am3/AM3_REGISTERED.md ;;
+              AM3_CONSTANTS_MANIFEST) p=experiments/dev1/DEV1_CONSTANTS_MANIFEST_AM3.json ;;
+              AM3_JOINT_SOURCE_DIGESTS) p=experiments/dev1/amendments/am3/seal/AM3_JOINT_SOURCE_DIGESTS.json ;;
+            esac
+            openssl ts -verify -data "$p" -in "experiments/dev1/amendments/am3/seal/$id.tsr" -CAfile /tmp/am3d1/root.pem -untrusted /tmp/am3d1/tsa.crt | grep -q 'Verification: OK'
+          done
+          echo DEV1_AM3_D1PP_SIGNED_SHA256_RFC3161_PASS
+      - name: D1 run ONLY first corrected D1 double-prime on original 32 synthetic tapes
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          DEV1_AM3_RFC3161_VERIFIED: 'true'
+          DEV1_AM3_SEVEN_UNITS_PASS: 'true'
+          DEV1_FROZEN_IDENTITY_PASS: 'true'
+          DEV1_D1PP_OPERATOR_APPROVED: 'true'
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          npx tsx experiments/dev1/DEV1_AM3_D1PP_COHORT.ts
+          cp experiments/dev1/DEV1_AM3_D1PP_RESULT.json /tmp/am3d1/first.json
+          cp experiments/dev1/DEV1_AM3_D1PP_REPORT.md /tmp/am3d1/first.md
+          echo DEV1_AM3_D1PP_FIRST_CORRECTED_ARM_COMPLETED
+      - name: D2 run independent byte-identical replay same first corrected arm, original science immutability
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          DEV1_AM3_RFC3161_VERIFIED: 'true'
+          DEV1_AM3_SEVEN_UNITS_PASS: 'true'
+          DEV1_FROZEN_IDENTITY_PASS: 'true'
+          DEV1_D1PP_OPERATOR_APPROVED: 'true'
+        run: |
+          set -euo pipefail
+          npx tsx experiments/dev1/DEV1_AM3_D1PP_COHORT.ts
+          cmp /tmp/am3d1/first.json experiments/dev1/DEV1_AM3_D1PP_RESULT.json
+          cmp /tmp/am3d1/first.md experiments/dev1/DEV1_AM3_D1PP_REPORT.md
+          git diff --exit-code -- experiments/dev1/DEV1_CONSTANTS.json experiments/dev1/DEV1_D1_RESULT.json experiments/dev1/DEV1_BASELINE_CALIBRATION.json experiments/dev1/DEV1_D1_REPORT.md experiments/dev1/amendments src/substrate src/governance src/ai/numogram src/types/amelia.ts experiments/pf1/
+          echo DEV1_AM3_D1PP_FULL_BYTE_IDENTICAL_REPLAY_AND_CANONICAL_IMMUTABILITY_PASS
+      - name: Preserve first corrected arm evidence even if GitHub archive fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DEV1-AM3-D1-DOUBLE-PRIME-ONLY-32-TAPE
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            experiments/dev1/DEV1_AM3_D1PP_RESULT.json
+            experiments/dev1/DEV1_AM3_D1PP_REPORT.md
+      - name: D3 create-only archive final original D1 double-prime evidence; no other arm
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,subprocess,base64,pathlib,os,hashlib
+          for name in ('DEV1_AM3_D1PP_RESULT.json','DEV1_AM3_D1PP_REPORT.md'):
+            p=pathlib.Path('experiments/dev1')/name
+            raw=p.read_bytes()
+            dest='experiments/dev1/'+name
+            payload={'message':'DEV1 AM3 D1-double-prime first corrected arm, 32 sealed tapes, create-only '+name,
+              'branch':'main','content':base64.b64encode(raw).decode()}
+            z=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dest,
+                '--input','-'],input=json.dumps(payload),capture_output=True,text=True)
+            if z.returncode:raise RuntimeError('D1PP_CREATE_ONLY_ARCHIVE_ERROR '+dest+' '+z.stderr)
+            print('DEV1_AM3_D1PP_ARCHIVED',dest,hashlib.sha256(raw).hexdigest())
+          PY
