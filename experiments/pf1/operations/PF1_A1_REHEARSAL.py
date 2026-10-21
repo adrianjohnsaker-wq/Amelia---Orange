@@ -52,6 +52,7 @@ with tempfile.TemporaryDirectory(prefix='pf1-a1-SYNTHETIC-') as td:
     sh('git','-C',str(local),'add','.')
     sh('git','-C',str(local),'commit','-m','SYNTHETIC A1 rehearsal genesis and lease')
     sh('git','-C',str(local),'push','origin','HEAD:main')
+    sh('git','-C',str(remote),'symbolic-ref','HEAD','refs/heads/main')
     original=os.getcwd()
     os.chdir(local)
     try:
