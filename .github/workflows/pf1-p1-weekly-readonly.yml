@@ -1,0 +1,55 @@
+name: PF1 P1 weekly companion read only
+on:
+  schedule:
+    - cron: '19 08 * * 1'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf1-p1-weekly-readonly.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  read-only-report:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Derive zones and split exposure without PF1 intake
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
+          python experiments/pf1/PF1_P1_READONLY_WEEKLY.py
+          test -z "$(git status --porcelain)"
+      - name: Archive derived weekly audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: PF1-P1-WEEKLY
+          retention-days: 90
+          path: /tmp/PF1_P1_WEEKLY_READONLY.json
+      - name: Commit dated create-only companion report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib,subprocess,base64,json,datetime,os
+          b=pathlib.Path('/tmp/PF1_P1_WEEKLY_READONLY.json').read_bytes()
+          j=json.loads(b)
+          assert j['noLiveAdmission'] and j['noC1Dispatch'] and not j['pinnedFilesModified']
+          stamp=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H%M%SZ')
+          dest='experiments/pf1/weekly-audit/PF1_P1_'+stamp+'_run'+os.environ['RUN_ID']+'.json'
+          payload={'message':'PF1 P1 dated read-only zones and split exposure report',
+            'branch':'main','content':base64.b64encode(b).decode()}
+          q=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dest,'--input','-'],
+            input=json.dumps(payload),text=True,capture_output=True)
+          assert q.returncode==0,q.stderr
+          print('PF1_P1_WEEKLY_ARCHIVED',dest)
+          PY
