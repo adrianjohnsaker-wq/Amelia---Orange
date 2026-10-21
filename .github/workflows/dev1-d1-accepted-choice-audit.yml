@@ -1,0 +1,109 @@
+name: DEV1 accepted D1 read-only 32-tape 1to2 rates and full terminal V audit
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/dev1-d1-accepted-choice-audit.yml']
+permissions:
+  contents: read
+jobs:
+  registered-B-and-D1-readonly:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check frozen B/D1 source identities, scientific pins and original signed constants
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:experiments/dev1/DEV1_CONSTANTS.json)" = d862d3afc0cfd334b5bc88b9541c687fa28ee16c
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import pathlib,hashlib,json,re
+          d=pathlib.Path('experiments/dev1')
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          base=json.loads((d/'DEV1_BASELINE_CALIBRATION.json').read_text())
+          arm=json.loads((d/'DEV1_D1_RESULT.json').read_text())
+          assert base['absorbedCount']==arm['O1']['absorbed']==32
+          assert base['medianAbsorptionStep']==1393
+          assert arm['O1']['restrictedMeanSurvival']==1224.6875
+          assert arm['O2']['manipulationCheck']=='PASS'
+          assert sha(d/'DEV1_CONSTANTS.json')==arm['constantsSha256']
+          assert not any(re.match(r'DEV1_(?:L|LY|L0|LS|LSY)(?:_|-)',p.name,re.I) and re.search(r'(RESULT|DATA|COHORT|OBSERV)',p.name,re.I) for p in d.rglob('*') if p.is_file())
+          g=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          m=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          assert sha('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json')==g['approvedManifestSHA256']
+          for item in g['liveOperationalSourceHashes']+m['immutableSource']['operationalSourceFileHashes']:
+              assert sha(item['path'])==item['sha256']
+          assert g['c1VerifierSourceCommit']=='f1875b5eea5339eb1ac73e50b5df6b103d0cabe9'
+          print('DEV1_D1_ACCEPTED_PINNED_SCIENCE_B_AND_D1_IDENTITY_GATE_PASS')
+          PY
+          mkdir -p /tmp/dev1choice
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/cacert.pem -o /tmp/dev1choice/root.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/dev1choice/root.pem' | sha256sum -c -
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/tsa.crt -o /tmp/dev1choice/tsa.crt
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467  /tmp/dev1choice/tsa.crt' | sha256sum -c -
+          openssl ts -verify -data experiments/dev1/DEV1_CONSTANTS.json -in experiments/dev1/seal/DEV1_CONSTANTS.tsr -CAfile /tmp/dev1choice/root.pem -untrusted /tmp/dev1choice/tsa.crt | grep -q 'Verification: OK'
+          echo DEV1_D1_ACCEPTED_SEALED_CONSTANTS_PASS
+      - name: Replay only previously registered B and D1 32 synthetic tapes, verify every final V
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          DEV1_DIAGNOSTIC_IDENTITY_PASS: 'true'
+          DEV1_D1_RERUN_NOT_NEW_ARM: 'true'
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          npx tsx experiments/dev1/DEV1_D1_ACCEPTED_CHOICE_AUDIT.ts
+          cp experiments/dev1/DEV1_D1_ACCEPTED_CHOICE_AUDIT.json /tmp/dev1choice/original.json
+          cp experiments/dev1/DEV1_D1_ACCEPTED_CHOICE_AUDIT.md /tmp/dev1choice/original.md
+          echo DEV1_D1_ACCEPTED_REPLAY_VERIFIED_32_B_32_D1_352_VALUES
+      - name: Demand byte-identical replay and immutable original data
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          DEV1_DIAGNOSTIC_IDENTITY_PASS: 'true'
+          DEV1_D1_RERUN_NOT_NEW_ARM: 'true'
+        run: |
+          set -euo pipefail
+          npx tsx experiments/dev1/DEV1_D1_ACCEPTED_CHOICE_AUDIT.ts
+          cmp /tmp/dev1choice/original.json experiments/dev1/DEV1_D1_ACCEPTED_CHOICE_AUDIT.json
+          cmp /tmp/dev1choice/original.md experiments/dev1/DEV1_D1_ACCEPTED_CHOICE_AUDIT.md
+          git diff --exit-code -- experiments/dev1/DEV1_CONSTANTS.json experiments/dev1/DEV1_BASELINE_CALIBRATION.json experiments/dev1/DEV1_D1_RESULT.json experiments/dev1/DEV1_D1_REPORT.md src/substrate src/governance src/ai/numogram src/types/amelia.ts experiments/pf1/
+          echo DEV1_D1_ACCEPTED_AUDIT_BYTE_IDENTICAL_REPLAY_PASS
+      - name: Retain read-only replay output regardless of archival outcome
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DEV1-D1-ACCEPTED-POSTHOC-CHOICE-RATES-AND-32-FINAL-V
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            experiments/dev1/DEV1_D1_ACCEPTED_CHOICE_AUDIT.json
+            experiments/dev1/DEV1_D1_ACCEPTED_CHOICE_AUDIT.md
+      - name: Create-only publish retrospective data and report; never mutate original results
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,subprocess,pathlib,json,os,hashlib
+          for name in ('DEV1_D1_ACCEPTED_CHOICE_AUDIT.json','DEV1_D1_ACCEPTED_CHOICE_AUDIT.md'):
+            p=pathlib.Path('experiments/dev1')/name
+            raw=p.read_bytes()
+            dest='experiments/dev1/'+name
+            payload={'message':'DEV1 post hoc accepted B/D1 read-only 32-tape 1->2 counts and final V provenance '+name,
+              'branch':'main','content':base64.b64encode(raw).decode()}
+            r=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dest,
+              '--input','-'],input=json.dumps(payload),capture_output=True,text=True)
+            if r.returncode:raise RuntimeError('CREATE_ONLY_POSTHOC_ARCHIVE_FAILURE '+dest+' '+r.stderr)
+            print('DEV1_D1_POSTHOC_ARCHIVED',dest,hashlib.sha256(raw).hexdigest())
+          PY
