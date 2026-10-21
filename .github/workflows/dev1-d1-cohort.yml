@@ -1,0 +1,118 @@
+name: DEV1 D1 32 synthetic tapes ONLY — O1 O2 absorption routes
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/dev1-d1-cohort.yml']
+permissions:
+  contents: read
+jobs:
+  d1-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify unchanged scientific identities, B acceptance, and existing RFC3161 timestamp
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import json,hashlib,pathlib
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          pf=pathlib.Path('experiments/pf1/')
+          g=json.loads((pf/'live/GENESIS.json').read_text())
+          m=json.loads((pf/'PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          assert sha(pf/'PF1_GENESIS_MANIFEST_DRAFT.json')==g['approvedManifestSHA256']
+          assert sha(pf/'PF1_A1_R2_CONSTANTS.json')==g['constantsSHA256']
+          assert g['c1VerifierSourceCommit']=='f1875b5eea5339eb1ac73e50b5df6b103d0cabe9'
+          for item in g['liveOperationalSourceHashes']+m['immutableSource']['operationalSourceFileHashes']:
+              assert sha(item['path'])==item['sha256'],item['path']
+          c=json.loads(pathlib.Path('experiments/dev1/DEV1_CONSTANTS.json').read_text())
+          assert c['syntheticOnly'] and c['liveInflowProhibited']
+          assert c['armsOrder'][1]=='D1' and c['mechanisms']['consequenceHorizon']['value']==24
+          assert c['mechanisms']['consequenceWeight']['value']==0.5
+          b=json.loads(pathlib.Path('experiments/dev1/DEV1_BASELINE_CALIBRATION.json').read_text())
+          assert b['absorbedCount']==32 and b['medianAbsorptionStep']==1393
+          assert b['localSelectorMemoryAblation']['changedBranchChoices']==124
+          assert b['localSelectorMemoryAblation']['branchChoices']==18594
+          print('DEV1_D1_FROZEN_IDENTITIES_AND_B_BASELINE_PASS')
+          PY
+          curl -fsSL --max-time 40 https://freetsa.org/files/cacert.pem -o /tmp/dev1-root.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/dev1-root.pem' | sha256sum -c -
+          curl -fsSL --max-time 40 https://freetsa.org/files/tsa.crt -o /tmp/dev1-cert.pem
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467  /tmp/dev1-cert.pem' | sha256sum -c -
+          openssl ts -verify -data experiments/dev1/DEV1_CONSTANTS.json -in experiments/dev1/seal/DEV1_CONSTANTS.tsr -CAfile /tmp/dev1-root.pem -untrusted /tmp/dev1-cert.pem | grep -q 'Verification: OK'
+          echo DEV1_D1_FROZEN_CONSTANTS_SIGNED
+      - name: Require D1 unit choice flip PASS before beginning any cohort
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          npx tsx experiments/dev1/DEV1_D1_UNIT.ts
+          echo DEV1_D1_UNIT_GATE_PASS_BEFORE_COHORT
+      - name: D1 synthetic cohort 32 tapes, O1/O2/routes ONLY
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          DEV1_D1_UNIT_VERIFIED: 'true'
+          DEV1_CONSTANTS_RFC3161_VERIFIED: 'true'
+          DEV1_IDENTITY_PASS: 'true'
+        run: |
+          set -euo pipefail
+          npx tsx experiments/dev1/DEV1_D1_COHORT.ts
+          cp experiments/dev1/DEV1_D1_RESULT.json /tmp/dev1-d1-first-result.json
+          cp experiments/dev1/DEV1_D1_REPORT.md /tmp/dev1-d1-first-report.md
+          echo DEV1_D1_FIRST_COHORT_COMPLETE
+      - name: Require entire D1 cohort byte-identical on independent replay
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          DEV1_D1_UNIT_VERIFIED: 'true'
+          DEV1_CONSTANTS_RFC3161_VERIFIED: 'true'
+          DEV1_IDENTITY_PASS: 'true'
+        run: |
+          set -euo pipefail
+          npx tsx experiments/dev1/DEV1_D1_COHORT.ts
+          cmp /tmp/dev1-d1-first-result.json experiments/dev1/DEV1_D1_RESULT.json
+          cmp /tmp/dev1-d1-first-report.md experiments/dev1/DEV1_D1_REPORT.md
+          git diff --exit-code -- src/substrate src/governance src/ai/numogram src/types/amelia.ts experiments/pf1/
+          echo DEV1_D1_32_TAPE_BYTE_IDENTICAL_REPLAY_PASS
+      - name: Retain D1 result artifact whether later archive succeeds or fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DEV1-D1-ONLY-O1-O2-ROUTES
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            experiments/dev1/DEV1_D1_RESULT.json
+            experiments/dev1/DEV1_D1_REPORT.md
+            /tmp/dev1-d1-first-result.json
+            /tmp/dev1-d1-first-report.md
+      - name: Publish D1 results create-only, never run or overwrite another arm
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib,subprocess,base64,json,hashlib,os
+          for name in ['DEV1_D1_RESULT.json','DEV1_D1_REPORT.md']:
+            p=pathlib.Path('experiments/dev1')/name
+            raw=p.read_bytes()
+            dest='experiments/dev1/'+name
+            payload={'message':'DEV1 synthetic D1 only: immutable O1/O2/absorption routes and replay',
+              'content':base64.b64encode(raw).decode(),'branch':'main'}
+            q=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dest,
+                '--input','-'],input=json.dumps(payload),capture_output=True,text=True)
+            if q.returncode:raise RuntimeError('D1_CREATE_ONLY_FAILED '+dest+' '+q.stderr)
+            print('DEV1_D1_RESULT_ARCHIVED',dest,hashlib.sha256(raw).hexdigest())
+          PY
