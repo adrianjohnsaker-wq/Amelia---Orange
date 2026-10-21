@@ -1,0 +1,183 @@
+name: DEV1 AM2 + AM1 joint prospective SHA256 and RFC3161 seal
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/dev1-am2-joint-seal.yml']
+permissions:
+  contents: read
+jobs:
+  seal-before-any-lineage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: P0 verify base and AM1 signed bytes, unchanged science, no lineage output
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:experiments/dev1/DEV1_CONSTANTS.json)" = d862d3afc0cfd334b5bc88b9541c687fa28ee16c
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import hashlib,json,pathlib,re,datetime
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          d=pathlib.Path('experiments/dev1')
+          a=json.loads((d/'amendments/am1/seal/receipt.json').read_text())
+          j=json.loads((d/'amendments/am2/AM2_AM1_JOINT_MANIFEST.json').read_text())
+          assert a['status']=='PASS' and a['priorLineageDataDetected'] is False
+          assert j['schema']=='DEV1_AM1_AM2_JOINT_PROSPECTIVE_PROVENANCE_MANIFEST_V1'
+          assert not j['scientificMechanismsChanged'] and not j['constantsChanged']
+          assert not j['armsChanged'] and not j['existingTestsChanged']
+          assert sha(d/'DEV1_CONSTANTS.json')==a['baseConstantsSHA256']==j['preExistingSeals']['base']['sha256']
+          for key in ('registration','constants','manifest'):
+             prev=a['items'][key]
+             old=j['preExistingSeals']['am1'][key]
+             assert old['path']==prev['path'] and sha(old['path'])==old['sha256']==prev['sha256']
+             assert old['token']==prev['tokenPath']
+             assert sha(old['token'])==old['tokenSha256']==prev['tokenSha256']
+             assert sha(prev['queryPath'])==prev['querySha256']
+          g=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          m=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          assert sha('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json')==g['approvedManifestSHA256']
+          assert sha('experiments/pf1/PF1_A1_R2_CONSTANTS.json')==g['constantsSHA256']
+          assert g['c1VerifierSourceCommit']=='f1875b5eea5339eb1ac73e50b5df6b103d0cabe9'
+          for e in g['liveOperationalSourceHashes']+m['immutableSource']['operationalSourceFileHashes']:
+             assert sha(e['path'])==e['sha256'],'FROZEN_SOURCE_MISMATCH '+e['path']
+          forbidden=[]
+          for item in d.rglob('*'):
+             if not item.is_file():continue
+             n=item.name.upper()
+             if re.match(r'DEV1_(?:L|LY|L0|LS|LSY)(?:_|-)',n) and re.search(r'(?:RESULT|DATA|OBSERV|COHORT|GENERATION|TRAJECTOR|ROUTE)',n):forbidden.append(str(item))
+             if item.suffix.lower() in ('.json','.jsonl','.csv','.parquet') and re.search(r'LINEAGE.*(?:RESULT|DATA|OBSERV|COHORT)',n):forbidden.append(str(item))
+          assert not forbidden,'NO_LINEAGE_DATA_GATE '+repr(forbidden)
+          assert (d/'amendments/am2/AM2_REGISTERED.md').exists()
+          print('DEV1_AM2_NO_LINEAGE_DATA_PRESEAL_PASS',datetime.datetime.now(datetime.timezone.utc).isoformat())
+          print('DEV1_AM2_AM1_BASE_AND_SCIENCE_BYTES_IDENTICAL_PASS')
+          PY
+      - name: P1 independently validate existing base/AM1 RFC3161 signatures and imprints
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/dev1-am2
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/cacert.pem -o /tmp/dev1-am2/root.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/dev1-am2/root.pem' | sha256sum -c -
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/tsa.crt -o /tmp/dev1-am2/tsa.crt
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467  /tmp/dev1-am2/tsa.crt' | sha256sum -c -
+          openssl ts -verify -data experiments/dev1/DEV1_CONSTANTS.json -in experiments/dev1/seal/DEV1_CONSTANTS.tsr -CAfile /tmp/dev1-am2/root.pem -untrusted /tmp/dev1-am2/tsa.crt | grep -q 'Verification: OK'
+          for id in AM1_REGISTRATION AM1_CONSTANTS AM1_MANIFEST; do
+            case "$id" in
+              AM1_REGISTRATION) p=experiments/dev1/amendments/am1/AM1_STONE_TAPE_REGISTRATION.md ;;
+              AM1_CONSTANTS) p=experiments/dev1/amendments/am1/AM1_CONSTANTS.json ;;
+              AM1_MANIFEST) p=experiments/dev1/DEV1_CONSTANTS_MANIFEST.json ;;
+            esac
+            openssl ts -verify -data "$p" -in "experiments/dev1/amendments/am1/seal/$id.tsr" -CAfile /tmp/dev1-am2/root.pem -untrusted /tmp/dev1-am2/tsa.crt | grep -q 'Verification: OK'
+          done
+          echo DEV1_AM2_AM1_PREVIOUS_SIGNED_TOKENS_VERIFIED
+      - name: P2 construct frozen joint two-amendment fingerprint bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,pathlib,datetime
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          d=pathlib.Path('experiments/dev1')
+          a=json.loads((d/'amendments/am1/seal/receipt.json').read_text())
+          j=json.loads((d/'amendments/am2/AM2_AM1_JOINT_MANIFEST.json').read_text())
+          fixed=['DEV1_CONSTANTS.json','amendments/am1/AM1_STONE_TAPE_REGISTRATION.md',
+            'amendments/am1/AM1_CONSTANTS.json','DEV1_CONSTANTS_MANIFEST.json',
+            'amendments/am1/seal/receipt.json','amendments/am2/AM2_REGISTERED.md',
+            'amendments/am2/AM2_AM1_JOINT_MANIFEST.json']
+          bundle={'schema':'DEV1_AM1_AM2_JOINT_FINGERPRINT_BUNDLE_V1',
+            'operatorAM2ApprovalUTC':'2026-10-21T11:47:28Z',
+            'preLineageDataAbsent':True,'readOnlyMeasurementsOnly':True,
+            'files':[{'path':str(d/p),'sha256':sha(d/p)} for p in fixed],
+            'previousAM1TokenSHA256':{k:sha(v['tokenPath']) for k,v in a['items'].items()},
+            'originalDev1TokenSHA256':sha(d/'seal/DEV1_CONSTANTS.tsr'),
+            'noScientificSourceMutation':True}
+          dest=pathlib.Path('/tmp/dev1-am2/AM1_AM2_JOINT_BUNDLE.json')
+          dest.write_text(json.dumps(bundle,indent=2)+'\n')
+          assert len(bundle['files'])==7
+          print('DEV1_AM2_JOINT_BUNDLE_SHA256',sha(dest))
+          print('DEV1_AM2_SIGNED_INPUTS',json.dumps(bundle['files']))
+          PY
+      - name: P3 obtain three genuine RFC3161 timestamps for AM2 registration, joint manifest and complete bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          inputs=(experiments/dev1/amendments/am2/AM2_REGISTERED.md experiments/dev1/amendments/am2/AM2_AM1_JOINT_MANIFEST.json /tmp/dev1-am2/AM1_AM2_JOINT_BUNDLE.json)
+          stems=(AM2_REGISTRATION AM2_JOINT_MANIFEST AM1_AM2_JOINT_BUNDLE)
+          for n in 0 1 2; do
+            src="${inputs[$n]}"; stem="${stems[$n]}"
+            openssl ts -query -data "$src" -sha256 -cert -no_nonce -out "/tmp/dev1-am2/$stem.tsq"
+            curl -fsSL --retry 5 --retry-all-errors --retry-delay 1 --max-time 75 -H 'Content-Type: application/timestamp-query' --data-binary "@/tmp/dev1-am2/$stem.tsq" https://freetsa.org/tsr -o "/tmp/dev1-am2/$stem.tsr"
+            openssl ts -verify -data "$src" -in "/tmp/dev1-am2/$stem.tsr" -CAfile /tmp/dev1-am2/root.pem -untrusted /tmp/dev1-am2/tsa.crt | grep -q 'Verification: OK'
+            openssl ts -reply -in "/tmp/dev1-am2/$stem.tsr" -text > "/tmp/dev1-am2/$stem.token.txt"
+            echo DEV1_AM2_JOINT_GENUINE_RFC3161_PASS "$stem" "$(sha256sum "$src")"
+          done
+      - name: P4 verified receipt binds AM2 and AM1 prior tokens, certify absence of lineage outcomes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib,json,hashlib,datetime
+          t=pathlib.Path('/tmp/dev1-am2')
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          src={'registration':pathlib.Path('experiments/dev1/amendments/am2/AM2_REGISTERED.md'),
+            'manifest':pathlib.Path('experiments/dev1/amendments/am2/AM2_AM1_JOINT_MANIFEST.json'),
+            'jointBundle':t/'AM1_AM2_JOINT_BUNDLE.json'}
+          stems={'registration':'AM2_REGISTRATION','manifest':'AM2_JOINT_MANIFEST','jointBundle':'AM1_AM2_JOINT_BUNDLE'}
+          items={}
+          for k,p in src.items():
+            id=stems[k]
+            items[k]={'fileSHA256':sha(p),'tokenSHA256':sha(t/(id+'.tsr')),
+             'querySHA256':sha(t/(id+'.tsq')),
+             'filePath':str(p),'tokenPath':'experiments/dev1/amendments/am2/seal/'+id+'.tsr',
+             'verification':'RFC3161 signed TSA chain and exact file imprint PASS'}
+          receipt={'schema':'DEV1_AM1_AM2_JOINT_RFC3161_RECEIPT_V1',
+           'status':'PASS','verifiedAtUTC':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+           'noLineageDataAtSeal':True,'baseAndAM1OriginalSignedTokensReverified':True,
+           'AM1ScientificAndConstantFilesUnchanged':True,
+           'tsaRootSHA256':'2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438',
+           'tsaCertSHA256':'8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467',
+           'items':items,'D1ReviewGate':'STILL_ACTIVE'}
+          (t/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          print('DEV1_AM2_JOINT_PROVENANCE_SEALED',json.dumps(receipt))
+          PY
+      - name: Preserve timestamped evidence even if remote archive fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DEV1-AM1-AM2-JOINT-RFC3161
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            /tmp/dev1-am2/*.tsq
+            /tmp/dev1-am2/*.tsr
+            /tmp/dev1-am2/*.token.txt
+            /tmp/dev1-am2/AM1_AM2_JOINT_BUNDLE.json
+            /tmp/dev1-am2/receipt.json
+      - name: P5 create-only archive signed token bytes, joint bundle and verified receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib,subprocess,base64,json,hashlib,os
+          t=pathlib.Path('/tmp/dev1-am2')
+          names=[stem+'.'+ext for stem in ('AM2_REGISTRATION','AM2_JOINT_MANIFEST','AM1_AM2_JOINT_BUNDLE') for ext in ('tsq','tsr')]
+          names+=['AM1_AM2_JOINT_BUNDLE.json','receipt.json']
+          for name in names:
+            content=(t/name).read_bytes()
+            dest='experiments/dev1/amendments/am2/seal/'+name
+            payload={'message':'DEV1 AM1+AM2 create-only externally signed prospective provenance '+name,
+                 'branch':'main','content':base64.b64encode(content).decode()}
+            res=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dest,
+                 '--input','-'],input=json.dumps(payload),capture_output=True,text=True)
+            if res.returncode:raise RuntimeError('AM2_ARCHIVE_CREATE_ONLY_FAILURE '+dest+' '+res.stderr)
+            print('DEV1_AM2_SEALED_ARCHIVE_PASS',dest,hashlib.sha256(content).hexdigest())
+          PY
