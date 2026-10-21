@@ -1,0 +1,53 @@
+name: PF1 A1 synthetic catchup predeployment rehearsal
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf1-a1-catchup-rehearsal.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-rehearsal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Assert genuine approval and all live pinned source hashes unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s experiments/pf1/operations/PF1_A1_OPERATOR_APPROVAL_2026-10-21.md
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import json,hashlib,pathlib
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          base=pathlib.Path('experiments/pf1/')
+          g=json.loads((base/'live/GENESIS.json').read_text())
+          m=json.loads((base/'PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          assert sha(base/'PF1_GENESIS_MANIFEST_DRAFT.json')==g['approvedManifestSHA256']
+          assert sha(base/'PF1_A1_R2_CONSTANTS.json')==g['constantsSHA256']
+          for z in g['liveOperationalSourceHashes']+m['immutableSource']['operationalSourceFileHashes']:
+            assert sha(z['path'])==z['sha256'],z['path']
+          assert g['c1VerifierSourceCommit']=='f1875b5eea5339eb1ac73e50b5df6b103d0cabe9'
+          assert g['notificationsEnabled'] is False and g['encountersJournalOnly'] is True
+          assert g['stride']==20 and g['periodSeconds']==3
+          assert g['R0']%20==0
+          print('PF1_A1_FROZEN_SOURCE_AND_OPERATOR_APPROVAL_GATE_PASS',g['genesisDigest'])
+          PY
+      - name: Compile operational code and run full isolated synthetic Git rehearsal
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/pf1/operations/PF1_A1_CATCHUP.py
+          python -m py_compile experiments/pf1/operations/PF1_A1_REHEARSAL.py
+          python experiments/pf1/operations/PF1_A1_REHEARSAL.py
+          git diff --exit-code -- .github src/substrate src/governance src/ai/numogram src/types/amelia.ts experiments/pf1/live/
+          echo PF1_A1_SYNTHETIC_PREDEPLOYMENT_GATE_PASS
