@@ -69,6 +69,12 @@ export function am5D2SelectorStep<T>(
  };
  try{return invokeStep()}finally{q.getGates=original}
 }
+export function am5ConsolidationBoundary(rt:AmeliaNumogramSubstrateRuntime,step:number):boolean{
+ if(!Number.isInteger(step)||step<1)throw Error('AM5_INVALID_CONSOLIDATION_STEP');
+ if(step%48!==0)return false;
+ rt.getMemory().consolidateStrain();
+ return true;
+}
 export function am5D2Step(
  rt:AmeliaNumogramSubstrateRuntime,traces:AM5SelectorTraces,
  values:Readonly<Record<string,number>>,input:string
@@ -81,8 +87,7 @@ export function am5D2Step(
  traces.observe(to);
  const step=result.step;
  if(step!==traces.steps)throw Error('AM5_D2_TRACE_STEP_OUT_OF_SYNC');
- const consolidate=(step%48===0);
- if(consolidate)rt.getMemory().consolidateStrain();
+ const consolidate=am5ConsolidationBoundary(rt,step);
  return {result,before,to,inputMemory,selectorBias,consolidated:consolidate};
 }
 export type AM5Bounds={E1Below:boolean;E2Outside:boolean};
