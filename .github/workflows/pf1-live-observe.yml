@@ -1,4 +1,4 @@
-name: PF1 Scheduled LIVE Observation — Nine Arms, Journal-Only
+name: PF1 Scheduled LIVE Observation — Nine Arms, Journal-Only (A1 Catch-up)
 on:
   schedule:
     - cron: '*/5 * * * *'
@@ -38,40 +38,75 @@ jobs:
         with:
           node-version: '22'
       - id: due
-        name: Require signed genesis, current running state and a published unadmitted round
+        name: Verify externally sealed genesis and require next published unadmitted round
         working-directory: orange
         shell: bash
         run: |
           set -euo pipefail
-          if [ ! -f experiments/pf1/live/GENESIS.json ]; then
-            echo 'PF1_GENESIS_NOT_YET_PERSISTED_NO_ADMISSION'
-            echo 'run=false' >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
           python - <<'PY'
-          import json,time,os
-          from pathlib import Path
-          from datetime import datetime
-          root=Path('experiments/pf1/live')
-          g=json.loads((root/'GENESIS.json').read_text())
-          state=json.loads((root/'STATE.json').read_text())
+          import os,json,time,hashlib,pathlib,datetime
+          base=pathlib.Path('experiments/pf1/')
+          p=base/'live/GENESIS.json'
+          if not p.exists():
+              print('PF1_A1_NO_EXISTING_GENESIS_NO_ADMISSION')
+              open(os.environ['GITHUB_OUTPUT'],'a').write('run=false\n')
+              raise SystemExit(0)
+          g=json.loads(p.read_text())
+          s=json.loads((base/'live/STATE.json').read_text())
+          l=json.loads((base/'live/SILENT_LEDGER.json').read_text())
           assert g['schema']=='PF1_LIVE_GENESIS_V1'
-          assert g['R0']%20==0 and (g['R0']-33158540)%20==0
-          assert g['PF1ReferenceDomain']=='PF1-REF-i|'
-          assert g['genesisDoesNotAdmitRound']
-          if state['status']=='halted':
-            print('PF1_HALTED_NO_AUTOMATIC_RESTART',state.get('openHalt'))
-            available=False
+          assert g['genesisDoesNotAdmitRound'] and g['R0']%20==0
+          assert (g['R0']-33158540)%20==0 and g['PF1ReferenceDomain']=='PF1-REF-i|'
+          assert g['stride']==20 and g['periodSeconds']==3
+          assert g['c1VerifierSourceCommit']=='f1875b5eea5339eb1ac73e50b5df6b103d0cabe9'
+          assert g['notificationsEnabled'] is False and g['encountersJournalOnly'] is True
+          assert s['genesisDigest']==g['genesisDigest']==l['genesisDigest']
+          assert s['admittedTicks']==len(l['rows'])
+          if s['status']=='halted':
+              print('PF1_A1_HALTED_OPERATOR_REVIEW_REQUIRED',s.get('openHalt'))
+              eligible=False
           else:
-            assert state['status']=='running'
-            first=datetime.fromisoformat(g['futureFirstRoundTime'].replace('Z','+00:00')).timestamp()
-            due=first+60*state['admittedTicks']+3
-            available=time.time()>=due
-            print('PF1_LIVE_NEXT_ROUND',g['R0']+20*state['admittedTicks'],'eligible',available)
-          with open(os.environ['GITHUB_OUTPUT'],'a') as output:
-            output.write('run='+('true' if available else 'false')+'\n')
+              assert s['status']=='running'
+              due=datetime.datetime.fromisoformat(g['futureFirstRoundTime'].replace('Z','+00:00')).timestamp()+60*s['admittedTicks']+3
+              eligible=time.time()>=due
+              print('PF1_A1_NEXT_ROUND',g['R0']+20*s['admittedTicks'],'eligible',eligible,
+                    'unadmittedBacklogSeconds',max(0,int(time.time()-due)))
+          open(os.environ['GITHUB_OUTPUT'],'a').write('run='+('true' if eligible else 'false')+'\n')
           PY
-      - name: Remotely lease FIRST, verify actual C1 BLS, advance nine arms, seal encounters, durable commit
+      - name: A1 prelease frozen-science audit, pinned C1 and approved rehearsal receipt
+        if: steps.due.outputs.run == 'true'
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          test -s experiments/pf1/operations/PF1_A1_OPERATOR_APPROVAL_2026-10-21.md
+          test -s experiments/pf1/operations/PF1_A1_DEPLOYMENT_LOG.md
+          test "$(git rev-parse HEAD:experiments/pf1/operations/PF1_A1_CATCHUP.py)" = 15196a9bcd1865d9c0924cf236073d0b4dfb0d4f
+          test "$(git rev-parse HEAD:experiments/pf1/operations/PF1_A1_REHEARSAL.py)" = fd721466e49cd87c42b2627a377db0d629153c33
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import hashlib,json,pathlib
+          root=pathlib.Path('experiments/pf1/')
+          g=json.loads((root/'live/GENESIS.json').read_text())
+          m=json.loads((root/'PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          assert sha(root/'PF1_GENESIS_MANIFEST_DRAFT.json')==g['approvedManifestSHA256']
+          assert sha(root/'PF1_A1_R2_CONSTANTS.json')==g['constantsSHA256']
+          for item in g['liveOperationalSourceHashes']+m['immutableSource']['operationalSourceFileHashes']:
+              assert sha(item['path'])==item['sha256'], 'FROZEN_SOURCE_CHANGED '+item['path']
+          print('PF1_A1_PINNED_C1_AND_SCIENTIFIC_BYTES_IDENTICAL')
+          PY
+      - name: Install unchanged BLS verification tools and JS runner before lease
+        if: steps.due.outputs.run == 'true'
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -r ../c1-pin/drift1a_c1/requirements.txt
+          npm install --no-audit --no-fund
+          python -m py_compile experiments/pf1/operations/PF1_A1_CATCHUP.py
+      - name: A1 exclusive lease and sequential verified catch-up (max 480, batches of 20)
         if: steps.due.outputs.run == 'true'
         working-directory: orange
         shell: bash
@@ -80,55 +115,19 @@ jobs:
           PYTHONDONTWRITEBYTECODE: '1'
           DRIFT_C1_ENABLE_LIVE: 'false'
           PF1_LIVE_ADMISSION_OPERATOR_AUTHORISED: 'true'
-          PF1_LIVE_INBOX: ${{ runner.temp }}/PF1_VERIFIED_LIVE_INBOX.json
+          PF1_A1_OPERATOR_APPROVED: 'true'
+          PF1_A1_REHEARSAL_PASS: 'true'
+          PF1_A1_MAX_TICKS: '480'
           PF1_MAX_LIVE_TICKS: '20'
+          PF1_LIVE_INBOX: ${{ runner.temp }}/PF1_VERIFIED_LIVE_INBOX.json
         run: |
           set -euo pipefail
-          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
-          echo 'b48dc2fa512b7e7ee77ea951309b826cb67b63ba728fb6bbeb35d6476d52a699  experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json' | sha256sum -c -
-          git config user.name 'PF1 authorised live recorder'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          python - <<'PY'
-          import os
-          from PF1_SAFE_LEASE import acquire
-          r=acquire(os.environ['PF1_LEASE'],branch='main')
-          assert r['status']=='PUSH_CONFIRMED' and r['admission_authorized']
-          print('PF1_PROSPECTIVE_REMOTE_LEASE_ACK',r['pushed_commit'])
-          PY
-          export PF1_REMOTE_LEASE_ACKNOWLEDGED=true
-          set +e
-          python -m pip install -r ../c1-pin/drift1a_c1/requirements.txt \
-            && python experiments/pf1/PF1_LIVE_INTAKE.py \
-            && npm install --no-audit --no-fund \
-            && npx tsx experiments/pf1/PF1_LIVE_RUN.ts \
-            && python experiments/pf1/PF1_LIVE_SEAL.py \
-            && python experiments/pf1/PF1_LIVE_CHECK.py
-          outcome=$?
-          set -e
-          if [ "$outcome" -ne 0 ]; then
-            echo "PF1_FAIL_CLOSED_PRECOMMIT code=$outcome"
-            git restore -- experiments/pf1/live/STATE.json \
-              experiments/pf1/live/SILENT_LEDGER.json \
-              experiments/pf1/live/JOURNAL.json
-            rm -f experiments/pf1/live/PENDING_JOURNAL.json
-            export PF1_HALT_REASON="PF1 verification, state/fork, or RFC3161 failure (exit $outcome); audit Actions run $GITHUB_RUN_ID"
-            python experiments/pf1/PF1_LIVE_HALT.py
-          fi
-          python -m drift1a_c1.runner complete "$PF1_LEASE"
-          git add -- experiments/pf1/live/ drift1a_c1/runner_state/
-          git diff --cached --check
-          git commit -m "PF1: live verified nine-arm evidence/incident and durable lease completion $PF1_LEASE"
-          # Fail closed if remote moved. NEVER rebase a stale admission or lease.
-          git push origin HEAD:main
-          git fetch origin main
-          test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)"
-          echo "PF1_LIVE_DURABLE_REMOTE_COMMIT_VERIFIED outcome=$outcome"
-          test "$outcome" -eq 0
-      - name: Preserve ephemeral verification and journal seal attempts as an artifact
+          python experiments/pf1/operations/PF1_A1_CATCHUP.py
+      - name: Archive verification and sealed journal attempts — no outbound notifications
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: PF1-LIVE-EVIDENCE-${{ github.run_id }}
+          name: PF1-A1-LIVE-EVIDENCE-${{ github.run_id }}
           retention-days: 90
           if-no-files-found: warn
           path: |
