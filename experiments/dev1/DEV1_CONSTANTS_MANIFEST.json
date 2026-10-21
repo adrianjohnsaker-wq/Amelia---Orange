@@ -1,0 +1,92 @@
+{
+  "schema": "DEV1_CONSTANTS_MANIFEST_V2_ADDENDUM_AM1",
+  "issuedUTC": "2026-10-21T11:27:35Z",
+  "mergeRule": "base DEV1_CONSTANTS.json sealed in original timestamp; AM1_CONSTANTS.json is additive ONLY; conflicts forbidden",
+  "versionInvariant": {
+    "baseConstantsImmutability": true,
+    "baseArmOrderImmutability": true,
+    "baseExternalRFC3161Token": "experiments/dev1/seal/DEV1_CONSTANTS.tsr",
+    "base": "experiments/dev1/DEV1_CONSTANTS.json",
+    "baseOriginalSchema": "DEV1_STAGE1_SYNTHETIC_CONSTANTS_V1",
+    "additiveRegistration": "experiments/dev1/amendments/am1/AM1_STONE_TAPE_REGISTRATION.md",
+    "additiveConstants": "experiments/dev1/amendments/am1/AM1_CONSTANTS.json",
+    "baseArmsUnaffected": [
+      "B",
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "Y",
+      "L",
+      "LY",
+      "L0"
+    ]
+  },
+  "additionalArmConstants": {
+    "LS": {
+      "role": "stone tape",
+      "personalInheritance": false,
+      "readPlaceMarks": true,
+      "placeMarkSource": "same lineage own previous terminal events"
+    },
+    "LSY": {
+      "role": "wrong-death control",
+      "personalInheritance": false,
+      "readPlaceMarks": true,
+      "placeMarkSource": "same-generation donor lineage (k mod 32)+1"
+    },
+    "T": {
+      "canonicalGateIds": 11,
+      "initial": 0,
+      "H": 24,
+      "writeTrigger": "terminal absorption only",
+      "writeDistinctFinal24EachOnce": true,
+      "update": "T(e) <- T(e) + (-1 - T(e))/8",
+      "w_T": 0.5,
+      "w_V": 0.5,
+      "weightBasis": "original operator AM1 0.287 largest choice-point gap",
+      "updateBasis": "same L terminal V(e) update strength; H from sealed base",
+      "canonicalGateFieldsUntouched": true
+    },
+    "individualBirth": {
+      "freshD4": true,
+      "initialPersonalV": 0,
+      "freshFastAndSlowTraces": true,
+      "damping": 0.88,
+      "personalMemoryTransmitted": false
+    },
+    "cohort": {
+      "lineages": 32,
+      "generationsCap": 50,
+      "totalStepsCap": 100000,
+      "syntheticOnly": true
+    },
+    "tests": {
+      "secondaryHolm": {
+        "alpha": 0.05,
+        "comparisons": [
+          "LS > L0",
+          "LS > LSY"
+        ]
+      },
+      "descriptiveTwoSided": [
+        "L vs LS"
+      ],
+      "O2TZeroEffectMeansFailure": true,
+      "O7Final24Edges": true
+    }
+  },
+  "seal": {
+    "algorithm": "SHA-256",
+    "timestamp": "RFC3161",
+    "requiredBeforeAnyLineageCohort": true,
+    "registrationAndAdditiveConstantsAndManifestAllSealed": true,
+    "archivePathPrefix": "experiments/dev1/amendments/am1/seal/",
+    "trustAnchorFingerprints": {
+      "tsaRootSHA256": "2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438",
+      "tsaCertSHA256": "8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467"
+    }
+  },
+  "stateAtSeal": "MUST_CERTIFY_NO_LINEAGE_DATA_EXISTS",
+  "futureLineageStart": "BLOCKED_BY_D1_REVIEW_GATE_UNTIL_EXPLICIT_OPERATOR_APPROVAL"
+}
