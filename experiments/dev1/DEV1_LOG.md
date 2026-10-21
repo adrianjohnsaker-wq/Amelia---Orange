@@ -52,3 +52,11 @@
 - D1 only: synthetic 32 tapes, H=24, V updated by (o-V)/8, O1 RMST up to 10000 and O2 branch-choice ablations plus absorption routes. Stops terminal individual at absorbing zone 5; this is a computational shortcut after an irreversible event.
 - Pre-run engineering cleanup: remove unused delayed-credit expression, invoke sealed consequenceOutcome directly, commit ea162b1cafdbbeff8d46a9835940bf733275a485. No constants changed.
 - D2, D3, D4, Y, L, LY, L0 not authorised to run until D1 reviewed.
+
+## D1 32-tape result and stop gate, 21 October 2026
+- Stage 1 D1-only workflow run 39587190646 PASS: pinned PF1/C1 source identities, RFC3161 sealed constants, standalone D1 unit before cohort, 32 synthetic tapes, byte-identical independent replay, create-only result and report publication. No D2/D3/D4/Y/L/LY/L0 executed.
+- O1 D1 RMST 1224.6875 vs B 1703.0000; paired D1-B -478.3125 steps. All 32 absorbed; D1 median 857, range 96–3435. Descriptive only; no D1 confirmatory p-value in registered design.
+- O2 combined selector-memory ablation 137/13409=1.021701842%, V-only 173/13409=1.290178238%; B reference 124/18594=0.6668817898%. O2 mechanism manipulation PASS under registered strict D1 greater than B. Not a survival advantage.
+- Terminal last-four-zone absorption route 1->2->4->5 in all 32; 10 tapes shortened survival, 5 prolonged survival, 17 unchanged compared with B.
+- D1 data and report: experiments/dev1/DEV1_D1_RESULT.json and experiments/dev1/DEV1_D1_REPORT.md; replay and run https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39587190646.
+- STOP: all further developmental arms remain not run pending operator review of D1, with no parameters tuned from this outcome.
