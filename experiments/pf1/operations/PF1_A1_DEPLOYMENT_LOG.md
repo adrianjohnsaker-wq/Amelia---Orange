@@ -8,3 +8,6 @@ Run [39583546876](https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/
 
 ## Deployment invariant
 No activation of the amended live scheduler until PASS of frozen-byte hash identity and the actual disposable remote-Git test: durable batch-1 acknowledgement, simulated interrupted/uncommitted batch recovery, next batch without duplicate admission, and rejection of a competing pushed Git head. Live source pinned under genesis remains unmodified.
+
+## Second full predeployment rehearsal — PASS (verified)
+Run [39583690337](https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39583690337): all pinned-source and approval identity gates PASS. Disposable *actual Git remote* rehearsal: first 20-tick batch durably pushed; uncommitted failure after 3 more synthetic ticks recovered to 20; second 20-tick batch committed to 40 with no duplicate ticks; concurrent remote movement rejected without stale-base rebase; C1, PF1 and canon unchanged. Signatures were **synthetic fixtures only** in this test, and no live BLS admission was performed. No A1 operational threshold or frozen scientific code change.
