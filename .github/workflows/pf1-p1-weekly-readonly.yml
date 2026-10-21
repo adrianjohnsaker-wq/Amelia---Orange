@@ -30,7 +30,7 @@ jobs:
         with:
           name: PF1-P1-WEEKLY
           retention-days: 90
-          path: /tmp/PF1_P1_WEEKLY_READONLY.json
+          path: ${{ runner.temp }}/PF1_P1_WEEKLY_READONLY.json
       - name: Commit dated create-only companion report
         env:
           GH_TOKEN: ${{ github.token }}
@@ -41,7 +41,7 @@ jobs:
           set -euo pipefail
           python - <<'PY'
           import pathlib,subprocess,base64,json,datetime,os
-          b=pathlib.Path('/tmp/PF1_P1_WEEKLY_READONLY.json').read_bytes()
+          b=(pathlib.Path(os.environ['RUNNER_TEMP'])/'PF1_P1_WEEKLY_READONLY.json').read_bytes()
           j=json.loads(b)
           assert j['noLiveAdmission'] and j['noC1Dispatch'] and not j['pinnedFilesModified']
           stamp=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H%M%SZ')
