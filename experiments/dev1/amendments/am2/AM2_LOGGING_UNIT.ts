@@ -39,7 +39,7 @@ console.log('DEV1_AM2_CUE_CLASSIFICATION_PASS',JSON.stringify({testedZones:[1,2,
 const r=new AM2O8Recorder();
 // Known constructed step sequence; 4 pit cues (2 matched), 4 other
 // cues (3 matched), 3 uncued choice points, 1 non-choice point.
-const observations:[
+const observations=[
  [1,2,2],[1,8,2],[2,7,4],[4,5,5],
  [1,8,8],[2,7,7],[4,5,7],[1,8,8],
  [1,2,9],[2,4,null],[4,7,0],[3,6,6]
