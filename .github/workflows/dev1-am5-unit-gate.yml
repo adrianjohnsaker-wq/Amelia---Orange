@@ -1,0 +1,77 @@
+name: DEV1 AM5 signed gate then corrected AM4 five and AM5 six units NO cohort
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/dev1-am5-unit-gate.yml']
+permissions:
+  contents: read
+jobs:
+  all-eleven-constructed-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: U0 verify AM5 signed fingerprint exact bytes before 11 constructed tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:experiments/dev1/DEV1_CONSTANTS.json)" = d862d3afc0cfd334b5bc88b9541c687fa28ee16c
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import json,pathlib,hashlib,re
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          d=pathlib.Path('experiments/dev1')
+          r=json.loads((d/'amendments/am5/seal/receipt.json').read_text())
+          bundle=json.loads((d/'amendments/am5/seal/AM5_JOINT_DIGESTS.json').read_text())
+          assert r['status']=='PASS' and r['onlyExistingDevelopmentalDataAtSeal']==['B','D1','D1″']
+          assert r['sourceWorkOrderCommittedBeforeSeal']
+          assert bundle['schema']=='DEV1_AM5_PROSPECTIVE_JOINT_SHA256_V1'
+          for item in bundle['sources']+bundle['priorSignedTokens']:
+            assert sha(item['path'])==item['sha256'],item['path']
+          for k,v in r['items'].items():
+            p='experiments/dev1/amendments/am5/seal/AM5_JOINT_DIGESTS.json' if k=='AM5_JOINT_DIGESTS' else v['originalPath']
+            assert sha(p)==v['sourceSHA256']
+            assert sha(v['tokenPath'])==v['tokenSHA256']
+          for f in d.rglob('*'):
+            if f.is_file() and re.match(r'DEV1_(?:D2|D3|D4|YPP|L|LY|L0|LS|LSY)',f.name,re.I) and re.search(r'(?:RESULT|COHORT|OBSERV|DATA)',f.name,re.I):
+              raise AssertionError('FUTURE_COHORT_EXISTS_BEFORE_UNITS '+str(f))
+          print('DEV1_AM5_UNIT_PRIOR_SIGNED_SOURCE_AND_ONLY_B_D1_D1PP_GATE_PASS')
+          PY
+          mkdir -p /tmp/am5unit
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/cacert.pem -o /tmp/am5unit/root.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/am5unit/root.pem' | sha256sum -c -
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/tsa.crt -o /tmp/am5unit/tsa.crt
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467  /tmp/am5unit/tsa.crt' | sha256sum -c -
+          for id in AM5_REGISTRATION AM5_MANIFEST AM5_JOINT_DIGESTS; do
+            case "$id" in
+              AM5_REGISTRATION) p=experiments/dev1/amendments/am5/AM5_REGISTERED.md ;;
+              AM5_MANIFEST) p=experiments/dev1/DEV1_CONSTANTS_MANIFEST_AM5.json ;;
+              AM5_JOINT_DIGESTS) p=experiments/dev1/amendments/am5/seal/AM5_JOINT_DIGESTS.json ;;
+            esac
+            openssl ts -verify -data "$p" -in "experiments/dev1/amendments/am5/seal/$id.tsr" -CAfile /tmp/am5unit/root.pem -untrusted /tmp/am5unit/tsa.crt | grep -q 'Verification: OK'
+            echo DEV1_AM5_VERIFIED_ORIGINAL_RFC3161 "$id"
+          done
+      - name: U1 re-run ALL AM4 five tests against prospectively corrected AM5 t star
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          npx tsx experiments/dev1/amendments/am5/AM5_CORRECTED_AM4_FIVE_UNIT.ts
+          echo AM5_CORRECTED_AM4_FIVE_ALL_PASS
+      - name: U2 execute all six AM5 prospective tests D2 D3 D4 Y
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        run: |
+          set -euo pipefail
+          npx tsx experiments/dev1/amendments/am5/AM5_SIX_UNIT.ts
+          git diff --exit-code -- src/substrate src/governance src/ai/numogram src/types/amelia.ts experiments/pf1/
+          test ! -e experiments/dev1/DEV1_AM5_D2PP_RESULT.json
+          echo AM5_CORRECTED_AM4_FIVE_PLUS_AM5_SIX_ALL_ELEVEN_PASS_NO_ARM_RUN
