@@ -104,8 +104,16 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install -r ../c1-pin/drift1a_c1/requirements.txt
-          npm install --no-audit --no-fund
-          python -m py_compile experiments/pf1/operations/PF1_A1_CATCHUP.py
+          npm ci --no-audit --no-fund
+          python - <<'PY'
+          import ast,pathlib
+          p=pathlib.Path('experiments/pf1/operations/PF1_A1_CATCHUP.py')
+          ast.parse(p.read_text(),filename=str(p))
+          print('PF1_A1_NO_BYTECODE_WRITTEN_SYNTAX_PASS')
+          PY
+          echo 'PF1_A1_PRELEASE_GIT_STATUS:'
+          git status --porcelain --untracked-files=all
+          test -z "$(git status --porcelain --untracked-files=all)"
       - name: A1 exclusive lease and sequential verified catch-up (max 480, batches of 20)
         if: steps.due.outputs.run == 'true'
         working-directory: orange
