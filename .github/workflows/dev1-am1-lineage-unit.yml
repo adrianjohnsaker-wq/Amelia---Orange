@@ -1,0 +1,79 @@
+name: DEV1 AM1 sealed stone-tape place-memory and lineage unit tests ONLY
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/dev1-am1-lineage-unit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  am1-unit-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: A0 verify RFC3161 seals and immutable SHA256 manifest BEFORE ANY lineage test
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:experiments/dev1/DEV1_CONSTANTS.json)" = d862d3afc0cfd334b5bc88b9541c687fa28ee16c
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import json,hashlib,pathlib,re
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          d=pathlib.Path('experiments/dev1')
+          r=json.loads((d/'amendments/am1/seal/receipt.json').read_text())
+          assert r['schema']=='DEV1_AM1_THREE_FILE_RFC3161_VERIFIED_RECEIPT_V1'
+          assert r['status']=='PASS' and r['priorLineageDataDetected'] is False
+          assert sha(d/'DEV1_CONSTANTS.json')==r['baseConstantsSHA256']
+          for key in ('registration','constants','manifest'):
+              item=r['items'][key]
+              assert sha(item['path'])==item['sha256'],key
+              assert sha(item['tokenPath'])==item['tokenSha256'],key
+              assert sha(item['queryPath'])==item['querySha256'],key
+          g=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          m=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          assert sha('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json')==g['approvedManifestSHA256']
+          for item in g['liveOperationalSourceHashes']+m['immutableSource']['operationalSourceFileHashes']:
+              assert sha(item['path'])==item['sha256'],item['path']
+          assert sha('experiments/pf1/PF1_A1_R2_CONSTANTS.json')==g['constantsSHA256']
+          assert g['c1VerifierSourceCommit']=='f1875b5eea5339eb1ac73e50b5df6b103d0cabe9'
+          assert json.loads((d/'DEV1_CONSTANTS_MANIFEST.json').read_text())['futureLineageStart']=='BLOCKED_BY_D1_REVIEW_GATE_UNTIL_EXPLICIT_OPERATOR_APPROVAL'
+          forbidden=[]
+          for item in d.rglob('*'):
+              if not item.is_file():continue
+              if re.match(r'DEV1_(?:L|LY|L0|LS|LSY)(?:_|-)',item.name.upper()) and re.search(r'(?:RESULT|DATA|OBSERV|COHORT|GENERATION|TRAJECTOR|ROUTE)',item.name.upper()):
+                  forbidden.append(str(item))
+          assert not forbidden,'LINEAGE_RESULT_ALREADY_EXISTS '+repr(forbidden)
+          print('DEV1_AM1_POST_SEAL_BYTES_IDENTICAL_AND_NO_LINEAGE_DATA_PASS')
+          PY
+          mkdir -p /tmp/am1-tsa
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/cacert.pem -o /tmp/am1-tsa/root.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/am1-tsa/root.pem' | sha256sum -c -
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/tsa.crt -o /tmp/am1-tsa/tsa.crt
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee872e0ff8689225081ea13467  /tmp/am1-tsa/tsa.crt' | sha256sum -c -
+          openssl ts -verify -data experiments/dev1/DEV1_CONSTANTS.json -in experiments/dev1/seal/DEV1_CONSTANTS.tsr -CAfile /tmp/am1-tsa/root.pem -untrusted /tmp/am1-tsa/tsa.crt | grep -q 'Verification: OK'
+          for id in AM1_REGISTRATION AM1_CONSTANTS AM1_MANIFEST; do
+            if [ "$id" = AM1_REGISTRATION ]; then src=experiments/dev1/amendments/am1/AM1_STONE_TAPE_REGISTRATION.md; fi
+            if [ "$id" = AM1_CONSTANTS ]; then src=experiments/dev1/amendments/am1/AM1_CONSTANTS.json; fi
+            if [ "$id" = AM1_MANIFEST ]; then src=experiments/dev1/DEV1_CONSTANTS_MANIFEST.json; fi
+            openssl ts -verify -data "$src" -in "experiments/dev1/amendments/am1/seal/$id.tsr" -CAfile /tmp/am1-tsa/root.pem -untrusted /tmp/am1-tsa/tsa.crt | grep -q 'Verification: OK'
+            echo DEV1_AM1_RFC3161_IMPRINT_AND_CHAIN_PASS "$id"
+          done
+      - name: A1 run sealed stone-tape T and LS/LSY mechanism unit fixtures; NO cohort
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          npx tsx experiments/dev1/amendments/am1/AM1_LINEAGE_UNIT.ts
+          git diff --exit-code -- src/substrate src/governance src/ai/numogram src/types/amelia.ts experiments/pf1/
+          test ! -e experiments/dev1/DEV1_LS_RESULT.json
+          test ! -e experiments/dev1/DEV1_LSY_RESULT.json
+          echo DEV1_AM1_UNIT_TESTS_PASS_NO_REGISTERED_LINEAGE_RUN
