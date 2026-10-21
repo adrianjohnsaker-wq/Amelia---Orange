@@ -26,6 +26,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Keep downloaded npm dependencies out of Git's scientific tree checks;
+          # exclusion is runner-local .git metadata, NEVER committed.
+          printf '\n/node_modules/\n' >> .git/info/exclude
           npm install --no-save --package-lock=false --no-audit --no-fund
           python - <<'PY'
           import ast,pathlib
