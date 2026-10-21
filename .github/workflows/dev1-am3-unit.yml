@@ -1,0 +1,70 @@
+name: DEV1 AM3 seven sealed refrain units before D1 double-prime
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/dev1-am3-unit.yml']
+permissions:
+  contents: read
+jobs:
+  seven-prospective-units-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: U0 verify full original and new AM3 signed SHA256 provenance, no corrected cohort
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:experiments/dev1/DEV1_CONSTANTS.json)" = d862d3afc0cfd334b5bc88b9541c687fa28ee16c
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import pathlib,json,hashlib,re
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          d=pathlib.Path('experiments/dev1')
+          a=json.loads((d/'amendments/am3/seal/receipt.json').read_text())
+          b=json.loads((d/'amendments/am3/seal/AM3_JOINT_SOURCE_DIGESTS.json').read_text())
+          assert a['status']=='PASS' and a['onlyPreviousCohortsBAndD1AtSeal']
+          assert a['allEarlierSignedTokensReverified'] and a['correctedArmRunsBeforeThisSeal']==0
+          assert b['schema']=='DEV1_AM3_REGISTERED_MULTI_GENERATION_PROVENANCE_BUNDLE_V1'
+          for item in b['sources']+b['priorRfc3161TokenDigests']:
+            assert sha(item['path'])==item['sha256'],item['path']
+          for k,v in a['items'].items():
+            path='experiments/dev1/amendments/am3/seal/AM3_JOINT_SOURCE_DIGESTS.json' if k=='bundle' else v['sourcePath']
+            assert sha(path)==v['sourceSHA256']
+            assert sha(v['tokenPath'])==v['tokenSHA256']
+          for p in d.rglob('*'):
+            if not p.is_file():continue
+            if re.match(r'DEV1_(?:D2|D3|D4|Y|L|LY|L0|LS|LSY|D1PP|D1_DOUBLE)',p.name,re.I) and re.search(r'(?:RESULT|COHORT|DATA|OBSERV)',p.name,re.I):
+              raise AssertionError('UNAPPROVED_ARM_RESULT_BEFORE_AM3_SEVEN_UNITS '+str(p))
+          print('DEV1_AM3_UNIT_PRECONDITION_HASHES_AND_NO_CORRECTED_ARM_PASS')
+          PY
+          mkdir -p /tmp/am3verify
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/cacert.pem -o /tmp/am3verify/root.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/am3verify/root.pem' | sha256sum -c -
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/tsa.crt -o /tmp/am3verify/tsa.crt
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467  /tmp/am3verify/tsa.crt' | sha256sum -c -
+          for id in AM3_REGISTRATION AM3_CONSTANTS_MANIFEST AM3_JOINT_SOURCE_DIGESTS; do
+            case "$id" in
+              AM3_REGISTRATION) p=experiments/dev1/amendments/am3/AM3_REGISTERED.md ;;
+              AM3_CONSTANTS_MANIFEST) p=experiments/dev1/DEV1_CONSTANTS_MANIFEST_AM3.json ;;
+              AM3_JOINT_SOURCE_DIGESTS) p=experiments/dev1/amendments/am3/seal/AM3_JOINT_SOURCE_DIGESTS.json ;;
+            esac
+            openssl ts -verify -data "$p" -in "experiments/dev1/amendments/am3/seal/$id.tsr" -CAfile /tmp/am3verify/root.pem -untrusted /tmp/am3verify/tsa.crt | grep -q 'Verification: OK'
+            echo AM3_UNIT_RFC3161_SEALED_IMPRINT_PASS "$id"
+          done
+      - name: U1 execute exactly seven constructed AM3 o-double-prime unit tests, NO cohort
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          npx tsx experiments/dev1/amendments/am3/AM3_UNIT_7.ts
+          git diff --exit-code -- src/substrate src/governance src/ai/numogram src/types/amelia.ts experiments/pf1/
+          test ! -e experiments/dev1/DEV1_D1PP_RESULT.json
+          echo DEV1_AM3_ALL_SEVEN_UNITS_AND_NO_CORRECTED_COHORT_PASS
