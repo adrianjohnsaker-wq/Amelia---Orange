@@ -14,3 +14,9 @@
 **Deviations:** none made to the numerical constants. The tape-index convention and selector-only ablation estimand are engineering specifications disclosed before calibration; if the operator intended another estimand, it must be registered as an amendment and the existing result retained, never overwritten.
 
 **Failures:** none reported at the point this log was created. Any GitHub workflow failure will remain visible through its linked immutable Actions job; no failed gate may be reinterpreted as success.
+
+## First Stage-1 workflow admission and provenance
+
+| 2026-10-21 | Seal / execution workflow | One-way gate implemented: frozen science identity and C1 read-only pin; actual FreeTSA RFC3161 token checked against fixed trust-anchor fingerprints; archive seal; only then B tests, B calibration and byte-for-byte replay. No D arm command exists in the workflow. | `5ab69e5c2a3b1a6f20ca099630fe9d900b9f5ad1`; [Actions run 39580807013](https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/39580807013) | SEAL AND UNIT TEST PASS; B IN PROGRESS AT THIS UPDATE |
+
+**Audit note:** successful timestamp and isolated unit-test gates are not evidence of baseline calibration success; no absorption summary, permutation inference, or D-arm result is asserted until the B calibration and byte-identical replay complete.
