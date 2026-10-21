@@ -1,0 +1,154 @@
+name: DEV1 AM4 sealed lineage-only credit amendment, before lineage
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/dev1-am4-seal.yml']
+permissions:
+  contents: read
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify AM3 history, original canonical science, no lineage outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:experiments/dev1/DEV1_CONSTANTS.json)" = d862d3afc0cfd334b5bc88b9541c687fa28ee16c
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import pathlib,re,hashlib,json
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          d=pathlib.Path('experiments/dev1')
+          m=json.loads((d/'DEV1_CONSTANTS_MANIFEST_AM4.json').read_text())
+          assert m['schema']=='DEV1_AM4_ADDITIVE_LINEAGE_CONSTANTS_V1'
+          assert m['literalDefinition']['terminalV'] and m['literalDefinition']['terminalT']
+          assert m['recognizedConflict']['blockLineage']
+          assert m['recognizedConflict']['allowWithinLifeAM3']
+          assert len(m['unitTests'])==5
+          assert len(m['literalDefinition']['unchanged'])==7
+          orig=json.loads((d/'DEV1_D1_RESULT.json').read_text())
+          first=json.loads((d/'DEV1_AM3_D1PP_RESULT.json').read_text())
+          assert orig['O1']['absorbed']==first['O1']['absorbed']==32
+          assert first['O1']['D1PPRestrictedMeanSurvival']==1593.625
+          assert sha(d/'DEV1_CONSTANTS_MANIFEST_AM3.json')==first['AM3ManifestSHA256']
+          b=json.loads((d/'amendments/am3/seal/AM3_JOINT_SOURCE_DIGESTS.json').read_text())
+          for item in b['sources']+b['priorRfc3161TokenDigests']:
+            assert sha(item['path'])==item['sha256']
+          for p in d.rglob('*'):
+            if not p.is_file():continue
+            n=p.name.upper()
+            if re.match(r'DEV1_(?:L|LY|L0|LS|LSY)',n) and re.search(r'(?:RESULT|DATA|COHORT|OBSERV|GENERATION)',n):
+              raise AssertionError('AM4_LINEAGE_DATA_ALREADY_EXISTS '+str(p))
+          g=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          gp=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          for item in g['liveOperationalSourceHashes']+gp['immutableSource']['operationalSourceFileHashes']:
+            assert sha(item['path'])==item['sha256'],item['path']
+          print('DEV1_AM4_PRELINEAGE_PROSPECTIVE_SEAL_SOURCE_IDENTITY_PASS')
+          PY
+      - name: Verify prior AM3 genuine RFC3161 and obtain trusted certificates
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/am4seal
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/cacert.pem -o /tmp/am4seal/root.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/am4seal/root.pem' | sha256sum -c -
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/tsa.crt -o /tmp/am4seal/tsa.crt
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467  /tmp/am4seal/tsa.crt' | sha256sum -c -
+          for id in AM3_REGISTRATION AM3_CONSTANTS_MANIFEST AM3_JOINT_SOURCE_DIGESTS; do
+            case "$id" in
+              AM3_REGISTRATION) p=experiments/dev1/amendments/am3/AM3_REGISTERED.md ;;
+              AM3_CONSTANTS_MANIFEST) p=experiments/dev1/DEV1_CONSTANTS_MANIFEST_AM3.json ;;
+              AM3_JOINT_SOURCE_DIGESTS) p=experiments/dev1/amendments/am3/seal/AM3_JOINT_SOURCE_DIGESTS.json ;;
+            esac
+            openssl ts -verify -data "$p" -in "experiments/dev1/amendments/am3/seal/$id.tsr" -CAfile /tmp/am4seal/root.pem -untrusted /tmp/am4seal/tsa.crt | grep -q 'Verification: OK'
+          done
+          echo DEV1_AM4_AM3_PRESERVED_EXTERNAL_SIGNATURES_VERIFIED
+      - name: Build pre-lineage additive fingerprint bundle and external RFC3161 for all 3
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib,json,hashlib
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          d=pathlib.Path('experiments/dev1')
+          paths=['DEV1_CONSTANTS.json','DEV1_CONSTANTS_MANIFEST.json',
+            'DEV1_CONSTANTS_MANIFEST_AM3.json','amendments/am3/AM3_REGISTERED.md',
+            'amendments/am3/seal/receipt.json','amendments/am4/AM4_REGISTERED.md',
+            'DEV1_CONSTANTS_MANIFEST_AM4.json','amendments/am1/AM1_CONSTANTS.json',
+            'amendments/am2/AM2_REGISTERED.md']
+          tok=['seal/DEV1_CONSTANTS.tsr']+[
+            'amendments/am3/seal/'+s+'.tsr' for s in
+            ('AM3_REGISTRATION','AM3_CONSTANTS_MANIFEST','AM3_JOINT_SOURCE_DIGESTS')]
+          x={'schema':'DEV1_AM4_PROSPECTIVE_PRELINEAGE_SEAL_BUNDLE_V1',
+            'lineageDataExists':False,
+            'retiredArmsUnrun':True,
+            'D1PPAcceptedWithoutRetune':True,
+            'AM4ContradictionRegisteredBeforeLineage':True,
+            'sources':[{'path':str(d/p),'sha256':sha(d/p)} for p in paths],
+            'tokens':[{'path':str(d/p),'sha256':sha(d/p)} for p in tok]}
+          pathlib.Path('/tmp/am4seal/AM4_PROVENANCE_BUNDLE.json').write_text(json.dumps(x,indent=2)+'\n')
+          print('DEV1_AM4_PROVENANCE_BUNDLE_HASH',sha('/tmp/am4seal/AM4_PROVENANCE_BUNDLE.json'))
+          PY
+          files=(experiments/dev1/amendments/am4/AM4_REGISTERED.md experiments/dev1/DEV1_CONSTANTS_MANIFEST_AM4.json /tmp/am4seal/AM4_PROVENANCE_BUNDLE.json)
+          names=(AM4_REGISTRATION AM4_MANIFEST AM4_PROVENANCE_BUNDLE)
+          for k in 0 1 2; do
+            f="${files[$k]}"; n="${names[$k]}"
+            openssl ts -query -data "$f" -sha256 -cert -no_nonce -out "/tmp/am4seal/$n.tsq"
+            curl -fsSL --retry 5 --retry-all-errors --retry-delay 1 --max-time 75 -H 'Content-Type: application/timestamp-query' --data-binary "@/tmp/am4seal/$n.tsq" https://freetsa.org/tsr -o "/tmp/am4seal/$n.tsr"
+            openssl ts -verify -data "$f" -in "/tmp/am4seal/$n.tsr" -CAfile /tmp/am4seal/root.pem -untrusted /tmp/am4seal/tsa.crt | grep -q 'Verification: OK'
+            echo DEV1_AM4_RFC3161_EXACT_IMPRINT_PASS "$n" "$(sha256sum "$f")"
+          done
+      - name: Commit create-only signed evidence to GitHub with verified SHA256 receipt
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib,hashlib,json,datetime,base64,os,subprocess
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          t=pathlib.Path('/tmp/am4seal')
+          items={}
+          origins={'AM4_REGISTRATION':'experiments/dev1/amendments/am4/AM4_REGISTERED.md',
+            'AM4_MANIFEST':'experiments/dev1/DEV1_CONSTANTS_MANIFEST_AM4.json',
+            'AM4_PROVENANCE_BUNDLE':str(t/'AM4_PROVENANCE_BUNDLE.json')}
+          for n,src in origins.items():
+            items[n]={'originalPath':src,'sourceSHA256':sha(src),'tokenSHA256':sha(t/(n+'.tsr')),
+              'tokenPath':'experiments/dev1/amendments/am4/seal/'+n+'.tsr',
+              'verified':'RFC3161 signed chain and exact imprint PASS'}
+          receipt={'schema':'DEV1_AM4_VERIFIED_RFC3161_RECEIPT_V1',
+            'status':'PASS','verifiedAtUTC':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'lineageResultsBeforeSeal':0,'AM3WithinLifeUnchanged':True,
+            'lineageBlockedByContradictoryFinalDeparture':True,'items':items}
+          (t/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          names=[n+'.'+ext for n in origins for ext in ('tsq','tsr')]+[
+            'AM4_PROVENANCE_BUNDLE.json','receipt.json']
+          for name in names:
+            raw=(t/name).read_bytes()
+            dest='experiments/dev1/amendments/am4/seal/'+name
+            inp={'message':'DEV1 AM4 create-only external RFC3161 prospective prelineage seal '+name,
+                 'branch':'main','content':base64.b64encode(raw).decode()}
+            p=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dest,
+                '--input','-'],capture_output=True,input=json.dumps(inp),text=True)
+            if p.returncode:raise RuntimeError('AM4_EXTERNAL_SEAL_ARCHIVE_FAILED '+dest+' '+p.stderr)
+            print('DEV1_AM4_VERIFIED_CREATE_ONLY',dest,sha(t/name))
+          print('DEV1_AM4_COMPLETE_EXTERNAL_SIGNED_SEAL_PASS')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: DEV1-AM4-ORIGINAL-PRELINEAGE-RFC3161-SEAL
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            /tmp/am4seal/*.tsr
+            /tmp/am4seal/*.tsq
+            /tmp/am4seal/AM4_PROVENANCE_BUNDLE.json
+            /tmp/am4seal/receipt.json
