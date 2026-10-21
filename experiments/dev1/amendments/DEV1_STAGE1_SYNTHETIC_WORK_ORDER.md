@@ -56,7 +56,7 @@ This is a reproduction check of the DEV-1 probe: 24 tapes, all absorbed, median 
 | Tension homeostat | Damping +0.01 when tension < 0.14; −0.01 when > 0.65; kept within [0.45, 0.99] | Lower limit = the existing anti-lock floor |
 | Lineage | On absorption the individual ends. The successor starts at zone 0 with fresh zone dynamics, canonical weights, damping 0.88 and a fresh fast trace. It inherits V(e) and the slow trace. | Design section 6 |
 | Lineage cap | 50 generations or 100,000 total steps, whichever comes first | Declared |
-| Tapes | 32; input `SHA256('DEV1-TAPE-k|' + i)`, k = 1..32 | Distinct from PF-1 and C1 domains |
+| Tapes | 32; input `SHA256('DEV1-TAPE-k\|' + i)`, k = 1..32 | Distinct from PF-1 and C1 domains |
 
 ## D. Arms (one at a time, in this order)
 
