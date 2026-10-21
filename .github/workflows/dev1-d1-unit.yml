@@ -1,0 +1,57 @@
+name: DEV1 D1 REQUIRED UNIT GATE — sealed constants; no D1 cohort
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/dev1-d1-unit.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  d1-selector-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify unchanged PF1/C1 science and prior registered DEV1 constant timestamp
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import json,hashlib,pathlib
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          root=pathlib.Path('experiments/pf1/')
+          g=json.loads((root/'live/GENESIS.json').read_text())
+          m=json.loads((root/'PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          assert sha(root/'PF1_GENESIS_MANIFEST_DRAFT.json')==g['approvedManifestSHA256']
+          assert sha(root/'PF1_A1_R2_CONSTANTS.json')==g['constantsSHA256']
+          for e in g['liveOperationalSourceHashes']+m['immutableSource']['operationalSourceFileHashes']:
+              assert sha(e['path'])==e['sha256'],e['path']
+          c=json.loads(pathlib.Path('experiments/dev1/DEV1_CONSTANTS.json').read_text())
+          assert c['schema']=='DEV1_STAGE1_SYNTHETIC_CONSTANTS_V1'
+          assert c['syntheticOnly'] and c['liveInflowProhibited']
+          assert c['armsOrder'][1]=='D1'
+          assert c['mechanisms']['consequenceWeight']['value']==0.5
+          assert c['mechanisms']['valueUpdate']['formula']=='V <- V + (o-V)/8'
+          print('DEV1_D1_PINNED_SCIENCE_AND_SEALED_CONSTANTS_PRECHECK_PASS')
+          PY
+          curl -fsSL --max-time 35 https://freetsa.org/files/cacert.pem -o /tmp/dev1tsa-root.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/dev1tsa-root.pem' | sha256sum -c -
+          curl -fsSL --max-time 35 https://freetsa.org/files/tsa.crt -o /tmp/dev1tsa-cert.pem
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467  /tmp/dev1tsa-cert.pem' | sha256sum -c -
+          openssl ts -verify -data experiments/dev1/DEV1_CONSTANTS.json -in experiments/dev1/seal/DEV1_CONSTANTS.tsr -CAfile /tmp/dev1tsa-root.pem -untrusted /tmp/dev1tsa-cert.pem | grep -q 'Verification: OK'
+          echo DEV1_D1_CONSTANTS_EXTERNAL_TIMESTAMP_VALID
+      - name: Mandatory flux-gap edge-value D1 unit test before cohort
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          npx tsx experiments/dev1/DEV1_D1_UNIT.ts
+          echo DEV1_D1_UNIT_GATE_PASS_NO_COHORT_EXECUTED
