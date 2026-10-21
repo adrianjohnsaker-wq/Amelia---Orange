@@ -1,0 +1,125 @@
+name: DEV1 D2-accepted READ ONLY every zone4 B versus D2 bias audit
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/dev1-d2-zone4-readonly-audit.yml']
+permissions:
+  contents: read
+jobs:
+  readonly-B-D2:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Original B D1 D1″ D2″ byte identities, signed constants, source pins
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:experiments/dev1/DEV1_CONSTANTS.json)" = d862d3afc0cfd334b5bc88b9541c687fa28ee16c
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import pathlib,json,hashlib,re
+          root=pathlib.Path('experiments/dev1')
+          sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          d=json.loads((root/'DEV1_AM5_D2PP_RESULT.json').read_text())
+          assert d['O1']['D2PPRestrictedMeanSurvival']==1736.125
+          assert d['O1']['absorbed']==32 and len(d['rows'])==32
+          assert sha(root/'DEV1_AM5_D2PP_RESULT.json')=='4021e0c3e0e3b6bde3bfddac61a2d637a5be162f79be68e83055123aba218443'
+          assert d['AM5ManifestSHA256']==sha(root/'DEV1_CONSTANTS_MANIFEST_AM5.json')
+          assert sha(root/'DEV1_D1_RESULT.json')=='0fb3269e1c52d9f0613a8d2b2b96abdca98e41ff023ca5f6f8a2c1682436997c'
+          receipt=json.loads((root/'amendments/am5/seal/receipt.json').read_text())
+          assert receipt['status']=='PASS'
+          bundle=json.loads((root/'amendments/am5/seal/AM5_JOINT_DIGESTS.json').read_text())
+          for x in bundle['sources']+bundle['priorSignedTokens']:
+            assert sha(x['path'])==x['sha256']
+          for p in root.rglob('*'):
+            if p.is_file() and re.match(r'DEV1_(?:D3|D4|YPP|L|LY|L0|LS|LSY)',p.name,re.I) and re.search(r'(?:RESULT|OBSERV|COHORT|DATA)',p.name,re.I):
+              raise AssertionError('UNAUTHORISED_FURTHER_ARM '+str(p))
+          g=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          gp=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          for x in g['liveOperationalSourceHashes']+gp['immutableSource']['operationalSourceFileHashes']:
+             assert sha(x['path'])==x['sha256']
+          print('DEV1_D2_READONLY_IDENTITIES_AND_NO_D3_PASS')
+          PY
+          mkdir -p /tmp/dev1z4
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/cacert.pem -o /tmp/dev1z4/root.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/dev1z4/root.pem' | sha256sum -c -
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/tsa.crt -o /tmp/dev1z4/tsa.crt
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467  /tmp/dev1z4/tsa.crt' | sha256sum -c -
+          for id in AM5_REGISTRATION AM5_MANIFEST AM5_JOINT_DIGESTS; do
+            case "$id" in
+              AM5_REGISTRATION) p=experiments/dev1/amendments/am5/AM5_REGISTERED.md ;;
+              AM5_MANIFEST) p=experiments/dev1/DEV1_CONSTANTS_MANIFEST_AM5.json ;;
+              AM5_JOINT_DIGESTS) p=experiments/dev1/amendments/am5/seal/AM5_JOINT_DIGESTS.json ;;
+            esac
+            openssl ts -verify -data "$p" -in "experiments/dev1/amendments/am5/seal/$id.tsr" -CAfile /tmp/dev1z4/root.pem -untrusted /tmp/dev1z4/tsa.crt | grep -q 'Verification: OK'
+          done
+          echo DEV1_D2_READONLY_AM5_RFC3161_PASS
+      - name: Complete read-only B D2 zone4 replay every score and every cue
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          DEV1_AM3_RFC3161_VERIFIED: 'true'
+          DEV1_AM3_SEVEN_UNITS_PASS: 'true'
+          DEV1_FROZEN_IDENTITY_PASS: 'true'
+          DEV1_D2PP_OPERATOR_APPROVED: 'true'
+          DEV1_AM5_RFC3161_VERIFIED: 'true'
+          DEV1_AM5_ELEVEN_UNITS_PASS: 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          npx tsx experiments/dev1/DEV1_D2_ACCEPTED_ZONE4_BIAS_AUDIT.ts
+          cp experiments/dev1/DEV1_D2_ACCEPTED_ZONE4_BIAS_AUDIT.json /tmp/dev1z4/first.json
+          cp experiments/dev1/DEV1_D2_ACCEPTED_ZONE4_BIAS_AUDIT.md /tmp/dev1z4/first.md
+      - name: Byte-identical independently repeated B/D2 replay and immutable science
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          DEV1_AM3_RFC3161_VERIFIED: 'true'
+          DEV1_AM3_SEVEN_UNITS_PASS: 'true'
+          DEV1_FROZEN_IDENTITY_PASS: 'true'
+          DEV1_D2PP_OPERATOR_APPROVED: 'true'
+          DEV1_AM5_RFC3161_VERIFIED: 'true'
+          DEV1_AM5_ELEVEN_UNITS_PASS: 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx tsx experiments/dev1/DEV1_D2_ACCEPTED_ZONE4_BIAS_AUDIT.ts
+          cmp /tmp/dev1z4/first.json experiments/dev1/DEV1_D2_ACCEPTED_ZONE4_BIAS_AUDIT.json
+          cmp /tmp/dev1z4/first.md experiments/dev1/DEV1_D2_ACCEPTED_ZONE4_BIAS_AUDIT.md
+          git diff --exit-code -- experiments/dev1/DEV1_CONSTANTS.json experiments/dev1/DEV1_BASELINE_CALIBRATION.json experiments/dev1/DEV1_D1_RESULT.json experiments/dev1/DEV1_AM3_D1PP_RESULT.json experiments/dev1/DEV1_AM5_D2PP_RESULT.json experiments/dev1/amendments/ src/substrate/ src/governance/ src/ai/numogram/ src/types/amelia.ts experiments/pf1/
+          echo DEV1_D2_ZONE4_BIAS_READONLY_DOUBLE_REPLAY_PASS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: DEV1-D2-READONLY-ALL-ZONE4-SCORES-CUES
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            experiments/dev1/DEV1_D2_ACCEPTED_ZONE4_BIAS_AUDIT.json
+            experiments/dev1/DEV1_D2_ACCEPTED_ZONE4_BIAS_AUDIT.md
+      - name: Create-only archive original observational data and report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib,hashlib,base64,json,subprocess,os
+          for n in ('DEV1_D2_ACCEPTED_ZONE4_BIAS_AUDIT.json','DEV1_D2_ACCEPTED_ZONE4_BIAS_AUDIT.md'):
+            f=pathlib.Path('experiments/dev1')/n
+            data=f.read_bytes()
+            payload={'message':'DEV1 D2 accepted read-only all zone4 scores and biases; no new cohort '+n,
+              'branch':'main','content':base64.b64encode(data).decode()}
+            r=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/experiments/dev1/'+n,
+             '--input','-'],input=json.dumps(payload),capture_output=True,text=True)
+            if r.returncode:raise RuntimeError('READONLY_CREATE_ONLY_FAILED '+n+' '+r.stderr)
+            print('DEV1_D2_ZONE4_AUDIT_ARCHIVED',n,hashlib.sha256(data).hexdigest())
+          PY
