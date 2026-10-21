@@ -104,7 +104,9 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install -r ../c1-pin/drift1a_c1/requirements.txt
-          npm ci --no-audit --no-fund
+          # Runner-local Git exclude; no tracked or pinned source change.
+          printf '\n/node_modules/\n' >> .git/info/exclude
+          npm install --no-save --package-lock=false --no-audit --no-fund
           python - <<'PY'
           import ast,pathlib
           p=pathlib.Path('experiments/pf1/operations/PF1_A1_CATCHUP.py')
