@@ -43,8 +43,9 @@ jobs:
             assert sha(p['tokenPath'])==p['tokenSha256']==bundle['previousAM1TokenSHA256'][key]
           assert sha(root/'seal/DEV1_CONSTANTS.tsr')==bundle['originalDev1TokenSHA256']
           for key,item in r['items'].items():
-            assert sha(item['filePath'])==item['fileSHA256']
-            assert sha(item['tokenPath'])==item['tokenSHA256']
+            source='experiments/dev1/amendments/am2/seal/AM1_AM2_JOINT_BUNDLE.json' if key=='jointBundle' else item['filePath']
+            assert sha(source)==item['fileSHA256'],'AM2_SIGNED_FILE_CHANGED '+key
+            assert sha(item['tokenPath'])==item['tokenSHA256'],'AM2_SIGNED_TOKEN_CHANGED '+key
           g=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
           m=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
           assert sha('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json')==g['approvedManifestSHA256']
