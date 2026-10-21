@@ -1,14 +1,14 @@
 /**
  * DEV-1 AM5 SECOND CORRECTED ARM ONLY: D2″
  * This is the second corrected arm under separately sealed AM5; D1″ accepted. Original D1 and B
- * files are READ ONLY and stay unchanged; no D2″ or lineage arm is dispatched.
+ * files are READ ONLY and stay unchanged; no D3″ or lineage arm is dispatched.
  */
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {AmeliaNumogramSubstrateRuntime} from '../../src/substrate/ameliaNumogramSubstrateRuntime';
 import {accelerateExactHistoryDigest} from '../../src/developmental/DEV1ExactDigestAdapter';
-import {d1EdgeKey,d1GateSelectorOverlay,d1ChooseExit,D1_CANONICAL_EDGES}
+import {d1EdgeKey,d1ChooseExit,D1_CANONICAL_EDGES}
  from '../../src/developmental/DEV1D1EdgeSelector';
 import {updateEdgeValue} from '../../src/developmental/DEV1Mechanisms';
 import {RefrainQueue,AM3_H} from '../../src/developmental/DEV1AM3Refrain';
@@ -284,7 +284,7 @@ const O2={baselineMemoryShare:baselineBranchShare,baselineChanges:b.localSelecto
  D2PPCombinedShare:branches?changed/branches:null,
  D2PPVOnlyChanged:vChanged,D2PPVOnlyShare:branches?vChanged/branches:null,
  manipulationCheck:branches&&changed/branches>baselineBranchShare?'PASS':'FAIL'};
-const result={schema:'DEV1_AM3_D1_DOUBLE_PRIME_CORRECTED_COHORT_V1',arm:'D2″',
+const result={schema:'DEV1_AM5_D2_DOUBLE_PRIME_CORRECTED_COHORT_V1',arm:'D2″',
  syntheticOnly:true,registeredCorrectionFromD1:true,
  AM3ManifestSHA256:sha(am3Raw),AM5ManifestSHA256:sha(am5Raw),baseConstantsSHA256:sha(originalRaw),
  originalD1Preserved:true,newCorrectedArmExecuted:'D2″',
