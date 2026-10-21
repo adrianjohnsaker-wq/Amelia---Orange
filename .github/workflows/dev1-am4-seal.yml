@@ -31,7 +31,7 @@ jobs:
           assert m['recognizedConflict']['blockLineage']
           assert m['recognizedConflict']['allowWithinLifeAM3']
           assert len(m['unitTests'])==5
-          assert len(m['literalDefinition']['unchanged'])==7
+          assert len(m['literalDefinition']['unchanged'])==8
           orig=json.loads((d/'DEV1_D1_RESULT.json').read_text())
           first=json.loads((d/'DEV1_AM3_D1PP_RESULT.json').read_text())
           assert orig['O1']['absorbed']==first['O1']['absorbed']==32
