@@ -1,0 +1,90 @@
+{
+  "schema": "DEV1_AM1_AM2_JOINT_PROSPECTIVE_PROVENANCE_MANIFEST_V1",
+  "operatorAM2ApprovalUTC": "2026-10-21T11:47:28Z",
+  "changeClass": "additional_read_only_measurement_and_tests_only",
+  "scientificMechanismsChanged": false,
+  "constantsChanged": false,
+  "armsChanged": false,
+  "existingTestsChanged": false,
+  "lineageDataAllowedAtSeal": false,
+  "preExistingSeals": {
+    "base": {
+      "path": "experiments/dev1/DEV1_CONSTANTS.json",
+      "sha256": "c5a82e34c6b3509286e515c51784b7e05c89e1541a0e0aa90782be88a948ea92",
+      "token": "experiments/dev1/seal/DEV1_CONSTANTS.tsr"
+    },
+    "am1": {
+      "verifiedReceipt": "experiments/dev1/amendments/am1/seal/receipt.json",
+      "registration": {
+        "path": "experiments/dev1/amendments/am1/AM1_STONE_TAPE_REGISTRATION.md",
+        "sha256": "dbdc39c8ceaf6ec43d40f7593a11eac02d3ce7c91b2033c76b66022c17c48056",
+        "token": "experiments/dev1/amendments/am1/seal/AM1_REGISTRATION.tsr",
+        "tokenSha256": "84ade6441735b9454312b162a9de19a9413fecbe0c3e228d57e355e70abb75da"
+      },
+      "constants": {
+        "path": "experiments/dev1/amendments/am1/AM1_CONSTANTS.json",
+        "sha256": "b2d564a9bac24a59d4251260cf85f21e97a12bc2f02f32a0b51f7c851d449422",
+        "token": "experiments/dev1/amendments/am1/seal/AM1_CONSTANTS.tsr",
+        "tokenSha256": "10e8dcfc85a61de9df3a2d843ea95fe8611f7513b90d6b7e9fc3d3c78c0f9b96"
+      },
+      "manifest": {
+        "path": "experiments/dev1/DEV1_CONSTANTS_MANIFEST.json",
+        "sha256": "ee0595c137d2031a429f6a4572a0c6348100af1ac9ccff9e473287ca1db058e7",
+        "token": "experiments/dev1/amendments/am1/seal/AM1_MANIFEST.tsr",
+        "tokenSha256": "a838f5fd1f6f94270f77dab87a3d293d29c6d0a64e8a81bfa5325433bf2fb8a0"
+      }
+    }
+  },
+  "newAm2": {
+    "registration": "experiments/dev1/amendments/am2/AM2_REGISTERED.md",
+    "prediction": "P-AM2-1: directional L < LS and L < L0 on per-lineage mean individual distinct-edge/1000-moving-step exploration; exclude generation 1",
+    "otherExploration": "PF1 scanner-presented distinct graph-null eligible pair keys per 1000 moving steps, descriptive only",
+    "tests": {
+      "family": "AM2 own family, two one-sided lineage permutations",
+      "n": 100000,
+      "holmAlpha": 0.05,
+      "comparisons": [
+        "L < LS",
+        "L < L0"
+      ]
+    },
+    "outcomeO8": {
+      "kind": "descriptive",
+      "zones": [
+        1,
+        2,
+        4
+      ],
+      "pitwardTargets": [
+        "1->2",
+        "2->4",
+        "4->5"
+      ],
+      "otherTargets": [
+        "1->8",
+        "2->7",
+        "4->7"
+      ],
+      "cue": "recorded input zone equals one outgoing target",
+      "sparseIfCueCountLessThan": 20,
+      "resistance": "compliance(other) - compliance(pitward)",
+      "nonLineageWindowSteps": 1000,
+      "lineageWindow": "by generation",
+      "pValues": "none"
+    },
+    "noMechanismOrConstantsOrArmsModified": true
+  },
+  "jointProof": {
+    "filesToTimestamp": [
+      "experiments/dev1/amendments/am2/AM2_REGISTERED.md",
+      "experiments/dev1/amendments/am2/AM2_AM1_JOINT_MANIFEST.json"
+    ],
+    "receiptTarget": "experiments/dev1/amendments/am2/seal/receipt.json",
+    "canonicalPinnedSourceMustRemainIdentical": true,
+    "allAm1TokensMustBeReverified": true,
+    "originalConstantsTokenMustBeReverified": true,
+    "noLineageDataAtTimestamp": true
+  },
+  "researchProvenance": "DEV1 designed partly in response to PF1 P1 sealed after 40 admitted ticks; design tests may falsify prior prediction; provenance not result",
+  "armOrder": "D1 reported; D2 onwards still requires explicit operator approval; no lineage arm dispatch authorised"
+}
