@@ -78,7 +78,8 @@ def assert_remote_head():
 
 def assert_batch_only_mutations():
     # Generated evidence and lease completion ONLY. Ignore ignored npm/node_modules.
-    modified=git("status","--porcelain","--untracked-files=all").splitlines()
+    # Preserve porcelain status leading columns: git() strips whitespace.
+    modified=cmd("git","status","--porcelain","--untracked-files=all").stdout.splitlines()
     for item in modified:
         if not item:continue
         path=item[3:]
