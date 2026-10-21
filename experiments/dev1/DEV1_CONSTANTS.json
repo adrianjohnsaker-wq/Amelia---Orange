@@ -1,0 +1,176 @@
+{
+  "schema": "DEV1_STAGE1_SYNTHETIC_CONSTANTS_V1",
+  "issuedUTC": "2026-10-21",
+  "provenance": "operator-approved DEV1_STAGE1_SYNTHETIC_WORK_ORDER.md §C; no Amelia outcome tuning",
+  "syntheticOnly": true,
+  "liveInflowProhibited": true,
+  "armsOrder": [
+    "B",
+    "D1",
+    "D2",
+    "D3",
+    "D4",
+    "Y",
+    "L",
+    "LY",
+    "L0"
+  ],
+  "baseline": {
+    "arm": "B",
+    "numberOfTapes": 32,
+    "maxStepsPerTape": 10000,
+    "tapeDomainTemplate": "DEV1-TAPE-{k}|{i}",
+    "tapeK": {
+      "min": 1,
+      "max": 32
+    },
+    "stepIndex": "zero-based i = 0..9999",
+    "startingZone": 0,
+    "absorptionZone": 5,
+    "referenceProbeTapes": 24,
+    "referenceMedianSteps": 1134,
+    "referenceMinSteps": 56,
+    "referenceMaxSteps": 7116,
+    "probeResultsNotUsedToFitConstants": true,
+    "choiceAblationDefinition": "one-step selector-only removal of additive 0.4*bias[target] term using post-evolution zones/phase and the same input; no rerun or perturbation of B"
+  },
+  "mechanisms": {
+    "consequenceHorizon": {
+      "value": 24,
+      "unit": "steps",
+      "basis": "PF-1 recovery horizon"
+    },
+    "edgeValues": {
+      "range": [
+        -1,
+        1
+      ],
+      "initial": 0,
+      "basis": "definition"
+    },
+    "consequenceWeight": {
+      "value": 0.5,
+      "basis": "exceeds largest choice-point flux gap (0.287 zone 1)"
+    },
+    "valueUpdate": {
+      "formula": "V <- V + (o-V)/8",
+      "timeConstantTraversal": 8,
+      "basis": "design definition"
+    },
+    "outcome": {
+      "absorptionWithinH": -1,
+      "moving": "clip((m_after-m_before)/11,-1,+1)",
+      "mDefinition": "count distinct directed edges in preceding/following 24 steps",
+      "edgeCount": 11,
+      "basis": "canonical directed edge count"
+    },
+    "absorption": {
+      "criterion": "entry to zone with no open outgoing exit",
+      "basis": "canonical directed graph"
+    },
+    "fastTrace": {
+      "tauSteps": 48,
+      "basis": "existing 48-event window",
+      "type": "exponential"
+    },
+    "slowTrace": {
+      "tauSteps": 2400,
+      "basis": "ten times PF-1 240-step scanner window",
+      "type": "exponential"
+    },
+    "traceNormalisation": {
+      "perTraceSum": 1,
+      "biasFormula": "0.4*(fast+slow)/2",
+      "basis": "retains existing selector memory bias weight"
+    },
+    "consolidation": {
+      "function": "IntegratedMemorySystem.consolidateStrain()",
+      "everySteps": 48,
+      "basis": "existing function/window"
+    },
+    "essentialVariables": {
+      "E1": {
+        "minDistinctDirectedEdges": 3,
+        "windowSteps": 48,
+        "basis": "shortest circuit has three edges"
+      },
+      "E2": {
+        "min": 0.14,
+        "max": 0.65,
+        "basis": "upper existing Governor DAMPING; lower half initial 0.28"
+      }
+    },
+    "secondOrder": {
+      "outOfBoundsConsecutiveSteps": 24,
+      "rangeMultiplierOfCanonicalWeights": [
+        0,
+        2
+      ],
+      "weightsCanonical": {
+        "w_bias": 0.4,
+        "w_act": 0.2,
+        "w_phase": 0.1,
+        "w_input": 0.35
+      },
+      "w_VFixed": 0.5,
+      "refractorySteps": 24,
+      "distribution": "uniform",
+      "basis": "Ashby step function; range centered on canonical values"
+    },
+    "tensionHomeostat": {
+      "whenBelowMinAddDamping": 0.01,
+      "whenAboveMaxAddDamping": -0.01,
+      "dampingBounds": [
+        0.45,
+        0.99
+      ],
+      "basis": "lower = existing anti-lock floor"
+    },
+    "lineage": {
+      "onAbsorption": "individual ends; successor zone0; fresh zone dynamics, canonical weights, damping0.88, fresh fast trace; inherit edge V and slow trace",
+      "capGenerations": 50,
+      "capSteps": 100000,
+      "basis": "design section 6"
+    },
+    "tapes": {
+      "count": 32,
+      "hash": "SHA256",
+      "inputFormula": "SHA256('DEV1-TAPE-'+k+'|'+i)",
+      "basis": "synthetic, distinct from PF-1 and C1 domains"
+    }
+  },
+  "plannedTests": {
+    "survival": {
+      "primary": "restricted mean survival time up to 10000 steps",
+      "comparisons": [
+        "D4 vs B",
+        "D4 vs Y"
+      ],
+      "test": "one-sided paired sign flip permutation",
+      "permutations": 100000
+    },
+    "lineage": {
+      "statistic": "Spearman slope of log survival vs generation",
+      "comparison": "L vs LY",
+      "test": "permutation"
+    },
+    "multipleTesting": {
+      "method": "Holm",
+      "alpha": 0.05,
+      "numberOfComparisons": 3
+    },
+    "manipulation": {
+      "definition": "share of choices changed by removal of fast, slow and V memory terms",
+      "gate": "D1,D2,D3,D4 share must exceed B"
+    },
+    "transplant": {
+      "sourceGeneration": 10,
+      "sourceArms": [
+        "L",
+        "LY"
+      ],
+      "recipient": "naive D4",
+      "metric": "O1"
+    }
+  }
+}
