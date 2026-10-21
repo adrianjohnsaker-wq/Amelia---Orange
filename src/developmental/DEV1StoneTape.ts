@@ -86,7 +86,7 @@ export class StoneTapePlaceMemory {
   * is checked to prevent arbitrary callers forging mid-life writes.
   */
  writeAtAbsorption(final24:readonly StoneGateId[],life:StoneTapeLife):number{
-  if(!life.hasAbsorbed()||life.final24GateIds().join('|')!==final24.join('|'))
+  if(!life.hasAbsorbed()||life.writtenGateCount()!==0||life.final24GateIds().join('|')!==final24.join('|'))
    throw Error('AM1_WRITE_ONLY_AFTER_CONFIRMED_ABSORPTION');
   if(final24.length===0||final24.length>AM1_H)throw Error('AM1_INVALID_FINAL24_COUNT');
   const distinct=new Set(final24);
