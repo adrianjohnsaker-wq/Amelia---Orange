@@ -1,0 +1,173 @@
+name: DEV1 AM3 genuine RFC3161 prospective seal before corrected arms
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/dev1-am3-seal.yml']
+permissions:
+  contents: read
+jobs:
+  prospective-seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: A0 frozen science and only B+D1 result cohorts before seal
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:experiments/dev1/DEV1_CONSTANTS.json)" = d862d3afc0cfd334b5bc88b9541c687fa28ee16c
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import pathlib,json,hashlib,re,datetime
+          d=pathlib.Path('experiments/dev1')
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          manifest=json.loads((d/'DEV1_CONSTANTS_MANIFEST_AM3.json').read_text())
+          assert manifest['schema']=='DEV1_AM3_ADDITIVE_CONSTANTS_MANIFEST_V3'
+          assert sha(d/'DEV1_CONSTANTS.json')==manifest['baseSha256']
+          assert manifest['onlyExistingCohorts']==['B','D1']
+          assert manifest['retiredUnrun']==['D2','D3','D4','Y','L','LY','L0','LS','LSY']
+          assert manifest['correctedOrder'][0]=='D1″' and len(manifest['correctedOrder'])==10
+          assert len(manifest['coPrimary']['tests'])==6 and manifest['coPrimary']['nPermutations']==100000
+          assert len(manifest['unitTests'])==7
+          assert manifest['signal']['horizon']==24 and manifest['signal']['wV']==0.5
+          assert manifest['operatorDesignRule']=='adaptive signals distinguish lines of flight that return from lines of abolition; they do not penalise novelty.'
+          for x in d.rglob('*'):
+           if not x.is_file():continue
+           n=x.name.upper()
+           if re.match(r'DEV1_(?:D2|D3|D4|Y|L|LY|L0|LS|LSY|D1PRIME|D1_DOUBLE|D1″|D1PP)',n) and re.search(r'(?:RESULT|COHORT|TRAJECTOR|OBSERV|DATA|GENERATION|OUTCOME)',n):
+             raise AssertionError('FUTURE_ARM_DATA_EXISTS_AT_AM3_SEAL '+str(x))
+          orig=json.loads((d/'DEV1_D1_RESULT.json').read_text())
+          b=json.loads((d/'DEV1_BASELINE_CALIBRATION.json').read_text())
+          assert orig['O1']['absorbed']==b['absorbedCount']==32
+          assert orig['O1']['restrictedMeanSurvival']==1224.6875
+          assert b['medianAbsorptionStep']==1393
+          g=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          m=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          assert sha('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json')==g['approvedManifestSHA256']
+          for item in g['liveOperationalSourceHashes']+m['immutableSource']['operationalSourceFileHashes']:
+           assert sha(item['path'])==item['sha256'],item['path']
+          print('DEV1_AM3_ONLY_B_AND_D1_DATA_EXIST_AT_SEAL_GATE_PASS')
+          print('DEV1_AM3_BASE_PF1_C1_PINNED_IDENTITY_PASS')
+          PY
+      - name: A1 verify pinned base and prior AM1 and AM2 original RFC3161
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/dev1am3
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/cacert.pem -o /tmp/dev1am3/root.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/dev1am3/root.pem' | sha256sum -c -
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/tsa.crt -o /tmp/dev1am3/tsa.crt
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467  /tmp/dev1am3/tsa.crt' | sha256sum -c -
+          openssl ts -verify -data experiments/dev1/DEV1_CONSTANTS.json -in experiments/dev1/seal/DEV1_CONSTANTS.tsr -CAfile /tmp/dev1am3/root.pem -untrusted /tmp/dev1am3/tsa.crt | grep -q 'Verification: OK'
+          for id in AM1_REGISTRATION AM1_CONSTANTS AM1_MANIFEST; do
+            case "$id" in
+             AM1_REGISTRATION) p=experiments/dev1/amendments/am1/AM1_STONE_TAPE_REGISTRATION.md ;;
+             AM1_CONSTANTS) p=experiments/dev1/amendments/am1/AM1_CONSTANTS.json ;;
+             AM1_MANIFEST) p=experiments/dev1/DEV1_CONSTANTS_MANIFEST.json ;;
+            esac
+            openssl ts -verify -data "$p" -in "experiments/dev1/amendments/am1/seal/$id.tsr" -CAfile /tmp/dev1am3/root.pem -untrusted /tmp/dev1am3/tsa.crt | grep -q 'Verification: OK'
+          done
+          for id in AM2_REGISTRATION AM2_JOINT_MANIFEST AM1_AM2_JOINT_BUNDLE; do
+            case "$id" in
+             AM2_REGISTRATION) p=experiments/dev1/amendments/am2/AM2_REGISTERED.md ;;
+             AM2_JOINT_MANIFEST) p=experiments/dev1/amendments/am2/AM2_AM1_JOINT_MANIFEST.json ;;
+             AM1_AM2_JOINT_BUNDLE) p=experiments/dev1/amendments/am2/seal/AM1_AM2_JOINT_BUNDLE.json ;;
+            esac
+            openssl ts -verify -data "$p" -in "experiments/dev1/amendments/am2/seal/$id.tsr" -CAfile /tmp/dev1am3/root.pem -untrusted /tmp/dev1am3/tsa.crt | grep -q 'Verification: OK'
+          done
+          echo DEV1_AM3_ALL_PREVIOUS_RFC3161_SIGNATURES_AND_IMPRINTS_PASS
+      - name: A2 prospective frozen bundle contains base, AM1, AM2 and new AM3 digests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib,hashlib,json
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          d=pathlib.Path('experiments/dev1')
+          sources=['DEV1_CONSTANTS.json','DEV1_CONSTANTS_MANIFEST.json',
+           'amendments/am1/AM1_STONE_TAPE_REGISTRATION.md','amendments/am1/AM1_CONSTANTS.json',
+           'amendments/am1/seal/receipt.json','amendments/am2/AM2_REGISTERED.md',
+           'amendments/am2/AM2_AM1_JOINT_MANIFEST.json',
+           'amendments/am2/seal/AM1_AM2_JOINT_BUNDLE.json','amendments/am2/seal/receipt.json',
+           'amendments/am3/AM3_REGISTERED.md','DEV1_CONSTANTS_MANIFEST_AM3.json']
+          tokens=['seal/DEV1_CONSTANTS.tsr']+[f'amendments/am1/seal/{x}.tsr' for x in
+           ('AM1_REGISTRATION','AM1_CONSTANTS','AM1_MANIFEST')]+[
+           f'amendments/am2/seal/{x}.tsr' for x in
+           ('AM2_REGISTRATION','AM2_JOINT_MANIFEST','AM1_AM2_JOINT_BUNDLE')]
+          bundle={'schema':'DEV1_AM3_REGISTERED_MULTI_GENERATION_PROVENANCE_BUNDLE_V1',
+             'onlyBAndD1CohortResultsAtSeal':True,'retiredOriginalUnrun':True,
+             'D1MotivatedCorrectionDisclosed':True,
+             'sources':[{'path':str(d/p),'sha256':sha(d/p)} for p in sources],
+             'priorRfc3161TokenDigests':[{'path':str(d/p),'sha256':sha(d/p)} for p in tokens]}
+          q=pathlib.Path('/tmp/dev1am3/AM3_JOINT_SOURCE_DIGESTS.json')
+          q.write_text(json.dumps(bundle,indent=2)+'\n')
+          print('DEV1_AM3_PRESEAL_BUNDLE_SHA256',sha(q))
+          PY
+      - name: A3 obtain genuine external RFC3161 for registration, additive constants and joint digest bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(experiments/dev1/amendments/am3/AM3_REGISTERED.md experiments/dev1/DEV1_CONSTANTS_MANIFEST_AM3.json /tmp/dev1am3/AM3_JOINT_SOURCE_DIGESTS.json)
+          ids=(AM3_REGISTRATION AM3_CONSTANTS_MANIFEST AM3_JOINT_SOURCE_DIGESTS)
+          for i in 0 1 2; do
+            file="${files[$i]}"; id="${ids[$i]}"
+            openssl ts -query -data "$file" -sha256 -cert -no_nonce -out "/tmp/dev1am3/$id.tsq"
+            curl -fsSL --retry 5 --retry-all-errors --retry-delay 1 --max-time 75 -H 'Content-Type: application/timestamp-query' --data-binary "@/tmp/dev1am3/$id.tsq" https://freetsa.org/tsr -o "/tmp/dev1am3/$id.tsr"
+            openssl ts -verify -data "$file" -in "/tmp/dev1am3/$id.tsr" -CAfile /tmp/dev1am3/root.pem -untrusted /tmp/dev1am3/tsa.crt | grep -q 'Verification: OK'
+            echo DEV1_AM3_REAL_RFC3161_SIGNED_FILE_PASS "$id" "$(sha256sum "$file")"
+          done
+      - name: A4 build verification receipt and archive-only create signed exact bytes
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,base64,subprocess,pathlib,json,hashlib,datetime
+          root=pathlib.Path('/tmp/dev1am3')
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          files={'registration':'experiments/dev1/amendments/am3/AM3_REGISTERED.md',
+             'manifest':'experiments/dev1/DEV1_CONSTANTS_MANIFEST_AM3.json',
+             'bundle':str(root/'AM3_JOINT_SOURCE_DIGESTS.json')}
+          stems={'registration':'AM3_REGISTRATION','manifest':'AM3_CONSTANTS_MANIFEST','bundle':'AM3_JOINT_SOURCE_DIGESTS'}
+          receipt={'schema':'DEV1_AM3_VERIFIED_RFC3161_RECEIPT_V1',
+           'status':'PASS','verifiedAtUTC':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+           'onlyPreviousCohortsBAndD1AtSeal':True,'allEarlierSignedTokensReverified':True,
+           'originalSciencePinUnchanged':True,'correctedArmRunsBeforeThisSeal':0,
+           'items':{}}
+          for label,source in files.items():
+           stem=stems[label]
+           receipt['items'][label]={'sourcePath':source,
+             'sourceSHA256':sha(source),
+             'tokenPath':'experiments/dev1/amendments/am3/seal/'+stem+'.tsr',
+             'tokenSHA256':sha(root/(stem+'.tsr'))}
+          (root/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          names=[stem+'.'+ext for stem in stems.values() for ext in ('tsq','tsr')]+['AM3_JOINT_SOURCE_DIGESTS.json','receipt.json']
+          for name in names:
+           raw=(root/name).read_bytes()
+           dest='experiments/dev1/amendments/am3/seal/'+name
+           payload={'message':'DEV1 AM3 genuine prospective RFC3161 create-only receipt '+name,
+             'branch':'main','content':base64.b64encode(raw).decode()}
+           p=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dest,
+                '--input','-'],input=json.dumps(payload),capture_output=True,text=True)
+           if p.returncode:raise RuntimeError('AM3_SIGNED_ARCHIVE_FAILED '+name+' '+p.stderr)
+           print('DEV1_AM3_SIGNED_ARCHIVED',dest,hashlib.sha256(raw).hexdigest())
+          print('DEV1_AM3_COMPLETE_PROSPECTIVE_SEAL_PASS',json.dumps(receipt))
+          PY
+      - name: retain original signing files regardless of archive
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DEV1-AM3-ORIGINAL-RFC3161-SIGNED-BYTES
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            /tmp/dev1am3/*.tsq
+            /tmp/dev1am3/*.tsr
+            /tmp/dev1am3/AM3_JOINT_SOURCE_DIGESTS.json
+            /tmp/dev1am3/receipt.json
