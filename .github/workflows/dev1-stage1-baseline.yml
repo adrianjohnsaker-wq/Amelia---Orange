@@ -1,0 +1,142 @@
+name: DEV1 Stage1 — seal frozen constants and calibrate B ONLY (synthetic)
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/dev1-stage1-baseline.yml']
+permissions:
+  contents: read
+jobs:
+  seal-and-calibrate-B:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: .dev1-c1-pin-readonly
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: B0 strict identity, scope and synthetic-only preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C .dev1-c1-pin-readonly rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import json,pathlib,hashlib
+          root=pathlib.Path('.')
+          sha=lambda path:hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()
+          g=json.loads((root/'experiments/pf1/live/GENESIS.json').read_text())
+          manifest=json.loads((root/'experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          for entry in g['liveOperationalSourceHashes']+manifest['immutableSource']['operationalSourceFileHashes']:
+            assert sha(entry['path'])==entry['sha256'], 'FROZEN_SOURCE_MISMATCH '+entry['path']
+          assert sha('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json')==g['approvedManifestSHA256']
+          assert sha('experiments/pf1/PF1_A1_R2_CONSTANTS.json')==g['constantsSHA256']
+          c=json.loads((root/'experiments/dev1/DEV1_CONSTANTS.json').read_text())
+          assert c['syntheticOnly'] and c['liveInflowProhibited']
+          assert c['baseline']['numberOfTapes']==32 and c['baseline']['maxStepsPerTape']==10000
+          assert c['armsOrder'][0]=='B'
+          print('DEV1_PRECALIBRATION_IDENTITY_AND_SYNTHETIC_SCOPE_PASS')
+          PY
+      - name: S0 EXTERNAL timestamp of exact frozen constants, verified before calibration
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/dev1-seal
+          p=experiments/dev1/DEV1_CONSTANTS.json
+          openssl ts -query -data "$p" -sha256 -cert -no_nonce -out /tmp/dev1-seal/DEV1_CONSTANTS.tsq
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/cacert.pem -o /tmp/dev1-seal/root.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/dev1-seal/root.pem' | sha256sum -c -
+          curl -fsSL --retry 3 --max-time 40 https://freetsa.org/files/tsa.crt -o /tmp/dev1-seal/tsa.crt
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467  /tmp/dev1-seal/tsa.crt' | sha256sum -c -
+          curl -fsSL --retry 3 --retry-all-errors --max-time 70 -H 'Content-Type: application/timestamp-query' --data-binary @/tmp/dev1-seal/DEV1_CONSTANTS.tsq https://freetsa.org/tsr -o /tmp/dev1-seal/DEV1_CONSTANTS.tsr
+          openssl ts -verify -in /tmp/dev1-seal/DEV1_CONSTANTS.tsr -queryfile /tmp/dev1-seal/DEV1_CONSTANTS.tsq -CAfile /tmp/dev1-seal/root.pem -untrusted /tmp/dev1-seal/tsa.crt | grep -q 'Verification: OK'
+          sha256sum "$p" /tmp/dev1-seal/DEV1_CONSTANTS.tsq /tmp/dev1-seal/DEV1_CONSTANTS.tsr > /tmp/dev1-seal/sha256sums.txt
+          openssl ts -reply -in /tmp/dev1-seal/DEV1_CONSTANTS.tsr -text > /tmp/dev1-seal/token-info.txt
+          echo DEV1_CONSTANTS_EXTERNAL_RFC3161_PASS_BEFORE_ANY_RUN
+      - name: Preserve external constants seal independently
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DEV1-CONSTANTS-SEAL
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            /tmp/dev1-seal/DEV1_CONSTANTS.tsq
+            /tmp/dev1-seal/DEV1_CONSTANTS.tsr
+            /tmp/dev1-seal/sha256sums.txt
+            /tmp/dev1-seal/token-info.txt
+      - name: B1 install toolchain and test pure mechanisms in isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          npx tsx experiments/dev1/DEV1_TESTS.ts
+      - name: B2 execute ONLY unchanged B runtime — 32 synthetic tapes × 10000
+        env:
+          DEV1_CONSTANTS_RFC3161_VERIFIED: 'true'
+          DEV1_IDENTITY_PASS: 'true'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s /tmp/dev1-seal/DEV1_CONSTANTS.tsr
+          npx tsx experiments/dev1/DEV1_BASELINE.ts
+          cp experiments/dev1/DEV1_BASELINE_CALIBRATION.json /tmp/dev1-seal/first-baseline.json
+          cp experiments/dev1/DEV1_STAGE1_REPORT.md /tmp/dev1-seal/first-baseline-report.md
+      - name: B3 byte-identical independent replay (32 synthetic tapes)
+        env:
+          DEV1_CONSTANTS_RFC3161_VERIFIED: 'true'
+          DEV1_IDENTITY_PASS: 'true'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx tsx experiments/dev1/DEV1_BASELINE.ts
+          cmp -s /tmp/dev1-seal/first-baseline.json experiments/dev1/DEV1_BASELINE_CALIBRATION.json
+          cmp -s /tmp/dev1-seal/first-baseline-report.md experiments/dev1/DEV1_STAGE1_REPORT.md
+          echo DEV1_BASELINE_BYTE_IDENTICAL_REPLAY_PASS
+      - name: Archive B result and replay evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DEV1-BASELINE-B
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            experiments/dev1/DEV1_BASELINE_CALIBRATION.json
+            experiments/dev1/DEV1_STAGE1_REPORT.md
+            /tmp/dev1-seal/first-baseline.json
+            /tmp/dev1-seal/first-baseline-report.md
+      - name: B4 Publish B report and timestamp artifacts create-only
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,base64,json,subprocess,pathlib,hashlib
+          folder=pathlib.Path('/tmp/dev1-seal')
+          files=[
+            ('experiments/dev1/DEV1_BASELINE_CALIBRATION.json',pathlib.Path('experiments/dev1/DEV1_BASELINE_CALIBRATION.json').read_bytes()),
+            ('experiments/dev1/DEV1_STAGE1_REPORT.md',pathlib.Path('experiments/dev1/DEV1_STAGE1_REPORT.md').read_bytes()),
+            ('experiments/dev1/seal/DEV1_CONSTANTS.tsq',(folder/'DEV1_CONSTANTS.tsq').read_bytes()),
+            ('experiments/dev1/seal/DEV1_CONSTANTS.tsr',(folder/'DEV1_CONSTANTS.tsr').read_bytes())]
+          assert all(x[1] for x in files)
+          for dest,raw in files:
+            payload={'message':'DEV1 synthetic Stage1: create-only frozen seal and baseline B evidence',
+              'content':base64.b64encode(raw).decode(),'branch':'main'}
+            q=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dest,'--input','-'],
+              input=json.dumps(payload),capture_output=True,text=True)
+            if q.returncode:raise RuntimeError('CREATE_ONLY_FAILED '+dest+': '+q.stderr)
+            print('DEV1_IMMUTABLE_ARCHIVE',dest,hashlib.sha256(raw).hexdigest())
+          PY
