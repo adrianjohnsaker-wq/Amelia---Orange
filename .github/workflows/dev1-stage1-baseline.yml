@@ -1,4 +1,4 @@
-name: DEV1 Stage1 — seal frozen constants and calibrate B ONLY (synthetic)
+name: DEV1 Stage1 B — exact history digest wrapped; synthetic only
 on:
   push:
     branches: [main]
@@ -80,7 +80,7 @@ jobs:
           set -euo pipefail
           npm install --no-audit --no-fund
           npx tsx experiments/dev1/DEV1_TESTS.ts
-      - name: B2 execute ONLY unchanged B runtime — 32 synthetic tapes × 10000
+      - name: B2 unchanged B transition kernel with exact-digest wrapper — 32 tapes × 10000
         env:
           DEV1_CONSTANTS_RFC3161_VERIFIED: 'true'
           DEV1_IDENTITY_PASS: 'true'
@@ -92,7 +92,7 @@ jobs:
           npx tsx experiments/dev1/DEV1_BASELINE.ts
           cp experiments/dev1/DEV1_BASELINE_CALIBRATION.json /tmp/dev1-seal/first-baseline.json
           cp experiments/dev1/DEV1_STAGE1_REPORT.md /tmp/dev1-seal/first-baseline-report.md
-      - name: B3 byte-identical independent replay (32 synthetic tapes)
+      - name: B3 byte-identical independent replay of exact-digest B run
         env:
           DEV1_CONSTANTS_RFC3161_VERIFIED: 'true'
           DEV1_IDENTITY_PASS: 'true'
