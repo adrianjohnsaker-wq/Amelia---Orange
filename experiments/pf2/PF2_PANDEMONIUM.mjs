@@ -12,6 +12,7 @@ import {load,evaluate,inputsForTick} from '../pf1/PF1_A1_R2_SCORER.mjs';
 import {pf2InputForArm} from './PF2_REFERENCE_INPUT.mjs';
 import {PF2ReceiverLineage,pf2FinalExcursion,pf2Refrain,PF2_ETA} from './PF2_RECEIVER_CORE.mjs';
 import {pf2Step} from './PF2_EXIT_SCORE_OVERLAY.mjs';
+import {accelerateExactHistoryDigest} from '../../src/developmental/DEV1ExactDigestAdapter.ts';
 const sha=x=>createHash('sha256').update(typeof x==='string'?x:JSON.stringify(x)).digest('hex');
 const ZERO=()=>({scannedSteps:0,candidatesDetected:0,eligibleCandidates:0,
  forkInstancesProbed:0,confirmedEncounters:0});
@@ -110,7 +111,17 @@ export class PF2Pandemonium{
     const line=new PF2ReceiverLineage({armId:task.k===0?'C':'R'+String(task.k).padStart(2,'0'),
      k:task.k,mode:task.mode,state:task.checkpoint});
     const rt=line.runtime;
-    if(condition==='reset')rt.getMemory().reset();
+    if(condition==='reset'){
+     const mem=rt.getMemory();
+     mem.reset();
+     // A reset creates a new history domain. The original canonical
+     // digest implementation must be reinstated before a fresh exact
+     // incremental digest wrapper; otherwise the old adapter rejects it.
+     const canonical=Object.getPrototypeOf(mem).exportHistoryDigest;
+     assert.equal(typeof canonical,'function');
+     mem.exportHistoryDigest=canonical.bind(mem);
+     accelerateExactHistoryDigest(mem);
+    }
     if(condition==='suppress')
      rt.getQabbala().getZones()[candidate.b].activation*=
        this.scope.constants.encounter.selectiveSuppressionScale;
