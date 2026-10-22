@@ -1,0 +1,176 @@
+# AD2: one RFC3161 token over the additive pre-flight repair after one-shot run 39854098920.
+name: PF2 AD2 prospective pre-flight repair ONE RFC3161 seal — zero admitted
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf2-ad2-seal.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+jobs:
+  prospective-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 32
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: orange
+          ref: main
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-pin
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: B0 verify frozen genesis, AD1 and PF1 pins and exact zero-admitted running state
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          test ! -e experiments/pf2/operational_ad2/seal/receipt.json
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import hashlib,json,pathlib
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          root=pathlib.Path('experiments/pf2')
+          g=json.loads((root/'live/GENESIS.json').read_text())
+          s=json.loads((root/'live/STATE.json').read_text())
+          b=json.loads((root/'live/GENESIS_SIGNED_BUNDLE.json').read_text())
+          assert g['genesisDigest']==h(root/'live/GENESIS_SIGNED_BUNDLE.json')=='6edb50ea3bdb6595cac20399c06142506ec1f35b8079fb556850eb20ca48b723'
+          assert s['status']=='running' and s['admittedTicks']==0 and s['openHalt'] is None
+          assert s['headDigest']==s['genesisDigest']==g['genesisDigest']
+          assert s['lastAdmittedRound'] is None and s['engine']['tick']==0 and len(s['engine']['receivers'])==18
+          assert not list((root/'live/chunks').glob('*.json')) and s['notificationsSent']==0
+          for x in b['frozenSourceSHA256']+b['originalFourFileSHA256']:
+            if x['path']=='.github/workflows/pf2-live-observe.yml':
+              assert x['sha256']=='9461fcc92de207279aac6444b7e83a7184f588ed1c2a90af7ac3becbc97bcd1d'
+              continue # AD1 prospectively sealed disabled original schedule
+            assert h(x['path'])==x['sha256'],'CHANGED_ORIGINAL_GENESIS_SOURCE '+x['path']
+          a=json.loads((root/'operational_ad1/seal/AD1_SIGNED_BUNDLE.json').read_text())
+          assert h(root/'operational_ad1/seal/AD1_SIGNED_BUNDLE.json')=='03d888c92c40f3660378644531db3e5410f75be69bae672f41135fb4bf290d4c'
+          for x in a['sourceSHA256']:
+            assert h(x['path'])==x['sha256'],'CHANGED_AD1_SOURCE '+x['path']
+          assert h('.github/workflows/pf2-live-observe-ad1.yml')=='156fe99cdb9ec9ede355970155e5767555b8d52456470ef60461c1f311474c2e'
+          pf1=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          p1=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          for x in pf1['liveOperationalSourceHashes']+p1['immutableSource']['operationalSourceFileHashes']:
+            assert h(x['path'])==x['sha256']
+          print('PF2_AD2_PROSPECTIVE_ZERO_ADMITTED_GENESIS_AD1_PF1_PINS_PASS')
+          PY
+      - name: B1 static AD1 defect reproduction and offline AD2 two-batch pipeline unit
+        working-directory: orange
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '\n/node_modules/\n' >> .git/info/exclude
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          python -m pip install -r ../c1-pin/drift1a_c1/requirements.txt
+          python experiments/pf2/PF2_AD2_PREFLIGHT_UNIT.py "${{ github.workspace }}/c1-pin"
+          test -z "$(git status --porcelain --untracked-files=all)"
+      - name: B2 create SHA256 exact-source AD2 bundle then obtain ONE genuine prospective RFC3161 token
+        working-directory: orange
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,pathlib,datetime
+          from drift1a_c1.beacon import Sealer
+          p=pathlib.Path('/tmp/pf2ad2')
+          p.mkdir(parents=True,exist_ok=True)
+          sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          genesis=json.loads(pathlib.Path('experiments/pf2/live/GENESIS.json').read_text())
+          files=[
+            'experiments/pf2/operational_ad2/PF2_AD2_REGISTERED.md',
+            '.github/workflows/pf2-live-observe-ad2.yml',
+            '.github/workflows/pf2-ad2-seal.yml',
+            'experiments/pf2/PF2_AD2_PREFLIGHT_UNIT.py',
+            'experiments/pf2/PF2_A1_CATCHUP_AD1.py',
+            'experiments/pf2/live/GENESIS_SIGNED_BUNDLE.json']
+          bundle={'schema':'PF2_AD2_OPERATIONAL_SHA256_V1',
+            'registration':'experiments/pf2/operational_ad2/PF2_AD2_REGISTERED.md',
+            'genesisDigest':genesis['genesisDigest'],
+            'AD1BundleSHA256':sha('experiments/pf2/operational_ad1/seal/AD1_SIGNED_BUNDLE.json'),
+            'AD1SealedObserveWorkflowSHA256':sha('.github/workflows/pf2-live-observe-ad1.yml'),
+            'AD1ObserveWorkflowUnchanged':True,
+            'originalAdmittedTicksAtSeal':0,
+            'sourceOfFailedPreflightEvidence':'39854098920',
+            'failure':'O1 second heredoc NameError h undefined; before lease, fetch or state write',
+            'originalReceiverChanged':False,'scienceChanged':False,
+            'notificationsEnabled':False,'noLiveInputAdmittedAtSeal':True,
+            'stateSHA256AtSeal':sha('experiments/pf2/live/STATE.json'),
+            'sourceSHA256':[{'path':x,'sha256':sha(x)} for x in files],
+            'P2_1Day30Ticks':43200,'P2_2SparseExtensionTicks':86400,
+            'sealedAgainstAnyRetrospectiveOutcome':True}
+          data=json.dumps(bundle,sort_keys=True,indent=2,ensure_ascii=False)+'\n'
+          bundlepath=p/'AD2_SIGNED_BUNDLE.json'
+          bundlepath.write_text(data)
+          imprint=sha(bundlepath)
+          folder=p/'seal'
+          Sealer().seal(folder,imprint)
+          assert Sealer().verify(folder,imprint)['status']=='PASS'
+          tokens=list(folder.glob('*.tsr'))
+          assert len(tokens)==1
+          info={'schema':'PF2_AD2_ONE_RFC3161_OPERATIONAL_RECEIPT_V1',
+            'status':'PASS','createdUTC':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'actualOriginalGenesis':genesis['genesisDigest'],
+            'originalAdmittedTicksAtSeal':0,'sourceCount':len(files),
+            'bundleSHA256':imprint,'tokenSHA256':sha(tokens[0]),
+            'nativeReceipt':'experiments/pf2/operational_ad2/seal/receipt.json',
+            'presealUnit':'PASS','scienceChanged':False,'notificationsSent':0}
+          (p/'AD2_RECEIPT_INFORMATIONAL.json').write_text(json.dumps(info,sort_keys=True,indent=2)+'\n')
+          print('PF2_AD2_ONE_INDEPENDENT_RFC3161_PASS',json.dumps({'digest':imprint,'sources':len(files),'ticks':0}))
+          PY
+      - name: B3 create-only archive exact signed AD2 bundle, token, native receipt and informational receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,pathlib,base64,os,json,subprocess
+          p=pathlib.Path('/tmp/pf2ad2')
+          files={'seal/AD2_SIGNED_BUNDLE.json':p/'AD2_SIGNED_BUNDLE.json',
+                 'AD2_RECEIPT_INFORMATIONAL.json':p/'AD2_RECEIPT_INFORMATIONAL.json'}
+          for n in ['attempt-0000.tsq','attempt-0000.tsr','receipt.json']:
+            if not (p/'seal'/n).exists():raise RuntimeError('MISSING_REAL_AD2_SEAL_'+n)
+            files['seal/'+n]=p/'seal'/n
+          # native receipt.json last: its presence is what arms the AD2 live workflow
+          for name in sorted(files,key=lambda k:k=='seal/receipt.json'):
+            dst='experiments/pf2/operational_ad2/'+name
+            raw=files[name].read_bytes()
+            cmd=['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dst,'--input','-']
+            payload={'message':'PF2 AD2 pre-flight repair ONE genuine RFC3161 token create-only '+name+'; zero admitted data',
+             'branch':'main','content':base64.b64encode(raw).decode()}
+            result=subprocess.run(cmd,input=json.dumps(payload),capture_output=True,text=True)
+            if result.returncode:raise RuntimeError('AD2_CREATE_ONLY_FAILED_'+dst+' '+result.stderr[-1000:])
+            print('PF2_AD2_CREATE_ONLY_ARCHIVED',dst,hashlib.sha256(raw).hexdigest())
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PF2-OPERATIONAL-AD2-SINGLE-TOKEN-${{ github.run_id }}
+          retention-days: 90
+          if-no-files-found: warn
+          path:
+            /tmp/pf2ad2/
