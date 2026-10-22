@@ -1,0 +1,168 @@
+name: PF2 one external RFC3161 prospective seal bundle — NO genesis or intake
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf2-single-seal.yml']
+permissions:
+  contents: read
+jobs:
+  seal-single-reviewed-provenance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: S0 verify GOLD, operator registration, fixed science and no PF2 genesis
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          echo '12a641718fb6c23f81b9f31ce7bc1e966654a9f01c85d16853219e50604e8237  experiments/pf2/PF2_RECEIVER_REGISTRATION_AND_WORK_ORDER.md' | sha256sum -c -
+          echo '030a0685e7d48fb71706b6100d2291e2d132a776432a99a81d54ba90b9c9a4b7  experiments/pf2/receiver.mjs' | sha256sum -c -
+          echo 'a35799a04c77f5d574cfd772c832b9aa7391af3ccad490636219d2027e499510  experiments/pf2/gold_learner.json' | sha256sum -c -
+          echo 'e984bb291476b820875a48e566d562a5e571a95435c7157cb44dba9df39a539f  experiments/pf2/gold_unchanged.json' | sha256sum -c -
+          test ! -e experiments/pf2/live/GENESIS.json
+          test ! -e experiments/pf2/live/STATE.json
+          test ! -e experiments/pf2/live/INBOX.json
+          git diff --exit-code b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import json,hashlib,pathlib
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          m=json.loads(pathlib.Path('experiments/pf2/PF2_GENESIS_MANIFEST_FOR_APPROVAL.json').read_text())
+          assert m['schema']=='PF2_RECEIVER_PREGENESIS_MANIFEST_V1'
+          assert m['status']=='FROZEN_PROSPECTIVE_REVIEW_NO_GENESIS_NO_LIVE'
+          assert m['beacon']['futureR0'] is None and m['beacon']['notYetChosen']
+          assert m['beacon']['referenceDomain']=='PF2-REF-i|'
+          assert m['beacon']['C1ReferenceR0']==33158540 and m['beacon']['strideRounds']==20
+          assert m['statusGate']['operatorApprovedGenesis'] is False
+          assert m['statusGate']['operatorApprovedLiveAdmission'] is False
+          assert m['statusGate']['notificationsEnabled'] is False
+          assert m['statusGate']['notificationChannels']==[]
+          assert m['receiver']['numLineages']==18
+          assert m['predictions']['windowAdmittedTicks']==43200
+          assert m['predictions']['P2-2']['ifFewerThan10ExtendToAdmittedTicks']==86400
+          assert m['operationalReuse']['PF1CatchupLimits']['maxPerSealedBatch']==20
+          assert m['operationalReuse']['PF1CatchupLimits']['maxPerInvocation']==480
+          for key,path in [('registration',m['scientificRegistration']),('receiver',m['referenceReceiver']),
+                           ('learner',m['allGoldens'][0]),('unchanged',m['allGoldens'][1])]:
+              assert h(path)==m['goldenReferenceSHA256'][key]
+          assert len(m['scienceFilesToPinInSingleProspectiveSeal'])>=16
+          assert len(set(m['scienceFilesToPinInSingleProspectiveSeal']))==len(m['scienceFilesToPinInSingleProspectiveSeal'])
+          g=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          p=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          assert h('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json')==g['approvedManifestSHA256']
+          assert g['C1ReferenceR0']==m['beacon']['C1ReferenceR0']
+          assert g['PF1ReferenceDomain']=='PF1-REF-i|'
+          for item in g['liveOperationalSourceHashes']+p['immutableSource']['operationalSourceFileHashes']:
+              assert h(item['path'])==item['sha256'],'PINNED_PF1_OR_C1_SOURCE_CHANGED '+item['path']
+          print('PF2_PRE_GENESIS_SOURCE_AND_GOLDEN_HASHES_PASS_NO_R0_NO_GENESIS')
+          PY
+          for run in 39834102673 39834111165 39834121444; do
+            conclusion=$(gh api "repos/$REPO/actions/runs/$run" --jq '.conclusion')
+            test "$conclusion" = 'success' || { echo "PF2_REQUIRED_GOLD_OR_SCANNER_GATE_NOT_SUCCESS $run"; exit 1; }
+            echo PF2_INDEPENDENT_PREGENSEAL_GATE_PASS "$run"
+          done
+      - name: S1 construct ONE byte-hash provenance bundle for all frozen sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/pf2single
+          python - <<'PY'
+          import pathlib,json,hashlib
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          manifest=pathlib.Path('experiments/pf2/PF2_GENESIS_MANIFEST_FOR_APPROVAL.json')
+          m=json.loads(manifest.read_text())
+          sources=[]
+          for filename in m['scienceFilesToPinInSingleProspectiveSeal']:
+              p=pathlib.Path(filename)
+              assert p.is_file(),'MISSING_PREGENESIS_SOURCE '+filename
+              sources.append({'path':filename,'sha256':sha(p),'bytes':p.stat().st_size})
+          pf1=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          m1=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          body={'schema':'PF2_SINGLE_RFC3161_PROSPECTIVE_SOURCE_BUNDLE_V1',
+              'operatorBuildApproved':True,'genesisNotYetApproved':True,
+              'futureR0RuleSealedButExactR0NotChosen':True,
+              'noLiveQuicknetRoundAdmitted':True,'notificationsEnabled':False,
+              'registeredP2':['P2-1','P2-2','P2-3'],
+              'fidelityPassWorkflows':[39834102673,39834111165,39834121444],
+              'sourceSHA256':sources,
+              'canonicalFrozenCommit':m['pinnedSources']['frozenCanonicalCommit'],
+              'c1VerifierPinnedCommit':m['pinnedSources']['C1VerifierPinnedCommit'],
+              'pf1GenesisSHA256':sha('experiments/pf1/live/GENESIS.json'),
+              'pf1ManifestSHA256':sha('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json'),
+              'pf1OriginalPinnedSourceSHA256':pf1['liveOperationalSourceHashes'],
+              'pf1ArchivePinnedSourceSHA256':m1['immutableSource']['operationalSourceFileHashes'],
+              'referenceDomain':'PF2-REF-i|',
+              'genesisApprovalRequiredSeparately':True}
+          out=pathlib.Path('/tmp/pf2single/PF2_SINGLE_SIGNED_SOURCE_BUNDLE.json')
+          out.write_text(json.dumps(body,sort_keys=True,indent=2)+'\n')
+          print('PF2_COMBINED_BUNDLE_SHA256',sha(out))
+          print('PF2_COMBINED_BUNDLE_SOURCES',len(sources))
+          PY
+      - name: S2 obtain EXACTLY ONE real external RFC3161 timestamp token for complete bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 --max-time 45 https://freetsa.org/files/cacert.pem -o /tmp/pf2single/root.pem
+          echo '2151b61137ffa86bf664691ba67e7da0b19f98c758e3d228d5d8ebf27e044438  /tmp/pf2single/root.pem' | sha256sum -c -
+          curl -fsSL --retry 3 --max-time 45 https://freetsa.org/files/tsa.crt -o /tmp/pf2single/tsa.crt
+          echo '8bfb0305bb64e2571ca507552ef3245cb1c2fee8728e0ff8689225081ea13467  /tmp/pf2single/tsa.crt' | sha256sum -c -
+          FILE=/tmp/pf2single/PF2_SINGLE_SIGNED_SOURCE_BUNDLE.json
+          openssl ts -query -data "$FILE" -sha256 -cert -no_nonce -out /tmp/pf2single/ONE.tsq
+          curl -fsSL --retry 5 --retry-all-errors --retry-delay 1 --max-time 75 -H 'Content-Type: application/timestamp-query' --data-binary @/tmp/pf2single/ONE.tsq https://freetsa.org/tsr -o /tmp/pf2single/ONE.tsr
+          openssl ts -verify -data "$FILE" -in /tmp/pf2single/ONE.tsr -CAfile /tmp/pf2single/root.pem -untrusted /tmp/pf2single/tsa.crt | grep -q 'Verification: OK'
+          echo PF2_SINGLE_INDEPENDENT_RFC3161_TOKEN_VALID_CHAIN_EXACT_SHA256_IMPRINT_PASS
+      - name: S3 create-only archive ONE signed token, provenance bundle and verified receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib,json,hashlib,base64,os,subprocess,datetime
+          tmp=pathlib.Path('/tmp/pf2single')
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          bundle=json.loads((tmp/'PF2_SINGLE_SIGNED_SOURCE_BUNDLE.json').read_text())
+          assert len(bundle['sourceSHA256'])>=16
+          assert bundle['genesisNotYetApproved'] is True
+          assert bundle['notificationsEnabled'] is False
+          receipt={'schema':'PF2_SINGLE_RFC3161_PREGENESIS_RECEIPT_V1',
+            'status':'PASS','verifiedAtUTC':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'singleTimestampTokenCount':1,
+            'sourceCount':len(bundle['sourceSHA256']),
+            'bundlePath':'experiments/pf2/seal/PF2_SINGLE_SIGNED_SOURCE_BUNDLE.json',
+            'bundleSHA256':h(tmp/'PF2_SINGLE_SIGNED_SOURCE_BUNDLE.json'),
+            'tokenPath':'experiments/pf2/seal/ONE.tsr','tokenSHA256':h(tmp/'ONE.tsr'),
+            'querySHA256':h(tmp/'ONE.tsq'),
+            'verification':'OpenSSL ts -verify Verification: OK against PINNED FreeTSA TSA certificate and root',
+            'scienceFilesPinnedByDigest':True,'R0':None,
+            'genesisApproved':False,'liveTicksAdmitted':0,'noNotifications':True}
+          (tmp/'receipt.json').write_text(json.dumps(receipt,sort_keys=True,indent=2)+'\n')
+          for name in ('PF2_SINGLE_SIGNED_SOURCE_BUNDLE.json','ONE.tsq','ONE.tsr','receipt.json'):
+              data=(tmp/name).read_bytes();path='experiments/pf2/seal/'+name
+              inp={'message':'PF2 create-only ONE prospectively verified RFC3161 source seal '+name,
+                'branch':'main','content':base64.b64encode(data).decode()}
+              r=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+path,
+                  '--input','-'],capture_output=True,input=json.dumps(inp),text=True)
+              if r.returncode:raise RuntimeError('PF2_SEAL_ARCHIVE_FAIL '+path+' '+r.stderr[-1400:])
+              print('PF2_CREATE_ONLY_SINGLE_SEAL_ARCHIVED',path,h(tmp/name))
+          print('PF2_PREGENSEAL_ONE_TOKEN_PASS_GENESIS_STILL_NEEDS_OPERATOR_APPROVAL',
+                json.dumps(receipt))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PF2-PREGENESIS-ONE-RFC3161-TOKEN
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            /tmp/pf2single/PF2_SINGLE_SIGNED_SOURCE_BUNDLE.json
+            /tmp/pf2single/ONE.tsq
+            /tmp/pf2single/ONE.tsr
+            /tmp/pf2single/receipt.json
