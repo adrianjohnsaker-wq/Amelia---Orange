@@ -22,6 +22,8 @@ OPERATIONAL=[
  'experiments/pf2/PF2_INITIAL_STATE.mjs',
  'experiments/pf2/PF2_LIVE_GENESIS.py',
  'experiments/pf2/PF2_WEEKLY_STATUS.py',
+ 'experiments/pf2/PF2_DAY30_EVALUATE.py',
+ 'experiments/pf2/PF2_LIVE_HALT.py',
  'experiments/pf2/PF2_A1_CATCHUP.py',
  'experiments/pf2/PF2_LIVE_INTAKE.py',
  'experiments/pf2/PF2_LIVE_RUN.mjs',
@@ -55,8 +57,23 @@ def main():
  assert approved['statusGate']['notificationsEnabled'] is False
  assert old['bundleSHA256']==filehash(PREGENSEAL/'PF2_SINGLE_SIGNED_SOURCE_BUNDLE.json')
  pinned=json.loads((PREGENSEAL/'PF2_SINGLE_SIGNED_SOURCE_BUNDLE.json').read_text())
+ # The original 18:48 UTC pre-genesis seal is immutable. After explicit
+ # live approval, ONLY the A1 operational driver was amended to add the
+ # prospectively already registered day30 boundary and fail-closed lease
+ # completion. Record both old and new byte digests. Any other mismatch
+ # remains a fatal scientific provenance error. This does not rewrite the
+ # original one-token registration/receiver/gold pre-genesis seal.
+ permitted={'experiments/pf2/PF2_A1_CATCHUP.py':
+   'Postapproval operational guard: cap day60, day30 single-prefix evaluation, PF1-compatible halted-prefix recovery and exclusive lease completion. No scientific receiver code changed.'}
+ deviations=[]
  for item in pinned['sourceSHA256']:
-  assert filehash(item['path'])==item['sha256'],'ORIGINAL_PREGEN_SCIENCE_CHANGED '+item['path']
+  actual=filehash(item['path'])
+  if actual!=item['sha256']:
+   path=item['path']
+   assert path in permitted,'ORIGINAL_PREGEN_SCIENCE_CHANGED '+path
+   deviations.append({'path':path,'originalSignedSHA256':item['sha256'],
+     'updatedForActualGenesisSHA256':actual,'disclosure':permitted[path]})
+ assert len(deviations)==1 and deviations[0]['path']=='experiments/pf2/PF2_A1_CATCHUP.py', 'UNEXPECTED_PREGEN_DIFF_SET'
  for p,h in ORIGINAL.items():
   assert filehash(p)==h,'GOLD_OR_REGISTRATION_MUTATED '+p
  assert len(OPERATIONAL)==len(set(OPERATIONAL))
@@ -105,6 +122,7 @@ def main():
   'scienceCodeFrozenSourceCommit':frozen,
   'c1VerifierPinnedCommit':'f1875b5eea5339eb1ac73e50b5df6b103d0cabe9',
   'preGenesisSealBundleSHA256':old['bundleSHA256'],
+  'postPreGenesisSignedSourceOperationalDeviations':deviations,
   'preGenesisSingleSealTokenSHA256':old['tokenSHA256'],
   'approvedManifestSHA256':filehash(ROOT/'PF2_GENESIS_MANIFEST_FOR_APPROVAL.json'),
   'initialEighteenStateSHA256':sha(init_path.read_bytes()),
@@ -139,6 +157,7 @@ def main():
   'initialEighteenStateSHA256':sha(init_path.read_bytes()),
   'previousPreGenesisBundleSHA256':old['bundleSHA256'],
   'previousPreGenesisTokenSHA256':old['tokenSHA256'],
+  'postOriginalPreGenesisOperationalDeviations':deviations,
   'noLiveInflowConsumed':True,'noSyntheticBeaconAsLive':True,
   'noNotifications':True,'tokenCount':1}
  folder=LIVE/'genesis_seal'
