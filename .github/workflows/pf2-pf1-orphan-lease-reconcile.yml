@@ -1,0 +1,112 @@
+name: PF2 one-time reconciled orphan PF1 lease — zero scientific writes
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf2-pf1-orphan-lease-reconcile.yml']
+permissions:
+  contents: read
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+jobs:
+  audited-aborted-lease-completion:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 23
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: orange
+          ref: main
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-pin
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: R0 verify orphan is exactly one previously FAILED completed PF1 owner, not an active lease
+        working-directory: orange
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          gh api repos/${{ github.repository }}/actions/runs/39673407071 --jq '.status+" "+.conclusion' | grep -Fx 'completed failure'
+          test -f drift1a_c1/runner_state/leases/39673407071-1.json
+          test ! -e drift1a_c1/runner_state/completions/39673407071-1.json
+          python - <<'PY'
+          import json,pathlib
+          root=pathlib.Path('drift1a_c1/runner_state')
+          lease=json.loads((root/'leases/39673407071-1.json').read_text())
+          assert lease['workflow_run']=='39673407071-1'
+          unresolved=sorted(p.name for p in (root/'leases').glob('*.json') if not (root/'completions'/p.name).exists())
+          assert unresolved==['39673407071-1.json'],'OTHER_OWNER_ACTIVE_OR_LEASE_CHANGED: '+repr(unresolved)
+          g=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          assert g['genesisDigest']=='c527bea9f5f417412914a5a00fbccd4ecf1a822cbc6e2fef57127ce8454165e6'
+          print('PF2_LEASE_EXACT_ONE_FAILED_PRIOR_OWNER_NO_OTHER_ACTIVE_RUN_PASS',unresolved)
+          PY
+      - name: R1 verify PF1 AUTHORITATIVE 1137-tick signed data prefix, reject third uncommitted attempt
+        working-directory: orange
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          PF1_REMOTE_LEASE_ACKNOWLEDGED: 'true'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PYTHONDONTWRITEBYTECODE: '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -r ../c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import json,pathlib,hashlib
+          r=pathlib.Path('experiments/pf1/live')
+          g=json.loads((r/'GENESIS.json').read_text())
+          s=json.loads((r/'STATE.json').read_text())
+          l=json.loads((r/'SILENT_LEDGER.json').read_text())
+          assert s['status']=='running'
+          assert s['admittedTicks']==len(l['rows'])==1137
+          assert s['lastAdmittedRound']==33267580
+          assert s['headDigest']=='29aa26f3da1e9a822f097f006ccdbde63638db06c12b740f780ec2cf3df884e1'
+          assert l['rows'][-1]['digest']==s['headDigest']
+          assert not (r/'PENDING_JOURNAL.json').exists()
+          assert s['notificationsEnabled'] is False if 'notificationsEnabled' in s else True
+          print('PF2_RECONCILIATION_PRIOR_PREFIX_CHECK_1137_COMMITTED_1157_REJECTED')
+          PY
+          python experiments/pf1/PF1_LIVE_CHECK.py
+          git diff --exit-code -- experiments/pf1/ experiments/pf2/live/ src/substrate src/governance src/ai/numogram src/types/amelia.ts
+      - name: R2 exactly ONE create-only C1-native abort-completion record; refuse stale branch
+        working-directory: orange
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          PYTHONDONTWRITEBYTECODE: '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'PF2 authorised shared lease reconciliation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          test "$(git rev-parse HEAD)" = "$(git ls-remote origin refs/heads/main | cut -f1)"
+          python -m drift1a_c1.runner complete 39673407071-1
+          python - <<'PY'
+          import json,pathlib,hashlib
+          base=pathlib.Path('drift1a_c1/runner_state')
+          lease=json.loads((base/'leases/39673407071-1.json').read_text())
+          done=json.loads((base/'completions/39673407071-1.json').read_text())
+          assert done['workflow_run']=='39673407071-1'
+          assert done['lease_digest']==hashlib.sha256(json.dumps(lease,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+          pending=[p.name for p in (base/'leases').glob('*.json') if not (base/'completions'/p.name).exists()]
+          assert not pending
+          print('PF2_SHARED_LEASE_CANONICAL_ABORT_COMPLETION_VALIDATED',done['lease_digest'])
+          PY
+          git add -- drift1a_c1/runner_state/completions/39673407071-1.json
+          git diff --cached --check
+          test "$(git diff --cached --name-only)" = drift1a_c1/runner_state/completions/39673407071-1.json
+          git commit -m 'PF1 aborted lease 39673407071-1 reconciled after full 1137 tick signed-prefix audit; failed third batch excluded; no scientific writes'
+          git push origin HEAD:main
+          git fetch origin main
+          test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)"
+          echo PF2_OLD_ABANDONED_LEASE_RECONCILED_UNCHANGED_SCIENTIFIC_PREFIX_PASS
