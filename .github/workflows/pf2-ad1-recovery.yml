@@ -1,0 +1,120 @@
+name: PF2 AD1 ONE-TIME audited zero-tick halt recovery — no scientific change
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf2-ad1-recovery.yml']
+permissions:
+  contents: read
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+jobs:
+  post-seal-recover-zero-prefix:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: orange
+          ref: main
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-pin
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: X0 independently verify AD1 actual genuine RFC3161, exact frozen sources and stopped zero-tick chain
+        working-directory: orange
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          python -m pip install -r ../c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import pathlib,hashlib,json
+          from drift1a_c1.beacon import Sealer
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          root=pathlib.Path('experiments/pf2')
+          g=json.loads((root/'live/GENESIS.json').read_text())
+          s=json.loads((root/'live/STATE.json').read_text())
+          ad=root/'operational_ad1/seal'
+          b=json.loads((ad/'AD1_SIGNED_BUNDLE.json').read_text())
+          receipt=json.loads((ad/'receipt.json').read_text())
+          assert b['schema']=='PF2_AD1_OPERATIONAL_SHA256_V1'
+          assert b['genesisDigest']==g['genesisDigest']
+          assert b['originalAdmittedTicksAtSeal']==0
+          assert b['originalV1Halted'] and b['scienceChanged'] is False
+          assert receipt['status']=='PASS' and receipt['sourceCount']==len(b['sourceSHA256'])
+          assert h(ad/'AD1_SIGNED_BUNDLE.json')==receipt['bundleSHA256']
+          assert h(ad/'attempt-0000.tsr')==receipt['tokenSHA256']
+          assert Sealer().verify(ad,receipt['bundleSHA256'])['status']=='PASS'
+          for x in b['sourceSHA256']:
+            assert h(x['path'])==x['sha256'],x['path']
+          genbundle=json.loads((root/'live/GENESIS_SIGNED_BUNDLE.json').read_text())
+          for x in genbundle['frozenSourceSHA256']+genbundle['originalFourFileSHA256']:
+            if x['path']=='.github/workflows/pf2-live-observe.yml':
+              assert x['sha256']==b['V1OriginalScheduledSHA256']
+              continue
+            assert h(x['path'])==x['sha256'],x['path']
+          assert s['status']=='halted' and s['admittedTicks']==0
+          assert s['genesisDigest']==s['headDigest']==g['genesisDigest']
+          assert s['sealedBatchCount']==0 and s['engine']['tick']==0
+          assert 'PF2_CHAIN_TICK_0' in s['openHalt']['reason']
+          print('PF2_AD1_POSTSEAL_PROSPECTIVE_RECORD_AND_ZERO_TICK_SIGNED_RECOVERY_GATE_PASS')
+          PY
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          test -z "$(git status --porcelain --untracked-files=all)"
+      - name: X1 restore only active status after exact fail-closed zero accepted ticks; original halt preserved
+        working-directory: orange
+        env:
+          PF2_AD1_RECOVERY_OPERATOR_CONTINUE: 'true'
+          PF2_OPERATIONAL_AD1_SEAL_VERIFIED: 'true'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PYTHONDONTWRITEBYTECODE: '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/pf2/PF2_AD1_RECOVER.py
+          python - <<'PY'
+          import json,pathlib
+          root=pathlib.Path('experiments/pf2/live')
+          g=json.loads((root/'GENESIS.json').read_text())
+          s=json.loads((root/'STATE.json').read_text())
+          r=json.loads((root/'RECOVERY_AD1.json').read_text())
+          assert s['status']=='running' and s['openHalt'] is None
+          assert s['admittedTicks']==0 and s['headDigest']==g['genesisDigest']
+          assert s['engine']['tick']==0 and len(s['engine']['receivers'])==18
+          assert r['originalHalt']['lastSealedTick']==0
+          assert r['oldHead']==r['newHead']==g['genesisDigest']
+          assert r['oldTicks']==r['newTicks']==0
+          assert r['scienceModified'] is False and r['genesisModified'] is False
+          assert s['notificationsSent']==0
+          print('PF2_AD1_RESTARTS_SAME_SIGNED_ZERO_PREFIX_NOT_NEW_GENESIS')
+          PY
+          test "$(git status --porcelain --untracked-files=all | wc -l)" -eq 2
+          test "$(git status --porcelain --untracked-files=all | grep -c 'experiments/pf2/live/')" -eq 2
+      - name: X2 durable PF2-only administrative state/receipt commit, reject stale remote
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'PF2 approved AD1 recovery recorder'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- experiments/pf2/live/STATE.json experiments/pf2/live/RECOVERY_AD1.json
+          git diff --cached --check
+          test "$(git diff --cached --name-only | wc -l)" -eq 2
+          git commit -m 'PF2 AD1 signed operational verifier repair: zero-tick recovery, previous halt archived; no science or genesis mutation'
+          git push origin HEAD:main
+          git fetch origin main
+          test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)"
+          echo PF2_ZERO_TICK_SIGNED_AD1_RECOVERY_PUBLISHED_NO_NOTIFICATIONS
