@@ -43,13 +43,16 @@ def main():
  original_scanner=[copy.deepcopy((r.get('pandemoniumExposure'),
     r.get('createdForkIDs'),r.get('confirmedEncounters'))) for r in rows]
  original_head=b['finalHead']
+ v1prior=b['previousHead']
+ for row in rows:
+  assert row['previous']==v1prior,'PF2_V1_CHAIN_BROKEN_BEFORE_REPAIR'
+  v1prior=row['digest']
+ assert v1prior==original_head
  prior=b['previousHead']
  for i,row in enumerate(rows):
   assert row['tick']==b['startTick']+i
   assert row['verification']=='REAL_QUICKNET_BLS_VERIFIED_WITH_PINNED_C1_PF1'
-  assert row['previous']==(b['previousHead'] if i==0 else rows[i-1]['digest']),(
-    'PF2_V1_TEMP_CHAIN_BROKEN_BEFORE_REPAIR',i)
-  assert hashlib.sha256(bytes.fromhex(row['signature'])).hexdigest()==row['randomness']
+   assert hashlib.sha256(bytes.fromhex(row['signature'])).hexdigest()==row['randomness']
   assert len(row['armEvents'])==18
   row['previous']=prior
   payload={k:v for k,v in row.items() if k!='digest'}
