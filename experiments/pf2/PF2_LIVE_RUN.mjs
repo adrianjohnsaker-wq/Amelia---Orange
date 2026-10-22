@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {PF2NinePairs} from './PF2_RECEIVER_CORE.mjs';
+import {PF2Pandemonium} from './PF2_PANDEMONIUM.mjs';
 const root='experiments/pf2/live/';
 const sha=x=>createHash('sha256').update(typeof x==='string'||Buffer.isBuffer(x)?x:JSON.stringify(x)).digest('hex');
 const get=n=>JSON.parse(readFileSync(root+n,'utf8'));
@@ -27,6 +28,7 @@ assert(inbox.count>=0&&inbox.count<=20);
 assert.equal(inbox.receipts.length,inbox.count);
 assert.equal(state.engine.tick,state.admittedTicks);
 const engine=new PF2NinePairs(state.engine);
+const pandemonium=new PF2Pandemonium(state.pandemonium);
 let previous=state.headDigest;
 const rows=[];
 for(let j=0;j<inbox.count;j++){
@@ -38,17 +40,19 @@ for(let j=0;j<inbox.count;j++){
  assert.match(r.signature,/^[0-9a-f]+$/i);
  assert.equal(sha(Buffer.from(r.signature,'hex')),r.randomness);
  const processed=engine.processVerified(r.round,r.randomness);
+ const det=pandemonium.onTick(r,processed.events,engine.receivers);
  assert.equal(processed.tick,tick+1);
  assert.equal(processed.events.length,18);
  const body={tick,round:r.round,randomness:r.randomness,
   signature:r.signature,roundTime:r.roundTime,
   verification:'REAL_QUICKNET_BLS_VERIFIED_WITH_PINNED_C1_PF1',
-  armEvents:processed.events,previous};
+  armEvents:processed.events,pandemoniumExposure:det.exposures,
+  createdForkIDs:det.createdForkIDs,confirmedEncounters:det.confirmed,previous};
  const digest=sha(body);
  rows.push({...body,digest});
  previous=digest;
 }
-const next={...state,engine:engine.exportState(),
+const next={...state,engine:engine.exportState(),pandemonium:pandemonium.exportState(),
  admittedTicks:state.admittedTicks+inbox.count,
  lastAdmittedRound:inbox.count?inbox.receipts.at(-1).round:state.lastAdmittedRound,
  headDigest:previous,
