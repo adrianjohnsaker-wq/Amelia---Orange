@@ -15,7 +15,8 @@ export function pf2Step(rt,input){
  const originalGates=originalGetGates.call(q);
  const trait=rt.traitEvolution;
  const originalEvolve=trait.evolveStep;
- const cue=parseInt((awaitSha256(input.trim())).slice(0,2),16)%10;
+ const cue=typeof input==='string'&&input.trim() ?
+   parseInt((awaitSha256(input.trim())).slice(0,2),16)%10 : undefined;
  const from=rt.getCurrentZone();
  let afterEvolution=false;
  let chosen=null;
