@@ -1,0 +1,99 @@
+name: PF2 AD1 native C1 RFC3161 receipt repair — preserve informational original
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf2-ad1-native-receipt-repair.yml']
+permissions:
+  contents: read
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+jobs:
+  metadata-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: orange
+          ref: main
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-pin
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: N0 preserve original informational record, reconstruct C1-native receipt from original verified signed token
+        working-directory: orange
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          python -m pip install -r ../c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import json,hashlib,pathlib,shutil,tempfile
+          from drift1a_c1.beacon import Sealer
+          root=pathlib.Path('experiments/pf2/operational_ad1/seal')
+          old=root/'receipt.json'
+          previous=json.loads(old.read_text())
+          assert previous['schema']=='PF2_AD1_ONE_RFC3161_OPERATIONAL_RECEIPT_V1'
+          assert previous['status']=='PASS' and previous['originalAdmittedTicksAtSeal']==0
+          assert previous['tokenSHA256']=='a9a290e1b628c8d529362c6dff25cc21efab4fac351bc274b36bca436ae2cc5f'
+          sha=lambda b:hashlib.sha256(b).hexdigest()
+          bundle=root/'AD1_SIGNED_BUNDLE.json'
+          imprint=sha(bundle.read_bytes())
+          assert imprint==previous['bundleSHA256']=='03d888c92c40f3660378644531db3e5410f75be69bae672f41135fb4bf290d4c'
+          token=root/'attempt-0000.tsr'
+          assert sha(token.read_bytes())==previous['tokenSHA256']
+          g=json.loads(pathlib.Path('experiments/pf2/live/GENESIS.json').read_text())
+          state=json.loads(pathlib.Path('experiments/pf2/live/STATE.json').read_text())
+          assert g['genesisDigest']=='6edb50ea3bdb6595cac20399c06142506ec1f35b8079fb556850eb20ca48b723'
+          assert state['status']=='halted' and state['admittedTicks']==0 and state['headDigest']==g['genesisDigest']
+          original=root/'receipt_informational_original.json'
+          assert not original.exists()
+          original.write_bytes(old.read_bytes())
+          with tempfile.TemporaryDirectory(prefix='pf2-ad1-native-') as td:
+            d=pathlib.Path(td)
+            shutil.copy2(token,d/token.name)
+            shutil.copy2(root/'attempt-0000.tsq',d/'attempt-0000.tsq')
+            o=Sealer().seal(d,imprint)
+            assert o['mode']=='LIVE' and o['status']=='PASS'
+            assert o['imprint']==imprint and o['token']==token.name
+            assert Sealer().verify(d,imprint)['status']=='PASS'
+            old.write_bytes((d/'receipt.json').read_bytes())
+          assert Sealer().verify(root,imprint)['status']=='PASS'
+          again=json.loads(original.read_text())
+          assert again==previous
+          assert len(list(root.glob('*.tsr')))==1
+          print('PF2_AD1_ONE_EXISTING_TOKEN_VERIFIED_NATIVE_C1_RECEIPT_REPAIRED',
+           json.dumps({'digest':imprint,'oneTokenUnchanged':True,
+            'originalInformationalReceiptPreserved':True,
+            'scienceUnchanged':True,'liveTicks':0,'notificationsSent':0}))
+          PY
+          git diff --exit-code -- experiments/pf2/live/ experiments/pf1/ src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          test "$(git status --porcelain --untracked-files=all | wc -l)" -eq 2
+      - name: N1 push precisely original metadata preservation and same-token canonical receipt, never rebase
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'PF2 AD1 timestamp-native receipt audit'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- experiments/pf2/operational_ad1/seal/receipt.json experiments/pf2/operational_ad1/seal/receipt_informational_original.json
+          git diff --cached --check
+          test "$(git diff --cached --name-only | wc -l)" -eq 2
+          git commit -m 'PF2 AD1 audit repair C1-native receipt on original SINGLE verified timestamp; preserve old informational record'
+          git push origin HEAD:main
+          git fetch origin main
+          test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)"
+          echo PF2_AD1_ORIGINAL_SIGNED_TOKEN_AND_GENESIS_UNCHANGED_NATIVE_RECEIPT_PASS
