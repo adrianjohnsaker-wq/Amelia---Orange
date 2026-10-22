@@ -1,0 +1,164 @@
+name: PF2 LIVE matched 18-receiver admission — PF1 shared safe lease, silent A1
+on:
+  schedule:
+    - cron: '2,17,32,47 * * * *'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf2-live-observe.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+jobs:
+  admit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 48
+    permissions:
+      contents: write
+    env:
+      PF2_LEASE: ${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: orange
+          ref: main
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-pin
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: O0 operator-approved real genesis must exist and next live round must be published
+        id: due
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,json,pathlib,time,datetime
+          p=pathlib.Path('experiments/pf2/live/GENESIS.json')
+          if not p.exists():
+            print('PF2_NO_GENESIS_YET_NO_ADMISSION')
+            open(os.environ['GITHUB_OUTPUT'],'a').write('run=false\n')
+            raise SystemExit(0)
+          g=json.loads(p.read_text())
+          s=json.loads(pathlib.Path('experiments/pf2/live/STATE.json').read_text())
+          assert g['schema']=='PF2_LIVE_GENESIS_V1' and g['approvedByOperator']
+          assert g['genesisDoesNotAdmitRound'] is True
+          assert g['R0']%20==0 and (g['R0']-33158540)%20==0
+          assert g['stride']==20 and g['periodSeconds']==3
+          assert g['referenceDomain']=='PF2-REF-i|'
+          assert g['notificationsEnabled'] is False and g['noNotificationsOfAnyKind'] is True
+          assert s['genesisDigest']==g['genesisDigest']
+          assert s['admittedTicks']==s['engine']['tick']
+          assert len(s['engine']['receivers'])==18
+          if s['status']=='halted':
+            print('PF2_HALTED_OPERATOR_RECOVERY_REQUIRED',s.get('openHalt'))
+            eligible=False
+          else:
+            assert s['status']=='running'
+            due=g['futureFirstRoundUnix']+60*s['admittedTicks']+3
+            eligible=time.time()>=due and s['admittedTicks']<86400
+            print('PF2_A1_NEXT',g['R0']+20*s['admittedTicks'],
+                  'admittedTicks',s['admittedTicks'],'eligible',eligible)
+          open(os.environ['GITHUB_OUTPUT'],'a').write('run='+('true' if eligible else 'false')+'\n')
+          PY
+      - name: O1 immutable genesis signed exact imprint, one RFC3161 token, canonical and original PF1/C1 science
+        if: steps.due.outputs.run == 'true'
+        working-directory: orange
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import json,pathlib,hashlib
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          root=pathlib.Path('experiments/pf2/live')
+          g=json.loads((root/'GENESIS.json').read_text())
+          bundle=json.loads((root/'GENESIS_SIGNED_BUNDLE.json').read_text())
+          assert bundle['schema']=='PF2_ONE_ACTUAL_R0_SIGNED_GENESIS_SOURCE_BUNDLE_V1'
+          assert bundle['exactGenesisBody']['R0']==g['R0']
+          assert bundle['genesisBodySHA256']
+          assert h(root/'GENESIS_SIGNED_BUNDLE.json')==g['genesisDigest']
+          assert bundle['noLiveInflowConsumed'] and bundle['tokenCount']==1
+          for x in bundle['frozenSourceSHA256']+bundle['originalFourFileSHA256']:
+            assert h(x['path'])==x['sha256'],'PF2_SCIENCE_HASH_CHANGED '+x['path']
+          pf1=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          m=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          for x in pf1['liveOperationalSourceHashes']+m['immutableSource']['operationalSourceFileHashes']:
+            assert h(x['path'])==x['sha256'],x['path']
+          assert g['day30AdmittedTicks']==43200
+          assert g['P2_2ExtendIfSparseToTicks']==86400
+          assert g['P2_1ThresholdLearnerDeathsOverControl']==0.35
+          assert g['P2_2FatalSinkCueThreshold']==0.85
+          print('PF2_APPROVED_ACTUAL_R0_REGISTERED_SCIENTIFIC_IDENTITY_PASS')
+          PY
+          python -m pip install -r ../c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import json,pathlib
+          from drift1a_c1.beacon import Sealer
+          r=pathlib.Path('experiments/pf2/live')
+          g=json.loads((r/'GENESIS.json').read_text())
+          v=Sealer().verify(r/'genesis_seal',g['genesisDigest'],g['futureFirstRoundUnix'])
+          assert v['status']=='PASS'
+          print('PF2_GENUINE_ONE_RFC3161_ACTUAL_R0_IMPRINT_VERIFIED')
+          PY
+      - name: O2 install JS tooling with no tracked/pinned file mutation or stale lease
+        if: steps.due.outputs.run == 'true'
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '\n/node_modules/\n' >> .git/info/exclude
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          python - <<'PY'
+          import ast,pathlib
+          for f in ['PF2_A1_CATCHUP.py','PF2_LIVE_INTAKE.py','PF2_LIVE_SEAL.py','PF2_LIVE_CHECK.py','PF2_DAY30_EVALUATE.py','PF2_LIVE_HALT.py']:
+            p=pathlib.Path('experiments/pf2')/f
+            ast.parse(p.read_text(),filename=str(p))
+          print('PF2_UNCHANGED_BLS_RUNTIME_PIPELINE_PARSE_PASS')
+          PY
+          test -z "$(git status --porcelain --untracked-files=all)"
+          echo PF2_BEFORE_SHARED_LEASE_CLEAN_WORKTREE
+      - name: O3 remotely exclusive PF1 safe lease then real BLS A1 20/480 tick bounded catch-up, no notifications
+        if: steps.due.outputs.run == 'true'
+        working-directory: orange
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin:${{ github.workspace }}/orange/experiments/pf1
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PF2_GENESIS_OPERATOR_APPROVED: 'true'
+          PF2_LIVE_ADMISSION_OPERATOR_AUTHORISED: 'true'
+          PF2_A1_OPERATOR_APPROVED: 'true'
+          PF2_MAX_LIVE_TICKS: '20'
+          PF2_A1_MAX_TICKS: '480'
+          PF2_LIVE_INBOX: ${{ runner.temp }}/PF2_VERIFIED_BLS_LIVE_INBOX.json
+          PF2_PENDING_BATCH: ${{ runner.temp }}/PF2_PENDING_SIGNED_BATCH.json
+        run: |
+          set -euo pipefail
+          python experiments/pf2/PF2_A1_CATCHUP.py
+          echo PF2_REAL_VERIFIED_BATCHES_DURABLY_SIGNED_AND_PUBLISHED_NO_NOTIFICATIONS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PF2-A1-AUDIT-ONLY-${{ github.run_id }}
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/PF2_VERIFIED_BLS_LIVE_INBOX.json
+            orange/experiments/pf2/live/genesis_seal/receipt.json
