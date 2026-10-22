@@ -1,0 +1,98 @@
+name: PF2 REAL zero-tick verified signed genesis + 18-state and weekly status AUDIT — no intake
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf2-live-zero-audit.yml']
+permissions:
+  contents: read
+jobs:
+  read-only-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: orange
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-pin
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read-only genesis raw signed imprint, unadmitted 18-pair state, exact frozen sources
+        working-directory: orange
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -r ../c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import hashlib,json,pathlib,time
+          from drift1a_c1.beacon import Sealer
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          root=pathlib.Path('experiments/pf2/live')
+          g=json.loads((root/'GENESIS.json').read_text())
+          s=json.loads((root/'STATE.json').read_text())
+          b=json.loads((root/'GENESIS_SIGNED_BUNDLE.json').read_text())
+          assert b['exactGenesisBody']['R0']==g['R0']==33298740
+          assert g['genesisDigest']==h(root/'GENESIS_SIGNED_BUNDLE.json')
+          assert g['genesisDoesNotAdmitRound']
+          assert g['notificationsEnabled'] is False
+          for item in b['frozenSourceSHA256']+b['originalFourFileSHA256']:
+            assert h(item['path'])==item['sha256'],item['path']
+          assert s['status']=='running'
+          assert s['admittedTicks']==0 and s['sealedBatchCount']==0
+          assert s['engine']['tick']==0 and len(s['engine']['receivers'])==18
+          assert len(s['pandemonium']['track'])==18
+          assert all(all(v==0 for v in a['V'].values()) for a in s['engine']['receivers'])
+          assert not list((root/'chunks').glob('*.json'))
+          seal=Sealer().verify(root/'genesis_seal',g['genesisDigest'],g['futureFirstRoundUnix'])
+          assert seal['status']=='PASS'
+          print('PF2_REAL_ONE_TOKEN_GENESIS_SIGNED_SOURCE_AND_18_EMPTY_TICKS_PASS',g['R0'])
+          PY
+          python experiments/pf2/PF2_LIVE_CHECK.py
+      - name: 18 receiver zero-state exact independent replay, weekly all 18 reporting fields
+        working-directory: orange
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          set -euo pipefail
+          printf '\n/node_modules/\n' >> .git/info/exclude
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          npx tsx experiments/pf2/PF2_REPLAY.mjs
+          python experiments/pf2/PF2_WEEKLY_STATUS.py --out "${RUNNER_TEMP}/PF2_ZERO_TICK_WEEKLY_FIELDS.json"
+          python - <<'PY'
+          import json,os,pathlib
+          j=json.loads((pathlib.Path(os.environ['RUNNER_TEMP'])/'PF2_ZERO_TICK_WEEKLY_FIELDS.json').read_text())
+          assert j['admittedTicks']==0
+          assert len(j['pairs'])==18
+          assert all(x['deaths']==0 and 'fatalTicks' in x and 'zone4' in x and 'cueCompliance' in x and
+            'completedLives' in x and 'candidatesByEntity' in x and 'encountersByEntity' in x
+            for x in j['pairs'].values())
+          assert j['day30']['status']=='NOT_DUE'
+          assert j['notificationsSent']==0
+          print('PF2_BOOTSTRAP_18_PAIR_WEEKLY_REPORT_SCHEMA_VERIFIED_NO_NOTIFICATIONS')
+          PY
+          test -z "$(git status --porcelain --untracked-files=all)"
+          echo PF2_REAL_GENESIS_ZERO_TICK_CRYPT_AND_REPORT_READONLY_PASS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PF2-REAL-GENESIS-INITIAL-READONLY-AUDIT-${{ github.run_id }}
+          retention-days: 90
+          if-no-files-found: warn
+          path: ${{ runner.temp }}/PF2_ZERO_TICK_WEEKLY_FIELDS.json
