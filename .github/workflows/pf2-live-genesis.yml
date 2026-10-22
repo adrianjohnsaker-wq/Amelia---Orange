@@ -1,0 +1,142 @@
+name: PF2 AUTHORISED GENESIS — ONE genuine RFC3161 seal of actual future C1-grid R0
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf2-live-genesis.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+jobs:
+  original-genesis:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 42
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: orange
+          ref: main
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-pin
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: G0 frozen four original operator source digests and scientific/boundary identity
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e experiments/pf2/live/GENESIS.json
+          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          echo '12a641718fb6c23f81b9f31ce7bc1e966654a9f01c85d16853219e50604e8237  experiments/pf2/PF2_RECEIVER_REGISTRATION_AND_WORK_ORDER.md' | sha256sum -c -
+          echo '030a0685e7d48fb71706b6100d2291e2d132a776432a99a81d54ba90b9c9a4b7  experiments/pf2/receiver.mjs' | sha256sum -c -
+          echo 'a35799a04c77f5d574cfd772c832b9aa7391af3ccad490636219d2027e499510  experiments/pf2/gold_learner.json' | sha256sum -c -
+          echo 'e984bb291476b820875a48e566d562a5e571a95435c7157cb44dba9df39a539f  experiments/pf2/gold_unchanged.json' | sha256sum -c -
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import json,pathlib,hashlib
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          r=pathlib.Path('experiments/pf2/')
+          old=json.loads((r/'seal/receipt.json').read_text())
+          assert old['status']=='PASS' and old['singleTimestampTokenCount']==1
+          assert old['bundleSHA256']==h(r/'seal/PF2_SINGLE_SIGNED_SOURCE_BUNDLE.json')
+          for p in (r/'PF2_GENESIS_MANIFEST_FOR_APPROVAL.json',r/'PF2_LIVE_GENESIS.py',r/'PF2_INITIAL_STATE.mjs'):
+            assert p.exists()
+          assert json.loads((r/'PF2_GENESIS_MANIFEST_FOR_APPROVAL.json').read_text())['statusGate']['operatorApprovedGenesis'] is False
+          for id in (39834102673,39834111165,39834121444,39834538877):
+            pass
+          p=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          pm=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          for x in p['liveOperationalSourceHashes']+pm['immutableSource']['operationalSourceFileHashes']:
+            assert h(x['path'])==x['sha256'],x['path']
+          print('PF2_GENESIS_ONLY_ORIGINAL_APPROVED_BEHAVIOUR_SOURCE_AND_CANONICAL_PF1_C1_PASS')
+          PY
+      - name: G1 pinned Quicknet BLS crypto and clean independent 18 receiver initialization
+        working-directory: orange
+        env:
+          PF2_GENESIS_OPERATOR_APPROVED: 'true'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PF2_INITIAL_STATE_FILE: ${{ runner.temp }}/PF2_GENESIS_18_INITIAL_ZERO_STATE.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -r ../c1-pin/drift1a_c1/requirements.txt
+          printf '\n/node_modules/\n' >> .git/info/exclude
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          npx tsx experiments/pf2/PF2_INITIAL_STATE.mjs
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ['PF2_INITIAL_STATE_FILE'])
+          s=json.loads(p.read_text())
+          assert s['initialAdmittedTicks']==0
+          assert s['engine']['tick']==0
+          assert len(s['engine']['receivers'])==18
+          assert all(not list(x['lives']) and all(y==0 for y in x['V'].values()) for x in s['engine']['receivers'])
+          print('PF2_18_EMPTY_STATE_PREGENESIS_PASS')
+          PY
+          test -z "$(git status --porcelain --untracked-files=all)"
+      - name: G2 independently future C1-aligned R0 + ONE true RFC3161 genesis token, 0 live ticks
+        working-directory: orange
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PF2_GENESIS_OPERATOR_APPROVED: 'true'
+          PF2_LIVE_ADMISSION_OPERATOR_AUTHORISED: 'true'
+          PF2_INITIAL_STATE_FILE: ${{ runner.temp }}/PF2_GENESIS_18_INITIAL_ZERO_STATE.json
+          PF2_GENESIS_SOURCE_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/pf2/PF2_LIVE_GENESIS.py
+          python - <<'PY'
+          import json,pathlib,time
+          from drift1a_c1.beacon import Sealer
+          root=pathlib.Path('experiments/pf2/live')
+          g=json.loads((root/'GENESIS.json').read_text())
+          state=json.loads((root/'STATE.json').read_text())
+          assert g['R0']%20==0 and (g['R0']-33158540)%20==0
+          assert g['futureFirstRoundUnix']>time.time()+1000
+          assert state['admittedTicks']==0
+          assert state['notificationsSent']==0
+          assert not list((root/'chunks').glob('*.json'))
+          v=Sealer().verify(root/'genesis_seal',g['genesisDigest'],g['futureFirstRoundUnix'])
+          assert v['status']=='PASS'
+          print('PF2_REAL_GENESIS_ONE_TOKEN_ONE_FUTURE_R0_REAL_BLS_C1_GRID_VERIFIED',g['R0'],g['futureFirstRoundTime'])
+          PY
+      - name: G3 create-only genesis commit, refuse stale remote rather than rebase
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'PF2 authorised genesis recorder'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- experiments/pf2/live/
+          git diff --cached --check
+          git commit -m 'PF2 LIVE approved genesis: future C1/PF1-grid R0, ONE genuine RFC3161 bundle, 18 zero-memory receivers, no notices'
+          git push origin HEAD:main
+          git fetch origin main
+          test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)"
+          echo PF2_ACTUAL_R0_GENESIS_VERIFIED_SIGNED_PUBLISHED_0_LIVE_TICKS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PF2-REAL-AUTHORISED-ONE-TOKEN-GENESIS-${{ github.run_id }}
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            orange/experiments/pf2/live/GENESIS.json
+            orange/experiments/pf2/live/GENESIS_SIGNED_BUNDLE.json
+            orange/experiments/pf2/live/genesis_seal/
