@@ -1,0 +1,126 @@
+name: PF2 weekly committed 18-pair journal report ONLY, NO notifications
+on:
+  schedule:
+    - cron: '43 09 * * 1'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf2-weekly-committed.yml']
+permissions:
+  contents: read
+jobs:
+  audit-create-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 42
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: orange
+          ref: main
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-pin
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - id: exists
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test ! -f experiments/pf2/live/GENESIS.json; then
+            echo 'PF2_WEEKLY_NO_GENESIS_NO_REPORT_NO_NOTIFICATIONS'
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+          else
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Audit immutable BLS verifier, original PF1 science, signed PF2 chunks
+        if: steps.exists.outputs.ready == 'true'
+        working-directory: orange
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          python -m pip install -r ../c1-pin/drift1a_c1/requirements.txt
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python experiments/pf2/PF2_LIVE_CHECK.py
+          test -z "$(git status --porcelain --untracked-files=all)"
+      - name: Create all 18 pair detailed report in ephemeral runner temp only
+        if: steps.exists.outputs.ready == 'true'
+        id: report
+        working-directory: orange
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        run: |
+          set -euo pipefail
+          when=$(date -u +%Y-%m-%dT%H%M%SZ)
+          name="PF2_WEEKLY_${when}_run${GITHUB_RUN_ID}.json"
+          dest="${RUNNER_TEMP}/${name}"
+          python experiments/pf2/PF2_WEEKLY_STATUS.py --out "$dest"
+          python - "$dest" <<'PY'
+          import json,pathlib,sys
+          j=json.loads(pathlib.Path(sys.argv[1]).read_text())
+          assert j['schema']=='PF2_WEEKLY_REPOSITORY_JOURNAL_V1'
+          assert j['noNotifications'] and j['notificationsSent']==0
+          assert len(j['pairs'])==18
+          assert not j['liveAdmissionPerformedByReport']
+          assert j['day30']['P2_1HeldOrFailed']=='NOT_EVALUATED_IN_WEEKLY_JOURNAL'
+          assert j['day30']['P2_2HeldOrFailed']=='NOT_EVALUATED_IN_WEEKLY_JOURNAL'
+          for pair in j['pairs'].values():
+              assert len(pair['fatalTicks'])==pair['deaths']
+              assert len(pair['completedLives'])==pair['deaths']
+              assert len(pair['perZoneCueComplianceRate'])==3
+              assert 'refusalUncued' in pair['zone4']
+              assert 'candidatesByEntity' in pair and 'encountersByEntity' in pair
+          print('PF2_WEEKLY_PER_PAIR_FIELDS_ALL_18_PRESENT')
+          PY
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "filepath=$dest" >> "$GITHUB_OUTPUT"
+          test -z "$(git status --porcelain --untracked-files=all)"
+      - name: Commit ONLY dated report to repository via create-only Contents API
+        if: steps.exists.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          FILEPATH: ${{ steps.report.outputs.filepath }}
+          FILENAME: ${{ steps.report.outputs.name }}
+          RUN_ID: ${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,re,base64,json,subprocess,pathlib
+          name=os.environ['FILENAME'];path=os.environ['FILEPATH']
+          assert re.fullmatch(r'PF2_WEEKLY_\d{4}-\d{2}-\d{2}T\d{6}Z_run\d+\.json',name)
+          assert name.endswith('run'+os.environ['RUN_ID']+'.json')
+          assert pathlib.Path(path).name==name
+          content=pathlib.Path(path).read_bytes()
+          report=json.loads(content)
+          assert len(report['pairs'])==18 and report['notificationsSent']==0
+          dest='experiments/pf2/weekly-status/'+name
+          body={'message':'PF2 weekly signed-journal 18-pair status, deaths cues refusals routes Pandemonium, NO notifications',
+            'branch':'main','content':base64.b64encode(content).decode()}
+          r=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dest,
+            '--input','-'],input=json.dumps(body),capture_output=True,text=True)
+          if r.returncode:raise RuntimeError('PF2_WEEKLY_CREATE_ONLY_COMMIT_FAILED '+r.stderr)
+          print('PF2_WEEKLY_REPORT_COMMITTED',dest)
+          PY
+      - name: Save identical report as Actions artifact, journal only
+        if: steps.exists.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: PF2-WEEKLY-REPOSITORY-ONLY-${{ github.run_id }}
+          retention-days: 90
+          if-no-files-found: error
+          path: ${{ steps.report.outputs.filepath }}
