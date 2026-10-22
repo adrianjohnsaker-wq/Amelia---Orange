@@ -50,7 +50,11 @@ jobs:
           let s=readFileSync('experiments/pf2/receiver.mjs','utf8');
           const old='const to = r.step(input).lastTransition.to;';
           if(s.split(old).length!==2)throw Error('PF2_EXPECTED_EXACT_NORMATIVE_SINGLE_STEP_CALL');
-          s="import {pf2Step} from './PF2_EXIT_SCORE_OVERLAY.mjs';\n"+s.replace(old,'const to = pf2Step(r,input).lastTransition.to;');
+          const oldBirth='r = new AmeliaNumogramSubstrateRuntime(); if (mode ===';
+          if(s.split(oldBirth).length!==2)throw Error('PF2_EXPECTED_NORMATIVE_BIRTH');
+          s="import {pf2Step} from './PF2_EXIT_SCORE_OVERLAY.mjs';\nimport {accelerateExactHistoryDigest} from '../../src/developmental/DEV1ExactDigestAdapter.ts';\n"+
+            s.replace(old,'const to = pf2Step(r,input).lastTransition.to;')
+             .replace(oldBirth,'r = new AmeliaNumogramSubstrateRuntime(); accelerateExactHistoryDigest(r.getMemory()); if (mode ===');
           writeFileSync('experiments/pf2/receiver_fidelity.mjs',s);
           console.log('PF2_NORMATIVE_RECEIVER_ONLY_SELECTION_CALL_OVERLAID');
           JS
