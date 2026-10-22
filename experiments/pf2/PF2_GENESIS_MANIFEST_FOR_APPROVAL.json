@@ -1,0 +1,212 @@
+{
+  "schema": "PF2_RECEIVER_PREGENESIS_MANIFEST_V1",
+  "title": "PF-2 The Receiver — operator review before genesis",
+  "issuedUTC": "2026-10-22T18:13:07Z",
+  "status": "FROZEN_PROSPECTIVE_REVIEW_NO_GENESIS_NO_LIVE",
+  "scientificRegistration": "experiments/pf2/PF2_RECEIVER_REGISTRATION_AND_WORK_ORDER.md",
+  "referenceReceiver": "experiments/pf2/receiver.mjs",
+  "allGoldens": [
+    "experiments/pf2/gold_learner.json",
+    "experiments/pf2/gold_unchanged.json"
+  ],
+  "goldenReferenceSHA256": {
+    "registration": "12a641718fb6c23f81b9f31ce7bc1e966654a9f01c85d16853219e50604e8237",
+    "receiver": "030a0685e7d48fb71706b6100d2291e2d132a776432a99a81d54ba90b9c9a4b7",
+    "learner": "a35799a04c77f5d574cfd772c832b9aa7391af3ccad490636219d2027e499510",
+    "unchanged": "e984bb291476b820875a48e566d562a5e571a95435c7157cb44dba9df39a539f"
+  },
+  "preGenesisFidelity": {
+    "goldenGate": "PASS Actions 39830353960 exact four trace digests, full gold JSON and learner0 V",
+    "independentStatefulGate": "PASS Actions 39831691428 four gold digest/V and 18-arm interruption replay",
+    "requiredTraceDigests": {
+      "learner0": "5c9cbd6ab7a974cbdbf63f54990a5a0b597affee50b6ca9659a78d8054af38e4",
+      "learner1": "4fda053dfddd7dc0ae9db4a7cdf0d799c89bf7502bfecd8e5b357ff33308168a",
+      "control0": "20365dd512e35f856ab8ab3a4c6bb4768aabb8ddbba3582bc96a057b6da69f5e",
+      "control1": "e5a5977c8c73292bc11d099bf493a80608434c4b27623841ae88681c74ad5fbe"
+    },
+    "lineage0FinalV": {
+      "0>9": 0,
+      "1>8": 0,
+      "2>7": 0.063612,
+      "3>6": 0,
+      "4>5": -0.413818,
+      "1>2": 0.095326,
+      "2>4": -0.312005,
+      "4>7": 0.040128,
+      "7>8": 0,
+      "8>9": 0,
+      "9>1": 0
+    }
+  },
+  "programmePlan": "experiments/pf2/AMELIA_THREE_STUDIOS_WORKING_PLAN.md",
+  "governingQuestion": "Can an encounter with something external create a history that becomes capable of organising subsequent encounters?",
+  "statusGate": {
+    "operatorApprovedBuild": true,
+    "operatorApprovedGenesis": false,
+    "operatorApprovedLiveAdmission": false,
+    "genesisExists": false,
+    "liveTicksAdmitted": 0,
+    "scheduledActionsEnabled": false,
+    "notificationsEnabled": false,
+    "notificationChannels": [],
+    "noNotificationsIncludingEmailChatPushWebhook": true,
+    "noNewC1OrPF1Mutations": true
+  },
+  "beacon": {
+    "provider": "drand quicknet",
+    "chainHash": "52db9ba70e0cc0f6eaf7803dd07447a1f5477735fd3f661792ba94600c84e971",
+    "scheme": "bls-unchained-g1-rfc9380",
+    "periodSeconds": 3,
+    "strideRounds": 20,
+    "cadenceSeconds": 60,
+    "C1ReferenceR0": 33158540,
+    "gridOffsetRounds": 0,
+    "PF1GenesisR0": 33244860,
+    "futureR0": null,
+    "notYetChosen": true,
+    "futureR0Rule": "Upon separate explicit operator GENESIS approval choose a still-unpublished round R0 with R0%20=0 and (R0-33158540)%20=0, using the pinned PF1 first_round/round_time procedure, so publication is strictly later than GENESIS creation by at least 1200 seconds. Never backdate, reuse admitted PF1/C1 ticks or infer missing rounds.",
+    "roundOfAdmittedTick": "R0+20*(admittedTickIndex); scientific receiver step = admittedTickIndex+1",
+    "verifiedAdmission": "reuse existing C1/PF1 LiveBeacon BLS verification and assert randomness==SHA256(signature); missing or unverified rounds HALT; no synthetic fallback",
+    "inputForArm": "C uses raw lowercase 32-byte randomness hex; Ri SHA256(ASCII('PF2-REF-'+i+'|')||raw randomness bytes) i=1..8",
+    "referenceDomain": "PF2-REF-i|",
+    "PF1DomainUntouched": "PF1-REF-i|",
+    "sharedPhysicalVerifiedRoundAtOverlappingTicks": true,
+    "noGenesisAdmitsRound": true
+  },
+  "receiver": {
+    "pairedArms": [
+      "C",
+      "R01",
+      "R02",
+      "R03",
+      "R04",
+      "R05",
+      "R06",
+      "R07",
+      "R08"
+    ],
+    "modesPerArm": [
+      "learner",
+      "unchanged"
+    ],
+    "numLineages": 18,
+    "freshRuntimeAtDeath": true,
+    "initialZone": 0,
+    "carryOnlyV": true,
+    "canonicalPFMIndividualReset": true,
+    "edgeCount": 11,
+    "consequenceHorizon": 24,
+    "learningRate": 0.125,
+    "wV": 0.5,
+    "exactInputCueAndScore": "canonical left-to-right score then +(0.5*V(edge)) LAST; tie by original gate order",
+    "refrain": "nonabsorbing departure/return within H=24, reward count novel excursion edges/11",
+    "death": "AM5 earliest departure never returning to territory, terminal distinct edges marked once -1, drop pending",
+    "control": "identical beacon input, fresh rebirth, never reads or writes V",
+    "persistPerLineage": [
+      "V",
+      "canonical runtime export/import",
+      "all life zones (≥last 48)",
+      "birthTick",
+      "per-life death log"
+    ],
+    "logEveryTick": [
+      "tick",
+      "round",
+      "cue",
+      "from",
+      "to",
+      "choice point",
+      "cued",
+      "followed",
+      "V term each option"
+    ],
+    "logEveryDeath": [
+      "length",
+      "final excursion",
+      "fatal cue",
+      "V after mark"
+    ]
+  },
+  "predictions": {
+    "windowAdmittedTicks": 43200,
+    "windowDays": 30,
+    "P2-1": {
+      "name": "survival",
+      "direction": "learner deaths <= 0.35*control deaths",
+      "thresholdRatio": 0.35
+    },
+    "P2-2": {
+      "name": "post-third-death fatal cue",
+      "minFraction": 0.85,
+      "eligibilityMinimum": 10,
+      "ifFewerThan10ExtendToAdmittedTicks": 86400,
+      "lateDefinition": "deaths after third within each learner lineage"
+    },
+    "P2-3": {
+      "name": "uncued zone4 sink share descriptive",
+      "maxFraction": 0.15
+    },
+    "stats": "P2-1 and P2-2 each one registered held/failed threshold, no new family, no retune."
+  },
+  "scanner": {
+    "source": "unchanged PF1_A1_R2_SCORER.mjs + core.mjs + sealed A1 R2 constants / null curves",
+    "runsOnBothModesEveryArm": true,
+    "forkHorizon": 24,
+    "antecedentJournalTicks": 240,
+    "names": "experiments/pf1/pandemonium-45.json",
+    "noClaimsOfLiteralExternalMinds": true,
+    "encounters": "only when unchanged PF1 Rung1 evaluator returns encounter; otherwise candidate only"
+  },
+  "operationalReuse": {
+    "PF1ExclusiveLease": "experiments/pf1/PF1_SAFE_LEASE.py.acquire (unchanged; shared remote lock)",
+    "PF1CatchupLimits": {
+      "maxPerSealedBatch": 20,
+      "maxPerInvocation": 480,
+      "wallLimitMinutes": 35,
+      "stopMarginMinutes": 5
+    },
+    "PF2Adapter": "experiments/pf2/PF2_A1_CATCHUP.py",
+    "PF1VerifiedQuicknet": "drift1a_c1.beacon.LiveBeacon from C1/PF1",
+    "PF2Intake": "experiments/pf2/PF2_LIVE_INTAKE.py",
+    "PF2Runtime": "experiments/pf2/PF2_LIVE_RUN.mjs",
+    "PF2Sealer": "experiments/pf2/PF2_LIVE_SEAL.py using unchanged drift1a_c1.beacon.Sealer",
+    "PF2Verifier": "experiments/pf2/PF2_LIVE_CHECK.py",
+    "PF2Replay": "experiments/pf2/PF2_REPLAY.mjs",
+    "remoteRules": "remote pushed exclusive lease before intake; append-only signed chunks, no stale rebase, full proof before commit; fail closed"
+  },
+  "pinnedSources": {
+    "frozenCanonicalCommit": "b67ec92e1cec13e9500d87292d59605428fb467e",
+    "C1VerifierRepository": "adrianjohnsaker-wq/Amelia-0.4",
+    "C1VerifierPinnedCommit": "f1875b5eea5339eb1ac73e50b5df6b103d0cabe9",
+    "PF1GenesisPath": "experiments/pf1/live/GENESIS.json",
+    "PF1ManifestPath": "experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json",
+    "PF1ScannerSource": "experiments/pf1/PF1_A1_R2_SCORER.mjs",
+    "PF1GoldNullSource": "experiments/pf1/a1-r2-graph-only/EXACT_NULL_CURVES.json",
+    "PF1SafeLeaseSource": "experiments/pf1/PF1_SAFE_LEASE.py",
+    "noCanonicalModifications": true,
+    "noPF1Modifications": true,
+    "noC1Modifications": true
+  },
+  "scienceFilesToPinInSingleProspectiveSeal": [
+    "experiments/pf2/PF2_RECEIVER_REGISTRATION_AND_WORK_ORDER.md",
+    "experiments/pf2/receiver.mjs",
+    "experiments/pf2/gold_learner.json",
+    "experiments/pf2/gold_unchanged.json",
+    "experiments/pf2/PF2_GENESIS_MANIFEST_FOR_APPROVAL.json",
+    "experiments/pf2/AMELIA_THREE_STUDIOS_WORKING_PLAN.md",
+    "experiments/pf2/PF2_EXIT_SCORE_OVERLAY.mjs",
+    "experiments/pf2/PF2_RECEIVER_CORE.mjs",
+    "experiments/pf2/PF2_REFERENCE_INPUT.mjs",
+    "experiments/pf2/PF2_PANDEMONIUM.mjs",
+    "experiments/pf2/PF2_LIVE_INTAKE.py",
+    "experiments/pf2/PF2_LIVE_RUN.mjs",
+    "experiments/pf2/PF2_LIVE_SEAL.py",
+    "experiments/pf2/PF2_LIVE_CHECK.py",
+    "experiments/pf2/PF2_REPLAY.mjs",
+    "experiments/pf2/PF2_A1_CATCHUP.py"
+  ],
+  "sealRule": "ONE independently verified external RFC 3161 timestamp of a single SHA256-provenance bundle containing exact byte SHA256 for every listed scientific/genesis source, original four uploaded sources, PF1/C1 pinned identities, no GENESIS.",
+  "genesisApprovalNext": "Present this signed manifest for explicit OPERATOR APPROVAL OF GENESIS; selecting and recording exact future R0 and enabling live admission require separate later authorisation and source identity checks.",
+  "weeklyOutput": "repo-only summary, no notification channels",
+  "log": "experiments/pf2/PF2_LOG.md"
+}
