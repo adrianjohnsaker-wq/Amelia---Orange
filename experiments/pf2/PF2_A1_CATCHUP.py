@@ -32,7 +32,7 @@ def state():
     assert g['approvedByOperator'] and (g['R0']-33158540)%20==0
     return g,s
 def published_budget(g,s):
-    return max(0,(current_round(time.time()-3)-g['R0'])//20+1-s['admittedTicks'])
+    return min(max(0,(current_round(time.time()-3)-g['R0'])//20+1-s['admittedTicks']),max(0,86400-s['admittedTicks']))
 def assert_allowed_files_only():
     rows=subprocess.run(['git','status','--porcelain','--untracked-files=all'],capture_output=True,text=True,check=True).stdout.splitlines()
     for row in rows:
@@ -49,6 +49,8 @@ def batch():
     cmd('npx','tsx','experiments/pf2/PF2_LIVE_RUN.mjs')
     cmd('python','experiments/pf2/PF2_LIVE_SEAL.py')
     cmd('python','experiments/pf2/PF2_LIVE_CHECK.py')
+    if state()[1]['admittedTicks']>=43200:
+        cmd('python','experiments/pf2/PF2_DAY30_EVALUATE.py')
     # Periodic full replay belongs to separate read-only workflow, never
     # silently omitted from scheduled weekly report.
     return n
@@ -98,11 +100,25 @@ def main():
             if accepted+n>CAP:raise RuntimeError('PF2_DISPATCH_CAP_EXCEEDED')
             bnum+=1;commit_batch(lease,bnum,n);accepted+=n
     except Exception as e:
-        # Do not auto-release after an indeterminate or failed batch: the
-        # remote unresolved lease is a quarantine lock. Human operator
-        # must inspect current remote prefix before recovery.
-        print('PF2_A1_FAIL_CLOSED_LEASE_LEFT_UNRESOLVED',repr(e),flush=True)
-        raise
+        print('PF2_A1_FAIL_CLOSED_BATCH_ERROR',repr(e),flush=True)
+        # Match the original PF1 A1 recovery: only after checking that our
+        # leased remote HEAD is still authoritative may we discard a local
+        # partially staged chunk, preserve the last signed prefix and halt.
+        # Never alter canonical, C1 or PF1 source/history.
+        remote_check()
+        cmd('git','restore','--','experiments/pf2/live/')
+        cmd('git','clean','-fd','--','experiments/pf2/live/')
+        assert_allowed_files_only()
+        os.environ['PF2_HALT_REASON']='PF2_A1 sealed batch failed: '+str(e)[:720]
+        cmd('python','experiments/pf2/PF2_LIVE_HALT.py')
+        assert_allowed_files_only()
+        cmd('git','add','--','experiments/pf2/live/')
+        cmd('git','diff','--cached','--check')
+        cmd('git','commit','-m','PF2 A1 FAIL-CLOSED HALT at last verified prefix lease '+lease)
+        cmd('git','push','origin','HEAD:main')
+        remote_check()
+        complete_lease(lease)
+        raise RuntimeError('PF2_A1_HALTED_OPERATOR_RECOVERY_REQUIRED: '+str(e))
     complete_lease(lease)
     print('PF2_A1_BATCHES_COMMITTED_NO_NOTIFICATIONS',json.dumps({
      'accepted':accepted,'batches':bnum,'admittedTicks':state()[1]['admittedTicks'],
