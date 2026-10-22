@@ -1,0 +1,28 @@
+{
+  "C1Modified": false,
+  "PF1Modified": false,
+  "atUTC": "2026-10-22T21:02:47.060219+00:00",
+  "genesisModified": false,
+  "lineageStatesModified": false,
+  "newHead": "6edb50ea3bdb6595cac20399c06142506ec1f35b8079fb556850eb20ca48b723",
+  "newTicks": 0,
+  "nextAdmitRequiresPF1ExclusiveLease": true,
+  "notificationsSent": 0,
+  "oldHead": "6edb50ea3bdb6595cac20399c06142506ec1f35b8079fb556850eb20ca48b723",
+  "oldTicks": 0,
+  "originalFailedOwnerRun": 39851244654,
+  "originalHalt": {
+    "atUTC": "2026-10-22T20:44:01.969250+00:00",
+    "lastSealedHead": "6edb50ea3bdb6595cac20399c06142506ec1f35b8079fb556850eb20ca48b723",
+    "lastSealedTick": 0,
+    "operatorRecoveryRequired": true,
+    "reason": "PF2_A1 sealed batch failed: PF2_COMMAND_FAILURE ('python', 'experiments/pf2/PF2_LIVE_CHECK.py') Traceback (most recent call last):\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/orange/experiments/pf2/PF2_LIVE_CHECK.py\", line 71, in <module>\n    if __name__=='__main__':main()\n                            ^^^^^^\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/orange/experiments/pf2/PF2_LIVE_CHECK.py\", line 60, in main\n    assert sha(raw.encode())==row['digest'],f'PF2_CHAIN_TICK_{total+j}'\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: PF2_CHAIN_TICK_0\n",
+    "scientificResultsNotReinterpreted": true
+  },
+  "priorStateSHA256": "a94b91ef8982f8760694bcc96ce76b5625b627861e6a25bc5ac7c1d50f560765",
+  "registeredDay30Unchanged": true,
+  "rootCause": "JS_JSON_STRINGIFY_INSERTION_ORDER_VS_SORTED_PYTHON_SIGNED_ARCHIVE",
+  "schema": "PF2_AD1_ONE_TIME_HALT_RECOVERY_V1",
+  "scienceModified": false,
+  "signedOperationalAmendment": "experiments/pf2/operational_ad1/seal/receipt.json"
+}

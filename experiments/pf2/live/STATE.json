@@ -6150,14 +6150,7 @@
   "lastAdmittedRound": null,
   "notificationsEnabled": false,
   "notificationsSent": 0,
-  "openHalt": {
-    "atUTC": "2026-10-22T20:44:01.969250+00:00",
-    "lastSealedHead": "6edb50ea3bdb6595cac20399c06142506ec1f35b8079fb556850eb20ca48b723",
-    "lastSealedTick": 0,
-    "operatorRecoveryRequired": true,
-    "reason": "PF2_A1 sealed batch failed: PF2_COMMAND_FAILURE ('python', 'experiments/pf2/PF2_LIVE_CHECK.py') Traceback (most recent call last):\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/orange/experiments/pf2/PF2_LIVE_CHECK.py\", line 71, in <module>\n    if __name__=='__main__':main()\n                            ^^^^^^\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/orange/experiments/pf2/PF2_LIVE_CHECK.py\", line 60, in main\n    assert sha(raw.encode())==row['digest'],f'PF2_CHAIN_TICK_{total+j}'\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: PF2_CHAIN_TICK_0\n",
-    "scientificResultsNotReinterpreted": true
-  },
+  "openHalt": null,
   "pandemonium": {
     "encounters": [],
     "history": [],
@@ -6328,7 +6321,13 @@
       }
     }
   },
+  "recoveredFromHalt": {
+    "noObservationsAdded": true,
+    "originalFailedOwnerRun": 39851244654,
+    "receiptPath": "experiments/pf2/live/RECOVERY_AD1.json",
+    "recoveryAtUTC": "2026-10-22T21:02:47.060219+00:00"
+  },
   "schema": "PF2_LIVE_RUNTIME_STATUS_V1",
   "sealedBatchCount": 0,
-  "status": "halted"
+  "status": "running"
 }
