@@ -1,10 +1,7 @@
-name: PF2 LIVE matched 18-receiver admission — PF1 shared safe lease, silent A1
+name: PF2 ORIGINAL V1 live workflow — DISABLED after signed AD1 serialization repair
+# Explicit prospective AD1 operational supersession. Genesis-frozen original
+# hash and first failed attempt preserved. V1 must never ingest after AD1.
 on:
-  schedule:
-    - cron: '2,17,32,47 * * * *'
-  push:
-    branches: [main]
-    paths: ['.github/workflows/pf2-live-observe.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -13,6 +10,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   admit:
+    if: false
     runs-on: ubuntu-24.04
     timeout-minutes: 48
     permissions:
