@@ -1,4 +1,5 @@
 name: PF2 AD1 ONE-TIME audited zero-tick halt recovery — no scientific change
+# Native C1 receipt restored in Actions 39853751402; original informational record retained.
 on:
   push:
     branches: [main]
@@ -54,7 +55,11 @@ jobs:
           assert b['genesisDigest']==g['genesisDigest']
           assert b['originalAdmittedTicksAtSeal']==0
           assert b['originalV1Halted'] and b['scienceChanged'] is False
-          assert receipt['status']=='PASS' and receipt['sourceCount']==len(b['sourceSHA256'])
+          original=json.loads((ad/'receipt_informational_original.json').read_text())
+          assert original['schema']=='PF2_AD1_ONE_RFC3161_OPERATIONAL_RECEIPT_V1'
+          assert original['sourceCount']==len(b['sourceSHA256'])
+          assert receipt['status']=='PASS' and receipt['mode']=='LIVE'
+          assert receipt['imprint']==original['bundleSHA256']
           assert h(ad/'AD1_SIGNED_BUNDLE.json')==receipt['bundleSHA256']
           assert h(ad/'attempt-0000.tsr')==receipt['tokenSHA256']
           assert Sealer().verify(ad,receipt['bundleSHA256'])['status']=='PASS'
