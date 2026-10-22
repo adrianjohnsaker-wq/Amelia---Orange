@@ -1,0 +1,46 @@
+name: PF2 second fidelity gate 18-arm state engine and all GOLD replays
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf2-stateful-fidelity.yml']
+permissions:
+  contents: read
+jobs:
+  stateful-golden-and-restart:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Revalidate normative originals and frozen canonical PF1 C1 identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '12a641718fb6c23f81b9f31ce7bc1e966654a9f01c85d16853219e50604e8237  experiments/pf2/PF2_RECEIVER_REGISTRATION_AND_WORK_ORDER.md' | sha256sum -c -
+          echo '030a0685e7d48fb71706b6100d2291e2d132a776432a99a81d54ba90b9c9a4b7  experiments/pf2/receiver.mjs' | sha256sum -c -
+          echo 'a35799a04c77f5d574cfd772c832b9aa7391af3ccad490636219d2027e499510  experiments/pf2/gold_learner.json' | sha256sum -c -
+          echo 'e984bb291476b820875a48e566d562a5e571a95435c7157cb44dba9df39a539f  experiments/pf2/gold_unchanged.json' | sha256sum -c -
+          git diff --exit-code b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import json,pathlib,hashlib
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          g=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          m=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          for e in g['liveOperationalSourceHashes']+m['immutableSource']['operationalSourceFileHashes']:
+            assert h(e['path'])==e['sha256'],e['path']
+          assert not pathlib.Path('experiments/pf2/live/GENESIS.json').exists()
+          print('PF2_STATEFUL_IMMUTABILITY_PASS')
+          PY
+      - name: Full four 20000 tick gold core fidelity plus nine pairs restarted replay
+        shell: bash
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          npx tsx experiments/pf2/PF2_STATEFUL_FIDELITY.mjs
+          echo PF2_STATEFUL_GOLD_ALL_FOUR_AND_PAIRED_STATE_REPLAY_PASS
