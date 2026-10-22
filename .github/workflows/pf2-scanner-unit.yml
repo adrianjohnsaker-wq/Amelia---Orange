@@ -1,0 +1,43 @@
+name: PF2 pre-genesis unchanged PF1 scanner 18-pair read-only integration check
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf2-scanner-unit.yml']
+permissions:
+  contents: read
+jobs:
+  synthetic-original-scanner-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: P0 frozen canonical, PF1 R2 and C1 science must be byte-identical
+        run: |
+          set -euo pipefail
+          git diff --exit-code b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import pathlib,json,hashlib
+          h=lambda x:hashlib.sha256(pathlib.Path(x).read_bytes()).hexdigest()
+          g=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          p=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          for x in g['liveOperationalSourceHashes']+p['immutableSource']['operationalSourceFileHashes']:
+              assert h(x['path'])==x['sha256']
+          assert not pathlib.Path('experiments/pf2/live/GENESIS.json').exists()
+          print('PF2_PF1_C1_CANONICAL_PINNED_SOURCE_PASS')
+          PY
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: P1 original PF1 exact scanner and 18-lineage interrupted replay, synthetic only
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          npx tsx experiments/pf2/PF2_PANDEMONIUM_UNIT.mjs
+          echo PF2_SCANNER_AND_PANDEMONIUM_RESUME_PASS_NO_LIVE_NO_NOTIFICATIONS
