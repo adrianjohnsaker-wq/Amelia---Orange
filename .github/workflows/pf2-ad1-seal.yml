@@ -1,0 +1,194 @@
+name: PF2 AD1 prospective operational chain serializer ONE RFC3161 seal — zero admitted
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf2-ad1-seal.yml']
+permissions:
+  contents: read
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+jobs:
+  prospective-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 32
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: orange
+          ref: main
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-pin
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: A0 verify frozen original science and exact halted zero-admitted history
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          test ! -e experiments/pf2/operational_ad1/seal/receipt.json
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import hashlib,json,pathlib
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          root=pathlib.Path('experiments/pf2')
+          g=json.loads((root/'live/GENESIS.json').read_text())
+          s=json.loads((root/'live/STATE.json').read_text())
+          b=json.loads((root/'live/GENESIS_SIGNED_BUNDLE.json').read_text())
+          assert g['genesisDigest']==h(root/'live/GENESIS_SIGNED_BUNDLE.json')=='6edb50ea3bdb6595cac20399c06142506ec1f35b8079fb556850eb20ca48b723'
+          assert s['status']=='halted' and s['admittedTicks']==0
+          assert s['headDigest']==s['genesisDigest']==g['genesisDigest']
+          assert s['lastAdmittedRound'] is None and s['engine']['tick']==0 and len(s['engine']['receivers'])==18
+          assert s['openHalt']['lastSealedTick']==0 and 'PF2_CHAIN_TICK_0' in s['openHalt']['reason']
+          assert not list((root/'live/chunks').glob('*.json')) and not (root/'live/RECOVERY_AD1.json').exists()
+          assert s['notificationsSent']==0
+          for x in b['frozenSourceSHA256']+b['originalFourFileSHA256']:
+            if x['path']=='.github/workflows/pf2-live-observe.yml':
+              assert x['sha256']=='9461fcc92de207279aac6444b7e83a7184f588ed1c2a90af7ac3becbc97bcd1d'
+              continue
+            assert h(x['path'])==x['sha256'],'CHANGED_ORIGINAL_GENESIS_SOURCE '+x['path']
+          d=pathlib.Path('.github/workflows/pf2-live-observe.yml').read_text()
+          assert 'if: false' in d and 'schedule:' not in d
+          assert 'cron:' in pathlib.Path('.github/workflows/pf2-live-observe-ad1.yml').read_text()
+          assert pathlib.Path('experiments/pf2/PF2_A1_CATCHUP_AD1.py').is_file()
+          assert pathlib.Path('experiments/pf2/PF2_CANONICAL_CHAIN_AD1.py').is_file()
+          assert pathlib.Path('experiments/pf2/PF2_AD1_RECOVER.py').is_file()
+          pf1=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          p1=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          for x in pf1['liveOperationalSourceHashes']+p1['immutableSource']['operationalSourceFileHashes']:
+            assert h(x['path'])==x['sha256']
+          print('PF2_AD1_PROSPECTIVE_ZERO_ACCEPTED_TICKS_ORIGINAL_FROZEN_SCIENCE_AND_HALT_PASS')
+          PY
+      - name: A1 replay constructed 18-event 2-tick failed JS versus sorted Python SHA256 repair unit
+        working-directory: orange
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/pf2/PF2_AD1_CANONICAL_UNIT.py
+          echo PF2_AD1_ORIGINAL_FAILURE_REPRODUCED_AND_REPAIRED_WITH_ZERO_RECEIVER_CHANGES
+      - name: A2 create SHA256 exact-source bundle then obtain ONE genuine prospective RFC3161 token
+        working-directory: orange
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -r ../c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import hashlib,json,pathlib,datetime
+          from drift1a_c1.beacon import Sealer
+          p=pathlib.Path('/tmp/pf2ad1')
+          p.mkdir(parents=True,exist_ok=True)
+          sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          genesis=json.loads(pathlib.Path('experiments/pf2/live/GENESIS.json').read_text())
+          st=json.loads(pathlib.Path('experiments/pf2/live/STATE.json').read_text())
+          files=[
+            'experiments/pf2/operational_ad1/PF2_AD1_REGISTERED.md',
+            'experiments/pf2/PF2_CANONICAL_CHAIN_AD1.py',
+            'experiments/pf2/PF2_A1_CATCHUP_AD1.py',
+            'experiments/pf2/PF2_AD1_RECOVER.py',
+            'experiments/pf2/PF2_AD1_CANONICAL_UNIT.py',
+            '.github/workflows/pf2-live-observe.yml',
+            '.github/workflows/pf2-live-observe-ad1.yml',
+            'experiments/pf2/PF2_LIVE_CHECK.py',
+            'experiments/pf2/PF2_LIVE_RUN.mjs',
+            'experiments/pf2/PF2_LIVE_SEAL.py',
+            'experiments/pf2/PF2_RECEIVER_CORE.mjs',
+            'experiments/pf2/PF2_PANDEMONIUM.mjs',
+            'experiments/pf2/receiver.mjs',
+            'experiments/pf2/PF2_RECEIVER_REGISTRATION_AND_WORK_ORDER.md',
+            'experiments/pf2/gold_learner.json',
+            'experiments/pf2/gold_unchanged.json',
+            'experiments/pf2/live/GENESIS_SIGNED_BUNDLE.json']
+          bundle={'schema':'PF2_AD1_OPERATIONAL_SHA256_V1',
+            'registration':'experiments/pf2/operational_ad1/PF2_AD1_REGISTERED.md',
+            'genesisDigest':genesis['genesisDigest'],
+            'originalAdmittedTicksAtSeal':0,'originalV1Halted':True,
+            'originalFailedOwnerRun':39851244654,
+            'sourceOfOriginalFailedV1Evidence':'39851244654',
+            'originalReceiverChanged':False,'scienceChanged':False,
+            'notificationsEnabled':False,
+            'V1OriginalScheduledSHA256':'9461fcc92de207279aac6444b7e83a7184f588ed1c2a90af7ac3becbc97bcd1d',
+            'V1ScheduleDisabled':True,'noLiveInputAdmittedAtSeal':True,
+            'genesisUnchangedSHA256':sha('experiments/pf2/live/GENESIS.json'),
+            'oldStateHaltSHA256':sha('experiments/pf2/live/STATE.json'),
+            'sourceSHA256':[{'path':x,'sha256':sha(x)} for x in files],
+            'canonicalJournalHashRule':'SHA256(UTF8(JSON(sort_keys=True,separators=(comma,colon),ensure_ascii=False,allow_nan=False)))',
+            'metadataOnlyRehashBeforeBatchRFC3161':True,
+            'P2_1Day30Ticks':43200,'P2_2SparseExtensionTicks':86400,
+            'sealedAgainstAnyRetrospectiveOutcome':True}
+          data=json.dumps(bundle,sort_keys=True,indent=2,ensure_ascii=False)+'\n'
+          bundlepath=p/'AD1_SIGNED_BUNDLE.json'
+          bundlepath.write_text(data)
+          imprint=sha(bundlepath)
+          folder=p/'seal'
+          result=Sealer().seal(folder,imprint)
+          verified=Sealer().verify(folder,imprint)
+          assert verified['status']=='PASS'
+          receipt=json.loads((folder/'receipt.json').read_text())
+          assert receipt['status']=='PASS'
+          tokens=list(folder.glob('*.tsr'))
+          assert len(tokens)==1
+          official={'schema':'PF2_AD1_ONE_RFC3161_OPERATIONAL_RECEIPT_V1',
+            'status':'PASS','createdUTC':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'actualOriginalGenesis':genesis['genesisDigest'],
+            'originalAdmittedTicksAtSeal':0,'originalStateStatusAtSeal':'halted',
+            'sourceCount':len(files),'sha256':imprint,
+            'bundleSHA256':imprint,'tokenSHA256':sha(tokens[0]),
+            'token':'experiments/pf2/operational_ad1/seal/'+tokens[0].name,
+            'presealConstructedUnit':'PASS',
+            'scienceChanged':False,'notificationsSent':0,
+            'verification':'Genuine original C1 FreeTSA Sealer.verify PASS',
+            'noLiveAdmissionOrGenesisChange':True}
+          (p/'receipt.json').write_text(json.dumps(official,sort_keys=True,indent=2)+'\n')
+          print('PF2_AD1_ONE_INDEPENDENT_RFC3161_AFTER_REJECTED_V1_BATCH_PASS',
+             json.dumps({'digest':imprint,'newSources':len(files),'status':'PASS',
+                'genesisUnchanged':True,'ticks':0,'notificationCount':0}))
+          PY
+      - name: A3 create-only archive exact signed AD1 bundle token and transparent receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,pathlib,base64,os,json,subprocess
+          p=pathlib.Path('/tmp/pf2ad1')
+          files={'AD1_SIGNED_BUNDLE.json':p/'AD1_SIGNED_BUNDLE.json',
+                 'receipt.json':p/'receipt.json'}
+          for n in ['attempt-0000.tsq','attempt-0000.tsr','receipt.json']:
+            if not (p/'seal'/n).exists():raise RuntimeError('MISSING_REAL_AD1_SEAL_'+n)
+            if n!='receipt.json':files[n]=p/'seal'/n
+          for name,path in files.items():
+            dst='experiments/pf2/operational_ad1/seal/'+name
+            raw=path.read_bytes()
+            cmd=['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dst,'--input','-']
+            payload={'message':'PF2 AD1 prospective canonical journal metadata hash fix — ONE genuine RFC3161 source token; zero admitted data',
+             'branch':'main','content':base64.b64encode(raw).decode()}
+            result=subprocess.run(cmd,input=json.dumps(payload),capture_output=True,text=True)
+            if result.returncode:raise RuntimeError('AD1_CREATE_ONLY_FAILED_'+dst+' '+result.stderr[-1000:])
+            print('PF2_AD1_SOURCE_SIGNATURE_CREATE_ONLY_ARCHIVED',dst,hashlib.sha256(raw).hexdigest())
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PF2-OPERATIONAL-AD1-AFTER-FAILURE-SINGLE-TOKEN-${{ github.run_id }}
+          retention-days: 90
+          if-no-files-found: warn
+          path:
+            /tmp/pf2ad1/
