@@ -1,0 +1,106 @@
+name: PF2 FIRST GATE golden 4 trace digests and full V equality ONLY
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf2-fidelity.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  golden-fidelity-before-all-else:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: F0 exact user-upload bytes, canonical immutable source, no live output
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '12a641718fb6c23f81b9f31ce7bc1e966654a9f01c85d16853219e50604e8237  experiments/pf2/PF2_RECEIVER_REGISTRATION_AND_WORK_ORDER.md' | sha256sum -c -
+          echo '030a0685e7d48fb71706b6100d2291e2d132a776432a99a81d54ba90b9c9a4b7  experiments/pf2/receiver.mjs' | sha256sum -c -
+          echo 'a35799a04c77f5d574cfd772c832b9aa7391af3ccad490636219d2027e499510  experiments/pf2/gold_learner.json' | sha256sum -c -
+          echo 'e984bb291476b820875a48e566d562a5e571a95435c7157cb44dba9df39a539f  experiments/pf2/gold_unchanged.json' | sha256sum -c -
+          git diff --exit-code b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import pathlib,json,hashlib
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          g=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          m=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          assert h('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json')==g['approvedManifestSHA256']
+          for e in g['liveOperationalSourceHashes']+m['immutableSource']['operationalSourceFileHashes']:
+            assert h(e['path'])==e['sha256'],e['path']
+          assert not pathlib.Path('experiments/pf2/live/GENESIS.json').exists()
+          print('PF2_FIDELITY_NORMATIVE_BYTES_AND_CANONICAL_PF1_C1_PINS_PASS')
+          PY
+      - name: F1 reproduce normative receiver with selection-only score overlay
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          mkdir -p /tmp/pf2-golden
+          node --input-type=module <<'JS'
+          import {readFileSync,writeFileSync} from 'node:fs';
+          let s=readFileSync('experiments/pf2/receiver.mjs','utf8');
+          const old='const to = r.step(input).lastTransition.to;';
+          if(s.split(old).length!==2)throw Error('PF2_EXPECTED_EXACT_NORMATIVE_SINGLE_STEP_CALL');
+          s="import {pf2Step} from './PF2_EXIT_SCORE_OVERLAY.mjs';\n"+s.replace(old,'const to = pf2Step(r,input).lastTransition.to;');
+          writeFileSync('experiments/pf2/receiver_fidelity.mjs',s);
+          console.log('PF2_NORMATIVE_RECEIVER_ONLY_SELECTION_CALL_OVERLAID');
+          JS
+          npx tsx experiments/pf2/receiver_fidelity.mjs "$(pwd)/src" learner 2 20000 GOLD /tmp/pf2-golden/learner.json | tee /tmp/pf2-golden/learner-stdout.txt
+          npx tsx experiments/pf2/receiver_fidelity.mjs "$(pwd)/src" unchanged 2 20000 GOLD /tmp/pf2-golden/unchanged.json | tee /tmp/pf2-golden/unchanged-stdout.txt
+      - name: F2 check ALL FOUR golden digests, all lives and learner-0 final 11-edge V exactly
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import {readFileSync,writeFileSync} from 'node:fs';
+          import {createHash} from 'node:crypto';
+          import assert from 'node:assert/strict';
+          const sha=b=>createHash('sha256').update(b).digest('hex');
+          const checks=[];
+          for(const mode of ['learner','unchanged']){
+            const got=JSON.parse(readFileSync('/tmp/pf2-golden/'+mode+'.json'));
+            const expect=JSON.parse(readFileSync('experiments/pf2/gold_'+mode+'.json'));
+            for(const k of [0,1]){
+              const g=got.lineages[k],e=expect.lineages[k];
+              const ok=g.traceSha256===e.traceSha256;
+              checks.push({mode,k,expected:e.traceSha256,actual:g.traceSha256,status:ok?'PASS':'FAIL'});
+              console.log('PF2_GOLDEN_TRACE',mode,k,ok?'PASS':'FAIL',g.traceSha256);
+              assert.equal(g.traceSha256,e.traceSha256,'PF2_GOLD_DIGEST_MISMATCH_'+mode+'_'+k);
+              assert.deepEqual(g.lives,e.lives,'PF2_GOLD_LIVES_MISMATCH_'+mode+'_'+k);
+            }
+            assert.deepEqual(got,expect,'PF2_FULL_REFERENCE_OUTPUT_MISMATCH_'+mode);
+          }
+          const a=JSON.parse(readFileSync('/tmp/pf2-golden/learner.json'));
+          const b=JSON.parse(readFileSync('experiments/pf2/gold_learner.json'));
+          assert.deepEqual(a.lineages[0].finalV,b.lineages[0].finalV,
+            'PF2_LEARNER_LINEAGE0_FINAL_V_NOT_EXACT');
+          console.log('PF2_GOLDEN_LEARNER0_11_EDGE_FINAL_V_EXACT_PASS');
+          const report={schema:'PF2_GOLDEN_FIDELITY_REPORT_V1',
+           status:'PASS',fourDigests:checks,learnerLineage0FinalV:a.lineages[0].finalV,
+           fullOutputFilesExactlyEqual:true,
+           registrationSHA256:sha(readFileSync('experiments/pf2/PF2_RECEIVER_REGISTRATION_AND_WORK_ORDER.md')),
+           referenceReceiverSHA256:sha(readFileSync('experiments/pf2/receiver.mjs')),
+           goldenLearnerSHA256:sha(readFileSync('experiments/pf2/gold_learner.json')),
+           goldenUnchangedSHA256:sha(readFileSync('experiments/pf2/gold_unchanged.json')),
+           noLiveIntake:true,noGenesis:true};
+          writeFileSync('/tmp/pf2-golden/fidelity_report.json',JSON.stringify(report,null,2)+'\n');
+          console.log('PF2_FIDELITY_GATE_PASS_ALL_FOUR_GOLDEN_DIGESTS_AND_FINAL_V_EXACT');
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PF2-FIRST-GOLDEN-FIDELITY-EVIDENCE
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            /tmp/pf2-golden/*.json
+            /tmp/pf2-golden/*.txt
