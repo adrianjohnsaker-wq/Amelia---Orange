@@ -52,7 +52,7 @@ def main():
  for i,row in enumerate(rows):
   assert row['tick']==b['startTick']+i
   assert row['verification']=='REAL_QUICKNET_BLS_VERIFIED_WITH_PINNED_C1_PF1'
-   assert hashlib.sha256(bytes.fromhex(row['signature'])).hexdigest()==row['randomness']
+  assert hashlib.sha256(bytes.fromhex(row['signature'])).hexdigest()==row['randomness']
   assert len(row['armEvents'])==18
   row['previous']=prior
   payload={k:v for k,v in row.items() if k!='digest'}
