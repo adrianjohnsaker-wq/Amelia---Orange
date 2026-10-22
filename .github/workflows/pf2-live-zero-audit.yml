@@ -73,6 +73,8 @@ jobs:
           set -euo pipefail
           printf '\n/node_modules/\n' >> .git/info/exclude
           npm install --no-save --package-lock=false --no-audit --no-fund
+          # Empty chunk directories are not retained by Git before first admission.
+          mkdir -p experiments/pf2/live/chunks
           npx tsx experiments/pf2/PF2_REPLAY.mjs
           python experiments/pf2/PF2_WEEKLY_STATUS.py --out "${RUNNER_TEMP}/PF2_ZERO_TICK_WEEKLY_FIELDS.json"
           python - <<'PY'
