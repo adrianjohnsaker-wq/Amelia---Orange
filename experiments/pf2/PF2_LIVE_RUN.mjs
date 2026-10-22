@@ -7,7 +7,7 @@ import {readFileSync,writeFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {PF2NinePairs} from './PF2_RECEIVER_CORE.mjs';
 const root='experiments/pf2/live/';
-const sha=x=>createHash('sha256').update(typeof x==='string'?x:JSON.stringify(x)).digest('hex');
+const sha=x=>createHash('sha256').update(typeof x==='string'||Buffer.isBuffer(x)?x:JSON.stringify(x)).digest('hex');
 const get=n=>JSON.parse(readFileSync(root+n,'utf8'));
 assert.equal(process.env.PF2_GENESIS_OPERATOR_APPROVED,'true','PF2_GENESIS_MISSING_AUTH');
 assert.equal(process.env.PF2_LIVE_ADMISSION_OPERATOR_AUTHORISED,'true','PF2_LIVE_OPERATOR_AUTH_MISSING');
