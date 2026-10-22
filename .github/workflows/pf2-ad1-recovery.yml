@@ -1,5 +1,5 @@
 name: PF2 AD1 ONE-TIME audited zero-tick halt recovery — no scientific change
-# Native C1 receipt restored in Actions 39853751402; original informational record retained.
+# Native C1 receipt restored in Actions 39853751402; original informational record retained.\n# Correctly use C1-native imprint field, while checking token SHA in preserved original.
 on:
   push:
     branches: [main]
@@ -60,9 +60,9 @@ jobs:
           assert original['sourceCount']==len(b['sourceSHA256'])
           assert receipt['status']=='PASS' and receipt['mode']=='LIVE'
           assert receipt['imprint']==original['bundleSHA256']
-          assert h(ad/'AD1_SIGNED_BUNDLE.json')==receipt['bundleSHA256']
-          assert h(ad/'attempt-0000.tsr')==receipt['tokenSHA256']
-          assert Sealer().verify(ad,receipt['bundleSHA256'])['status']=='PASS'
+          assert h(ad/'AD1_SIGNED_BUNDLE.json')==receipt['imprint']
+          assert h(ad/'attempt-0000.tsr')==original['tokenSHA256']
+          assert Sealer().verify(ad,receipt['imprint'])['status']=='PASS'
           for x in b['sourceSHA256']:
             assert h(x['path'])==x['sha256'],x['path']
           genbundle=json.loads((root/'live/GENESIS_SIGNED_BUNDLE.json').read_text())
