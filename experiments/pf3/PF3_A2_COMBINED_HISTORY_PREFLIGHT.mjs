@@ -122,7 +122,7 @@ function run(seed,policy,donorSchedule=null,asDonor=false){
  const actions=[],path=[];let firstHExample=null;
  const summary={seed,policy,asDonor,steps:N,branchChoices:0,
   cuePivotal:0,hPivotal:0,vPivotal:0,overlapHV:0,
-  hActiveBranchChoices:0,bonusClippedAtChoice:0,
+  hActiveBranchChoices:0,bonusClippedAtChoice:0,attributionMatched:0,
   contexts:new Map(),repeatedContexts:0,differentOnReturn:0,
   deathCount:0,rebirthHExact:0,rebirthVExact:0,postRebirthHPivotal:0,
   positiveRefrain:0,settledRefrain:0,probes:[],lastDeathTick:null,
@@ -143,20 +143,55 @@ function run(seed,policy,donorSchedule=null,asDonor=false){
   const Hactive=choices.some(to=>readBonus(H,policy,from,to,priorCue)>0);
   const Vactive=choices.some(to=>Math.abs(receiver.V[from+'>'+to]||0)>0);
   const isBranch=choices.length===2;
-  let hOff=null,vOff=null,cueOff=null;
-  // H-off and V-off are same-state forks. NO future observer state is changed.
+  // Same-state analytic ablation at the EXACT post-evolution, pre-choice
+  // selector. Reconstruct actual winner using immutable canonical gate order;
+  // validate against the actual PF2 step before accepting H/V counterfactuals.
+  let local=null,hOff=null,vOff=null;
+  const trait=receiver.runtime.traitEvolution;
+  const originalEvolve=trait.evolveStep;
+  trait.evolveStep=function(...args){
+   const result=originalEvolve.apply(this,args);
+   if(isBranch){
+    const zones=args[0],gates=args[1],biasVector=args[4];
+    const options=gates.filter(g=>g.isOpen&&g.source===from);
+    assert.equal(options.length,2,'TWO_OPEN_EXITS_EXPECTED');
+    const base=g=>{
+     const z=zones[g.target];
+     return g.flux*(1-g.resistance)
+       +(biasVector[g.target]||0)*.4
+       +z.activation*.2+Math.cos(z.phaseAngle)*.1
+       +(c===g.target?.35:0);
+    };
+    const choose=(includeH,includeV)=>{
+     let best=-Infinity,to=from;
+     for(const g of options){
+      const score=base(g)+bonus(H,receiver,policy,priorCue,from,g.target,includeH,includeV);
+      if(score>best){best=score;to=g.target;}
+     }
+     return to;
+    };
+    local={actual:choose(true,true),Hoff:choose(false,true),
+      Voff:choose(true,false)};
+   }
+   return result;
+  };
+  let ev;
+  try{
+   receiver.runtime.exitBonus=(a,b)=>bonus(H,receiver,policy,priorCue,a,b,true,true);
+   ev=receiver.process(x,t,900000+t);
+  }finally{trait.evolveStep=originalEvolve;}
+  assert.equal(ev.fromZone,from);assert.equal(ev.cueZone,c);
   if(isBranch){
-   hOff=forkExit(receiver,H,policy,x,t,priorCue,false,true);
-   if(Vactive)vOff=forkExit(receiver,H,policy,x,t,priorCue,true,false);
-   if(Hactive)summary.hActiveBranchChoices++;
+   assert(local,'POST_EVOLUTION_SELECTOR_AUDIT_MISSING');
+   assert.equal(local.actual,ev.toZone,'ACTUAL_RECONSTRUCTED_CHOICE_MISMATCH_'+seed+'_'+policy+'_'+t);
+   hOff=local.Hoff;vOff=local.Voff;
+   summary.hActiveBranchChoices+=Number(Hactive);
    for(const to of choices){
     const raw=PF2_W_V*(receiver.V[from+'>'+to]??0)+readBonus(H,policy,from,to,priorCue);
     summary.bonusClippedAtChoice+=Number(Math.abs(raw)>0.5+1e-12);
    }
+   summary.attributionMatched++;
   }
-  receiver.runtime.exitBonus=(a,b)=>bonus(H,receiver,policy,priorCue,a,b,true,true);
-  const ev=receiver.process(x,t,900000+t);
-  assert.equal(ev.fromZone,from);assert.equal(ev.cueZone,c);
   const hPivotal=isBranch&&hOff!==ev.toZone;
   const vPivotal=isBranch&&vOff!==null&&vOff!==ev.toZone;
   if(isBranch){
@@ -253,7 +288,8 @@ for(const seed of SEEDS){
 }
 const trimmed=results.map(({actions,...x})=>x);
 const checks={
- determinism:true,VActive:results.some(x=>x.vPivotal>0),
+ determinism:true,
+ selectorReconstructionExact:results.every(x=>x.attributionMatched===x.branchChoices),VActive:results.some(x=>x.vPivotal>0),
  HActive:results.some(x=>x.hPivotal>0),
  includesPFM:true,PF2Unchanged:true,
  allSourcesStrictlyPast:true,capacityBound:results.every(x=>x.retained<=K),
