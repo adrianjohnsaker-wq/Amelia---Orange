@@ -305,8 +305,8 @@ const checks={
  retainedHistoryOverRebirth:results.some(x=>x.rebirthHExact>0),
  noExternalAgencyTest:true,noProspectiveDevelopmentalInference:true};
 const meta={
- schema:'PF3_A3_COMBINED_HISTORY_SYNTHETIC_PREFLIGHT_V1',
- status:'DESIGN_SEED_ENGINEERING_ONLY_NOT_REGISTERED_NOT_LIVE',
+ schema:'PF3_A3_ORDER_AND_CREDIT_SYNTHETIC_PREFLIGHT_V1',
+ status:'ENGINEERING_ONLY_DESIGN_SEEDS_NOT_PROSPECTIVELY_REGISTERED',
  source:'sha256 deterministic synthetic inputs only, no drand, no RFC3161',
  seedTapes:SEEDS,stepsPerArm:N,
  constants:{historyCapacity:K,HbonusMax:WH,Vweight:PF2_W_V,
@@ -333,7 +333,7 @@ const dst=resolve(process.argv[2]||'/tmp/pf3-a3');
 assert(dst.startsWith('/tmp/')||dst.startsWith('/mnt/data/'),'OUTPUT_OUTSIDE_REPOSITORY_ONLY');
 mkdirSync(dst,{recursive:true});
 writeFileSync(join(dst,'PF3_A3_SYNTHETIC_SUMMARY.json'),JSON.stringify(meta,null,2)+'\n');
-console.log('PF3_A3_SYNTHETIC_COMBINED_HISTORY_PREFLIGHT_PASS '+JSON.stringify({
+console.log('PF3_A3_SYNTHETIC_ORDER_CREDIT_PREFLIGHT_PASS '+JSON.stringify({
  steps:N,seeds:SEEDS,checks,donors:donorChecks,
  rows:trimmed.map(x=>({seed:x.seed,policy:x.policy,hPivotal:x.hPivotal,
   vPivotal:x.vPivotal,learnedUpdates:x.learnedUpdates,rebirths:x.deathCount,
