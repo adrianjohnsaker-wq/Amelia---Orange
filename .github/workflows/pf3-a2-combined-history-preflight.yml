@@ -1,0 +1,55 @@
+name: PF3 A2 — Combined External History Selectivity (synthetic only)
+on:
+  push:
+    branches:
+      - design/pf3-a2-history-selection-field-agency-20261023
+    paths:
+      - .github/workflows/pf3-a2-combined-history-preflight.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  engineering:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      DRIFT_C1_ENABLE_LIVE: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install isolated tsx runner
+        run: npm install --ignore-scripts --no-save --no-package-lock tsx@4.23.12
+      - name: Syntax check synthetic-only A2
+        run: node --check experiments/pf3/PF3_A2_COMBINED_HISTORY_PREFLIGHT.mjs
+      - name: Execute deterministic combined H V and canonical PFM
+        run: npx tsx experiments/pf3/PF3_A2_COMBINED_HISTORY_PREFLIGHT.mjs /tmp/pf3-a2 | tee /tmp/pf3-a2-run.txt
+      - name: Check audit gates fail-closed
+        run: |
+          python3 - <<'PY'
+          import json
+          x=json.load(open('/tmp/pf3-a2/PF3_A2_SYNTHETIC_SUMMARY.json'))
+          c=x['checks']
+          assert c['determinism']
+          assert c['resetNoH']
+          assert c['realDonorYoke']
+          assert c['capacityBound']
+          assert c['PF2Unchanged']
+          assert len(x['results'])==18
+          assert len(x['donorChecks'])==3
+          assert x['source']=='sha256 deterministic synthetic inputs only, no drand, no RFC3161'
+          print('PF3_A2_H_V_PFM_ENGINEERING_GATES_PASS',json.dumps(c,sort_keys=True))
+          PY
+      - name: Export derived synthetic diagnostics without science mutations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pf3-a2-combined-history-synthetic-preflight
+          path: |
+            /tmp/pf3-a2/
+            /tmp/pf3-a2-run.txt
+          if-no-files-found: warn
+          retention-days: 30
