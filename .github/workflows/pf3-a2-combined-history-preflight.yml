@@ -26,7 +26,9 @@ jobs:
       - name: Syntax check synthetic-only A2
         run: node --check experiments/pf3/PF3_A2_COMBINED_HISTORY_PREFLIGHT.mjs
       - name: Execute deterministic combined H V and canonical PFM
-        run: npx tsx experiments/pf3/PF3_A2_COMBINED_HISTORY_PREFLIGHT.mjs /tmp/pf3-a2 | tee /tmp/pf3-a2-run.txt
+        run: |
+          set -euo pipefail
+          npx tsx experiments/pf3/PF3_A2_COMBINED_HISTORY_PREFLIGHT.mjs /tmp/pf3-a2 | tee /tmp/pf3-a2-run.txt
       - name: Check audit gates fail-closed
         run: |
           python3 - <<'PY'
