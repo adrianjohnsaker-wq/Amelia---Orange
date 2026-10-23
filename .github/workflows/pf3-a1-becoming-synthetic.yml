@@ -1,0 +1,56 @@
+name: PF3 A1 Becoming EncounterHistory — synthetic engineering only
+
+on:
+  push:
+    branches:
+      - design/pf3-becoming-two-wills-20261023
+    paths:
+      - .github/workflows/pf3-a1-becoming-synthetic.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    env:
+      DRIFT_C1_ENABLE_LIVE: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install runner, no package lock or source changes
+        run: npm install --ignore-scripts --no-save --no-package-lock tsx@4.23.12
+      - name: Strict syntax preflight
+        run: node --check experiments/pf3/PF3_A1_SYNTHETIC_ENGINEERING.mjs
+      - name: Run actual frozen Numogram via synthetic H engineering fixture
+        run: |
+          mkdir -p /tmp/pf3-a1
+          npx tsx experiments/pf3/PF3_A1_SYNTHETIC_ENGINEERING.mjs | tee /tmp/pf3-a1/ENGINEERING_LOG.txt
+      - name: Confirm reset gate and physical-source exclusion
+        run: |
+          python3 - <<'PY'
+          import json,pathlib
+          x=pathlib.Path('/tmp/pf3-a1/ENGINEERING_LOG.txt').read_text()
+          matches=[t for t in x.splitlines() if 'PF3_A1_SYNTHETIC_ENGINEERING_PASS ' in t]
+          assert len(matches)==1, 'MISSING_ENGINEERING_RESULT'
+          data=json.loads(matches[0].split('PF3_A1_SYNTHETIC_ENGINEERING_PASS ',1)[1])
+          assert data['engineering']['determinismPASS']
+          assert data['engineering']['resetNoHReadoutPASS']
+          assert data['source']=='sha256 synthetic strings, NOT quicknet, NEVER live'
+          pathlib.Path('/tmp/pf3-a1/SUMMARY.json').write_text(json.dumps(data,indent=2)+'\n')
+          print('PF3_A1_DESIGN_MECHANISM_UNIT_GATES_PASS', data['engineering'])
+          PY
+      - name: Upload synthetic-only engineering evidence
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pf3-a1-synthetic-encounter-history-preflight
+          path: /tmp/pf3-a1/
+          retention-days: 30
+          if-no-files-found: error
