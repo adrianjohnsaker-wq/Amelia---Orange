@@ -1,0 +1,44 @@
+name: PF2 Capture and Selection Atlas — read-only
+
+on:
+  push:
+    branches:
+      - analysis/pf2-capture-selection-atlas-20261023
+    paths:
+      - .github/workflows/pf2-capture-selection-atlas-readonly.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  atlas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install local TypeScript runner without modifying scientific source
+        run: npm install --ignore-scripts --no-save --no-package-lock tsx@4.23.12
+      - name: Check atlas syntax
+        run: node --check experiments/pf2/atlas/PF2_CAPTURE_SELECTION_ATLAS.mjs
+      - name: Source-faithful independent read-only 18-arm replay
+        run: |
+          npx tsx experiments/pf2/PF2_REPLAY.mjs
+      - name: Calculate exact local cue/V ablations and selection atlas
+        env:
+          DRIFT_C1_ENABLE_LIVE: "false"
+        run: |
+          npx tsx experiments/pf2/atlas/PF2_CAPTURE_SELECTION_ATLAS.mjs /tmp/pf2-capture-selection-atlas
+      - name: Publish separate derived atlas results without repository writes
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pf2-capture-selection-292tick-readonly
+          path: /tmp/pf2-capture-selection-atlas/
+          if-no-files-found: error
+          retention-days: 30
