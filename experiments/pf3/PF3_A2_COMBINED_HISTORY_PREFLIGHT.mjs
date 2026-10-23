@@ -75,7 +75,7 @@ function updateCredit(H,source,outcome) {
  assert(source.cue>=0&&source.cue<=9,'CREDIT_CUE_OUT_OF_RANGE');
  // Bounded online estimate; update AFTER 24-step consequences settle.
  // Refrain is reward-transformed but not a test for autonomy or capacity.
- const value=outcome>0?1:-.05,lr=.22;
+ const value=outcome<0?-1:(outcome>0?1:-.05),lr=.22;
  H.pref[source.cue]+=lr*(value-H.pref[source.cue]);
  H.creditCount++;
 }
@@ -125,7 +125,7 @@ function run(seed,policy,donorSchedule=null,asDonor=false){
   hActiveBranchChoices:0,bonusClippedAtChoice:0,
   contexts:new Map(),repeatedContexts:0,differentOnReturn:0,
   deathCount:0,rebirthHExact:0,rebirthVExact:0,postRebirthHPivotal:0,
-  positiveRefrain:0,settledRefrain:0,probes:[],
+  positiveRefrain:0,settledRefrain:0,probes:[],lastDeathTick:null,
   firstHExample:null,sourceLinksAudited:0};
  let hSinceLastDeath=false;
  for(let t=1;t<=N;t++){
@@ -190,7 +190,7 @@ function run(seed,policy,donorSchedule=null,asDonor=false){
    updateCredit(H,src,ev.refrainOutcome.outcome);
   }
   if(ev.death){
-   summary.deathCount++;
+   summary.deathCount++;summary.lastDeathTick=t;
    // Terminal loss updates are separate from positive novelty/return credit.
    const final=new Set(ev.death.finalExcursion);
    for(const e of lifeSources)if(final.has(e.executedFrom+'>'+e.executedTo))
@@ -245,8 +245,9 @@ for(const seed of SEEDS){
    assert.equal(x.actionDigest,donor.actionDigest,'NOT_TRUE_DONOR_YOKE_'+seed);
    assert.equal(x.yokedCopyChecks,N-K,'DONOR_DECISION_COUNT');
   }
-  assert.equal(x.rebirthHExact,x.deathCount-(x.deathCount&&x.deathCount>0&&false?1:0)-
-   Number(false),'PLACEHOLDER');
+  assert.equal(x.rebirthHExact,x.deathCount-Number(x.lastDeathTick===N),
+    'H_INHERITANCE_CHECK_COUNT');
+  assert.equal(x.rebirthVExact,x.rebirthHExact,'V_INHERITANCE_CHECK_COUNT');
   results.push(x);
  }
 }
