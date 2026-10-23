@@ -70,6 +70,7 @@ function fixtureLife(seed,policy){
  for(let step=1;step<=N;step++){
   const input=synthetic(seed,step),cue=cueOf(input);
   const from=lineage.runtime.getCurrentZone();
+  const beforeZones=clone(lineage.runtime.getQabbala().getZones());
   const vals=H.items.map(x=>x.sourceSyntheticTick);
   assert(vals.every(t=>t<step),'FUTURE_HISTORY_LEAKAGE');
   const available=PF2_OPEN[from]||[];
@@ -99,7 +100,7 @@ function fixtureLife(seed,policy){
   }
   // Credit a source history ONLY AFTER the actual event. No current-cue
   // can enter H before its own selection.
-  const record=sourceEvent(seed,step,input,prevCue,from,lineage.runtime.getQabbala().getZones());
+  const record=sourceEvent(seed,step,input,prevCue,from,beforeZones);
   H.observe(record);
   prevCue=cue;
   trace.push({step,syntheticSourceDigest:sha(input),cue,from,to:e.toZone,
@@ -140,7 +141,7 @@ const summary={schema:'PF3_A1_SYNTHETIC_ENGINEERING_ONLY_V1',status:'UNREGISTERE
  constants:{capacity:MAX_H,hWeight:W_H,steps:N,seeds:SEEDS},
  design:{
   H:'prior-cue/current-cue/from-zone source histories; bounded 12, order-sensitive',
-  selective:'designer-fixed preference for lower post-event target activation; NOT learned autonomous will',
+  selective:'designer-fixed preference for lower pre-event target activation; NOT learned autonomous will',
   fifo:'keeps last 12 eligible past histories',
   yoked:'independent seed-free priority of past-event indices; NOT a true matched independent-donor mask',
   reset:'no H',
