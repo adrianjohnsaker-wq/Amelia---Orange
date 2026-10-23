@@ -183,7 +183,7 @@ function run(seed,policy,donorSchedule=null,asDonor=false){
    assert.equal(idx,lifeSources.length-PF2_H,'SOURCE_HORIZON_OFFSET');
    const src=lifeSources[idx];
    assert.equal(src.executedFrom+'>'+src.executedTo,ev.refrainOutcome.edge);
-   assert.equal(src.tick,t-PF2_H);
+   assert.equal(src.tick,t-PF2_H+1,'PF2_24_EVENT_WINDOW_INDEX_MATCH');
    summary.sourceLinksAudited++;
    summary.settledRefrain++;
    summary.positiveRefrain+=Number(ev.refrainOutcome.outcome>0);
