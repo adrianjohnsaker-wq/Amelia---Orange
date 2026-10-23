@@ -33,6 +33,16 @@ jobs:
         run: |
           python3 experiments/pf3/READONLY_EXTERNAL_HISTORY_CREDIT.py \
             --output /tmp/pf3-external-history-selection
+      - name: Validate edge-stratified credit table
+        run: |
+          python3 - <<'PY'
+          import json
+          p='/tmp/pf3-external-history-selection/HISTORY_CREDIT_SUMMARY.json'
+          j=json.load(open(p))
+          assert sum(j['totals']['edge_by_cue'].values()) == j['historyCredits']
+          assert sum(j['totals']['edge_by_cue_positive'].values()) == j['totals']['credits']['positive']
+          print('EDGE_CONFOUNDER_STRATIFICATION_SUM_CHECK_PASS')
+          PY
       - name: Upload read-only derived evidence, no repository changes
         if: success()
         uses: actions/upload-artifact@v4
