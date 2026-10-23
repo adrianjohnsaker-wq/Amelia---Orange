@@ -119,7 +119,7 @@ function probe(L,H,policy,previousCue,seed,checkpoint,allowH){
 function run(seed,policy,donorSchedule=null,asDonor=false){
  const receiver=new PF2ReceiverLineage({armId:'C',k:0,mode:'learner'});
  const H=emptyH();let priorCue=null,lifeSources=[],lastDeathH=null;
- const actions=[],path=[],firstHExample=null;
+ const actions=[],path=[];let firstHExample=null;
  const summary={seed,policy,asDonor,steps:N,branchChoices:0,
   cuePivotal:0,hPivotal:0,vPivotal:0,overlapHV:0,
   hActiveBranchChoices:0,bonusClippedAtChoice:0,
