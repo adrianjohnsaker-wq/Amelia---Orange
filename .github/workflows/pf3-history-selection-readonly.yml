@@ -1,0 +1,43 @@
+name: PF3 external history selection — read-only source-credit audit
+
+on:
+  push:
+    branches:
+      - analysis/pf3-external-history-selection-20261023
+    paths:
+      - .github/workflows/pf3-history-selection-readonly.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-credit-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Prohibit live access and check analysis syntax
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        run: |
+          python3 -m py_compile experiments/pf3/READONLY_EXTERNAL_HISTORY_CREDIT.py
+      - name: Link each archived original encounter to delayed learner credit
+        env:
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        run: |
+          python3 experiments/pf3/READONLY_EXTERNAL_HISTORY_CREDIT.py \
+            --output /tmp/pf3-external-history-selection
+      - name: Upload read-only derived evidence, no repository changes
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pf3-external-history-selection-exploratory
+          path: /tmp/pf3-external-history-selection/
+          if-no-files-found: error
+          retention-days: 30
