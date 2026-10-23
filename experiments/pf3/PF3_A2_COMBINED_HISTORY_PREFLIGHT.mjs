@@ -171,7 +171,9 @@ function run(seed,policy,donorSchedule=null,asDonor=false){
      return to;
     };
     local={actual:choose(true,true),Hoff:choose(false,true),
-      Voff:choose(true,false)};
+      Voff:choose(true,false),
+      clipped:options.filter(g=>Math.abs(
+       PF2_W_V*(receiver.V[from+'>'+g.target]??0)+readBonus(H,policy,from,g.target,priorCue))>0.5+1e-12).length};
    }
    return result;
   };
@@ -186,10 +188,7 @@ function run(seed,policy,donorSchedule=null,asDonor=false){
    assert.equal(local.actual,ev.toZone,'ACTUAL_RECONSTRUCTED_CHOICE_MISMATCH_'+seed+'_'+policy+'_'+t);
    hOff=local.Hoff;vOff=local.Voff;
    summary.hActiveBranchChoices+=Number(Hactive);
-   for(const to of choices){
-    const raw=PF2_W_V*(receiver.V[from+'>'+to]??0)+readBonus(H,policy,from,to,priorCue);
-    summary.bonusClippedAtChoice+=Number(Math.abs(raw)>0.5+1e-12);
-   }
+   summary.bonusClippedAtChoice+=local.clipped;
    summary.attributionMatched++;
   }
   const hPivotal=isBranch&&hOff!==ev.toZone;
