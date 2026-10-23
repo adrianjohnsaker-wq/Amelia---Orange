@@ -41,6 +41,10 @@ At each step, instrument only the *already-running deterministic replay's* trait
 - \`PF2_CAPTURE_SELECTION_ATLAS.mjs\`: additive offline replayer and exact-score analytic auditor. On a real local checkout run \`npx tsx experiments/pf2/atlas/PF2_CAPTURE_SELECTION_ATLAS.mjs /tmp/pf2-atlas\`. Writes only to the explicit destination outside the repository (default \`/tmp/pf2-capture-selection-atlas\`).
 - \`PREFIX_OBSERVATION_2026-10-23.md\`: independently tallied descriptive archive snapshot; **not** inferential results or an executed local-ablation audit.
 
+## Status and evidence boundary
+
+**Local cue/V influence: verified by exact deterministic replay.** **V transmission over rebirth: 2 of 2 exact observed cases.** **Differentiated recurrence: descriptively catalogued, but no learner advantage over unchanged controls.** **Population-level selection and independent external field agency: not established.** One physical beacon generates all nine PF2 input arms; their keyed transforms are not independent physical signals.
+
 ## Experimental philosophy
 
 The objective is to measure **where** inflow captures transitions, **when** inherited memory redirects them, and **which** dispositions survive or proliferate, before testing whether external patterns themselves maintain and reproduce an organising power. The spiral of differentiated recurrence, not survival alone, is the developmental target.
