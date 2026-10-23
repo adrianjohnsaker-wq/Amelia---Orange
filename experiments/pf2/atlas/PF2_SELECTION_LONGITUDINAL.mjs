@@ -30,7 +30,7 @@ function fresh(){
  return {ticks:0,choices:0,cueEligible:0,cueFollowed:0,cuePivotal:0,vPivotal:0,
   nonzeroV:0,positiveRefrains:0,deaths:0,routeEdges:new Set(),pitWardChoices:0,
   contextRepeat:0,contextDifferentExit:0,contextVChanged:0,contextDifferentAndVChanged:0,
-  vSignAtChoices:{positive:0,negative:0,zero:0},firstChoiceTick:null,lastChoiceTick:null,
+  vActivityAtChoices:{nonzero:0,zero:0},firstChoiceTick:null,lastChoiceTick:null,
   memoriesObservedAtBranch:0,contextRepeatVChangeSum:0,contextRepeatAbsVDiffSum:0};
 }
 const arm={};const windows=Array.from({length:WINDOWS},(_,i)=>({
@@ -84,7 +84,7 @@ for (const name of names){
       q.vPivotal+=Number(c.vPivotal);
       q.nonzeroV+=Number(c.nonzeroV);
       q.memoriesObservedAtBranch+=Number(vecNorm>0);
-      q.vSignAtChoices[vecNorm>0?'positive':'zero']++;
+      q.vActivityAtChoices[vecNorm>0?'nonzero':'zero']++;
       q.firstChoiceTick??=row.tick;q.lastChoiceTick=row.tick;
       q.pitWardChoices+=Number([1,2,4].includes(e.fromZone)&&
         e.toZone===(e.fromZone===1?2:e.fromZone===2?4:5));
@@ -119,7 +119,7 @@ for (const name of names){
         exactCarryBeforeFirstChoice:same<1e-12,
         firstChoice:c.selected.actual,firstChoiceCue:e.cueZone,
         firstChoiceVPivotal:c.vPivotal,firstChoiceCuePivotal:c.cuePivotal,
-        stateChangeAfterDeath:false,sourceRowDigest:row.digest});
+        sourceRowDigest:row.digest});
       state.pendingDeath=null;
     }
    } else {
