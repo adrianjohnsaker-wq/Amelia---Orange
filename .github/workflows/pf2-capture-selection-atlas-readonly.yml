@@ -34,11 +34,14 @@ jobs:
           DRIFT_C1_ENABLE_LIVE: "false"
         run: |
           npx tsx experiments/pf2/atlas/PF2_CAPTURE_SELECTION_ATLAS.mjs /tmp/pf2-capture-selection-atlas
+      - name: Longitudinal selection, rebirth and differentiated recurrence
+        run: |
+          npx tsx experiments/pf2/atlas/PF2_SELECTION_LONGITUDINAL.mjs /tmp/pf2-capture-selection-atlas
       - name: Publish separate derived atlas results without repository writes
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: pf2-capture-selection-292tick-readonly
+          name: pf2-capture-and-longitudinal-selection-292tick
           path: /tmp/pf2-capture-selection-atlas/
           if-no-files-found: error
           retention-days: 30
