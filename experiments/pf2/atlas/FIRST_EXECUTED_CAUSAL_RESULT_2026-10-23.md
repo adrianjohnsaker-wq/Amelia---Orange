@@ -48,7 +48,7 @@ Later branch divergences cannot be interpreted as independent first intervention
 
 ## Selection and spiral status
 
-- **Observed:** 58 positive learner refrain updates, 805 choices with nonzero inherited V, five independent paired *first-divergence occasions*, different evolution of transition histories.
+- **Observed:** 58 positive learner refrain updates, 805 choices with nonzero inherited V, five **distinct matched-arm** *first-divergence occasions* (not independent physical beacons), different evolution of transition histories.
 - **NOT YET DEMONSTRATED:** selective persistence of a population of dispositions due to external inflow rather than ordinary cue-driven motion; only two learner deaths (matched by two controls), no after-third-death P2-2 eligible deaths, and short follow-up for robust lineage selection.
 - Future descriptive selection measures: pre/post birth edge-V vectors, route repertoire, recurrence novelty, replacement frequencies, exposure-normalised cue classes and effects at matched initial states. Genuine *spiral* means differentiated recurrence; survival alone does not count.
 
