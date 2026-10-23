@@ -112,6 +112,10 @@ def main():
                         stats["credits"]["positive" if positive else "zero"]+=1
                         stats["source_cue_class"][src["cueClass"]]+=1
                         stats["source_cue_class_positive" if positive else "source_cue_class_zero"][src["cueClass"]]+=1
+                        # Edge-stratified classes guard against mistaking cue alignment for causal credit.
+                        stratum=src["edge"]+"|"+src["cueClass"]
+                        stats["edge_by_cue"][stratum]+=1
+                        stats["edge_by_cue_positive" if positive else "edge_by_cue_zero"][stratum]+=1
                         motifs["all"][src["cueMotif"]]+=1
                         motifs["positive" if positive else "zero"][src["cueMotif"]]+=1
                         arms[a]["credits"]["all"]+=1
