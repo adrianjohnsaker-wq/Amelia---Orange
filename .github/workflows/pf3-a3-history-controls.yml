@@ -1,0 +1,57 @@
+name: PF3 A3 — selective becoming synthetic order and credit controls
+on:
+  push:
+    branches: ["design/pf3-a3-selective-becoming-20261023"]
+    paths:
+      - .github/workflows/pf3-a3-history-controls.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      DRIFT_C1_ENABLE_LIVE: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install tooling without package mutations
+        run: npm install --ignore-scripts --no-save --no-package-lock tsx@4.23.12
+      - name: Syntax gate
+        run: node --check experiments/pf3/PF3_A3_HISTORY_CONTROLS.mjs
+      - name: Execute synthetic only; propagate all errors
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx tsx experiments/pf3/PF3_A3_HISTORY_CONTROLS.mjs /tmp/pf3-a3 | tee /tmp/pf3-a3-engineering-log.txt
+      - name: Fail closed on engineering constraints
+        run: |
+          python3 - <<'PY'
+          import json
+          j=json.load(open('/tmp/pf3-a3/PF3_A3_SYNTHETIC_SUMMARY.json'))
+          assert j['status']=='ENGINEERING_ONLY_DESIGN_SEEDS_NOT_PROSPECTIVELY_REGISTERED'
+          assert set(j['arms'])=={'adaptive','fixed','fifo','yoked','time_permuted','credit_scrambled','reset'}
+          a=j['checks']
+          for k in ('determinism','selectorReconstructionExact','resetNoH','realDonorYoke','capacityBound','allSourcesStrictlyPast','PF2Unchanged'):
+              assert a[k],k
+          assert len(j['results'])==21
+          assert not a['noExternalAgencyTest'] is False
+          assert a['noProspectiveDevelopmentalInference']
+          assert all(r['bonusClippedAtChoice']==0 for r in j['results']), 'CLIPPING_NEEDS_EXPLICIT_REVIEW'
+          print('PF3_A3_SYNTHETIC_GATES_PASS', json.dumps(a, sort_keys=True))
+          PY
+      - name: Export derived results only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pf3-a3-order-and-credit-synthetic
+          path: |
+            /tmp/pf3-a3/
+            /tmp/pf3-a3-engineering-log.txt
+          if-no-files-found: warn
+          retention-days: 30
