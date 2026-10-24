@@ -1,0 +1,37 @@
+name: PF4 G3e — full 99-value Rmean calibration QA (mock only)
+on:
+  push:
+    branches:
+      - design/pf4-inscription-precommit-20261024
+    paths:
+      - experiments/pf4/PF4_G3E_FULL_VECTOR_RMEAN_AUDIT.py
+      - .github/workflows/pf4-g3e-fullvector-selftest.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit-self-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check frozen original Studio SHA manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd experiments/studio
+          sha256sum -c SHA256SUMS.txt > /tmp/pf4-g3e-source-sha.txt
+          test "$(grep -c ' OK$' /tmp/pf4-g3e-source-sha.txt)" -eq 65
+      - name: Exact R_mean 90-cell computation and mock corruption cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile experiments/pf4/PF4_G3E_FULL_VECTOR_RMEAN_AUDIT.py
+          python3 experiments/pf4/PF4_G3E_FULL_VECTOR_RMEAN_AUDIT.py --self-test
+      - name: Fail closed on prospective status
+        run: echo PF4_G3E_SCORING_VALIDATOR_ONLY_REAL_CALIBRATION_NOT_YET_PROVIDED
