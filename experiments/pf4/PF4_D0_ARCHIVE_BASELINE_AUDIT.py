@@ -66,6 +66,8 @@ def main():
     assert len(loopB)==21 and loopB[0]["pass"]==-1
     assert all(len(r["traces"])==9 and len(r["deaths"])==9 for r in loop+loopB)
     assert infinity_norm(c0,loop[-1]["Vend"])==0
+    stableHistory=all(r["traces"]==loop[-1]["traces"] for r in loop[20:])
+    assert stableHistory, "LAST_TEN_PASSES_TRACES_DIFFER"
     # The published final code is the *end* of pass 29, not its beginning.
     preceding_step_residual=infinity_norm(loop[-1]["Vstart"],loop[-1]["Vend"])
     assay=load("outputs/scar/scar_assay.json")
@@ -101,7 +103,7 @@ def main():
             "deathCount":deaths(own),
             "R_all":maxrecs(own),
             "numericFixedPointExact":maxrecs(own)==0,
-            "historyDigestStable":True},
+            "historyDigestStableSincePass20":stableHistory},
         "scarIntervention":{
             "naiveDeaths":deaths(assay["naive (zero code)"]),
             "scarErasedDeaths":deaths(assay["erase scar: V* with 4>5 = 0"]),
