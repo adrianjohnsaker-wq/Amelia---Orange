@@ -25,13 +25,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install isolated TypeScript module resolver
+        run: npm install --ignore-scripts --no-save --no-package-lock tsx@4.23.12
       - name: Validate source syntax and read-only design
         run: node --check experiments/pf4/PF4_G2_ARCHIVED_PREFIX_PARITY.mjs
       - name: Recompute independent Studio lineage against published PF2 rows
         shell: bash
         run: |
           set -euo pipefail
-          node --experimental-strip-types --no-warnings experiments/pf4/PF4_G2_ARCHIVED_PREFIX_PARITY.mjs /tmp/pf4-g2 | tee /tmp/pf4-g2-run.log
+          npx tsx experiments/pf4/PF4_G2_ARCHIVED_PREFIX_PARITY.mjs /tmp/pf4-g2 | tee /tmp/pf4-g2-run.log
       - name: Verify correct output status
         shell: bash
         run: |
