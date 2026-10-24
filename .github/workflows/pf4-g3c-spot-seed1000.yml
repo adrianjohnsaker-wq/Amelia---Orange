@@ -1,0 +1,57 @@
+name: PF4 G3c — independent synthetic null seed 1000 spot-check
+on:
+  push:
+    branches:
+      - design/pf4-inscription-precommit-20261024
+    paths:
+      - .github/workflows/pf4-g3c-spot-seed1000.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reconstruct:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated TS runner
+        run: npm install --ignore-scripts --no-save --no-package-lock tsx@4.23.12
+      - name: Compare all 99 original Studio code cells and SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd experiments/studio
+          sha256sum -c SHA256SUMS.txt >/tmp/pf4-g3c-studio-shas.txt
+          test "$(grep -c ' OK$' /tmp/pf4-g3c-studio-shas.txt)" -eq 65
+      - name: Reconstruct 20160-tick seed1000 under four candidate-code assignments
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx tsx experiments/pf4/PF4_G3C_NULL_SPOT_SEED1000.mjs /tmp/pf4-g3c | tee /tmp/pf4-g3c-execution.txt
+      - name: Validate standalone report shape but retain any spot mismatches
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          r=json.load(open('/tmp/pf4-g3c/PF4_G3C_SPOT_SEED_1000.json'))
+          assert r['ticks']==20160 and r['seed']==1000 and r['prospective'] is False
+          assert r['source']=='DETERMINISTIC_SYNTHETIC_SHA256_NOT_DRAND'
+          assert set(r['results'])=={'vstar','vstar_shift_plus1','vstar_shift_minus1','zero'}
+          assert all(len(z['perEdgeMaxima'])==11 for z in r['results'].values())
+          print('PF4_G3C_SHAPE_PASS - numerical disagreements must be reported, not hidden')
+          PY
+      - name: Preserve reconstruction and differences
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pf4-g3c-independent-seed1000
+          path: |
+            /tmp/pf4-g3c/
+            /tmp/pf4-g3c-execution.txt
+          if-no-files-found: warn
