@@ -1,0 +1,30 @@
+name: PF4 AM1 — two-code same-window preseal structural guard (mock only)
+on:
+  push:
+    branches:
+      - design/pf4-inscription-precommit-20261024
+    paths:
+      - .github/workflows/pf4-am1-preseseal-guard.yml
+      - experiments/pf4/PF4_AM1_TWO_CODE_PRESSEAL_GUARD.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mock-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Vstar + inscription identity, paired controls, both alpha policies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile experiments/pf4/PF4_AM1_TWO_CODE_PRESSEAL_GUARD.py
+          python3 experiments/pf4/PF4_AM1_TWO_CODE_PRESSEAL_GUARD.py --self-test
+      - name: Confirm no actual seal or user inscription is generated
+        run: echo PF4_AM1_DUAL_CODE_GUARD_MOCK_ONLY_NO_LIVE_SEAL
