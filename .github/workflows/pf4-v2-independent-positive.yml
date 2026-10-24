@@ -1,0 +1,57 @@
+name: PF4 v2 G3e — independent positive control (frozen PF2)
+on:
+  push:
+    branches:
+      - design/pf4-inscription-precommit-20261024
+    paths:
+      - .github/workflows/pf4-v2-independent-positive.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reproduce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated TypeScript loader
+        run: npm install --ignore-scripts --no-save --no-package-lock tsx@4.23.12
+      - name: Verify 65-file studio parent archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd experiments/studio
+          sha256sum -c SHA256SUMS.txt > /tmp/pf4-v2-studio-checks.txt
+          test "$(grep -c ' OK$' /tmp/pf4-v2-studio-checks.txt)" -eq 65
+      - name: Compute both LOOP positive controls through original PF2 receiver
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx tsx experiments/pf4/PF4_V2_INDEPENDENT_POSITIVE_CONTROL.mjs /tmp/pf4-v2-pos | tee /tmp/pf4-v2-positive-run.txt
+      - name: Guard against prospective claims
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          x=json.load(open('/tmp/pf4-v2-pos/PF4_V2_INDEPENDENT_POSITIVE_CONTROL.json'))
+          assert x['futureSourceSeen'] is False and x['livePF2Mutated'] is False
+          assert x['ticks']==20160
+          assert x['arms']['vstar']['deaths']==0
+          assert x['arms']['vstar_shift1']['deaths']==3
+          print('PF4_V2_POSITIVE_CONTROL_ENGINEERING_ONLY')
+          PY
+      - name: Archive derived audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pf4-v2-independent-positive-replay
+          path: |
+            /tmp/pf4-v2-pos/
+            /tmp/pf4-v2-positive-run.txt
+          retention-days: 30
+          if-no-files-found: warn
