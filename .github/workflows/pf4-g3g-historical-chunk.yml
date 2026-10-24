@@ -1,0 +1,72 @@
+name: PF4 G3g — bounded read-only historical source chunk
+on:
+  push:
+    branches:
+      - design/pf4-inscription-precommit-20261024
+    paths:
+      - .github/workflows/pf4-g3g-historical-chunk.yml
+  workflow_dispatch:
+    inputs:
+      window:
+        description: "Historical 14-day world index 0..9"
+        type: number
+        required: true
+        default: 0
+      chunk:
+        description: "Bounded world chunk index 0..16 (1200 ticks except last 960)"
+        type: number
+        required: true
+        default: 0
+permissions:
+  contents: read
+jobs:
+  independently-bls-verified:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-pin
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Use only pinned BLS verifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          python3 -m pip install -r c1-pin/drift1a_c1/requirements.txt
+      - name: Validate ten-world 170-chunk historical schedule, no network
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          DRIFT_C1_ENABLE_LIVE: 'false'
+        run: python3 experiments/pf4/PF4_G3G_HISTORICAL_BLS_CHUNK.py --self-test
+      - name: Fetch and authenticate strictly past rounds in bounded chunk
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          WORLD_INDEX: ${{ inputs.window || 0 }}
+          CHUNK_INDEX: ${{ inputs.chunk || 0 }}
+          EVENT_NAME: ${{ github.event_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "push" ]]; then
+            python3 experiments/pf4/PF4_G3G_HISTORICAL_BLS_CHUNK.py --window 0 --chunk 0 --pilot-count 30
+          else
+            python3 experiments/pf4/PF4_G3G_HISTORICAL_BLS_CHUNK.py --window "$WORLD_INDEX" --chunk "$CHUNK_INDEX"
+          fi
+      - name: Archive authentic source chunk only (NO model scoring)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pf4-g3g-historical-readonly-${{ github.run_id }}
+          path: /tmp/pf4-g3g/
+          retention-days: 45
+          if-no-files-found: warn
