@@ -1,0 +1,31 @@
+name: PF4 G3b — null calibration package validator (mock self-tests only)
+on:
+  push:
+    branches:
+      - design/pf4-inscription-precommit-20261024
+    paths:
+      - .github/workflows/pf4-g3b-package-validation.yml
+      - experiments/pf4/PF4_G3B_OPERATOR_CALIBRATION_QA.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Syntax and test strict package schema, including negative corruption controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile experiments/pf4/PF4_G3B_OPERATOR_CALIBRATION_QA.py
+          python3 experiments/pf4/PF4_G3B_OPERATOR_CALIBRATION_QA.py --self-test
+      - name: Confirm this is NOT the actual 400-world calibration
+        run: |
+          echo PF4_G3B_MOCK_TESTS_ONLY_OPERATOR_CALIBRATION_PACKAGE_NOT_YET_PROVIDED
