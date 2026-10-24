@@ -47,6 +47,7 @@ def inspect_archive(root):
     previous = g_digest
     count = 0
     selected = []
+    last_release = None
     names = sorted(p for p in (root / "chunks").iterdir() if NAME.fullmatch(p.name))
     need(bool(names), "no published chunks")
     for p in names:
@@ -75,6 +76,10 @@ def inspect_archive(root):
             need(digest_bytes(bytes.fromhex(signature)) == randomness,
                  "randomness != SHA256(signature)")
             need(isinstance(row.get("roundTime"), int), "invalid release time")
+            if last_release is not None:
+                need(row["roundTime"] - last_release == 60,
+                     "Quicknet release timestamps are not 60 seconds apart")
+            last_release = row["roundTime"]
             need(re.fullmatch(r"[0-9a-f]{64}", str(row.get("digest", ""))) is not None,
                  "invalid linked row digest")
             selected.append({"tick": count, "round": row["round"],
