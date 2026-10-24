@@ -22,6 +22,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install isolated TypeScript runner
+        run: npm install --ignore-scripts --no-save --no-package-lock tsx@4.23.12
       - name: Freeze archive on exact studio prefix and check SHA manifest
         run: |
           set -euo pipefail
@@ -34,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node --experimental-strip-types --no-warnings experiments/pf4/PF4_G2_ARCHIVED_1731_PARITY.mjs /tmp/pf4-g2 | tee /tmp/pf4-g2-log.txt
+          npx tsx experiments/pf4/PF4_G2_ARCHIVED_1731_PARITY.mjs /tmp/pf4-g2 | tee /tmp/pf4-g2-log.txt
       - name: Assert historical, no future and 1731 exact values
         run: |
           python3 - <<'PY'
