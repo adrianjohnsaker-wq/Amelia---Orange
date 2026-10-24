@@ -1,0 +1,55 @@
+name: PF4 D0 — read-only studio archive and future-test baseline audit
+
+on:
+  push:
+    branches:
+      - design/pf4-future-boundary-residual-20261024
+    paths:
+      - .github/workflows/pf4-d0-archive-audit.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify all original studio archive checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd experiments/studio
+          sha256sum -c SHA256SUMS.txt
+      - name: Execute retrospective self-consistency and baseline audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 experiments/pf4/PF4_D0_ARCHIVE_BASELINE_AUDIT.py --output /tmp/pf4-d0
+      - name: Confirm prospective status remains not calibrated
+        run: |
+          python3 - <<'PY'
+          import json
+          x=json.load(open('/tmp/pf4-d0/PF4_D0_ARCHIVE_BASELINE_AUDIT.json'))
+          assert x['manifest']['filesChecked']==65 and x['manifest']['allSha256Verified']
+          assert not x['codeSelfReexecution']['numericFixedPointExact']
+          assert x['codeSelfReexecution']['historyDigestStableSincePass20']
+          assert x['liveThresholdStatus']=='NOT_CALIBRATED_FOR_PF2_QUICKNET_INPUT_MAPPING'
+          assert x['liveSampleSeen'] is False
+          print('PF4_D0_FUTURE_SAMPLE_UNSEEN_AND_REGISTRATION_UNSEALED_PASS')
+          PY
+      - name: Publish only derived retrospective record
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pf4-d0-retrospective-baseline-audit
+          path: /tmp/pf4-d0/
+          retention-days: 30
+          if-no-files-found: error
