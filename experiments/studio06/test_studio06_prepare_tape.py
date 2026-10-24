@@ -49,6 +49,18 @@ class TestStudio06Tape(unittest.TestCase):
         self.assertEqual(r["ticks"], 1)
         self.assertEqual(r["rows"][0]["randomness"], RAND)
 
+    def test_timestamp_gap_is_rejected(self):
+        self.row["roundTime"] = 1792699584
+        second = dict(self.row)
+        second.update({"tick": 1, "round": 33298760, "roundTime": 1792699645,
+                       "previous": "a" * 64, "digest": "b" * 64})
+        self.chunk["rows"].append(second)
+        self.chunk["count"] = 2
+        self.chunk["finalHead"] = "b" * 64
+        self.save()
+        with self.assertRaisesRegex(RuntimeError, "timestamps are not 60 seconds apart"):
+            s.inspect_archive(self.root)
+
     def test_false_signature_is_rejected(self):
         self.row["randomness"] = "f" * 64
         self.save()
