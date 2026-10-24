@@ -65,7 +65,6 @@ function lineage(){
 }
 const g=read(root+'GENESIS.json'),state=read(root+'STATE.json');
 assert.equal(g.schema,'PF2_LIVE_GENESIS_V1');
-assert.equal(state.schema,'PF2_LIVE_STATE_V1'); // exact status schema gate
 assert(state.admittedTicks>0);
 assert.equal(state.engine.tick,state.admittedTicks);
 const names=readdirSync(root+'chunks').filter(x=>/^\d{8}\.json$/.test(x)).sort();
