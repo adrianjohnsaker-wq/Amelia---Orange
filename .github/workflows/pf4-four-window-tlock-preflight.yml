@@ -1,0 +1,30 @@
+name: PF4 — future-window/tlock schedule structure mock only
+on:
+  push:
+    branches:
+      - design/pf4-inscription-precommit-20261024
+    paths:
+      - experiments/pf4/PF4_FOUR_WINDOW_TLOCK_SCHEDULE_PREFLIGHT.py
+      - .github/workflows/pf4-four-window-tlock-preflight.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  syntax-and-negative-cases:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Confirm four windows, future unlock and unpublished start failure cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile experiments/pf4/PF4_FOUR_WINDOW_TLOCK_SCHEDULE_PREFLIGHT.py
+          python3 experiments/pf4/PF4_FOUR_WINDOW_TLOCK_SCHEDULE_PREFLIGHT.py --self-test
+      - name: Confirm NO live schedule and NO seal
+        run: echo PF4_TIMING_MOCK_ONLY_NOT_LIVE_NOT_SEALED
