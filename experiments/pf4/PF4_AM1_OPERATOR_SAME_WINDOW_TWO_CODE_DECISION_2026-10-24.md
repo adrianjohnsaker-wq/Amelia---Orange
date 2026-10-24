@@ -80,3 +80,7 @@ The inscription's null calibration can execute only after its code exists. Basel
 **PF2 live/science unchanged.**
 
 The computational bootstrap and memory-dependent scar remain verified within their own archived synthetic experiments; no physically retrocausal dependency has been tested by AM1.
+
+## 7. Timelock disclosure versus the PF2 reporting order
+
+The proposed Quicknet timelock ciphertext becomes **technically decryptable** when its chosen Quicknet round is published, regardless of whether the PF2 day-60 report has appeared. Consequently, the requirement "publish the PF2 day-60 report before PF4 is decrypted" is an **operator-controlled publication/decryption order**, not a cryptographic property of the tlock. If PF2 reporting is unexpectedly late, the operator and custodian must defer the **act of decrypting and scoring** PF4; they cannot claim that published Quicknet prevents a third party who has the ciphertext from decrypting it. Predeclared timing amendments cannot retroactively alter that physical availability. If strict information inaccessibility until PF2 reporting were genuinely required, a separately controlled private key or later fixed unlock round would be needed and independently precommitted before window 1. This reporting condition does not justify moving the four physical source windows.
