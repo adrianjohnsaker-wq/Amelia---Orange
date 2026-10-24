@@ -41,7 +41,6 @@ def audit(pack):
     if not isinstance(rows,list) or len(rows)!=N_WORLDS:
         fail("require exactly 400 independent whole-world records")
     ids=set();tapeDigests=set();sourceTags=set()
-    full=[],[]
     vstar=[];shift=[];blank=[];blankIds=[]
     for i,r in enumerate(rows):
         if not isinstance(r,dict):fail("malformed world "+str(i))
