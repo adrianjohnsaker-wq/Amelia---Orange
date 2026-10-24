@@ -1,0 +1,56 @@
+name: PF4 G2 — independent archived PF2 studio mirror parity (read only)
+
+on:
+  push:
+    branches:
+      - analysis/pf4-g2-independent-published-prefix-20261024
+    paths:
+      - experiments/pf4/PF4_G2_ARCHIVED_PREFIX_PARITY.mjs
+      - .github/workflows/pf4-g2-archived-prefix-parity.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      DRIFT_C1_ENABLE_LIVE: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate source syntax and read-only design
+        run: node --check experiments/pf4/PF4_G2_ARCHIVED_PREFIX_PARITY.mjs
+      - name: Recompute independent Studio lineage against published PF2 rows
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --experimental-strip-types --no-warnings experiments/pf4/PF4_G2_ARCHIVED_PREFIX_PARITY.mjs /tmp/pf4-g2 | tee /tmp/pf4-g2-run.log
+      - name: Verify correct output status
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          x=json.load(open('/tmp/pf4-g2/PF4_G2_PUBLISHED_PREFIX_PARITY.json'))
+          assert x['noPhysicalFutureBeaconRead'] is True
+          assert x['exactMappedInputChecks']==x['ticks']*9
+          assert x['exactIndependentTransitionChecks']==x['ticks']*9
+          assert x['float64VValueChecks']==x['ticks']*9*11
+          assert len(x['outputs'])==9
+          print('PF4_G2_INDEPENDENT_ADAPTER_PARITY_ASSERTED',x['ticks'])
+          PY
+      - name: Export derived parity only (never source beacons)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pf4-g2-published-prefix-parity
+          path: /tmp/pf4-g2/
+          if-no-files-found: error
+          retention-days: 30
