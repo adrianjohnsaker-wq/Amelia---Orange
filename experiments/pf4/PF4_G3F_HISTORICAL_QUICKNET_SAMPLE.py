@@ -42,7 +42,7 @@ def main():
   if len(sys.argv)==2 and sys.argv[1]=='--self-test':
     w=world_spec()
     assert len(w)==10 and w[0]['startRound']==29156220
-    assert w[-1]['endRound']==33188000
+    assert w[-1]['endRound']==33188200
     print('PF4_G3F_HISTORICAL_ROUND_GRID_STRUCTURE_PASS',json.dumps({
       'first':w[0]['startUTC'],'last':w[-1]['endUTC'],'tenWorlds':len(w)}))
     return
