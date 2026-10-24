@@ -15,7 +15,7 @@ The studio's fixed point is a **candidate code**, not a guarantee of a future-de
 ## II. Pinned exploratory source and limitations
 
 - Base Git commit: \`dd48820ff2ac5e97bd2f9a327ce113a0b02d93ff\` on \`Amelia---Orange\`.
-- Input code candidate, 9 lineages × 11 canonical directed edges: \`experiments/studio/outputs/loop/Vstar.json\`. This is exactly the \`Vend\` of pass 29 in the archived zero-start loop. Existing archive SHA-256 for candidate: \`929cebe13fab660ece87e67661a64abd2e0862ab01c6c2cca83d17cb44edd6c9\`. Do NOT refit or prune V.
+- Input code candidate, 9 lineages × 11 canonical directed edges: \`experiments/studio/outputs/loop/Vstar.json\`. This is exactly the \`Vend\` of pass 29 in the archived zero-start loop. **CI-verified archive SHA-256** for candidate: \`de0d86764a300abe5187b06a379be1beefed859942784d12cd6a672f81702925\`. Do NOT refit or prune V.
 - Archive \`experiments/studio/SHA256SUMS.txt\` verifies 65 listed files in GitHub; no additions inside this manifest's scope.
 - Native model provenance: frozen original runtime SHA \`90cf07d0adca6e6012b9e24ee022768011934982\`; studio uses \`runtime_mirror/\` with a last-term exit bonus hook, type-only import adjustments and disabled per-step digest for performance. \`runtime_unmodified/\` only changes imports. Registered PF2 golden JSONs are byte-identical to studio \`outputs/gold_*.json\`. A further wrapper-fidelity audit is REQUIRED to use a physical PF2 source and exact arm mapping.
 - Scar assay baseline: same-world V* 0 deaths; removing 4→5 mark, 36 deaths; zero code, 32; scar only 9; closing 2→4 approach, zero deaths but zone 4 visits 15 vs 434; modifying unreachable 3→6 produces nine identical traces. These are **exploratory, synthetic**, not registered live predictions.
