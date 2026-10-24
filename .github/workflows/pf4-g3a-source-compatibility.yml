@@ -1,0 +1,56 @@
+name: PF4 G3a — published-prefix SHA256 source compatibility (not residual)
+on:
+  push:
+    branches:
+      - design/pf4-inscription-precommit-20261024
+    paths:
+      - .github/workflows/pf4-g3a-source-compatibility.yml
+      - experiments/pf4/PF4_G3A_PUBLISHED_PREFIX_CUE_COMPATIBILITY.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  archived-prefix-null:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check frozen studio source files
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd experiments/studio
+          sha256sum -c SHA256SUMS.txt > /tmp/pf4-g3a-studio-checks.txt
+          test "$(grep -c ' OK$' /tmp/pf4-g3a-studio-checks.txt)" -eq 65
+      - name: Read committed 1731 historical Quicknet ticks, compare 400 generated tapes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 experiments/pf4/PF4_G3A_PUBLISHED_PREFIX_CUE_COMPATIBILITY.py --out /tmp/pf4-g3a | tee /tmp/pf4-g3a-run.txt
+      - name: Validate NO live residual or future-beacon inference
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          x=json.load(open('/tmp/pf4-g3a/PF4_G3A_1731_SOURCE_COMPATIBILITY.json'))
+          assert x['status']=='EXPLORATORY_SOURCE_MAPPING_DIAGNOSTIC_NOT_G3_RESIDUAL_CALIBRATION'
+          assert x['numberOfPublishedPrefixTicks']==1731 and x['syntheticWorlds']==400
+          assert x['futureRoundSeen'] is False and x['sourceAdmissionReadOnly']
+          assert len(x['observed']['cueCounts'])==10
+          print('PF4_G3A_READONLY_SOURCE_CUE_PREFLIGHT_PASS_NOT_SEALED')
+          PY
+      - name: Archive descriptive diagnostics
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pf4-g3a-1731-cue-compatibility
+          path: |
+            /tmp/pf4-g3a/
+            /tmp/pf4-g3a-run.txt
+          if-no-files-found: error
