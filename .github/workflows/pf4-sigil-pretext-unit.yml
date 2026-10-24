@@ -1,0 +1,57 @@
+name: PF4 — Pretext Symbolic Reduction V1 (no actual inscription)
+
+on:
+  push:
+    branches:
+      - design/pf4-inscription-precommit-20261024
+    paths:
+      - experiments/pf4/PF4_SIGIL_V1.py
+      - experiments/pf4/PF4_SIGIL_PRETEXT_REGISTRATION_PROTOCOL_V1.md
+      - .github/workflows/pf4-sigil-pretext-unit.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pretext:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check syntax of protocol before writing text
+        run: python3 -m py_compile experiments/pf4/PF4_SIGIL_V1.py
+      - name: Execute only deterministic protocol unit tests
+        run: python3 experiments/pf4/PF4_SIGIL_V1.py --self-test
+      - name: Independent JS SHA256 cross-check of protocol domain
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module - <<'JS' > /tmp/pf4-independent-hash.txt
+          import {createHash} from 'node:crypto';
+          const v=createHash('sha256').update(Buffer.from('AMELIA-PF4-SIGIL-V1\\0ABCD'.replace('\\0','\\u0000'),'utf8')).digest('hex');
+          console.log(v);
+          JS
+          python3 - <<'PY'
+          import hashlib
+          actual=open('/tmp/pf4-independent-hash.txt').read().strip()
+          expected=hashlib.sha256(b'AMELIA-PF4-SIGIL-V1\\x00ABCD').hexdigest()
+          assert actual==expected,(actual,expected)
+          print('PF4_INDEPENDENT_NODE_PYTHON_SEED_HASH_PASS',actual)
+          PY
+      - name: Confirm unmodified source archive remains intact
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd experiments/studio
+          sha256sum -c SHA256SUMS.txt > /tmp/pf4-studio-manifest-check.txt
+          test "$(grep -c ' OK$' /tmp/pf4-studio-manifest-check.txt)" -eq 65
+          echo PF4_FROZEN_STUDIO_65_FILE_MANIFEST_PASS
