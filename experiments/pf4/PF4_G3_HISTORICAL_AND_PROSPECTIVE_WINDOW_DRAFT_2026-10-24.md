@@ -1,3 +1,5 @@
+> **SUPERSEDED DESIGN CHOICE (24 October 2026):** The proposal below to postpone the inscription until a later block was superseded by the operator's AM1 decision: **both Vstar and the separately derived inscription code will be tested in the same four predeclared windows, each paired with its own +1 lineage-shift control**. This earlier record is preserved as design history, not as the current experimental plan. The choice between two-arm alpha 0.005 each and Vstar-only confirmatory alpha 0.01 remains open; nothing sealed. See [PF4 AM1](./PF4_AM1_OPERATOR_SAME_WINDOW_TWO_CODE_DECISION_2026-10-24.md).
+
 # PF4 — prospective four-window scheduling decision (DRAFT, not a registration)
 **24 October 2026. Operator conversation recommends after PF2 day-30; science remains unsealed.**
 
