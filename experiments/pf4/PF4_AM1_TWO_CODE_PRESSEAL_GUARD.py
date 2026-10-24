@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""PF4 AM1 PRESEAL STRUCTURAL GUARD; --self-test uses entirely fabricated fixtures.
+"""PF4 AM1 two-phase preseal / postseal structural guard; --self-test uses fabricated fixtures.
 
 This program CANNOT verify RFC3161, BLS, source-code identity, custody or
 whether future information was accessible. It checks expected schemas, dates,
@@ -31,9 +31,10 @@ def sha64(v):
     return isinstance(v,str) and len(v)==64 and all(c in "0123456789abcdef" for c in v)
 def expected_time(round_no):
     return datetime.fromtimestamp(GENESIS+SEC*(round_no-1),timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-def validate(d):
+def validate(d,phase="postseal"):
+    require(phase in ("preseal","postseal"),"BAD_PHASE")
     require(isinstance(d,dict) and d.get("schema")==SCHEMA,"UNKNOWN_SCHEMA")
-    require(d.get("status")=="OPERATOR_APPROVED_FOR_EXTERNAL_SEAL","NOT_READY")
+    require(d.get("status")==("READY_FOR_INDEPENDENT_SEAL" if phase=="preseal" else "SEALED_EXTERNALLY_AND_VERIFIED"),"NOT_READY")
     require(d.get("chainHash")==SOURCE_CHAIN,"CHAIN_NOT_PINNED")
     require(d.get("stride")==STRIDE and d.get("ticksPerWindow")==TICKS,"SOURCE_CADENCE_CHANGED")
     require(d.get("analysisSourceSHA256") and sha64(d.get("analysisSourceSHA256")),"NO_FROZEN_ANALYSIS")
@@ -107,15 +108,18 @@ def validate(d):
     require(D.get("statisticalProcedureFrozen") is True,"NULL_TAIL_NOT_FROZEN")
     require(d.get("sourceCommitmentIncludesAllNegativeResults") is True,"NO_FAILURE_REPORTING")
     E=d.get("independentExternalSeal")
-    require(isinstance(E,dict),"NO_EXTERNAL_SEAL")
-    require(sha64(E.get("sealInputBundleSHA256")),"NO_TIMESTAMPEED_BUNDLE")
-    require(sha64(E.get("RFC3161TokenSHA256")),"MISSING_TIMESTAMP_TOKEN_HASH")
-    require(E.get("trustVerificationStatus")=="PASS","RFC3161_NOT_INDEPENDENTLY_VERIFIED")
-    r=E.get("lastRoundPublishedAtSeal")
-    require(type(r)==int and r<FIRST[0],"SEALED_TOO_LATE")
-    require(E.get("dateUTC", "")<expected_time(FIRST[0]),"SEAL_TIMESTAMP_AFTER_TARGET")
+    if phase=="preseal":
+        require(E is None,"PRESEAL_MUST_NOT_PRETEND_ALREADY_TIMESTAMPED")
+    else:
+        require(isinstance(E,dict),"NO_EXTERNAL_SEAL")
+        require(sha64(E.get("sealInputBundleSHA256")),"NO_TIMESTAMPED_BUNDLE")
+        require(sha64(E.get("RFC3161TokenSHA256")),"MISSING_TIMESTAMP_TOKEN_HASH")
+        require(E.get("trustVerificationStatus")=="PASS","RFC3161_NOT_INDEPENDENTLY_VERIFIED")
+        r=E.get("lastRoundPublishedAtSeal")
+        require(type(r)==int and r<FIRST[0],"SEALED_TOO_LATE")
+        require(E.get("dateUTC", "")<expected_time(FIRST[0]),"SEAL_TIMESTAMP_AFTER_TARGET")
     return {
-      "result":"STRUCTURAL_GATE_PASS_NOT_PHYSICAL_CRYPTOGRAPHIC_VERIFICATION",
+      "result":phase.upper()+"_STRUCTURAL_GATE_PASS_NOT_PHYSICAL_CRYPTOGRAPHIC_VERIFICATION",
       "twoFamilies":names,"alphaPolicy":D["policy"],
       "firstRound":FIRST[0],"lastRound":LAST[-1],"unlockRound":UNLOCK,
       "knownLimitations":["external timestamps and BLS reports are attested, not independently cryptographically verified by this script",
@@ -132,7 +136,7 @@ def mock():
       nullQualityStatus="PASS",positiveControlStatus="PASS",
       statistic="FOUR_WINDOW_MEAN_SHIFT_MINUS_ORIGINAL_R_MEAN",
       activeEdges="ALL_11_EXCEPT_3>6")
-    return dict(schema=SCHEMA,status="OPERATOR_APPROVED_FOR_EXTERNAL_SEAL",
+    return dict(schema=SCHEMA,status="SEALED_EXTERNALLY_AND_VERIFIED",
       chainHash=SOURCE_CHAIN,stride=STRIDE,ticksPerWindow=TICKS,
       analysisSourceSHA256=h,inputAdapterSHA256=h,
       verifierPinnedCommit="f1875b5eea5339eb1ac73e50b5df6b103d0cabe9",
@@ -158,7 +162,17 @@ def mock():
 
 def selftest():
     good=mock()
-    assert validate(good)["alphaPolicy"]=="D"
+    assert validate(good,phase="postseal")["alphaPolicy"]=="D"
+    ready=json.loads(json.dumps(good))
+    ready["status"]="READY_FOR_INDEPENDENT_SEAL"
+    ready["independentExternalSeal"]=None
+    assert validate(ready,phase="preseal")["alphaPolicy"]=="D"
+    try:validate(ready,phase="postseal")
+    except ValueError:pass
+    else:raise AssertionError("PRESEAL_NOT_PERMITTED_AS_POSTSEAL")
+    try:validate(good,phase="preseal")
+    except ValueError:pass
+    else:raise AssertionError("ALREADY_SEALED_NOT_PRESEAL")
     y=json.loads(json.dumps(good))
     y["multiplicity"].update(policy="P",VSTAR_ALPHA="0.01",INSCRIPTION_ALPHA=None,
                              INSCRIPTION_CONFIRMATORY=False)
@@ -181,15 +195,16 @@ def selftest():
         try: validate(x)
         except(ValueError,KeyError):continue
         raise AssertionError("NEGATIVE_PRESEAL_TEST_FAILED")
-    print("PF4_AM1_DUAL_ARM_PRESEAL_STRUCTURAL_GUARD_AND_11_NEGATIVE_TESTS_PASS_MOCK_ONLY")
+    print("PF4_AM1_DUAL_ARM_TWO_PHASE_GUARD_AND_NEGATIVE_TESTS_PASS_MOCK_ONLY")
 
 def main():
     p=argparse.ArgumentParser()
     p.add_argument("--self-test",action="store_true")
     p.add_argument("--manifest")
+    p.add_argument("--phase",choices=("preseal","postseal"),default="preseal")
     a=p.parse_args()
     if a.self_test:selftest();return
     if not a.manifest:p.error("--manifest JSON required")
-    result=validate(json.loads(Path(a.manifest).read_text()))
+    result=validate(json.loads(Path(a.manifest).read_text()),phase=a.phase)
     print(json.dumps(result,sort_keys=True))
 if __name__=="__main__":main()
