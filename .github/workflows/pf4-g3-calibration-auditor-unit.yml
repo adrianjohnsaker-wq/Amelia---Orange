@@ -1,0 +1,32 @@
+name: PF4 G3 — calibration import auditor schema and fail-closed tests
+on:
+  push:
+    branches: ["analysis/pf4-g2-g3-input-audit-20261024"]
+    paths:
+      - experiments/pf4/PF4_G3_CALIBRATION_AUDITOR.py
+      - experiments/pf4/PF4_G3_AUDITOR_UNIT.py
+      - .github/workflows/pf4-g3-calibration-auditor-unit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mock-only-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Syntax, no external data
+        run: |
+          python3 -m py_compile experiments/pf4/PF4_G3_CALIBRATION_AUDITOR.py
+          python3 -m py_compile experiments/pf4/PF4_G3_AUDITOR_UNIT.py
+      - name: Fail closed on malformed 400-world calibration manifests
+        run: python3 experiments/pf4/PF4_G3_AUDITOR_UNIT.py
+      - name: Confirm no physical calibration has been admitted
+        run: |
+          test ! -f experiments/pf4/PF4_G3_CALIBRATION_EXPORT_V1.json
+          echo PF4_G3_NO_CALIBRATION_PACKAGE_OR_FUTURE_TARGET_ADMITTED
