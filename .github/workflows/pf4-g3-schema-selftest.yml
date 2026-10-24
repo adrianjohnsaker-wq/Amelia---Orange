@@ -1,0 +1,29 @@
+name: PF4 G3 — Null-world audit interface (schema only)
+on:
+  push:
+    branches:
+      - analysis/pf4-g2-independent-published-prefix-20261024
+    paths:
+      - .github/workflows/pf4-g3-schema-selftest.yml
+      - experiments/pf4/PF4_G3_NULL_PACKAGE_AUDIT.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check G3 JSON auditor syntax
+        run: python3 -m py_compile experiments/pf4/PF4_G3_NULL_PACKAGE_AUDIT.py
+      - name: Fail-closed schema tests, no real calibration claimed
+        run: python3 experiments/pf4/PF4_G3_NULL_PACKAGE_AUDIT.py --self-test
+      - name: Verify no prospective registration/sealing occurs
+        run: |
+          echo PF4_G3_SCHEMA_ONLY_NO_TARGET_READ_NO_LIVE_FETCH_PASS
