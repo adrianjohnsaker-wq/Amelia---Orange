@@ -1,0 +1,53 @@
+name: PF4 G2 — published PF2 archive independently replayed by studio
+on:
+  push:
+    branches: ["analysis/pf4-g2-g3-input-audit-20261024"]
+    paths:
+      - experiments/pf4/PF4_G2_STUDIO_PREFIX_PARITY.mjs
+      - .github/workflows/pf4-g2-published-prefix-parity.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  independent-parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DRIFT_C1_ENABLE_LIVE: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify syntax
+        run: node --check experiments/pf4/PF4_G2_STUDIO_PREFIX_PARITY.mjs
+      - name: Independently replay only already admitted and published PF2 chunks
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --experimental-strip-types --no-warnings experiments/pf4/PF4_G2_STUDIO_PREFIX_PARITY.mjs /tmp/pf4-g2 | tee /tmp/pf4-g2-log.txt
+      - name: Require exact nine V vector comparison
+        run: |
+          python3 - <<'PY'
+          import json
+          s=json.load(open('/tmp/pf4-g2/PF4_G2_PUBLISHED_PREFIX_PARITY.json'))
+          assert s['status']=='ENGINEERING_PASS_PUBLISHED_ONLY_NOT_FUTURE_TEST'
+          assert s['all99VExact'] and s['inputAdapterIndependent']
+          assert len(s['lineages'])==9 and all(len(l['finalV'])==11 for l in s['lineages'])
+          assert s['checkedArmTicks']==9*s['countTicks']
+          assert s['sourceBLSAlreadyPreverifiedByPF2'] and not s['independentlyReverifiedBLS']
+          assert s['noLiveFetch'] and not s['PF2StateMutated']
+          print('PF4_G2_EXACT_99_LEARNER_CODE_VALUES_AUDITED_PASS', s['countTicks'])
+          PY
+      - name: Preserve derived evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pf4-g2-published-studio-parity
+          path: |
+            /tmp/pf4-g2
+            /tmp/pf4-g2-log.txt
+          if-no-files-found: warn
+          retention-days: 30
