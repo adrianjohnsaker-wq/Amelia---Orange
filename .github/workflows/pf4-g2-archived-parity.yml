@@ -1,0 +1,62 @@
+name: PF4 G2 — archived 1731 parity (read-only, no network)
+
+on:
+  push:
+    branches:
+      - design/pf4-inscription-precommit-20261024
+    paths:
+      - .github/workflows/pf4-g2-archived-parity.yml
+      - experiments/pf4/PF4_G2_ARCHIVED_1731_PARITY.mjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Freeze archive on exact studio prefix and check SHA manifest
+        run: |
+          set -euo pipefail
+          cd experiments/studio
+          sha256sum -c SHA256SUMS.txt > /tmp/pf4-studio-archive-checks.txt
+          test "$(grep -c ' OK$' /tmp/pf4-studio-archive-checks.txt)" -eq 65
+      - name: Syntax gate
+        run: node --check experiments/pf4/PF4_G2_ARCHIVED_1731_PARITY.mjs
+      - name: Independent standalone G2 arm mapping and 99-value parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --experimental-strip-types --no-warnings experiments/pf4/PF4_G2_ARCHIVED_1731_PARITY.mjs /tmp/pf4-g2 | tee /tmp/pf4-g2-log.txt
+      - name: Assert historical, no future and 1731 exact values
+        run: |
+          python3 - <<'PY'
+          import json
+          x=json.load(open('/tmp/pf4-g2/PF4_G2_1731_PARITY.json'))
+          r=x['records']; p=x['provenance']
+          assert r['verifiedPublishedTicks']==1731 and r['chunks']==95
+          assert r['independentArmMapChecks']==15579
+          assert r['studioComparedEvents']==15579
+          assert r['normativeEventChecks']==31158
+          assert r['wholeIEEE754Checks']==99
+          assert p['usesOnlyCommittedPastRounds'] and not p['readsFutureRounds']
+          assert not p['touchedLivePF2'] and not p['bLSVerifiedAgainInThisTest']
+          assert len(x['code'])==9 and all(len(a['code'])==11 for a in x['code'])
+          print('PF4_G2_PREFIX_PARITY_AUDIT_PASS',r['archivedPrefixDigest'])
+          PY
+      - name: Preserve derived parity report for audit
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pf4-g2-independent-1731-bitwise-parity
+          path: |
+            /tmp/pf4-g2/
+            /tmp/pf4-g2-log.txt
+          if-no-files-found: error
