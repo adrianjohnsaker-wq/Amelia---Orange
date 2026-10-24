@@ -37,13 +37,13 @@ jobs:
           set -euo pipefail
           node --input-type=module - <<'JS' > /tmp/pf4-independent-hash.txt
           import {createHash} from 'node:crypto';
-          const v=createHash('sha256').update(Buffer.from('AMELIA-PF4-SIGIL-V1\\0ABCD'.replace('\\0','\\u0000'),'utf8')).digest('hex');
+          const v=createHash('sha256').update(Buffer.concat([Buffer.from('AMELIA-PF4-SIGIL-V1','ascii'),Buffer.from([0]),Buffer.from('ABCD','ascii')])).digest('hex');
           console.log(v);
           JS
           python3 - <<'PY'
           import hashlib
           actual=open('/tmp/pf4-independent-hash.txt').read().strip()
-          expected=hashlib.sha256(b'AMELIA-PF4-SIGIL-V1\\x00ABCD').hexdigest()
+          expected=hashlib.sha256(b'AMELIA-PF4-SIGIL-V1'+bytes([0])+b'ABCD').hexdigest()
           assert actual==expected,(actual,expected)
           print('PF4_INDEPENDENT_NODE_PYTHON_SEED_HASH_PASS',actual)
           PY
