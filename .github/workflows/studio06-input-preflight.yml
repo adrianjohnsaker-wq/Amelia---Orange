@@ -1,0 +1,24 @@
+name: STUDIO06 input preflight (no live mutation)
+on:
+  pull_request:
+    paths:
+      - 'experiments/studio06/**'
+      - '.github/workflows/studio06-input-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  read-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Constructed engineering tests (not science)
+        run: python3 -m unittest discover -s experiments/studio06 -p 'test_*.py' -v
+      - name: Report authentic PF2 input archive coverage (structural check only)
+        run: python3 experiments/studio06/studio06_prepare_tape.py --inspect
