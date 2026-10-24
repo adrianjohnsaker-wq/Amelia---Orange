@@ -7,13 +7,11 @@ This addendum answers the proposed code-generation decision without retroactivel
 
 **PRIMARY C0 (do not replace):** Keep the archive's converged Studio04 9×11 code as the first and predeclared primary candidate. Its literal-byte SHA-256 is \`de0d86764a300abe5187b06a379be1beefed859942784d12cd6a672f81702925\`, checked by PF4 D0. No regeneration, adjustment to future expected data, or posthoc replacement permitted.
 
-**SECONDARY text-derived inscription (optional, NOT YET IMPLEMENTED):** A separately labelled arm could deterministically construct a new synthetic training world from exactly specified UTF-8 bytes, source-domain separation, SHA-256 expansion algorithm, parameter choices, and published training code before new beacon rounds are available. Suggested **neutral** mnemonic seed bytes:
-\`AMELIA|PF4|NINE-ZONES|FUTURE-BOUNDARY|V1\`.
-This text is a design marker, not a physical information channel. Pre-register the derivation, the resulting *full 9×11 code SHA*, the exact secondary family and a multiplicity rule. A performance improvement cannot be retroactively attributed to a selected mystical label.
+**SECONDARY text-derived inscription (optional, NOT YET IMPLEMENTED):** A separately labelled arm could deterministically construct a new synthetic training world from exactly specified UTF-8 bytes, source-domain separation, SHA-256 expansion algorithm, parameter choices, and published training code before new beacon rounds are available. **No inscription text is supplied or generated before the method is frozen.**
+The subsequent inscription is a design marker, not a physical information channel. Pre-register the derivation, the resulting *full 9×11 code SHA*, the exact secondary family and a multiplicity rule. A performance improvement cannot be retroactively attributed to a selected mystical label.
 
-**O9A provenance warning:** The contemporary Order of Nine Angles (O9A) has documented connections to violent neo-Nazi and extremist currents. It should not be treated as equivalent to Jewish Kabbalah or the CCRU Numogram. Its name is not given a privileged computational role; historical discussion may mention it critically and separately. Choosing the mnemonic solely for philosophical imagery has no statistical or mechanistic advantage over an otherwise arbitrary neutral phrase.
+**Revised inscription policy:** The historical source debate is out of scope. No organisation or existing occult text is given a privileged experimental role. Use a new author-supplied inscription only after the normalisation, reduction, seed expansion and validation code is publicly frozen. Do not include a sample statement in the committed protocol. A symbolic label is not a physical information channel.
 
-**Do not choose whichever code later wins** (the archive code, text code, donor-yoked code, or additional seeds); each additional candidate is a separate hypothesis or part of an advance-declared family.
 
 ## Decision 2: Gate 2 independent parity and source authenticity
 
