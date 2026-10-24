@@ -1,0 +1,30 @@
+name: PF4 G3d — operator 900-row CSV QA fixture (no calibration data)
+on:
+  push:
+    branches:
+      - design/pf4-inscription-precommit-20261024
+    paths:
+      - .github/workflows/pf4-g3d-operator-csv-qa.yml
+      - experiments/pf4/PF4_G3D_OPERATOR_900_CSV_QA.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  self-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate code and strict CSV QC on generated MOCK data only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile experiments/pf4/PF4_G3D_OPERATOR_900_CSV_QA.py
+          python3 experiments/pf4/PF4_G3D_OPERATOR_900_CSV_QA.py --self-test
+      - name: Do not claim operator data audited
+        run: echo PF4_G3D_MOCK_FIXTURE_ONLY_WAITING_FOR_900_ROW_REAL_CSV
