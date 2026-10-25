@@ -23,7 +23,7 @@ assert.deepEqual(a,house(),'pure readout must not mutate house');
 assert.throws(()=>houseChangeCue(a,{surface:{},deep:{}}),/missing or not finite/);
 assert.throws(()=>cueBonus(0,10),/Invalid cue zone/);
 console.log(JSON.stringify({
- status:'STUDIO08_SMOOTH_HOUSE_READOUT_UNIT_PASS', tests:9,
+ status:'STUDIO08_SMOOTH_HOUSE_READOUT_UNIT_PASS', assertions:11,
  syntheticOnly:true, readsCompletedPreChoiceSnapshots:true,
  predeclaredTieRule:'lowest_target_zone', noScienceOutcome:true
 }));
