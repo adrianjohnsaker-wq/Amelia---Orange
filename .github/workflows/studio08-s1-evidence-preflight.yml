@@ -38,6 +38,8 @@ jobs:
           assert m['worlds']==expected
           print('STUDIO08_S1_32_PINNED_WORLD_SEEDS_QA_PASS_NOT_SCIENCE')
           PY
+      - name: Independent raw-trace structural, death and credit-ledger selftests
+        run: python3 experiments/studio08/s1/trace_integrity.py --self-test
       - name: Parse original-model scientific runner without executing any world
         run: node --check experiments/studio08/s1/original_model_assay.mjs
       - name: Original-model runner must FAIL CLOSED without archive and replay receipts
