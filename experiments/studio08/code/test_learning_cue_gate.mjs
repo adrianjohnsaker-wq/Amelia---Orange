@@ -11,7 +11,7 @@ function throws(fn,pattern){assert.throws(fn,pattern);assertions++}
 eq(reward(4,false),0);
 eq(reward(11,false),1);
 eq(reward(4,true),-1);
-eq(reward(11,true),0);
+eq(reward(11,true),-1);
 eq(bonus(2,2),0.35);
 eq(bonus(7,2),0);
 eq(bonus(7,null),0);
