@@ -1,0 +1,29 @@
+name: STUDIO08 isolated input-pathway engineering preflight
+on:
+  pull_request:
+    paths:
+      - 'experiments/studio08/**'
+      - '.github/workflows/studio08-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-qa-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: Install pinned development dependencies (without lifecycle scripts)
+        run: npm ci --ignore-scripts
+      - name: Non-hash smooth house cue: pure unit tests
+        run: node experiments/studio08/code/test_endogenous_cues.mjs
+      - name: Runtime copy default fidelity and cue-off V/K/N isolation
+        run: npx tsx experiments/studio08/code/input_pathway_audit.mjs
+      - name: Verify parent Studio runtime is unmodified by this PR
+        run: git diff --exit-code -- experiments/studio/runtime_mirror
