@@ -32,7 +32,8 @@ export function registeredS1Reward(distinctEdgesAfterChoice,deathWithin24) {
     'distinct edge count must be integer 0..11');
   ensure(typeof deathWithin24==='boolean','death flag must be boolean');
   const novelty=Math.max(0,Math.min(1,(distinctEdgesAfterChoice-4)/7));
-  return novelty-(deathWithin24?1:0);
+  // Safety-dominant credit: death cannot be cancelled by route novelty.
+  return deathWithin24 ? -1 : novelty;
 }
 export function s1CueBonus(target,selectedTarget) {
   if(selectedTarget===null)return 0;
