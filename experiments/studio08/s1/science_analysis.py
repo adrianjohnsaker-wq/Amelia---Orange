@@ -169,6 +169,12 @@ def analyze_data(record,trace_root,registration_path,source_receipt,replay_recei
                 assert_true(traceSha==digest(path),"trace bytes mismatched: "+str(trace))
                 # A trace is an original model step log, not merely one synthetic success JSON.
                 assert_true(path.stat().st_size>=128,"implausibly short original model trace: "+str(trace))
+                # Independently inspect every event, not only the file hash.
+                from trace_integrity import validate as verify_raw_trace
+                integrity=verify_raw_trace(path,wid,scenario,arm)
+                assert_true(integrity["status"]==
+                            "STUDIO08_S1_RAW_TRACE_STRUCTURE_PASS_NOT_FULL_MODEL_REPLAY",
+                            "raw original-event verification failed")
                 rows[wid][scenario][arm]=x["class"]
     results={}
     for scenario,positive in (("intact","held"),("lesion","restored")):
@@ -198,9 +204,10 @@ def analyze_data(record,trace_root,registration_path,source_receipt,replay_recei
         results[scenario]["passesFamilyAlpha05"]=adjusted<=0.05
         last=adjusted
     return {
-        "status":"STUDIO08_S1_ALL_32_WORLD_REPORTS_AND_HASHES_VERIFIED_FOR_ANALYSIS",
+        "status":"STUDIO08_S1_ALL_32_WORLD_REPORTS_TRACES_AND_HASHES_VERIFIED_FOR_ANALYSIS",
         "scientificClaimStatus":"INTERNAL_EVIDENCE_CHECKS_ONLY_NOT_INDEPENDENT_CERTIFICATION",
         "worlds":32,"verifiedOutcomeTraceFiles":len(traces),
+        "independentStructuralTraceChecks":len(traces),
         "registeredSourceDigest":record["sourceDigest"],
         "originalReplayReceiptSha256":record["originalReplayReceiptSha256"],
         "registeredProtocolSha256":record["registrationSha256"],
