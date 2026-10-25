@@ -1,0 +1,47 @@
+name: Studio08 META1 stage 2 engineering test (pilot P0 only)
+on:
+  push:
+    branches:
+      - studio08-meta1-20261025
+    paths:
+      - 'experiments/studio08/meta1/**'
+      - '.github/workflows/studio08-meta1-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-first:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Parse immutable scientific code
+        run: |
+          node --check experiments/studio08/meta1/meta1_runner.mjs
+          python3 -m py_compile experiments/studio08/meta1/meta1_batch.py experiments/studio08/meta1/meta1_trace_validator.py experiments/studio08/meta1/meta1_analysis.py
+      - name: Run three paired arms in independent P0 QA world and rerun adaptive
+        run: python3 experiments/studio08/meta1/meta1_batch.py --mode qa --output "$RUNNER_TEMP/meta1-qa"
+      - name: Audit provenance and failed tamper test
+        run: |
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"meta1-qa"/"QA_RECEIPT.json").read_text())
+          assert x["status"]=="META1_ENG_TEST_PASS_NOT_SCIENCE"
+          assert x["independentAdaptiveTraceReplayedByteIdentical"] is True
+          assert x["modifiedCueRejected"] is True
+          assert len(x["armReceipts"])==3
+          print("META1_STAGE2_PILOT_ONLY_TEST_PASSED_NO_SCIENCE_RUN")
+          PY
+      - name: Preserve P0 pilot QA receipt only
+        uses: actions/upload-artifact@v4
+        with:
+          name: meta1-p0-engineering-qa
+          path: ${{ runner.temp }}/meta1-qa/QA_RECEIPT.json
+          if-no-files-found: error
+          retention-days: 90
