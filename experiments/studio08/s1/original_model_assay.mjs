@@ -159,6 +159,7 @@ try{
    scoreMarginOriginal:step.scoreMarginOriginal,
    scoreMarginWithCue:step.scoreMarginWithCue,
    selectedSensor:selected.sensor,selectedTarget:selected.target,
+   selectedToken:selected.token ?? null,
    selectedCueMagnitude:strength,creditsSettled:credits,
    pendingRewards:pending.size,
    candidateReadouts:candidates});
