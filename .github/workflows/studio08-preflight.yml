@@ -30,5 +30,9 @@ jobs:
         run: node experiments/studio08/code/test_endogenous_cues.mjs
       - name: Runtime copy default fidelity and cue-off V/K/N isolation
         run: npx tsx experiments/studio08/code/input_pathway_audit.mjs
+      - name: Full-state forked constant-varying-absent input causal audit
+        run: npx tsx experiments/studio08/code/fork_causality_audit.mjs
+      - name: Archive hash and required-role gate adversarial tests
+        run: python3 experiments/studio08/code/archive_gate.py --self-test
       - name: Verify parent Studio runtime is unmodified by this PR
         run: git diff --exit-code -- experiments/studio/runtime_mirror
