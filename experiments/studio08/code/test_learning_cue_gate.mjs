@@ -28,13 +28,13 @@ for(let i=0;i<25;i++){
   eq(rr.choose(candidates()).sensor,SENSOR_IDS[i%3]);
 }
 eq(a.exportState().tick,25);
-throws(()=>a.settle(tokens[0],{observedAt:24,distinctEdges:11,deathWithin24:false}),/before\/after/);
+throws(()=>a.settle(tokens[0],{observedAt:23,distinctEdges:11,deathWithin24:false}),/before\/after/);
 throws(()=>a.settle(tokens[0],{observedAt:26,distinctEdges:11,deathWithin24:false}),/future/);
 
-const won=a.settle(tokens[0],{observedAt:25,distinctEdges:11,deathWithin24:false});
-const lost=b.settle(tokens[0],{observedAt:25,distinctEdges:4,deathWithin24:true});
+const won=a.settle(tokens[0],{observedAt:24,distinctEdges:11,deathWithin24:false});
+const lost=b.settle(tokens[0],{observedAt:24,distinctEdges:4,deathWithin24:true});
 eq(won.reward,1);eq(lost.reward,-1);
-throws(()=>a.settle(tokens[0],{observedAt:25,distinctEdges:11,deathWithin24:false}),/already-settled/);
+throws(()=>a.settle(tokens[0],{observedAt:24,distinctEdges:11,deathWithin24:false}),/already-settled/);
 
 const cloned=new Gate('adaptive').importState(a.exportState());
 eq(cloned.exportState(),a.exportState());
@@ -42,6 +42,15 @@ eq(cloned.choose(candidates()),a.choose(candidates()));
 const changed=b.choose(candidates());
 assert.notEqual(changed.sensor,a.exportState().pending['S1-26'].sensor,
   'settled historical experience must affect advisor selection');assertions++;
+
+const immediate=new Gate('adaptive');
+const immediateDecision=immediate.choose(candidates());
+eq(immediate.settle(immediateDecision.token,{
+ observedAt:1,distinctEdges:1,deathWithin24:true
+}).reward,-1);
+throws(()=>immediate.settle(immediateDecision.token,{
+ observedAt:1,distinctEdges:1,deathWithin24:true
+}),/already-settled/);
 
 const nullPolicy=new Gate();
 const nullDecision=nullPolicy.choose(SENSOR_IDS.map(id=>({id,target:null})));
