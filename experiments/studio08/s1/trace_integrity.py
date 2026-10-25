@@ -149,15 +149,15 @@ def fixture_selftest():
             validate(f,"S1-W00","intact","no_cue")
             raise AssertionError("outside input accepted")
         except ValueError as e:
-            assert "tick" in str(e) or "outside" in str(e)
+            assert "outside signal not absent" in str(e)
         wrong=base.copy();wrong["sourceInput"]=None
         wrong["selectedCueMagnitude"]=0.35
         f.write_text(json.dumps(wrong)+"\n")
         try:
             validate(f,"S1-W00","intact","no_cue")
             raise AssertionError("cue without target accepted")
-        except ValueError:
-            pass
+        except ValueError as e:
+            assert "cue amplitude or null-cue contract" in str(e)
     print(json.dumps({"status":"STUDIO08_S1_RAW_TRACE_SELFTEST_PASS",
                       "positiveQA":1,"negativeQA":2,
                       "originalSourceLoaded":False,"scienceRun":False}))
