@@ -43,7 +43,7 @@ Fixed exploration coefficient `c=0.20`. Score for expert j with k_j selections a
 
 The maximal Q is selected, with fixed expert-order ties. `t` counts cue decisions even if none available; null experts are skipped only when absolutely null, NOT when they target a currently closed exit. Outstanding delayed rewards cannot be consumed early.
 
-Learning target is a prespecified **24-transition future window** after each selected cue. After 24 actual transitions (or sooner only on absorption/death), settle the selected expert with:
+Learning target is a prespecified **24-transition outcome window inclusive of the cue-affected transition**. A cue chosen for transition `t` receives credit from the 24 transitions `t..t+23`; without death the reward matures at the end of transition `t+23`, and any death on `t` through `t+23` settles the credit immediately. This first-inclusive timing was clarified during engineering QA, before scientific registration or any scientific outcome. Settle the selected expert with:
 
 `r = −1 if any death occurs within 24 transitions; otherwise r = clip((distinctDirectedEdgesAfterChoiceInWindow − 4)/7, 0, 1)`.
 
