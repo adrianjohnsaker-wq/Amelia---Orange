@@ -39,7 +39,12 @@ def validate_seal():
       "meta1_trace_validator.py":VAL,
       "META1_PRECOMMIT.md":PROTOCOL,
       "closed_circuit_sensors.mjs":SENSORS,
-      "learning_cue_gate.mjs":SELECTOR
+      "learning_cue_gate.mjs":SELECTOR,
+      "meta1_batch.py":BASE/"meta1_batch.py",
+      "meta1_analysis.py":BASE/"meta1_analysis.py",
+      "two_subjects.mjs":ROOT/"experiments"/"studio"/"code"/"two_subjects.mjs",
+      "ameliaNumogramSubstrateRuntime.ts":RUNTIME/"substrate"/"ameliaNumogramSubstrateRuntime.ts",
+      "IntegratedMemorySystem.ts":RUNTIME/"substrate"/"IntegratedMemorySystem.ts"
     }
     for name,file in expected.items():
         if data["sha256"].get(name)!=hashfile(file):
