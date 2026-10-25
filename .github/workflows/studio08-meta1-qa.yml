@@ -38,6 +38,19 @@ jobs:
           assert len(x["armReceipts"])==3
           print("META1_STAGE2_PILOT_ONLY_TEST_PASSED_NO_SCIENCE_RUN")
           PY
+      - name: Print exact SHA256 values for pre-science launch seal
+        run: |
+          sha256sum \
+            experiments/studio08/meta1/meta1_runner.mjs \
+            experiments/studio08/meta1/meta1_trace_validator.py \
+            experiments/studio08/meta1/META1_PRECOMMIT.md \
+            experiments/studio08/code/closed_circuit_sensors.mjs \
+            experiments/studio08/code/learning_cue_gate.mjs \
+            experiments/studio08/meta1/meta1_batch.py \
+            experiments/studio08/meta1/meta1_analysis.py \
+            experiments/studio/code/two_subjects.mjs \
+            experiments/studio08/runtime_mirror/substrate/ameliaNumogramSubstrateRuntime.ts \
+            experiments/studio08/runtime_mirror/substrate/IntegratedMemorySystem.ts
       - name: Preserve P0 pilot QA receipt only
         uses: actions/upload-artifact@v4
         with:
