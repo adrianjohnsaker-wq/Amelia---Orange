@@ -68,3 +68,39 @@ cue as endogenous.
 restoration or genesis evidence has been produced in this diagnostic.
 The philosophical distinction between "Outside working from within" and
 self-produced information remains an empirical hypothesis.
+
+
+## Addendum E0c — from discrepant metadata to discrepant actions
+**Executed 25 October 2026.** New synthetic feedback negative-control source:
+\`experiments/studio08/code/input_metadata_feedback_negative_control.mjs\`.
+Verified [GitHub Actions run 40221772782](https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/40221772782) **PASS**.
+
+Three copies of a single 32-step full-state fixture are replayed for 192
+steps under varying/constant/absent signal strings, with the runtime's
+original \`+0.35\` source cue disabled. Two new candidate self-cues are
+computed **before** each decision and fed back as the same \`+0.35\`
+exit bonus:
+
+| Readout used to derive new cue | Pre-choice cue differs at some fork | Chosen target differs at some fork |
+| --- | ---: | ---: |
+| SHA256 of PFM history digest, which contains input-labelled event digests | 189/192 steps | **156/192 steps** |
+| SHA256 of only the last 24 target-zone visits | **0/192 steps** | **0/192 steps** |
+
+No house, lineage code or Studio07 serializer was involved; no real Quicknet
+bytes were fetched. These are fixture-dependent mechanistic counts, NOT
+registered effect sizes or measured territory recovery.
+
+**Finding:** In a frozen substrate whose ordinary PFM dynamics are already
+independent of incoming signal after direct cue cancellation, a new
+self-readout of its input-bearing event digests can reintroduce strong
+input-to-choice dependence. The changing source can alter the observed
+trajectory *through the supposed self-cue*, not merely through metadata.
+A source-excluded zone-history readout closes this pathway but does not,
+by itself, create new differences when the zone history remains the same.
+
+**Implication for Studio 08:** audit the ORIGINAL Studio 07 joint-state
+serializer, do not infer its field dependencies from this negative control;
+then run A/B/C paired forks with the original serializer intact. Treat any
+source-excluded variant as an explicitly NEW experimental arm. Do not
+reinterpret these 156 fixture divergences as evidence of external
+intelligence, autonomous genesis or regenerative competence.
