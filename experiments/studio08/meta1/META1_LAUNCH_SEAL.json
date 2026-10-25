@@ -1,0 +1,44 @@
+{
+  "schema": "STUDIO08_META1_LAUNCH_V1",
+  "status": "FROZEN_BEFORE_META1_SCIENCE",
+  "sourceParentCommit": "28312116dd17cc6191216de88894e8de293630ff",
+  "prelaunchCommit": "76a5fbf1ab694d6f05802080b0cfd3dc29a4d4fc",
+  "qaRunId": 40245629650,
+  "qaStatus": "PASS",
+  "experimentalMode": "shared_deterministic_time_varying_external_input",
+  "seedDomain": "STUDIO08-META1-V1|META1-Wxx",
+  "worldCount": 32,
+  "worldIds": "META1-W00..META1-W31",
+  "arms": [
+    "adaptive",
+    "round_robin",
+    "no_cue"
+  ],
+  "scenarios": [
+    "intact",
+    "lesion"
+  ],
+  "genesis": {
+    "generations": 24,
+    "cap": 5000
+  },
+  "run": {
+    "seasons": 7,
+    "ticksPerSeason": 5000,
+    "fullRuns": 192
+  },
+  "primary": "one-sided exact paired sign test on seven-season intact deaths, adaptive < round_robin, alpha=0.05",
+  "originalStudio07CodeRequired": false,
+  "sha256": {
+    "meta1_runner.mjs": "ebc8ee2fe1ed0b96dbf270c7e2082e1eda00f8543bc5ad6686114c5858d12e2b",
+    "meta1_trace_validator.py": "00b1ab948b4d2c1fefdd54af42700d46806bd43f552eb498fd79fc17eb50c7ce",
+    "META1_PRECOMMIT.md": "fcf19898e11d29588c4b688084c87c29a407fa0e6da3e289c2beb6f560004dc4",
+    "closed_circuit_sensors.mjs": "3037d3d8b8e3f03eea2ec89ad30cd85ff1548f14a1b7cc6659dad9783d15388f",
+    "learning_cue_gate.mjs": "3459ef742b5d93f8ad7da05ce0e5c246f88ba984f9293a291d43cc6c362e20ea",
+    "meta1_batch.py": "51f55571b2c5588fc72b20e47d9d9432c1048f0e24d732a2308c5dbde09abe52",
+    "meta1_analysis.py": "d8c4794376df2130e151c7acd0004aeb4467f8010bcf07536385e91cc6f03ed0",
+    "two_subjects.mjs": "91adb5eb48de4c6401497ea4c5c03891717b8e100ea639367f71a9e0248ae7cf",
+    "ameliaNumogramSubstrateRuntime.ts": "5c6b476c2f275fec8c16d9539cee74a82c33469e964b845e2a837e6908157405",
+    "IntegratedMemorySystem.ts": "b75db5ef8723bed0dd15003dee11d39a3b575ec4a2cb40edb22749ea2a485bab"
+  }
+}
