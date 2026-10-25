@@ -38,6 +38,17 @@ jobs:
           assert m['worlds']==expected
           print('STUDIO08_S1_32_PINNED_WORLD_SEEDS_QA_PASS_NOT_SCIENCE')
           PY
+      - name: Parse original-model scientific runner without executing any world
+        run: node --check experiments/studio08/s1/original_model_assay.mjs
+      - name: Original-model runner must FAIL CLOSED without archive and replay receipts
+        run: |
+          set -euo pipefail
+          if node experiments/studio08/s1/original_model_assay.mjs > /tmp/s1_attempt.out 2>&1; then
+             echo 'ERROR: scientific runner ran without mandatory origin evidence'
+             exit 1
+          fi
+          grep -q 'STUDIO08_S1_ORIGINAL_SCIENCE_GATE_BLOCKED' /tmp/s1_attempt.out
+          echo 'STUDIO08_S1_MISSING_ORIGINAL_SCIENCE_ADMISSION_REJECTED'
       - name: Enforce that no actual science outcome is committed into fixture folder
         run: |
           test ! -e experiments/studio08/s1/REAL_WORLD_RESULTS.json
