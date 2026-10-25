@@ -32,6 +32,8 @@ jobs:
         run: node experiments/studio08/code/source_diff_gate.mjs
       - name: Runtime copy default fidelity and cue-off V/K/N isolation
         run: npx tsx experiments/studio08/code/input_pathway_audit.mjs
+      - name: Negative control - archived input metadata must not be mistaken for endogenous cue
+        run: npx tsx experiments/studio08/code/input_metadata_leakage_audit.mjs
       - name: Full-state forked constant-varying-absent input causal audit
         run: npx tsx experiments/studio08/code/fork_causality_audit.mjs
       - name: Archive hash and required-role gate adversarial tests
