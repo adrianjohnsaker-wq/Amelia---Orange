@@ -1,0 +1,49 @@
+name: S1 pilot-only archived-config feasibility screen (NO SCIENCE)
+on:
+  push:
+    branches:
+      - studio08-s1-pilot-only-feasibility-20261025
+    paths:
+      - 'experiments/studio08/s1/committed/pilot/engineering_config_screen.mjs'
+      - '.github/workflows/studio08-s1-pilot-feasibility.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-pilot-seeds-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Confirm no scientific S1-W world IDs or output are selected
+        run: |
+          set -euo pipefail
+          grep -F "['S1-P0','S1-P1','S1-P2','S1-P3']" experiments/studio08/s1/committed/pilot/engineering_config_screen.mjs
+          test ! -d _studio08_pilotonly_screen
+      - name: Four pilot seeds x five archival configurations x matched 2,000-tick probes
+        run: node experiments/studio08/s1/committed/pilot/engineering_config_screen.mjs
+      - name: Independently verify screening output provenance schema and totals
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('_studio08_pilotonly_screen/PILOT_ONLY_FEASIBILITY_REPORT.json').read_text())
+          assert x['status']=='STUDIO08_S1_PILOT_ONLY_ELIGIBILITY_SCREEN_NOT_SCIENCE'
+          assert x['freshRegisteredS1WorldsUsed']==0
+          assert len(x['rows'])==20
+          assert all(len(row['results'])==10 and row['worldId'].startswith('S1-P') for row in x['rows'])
+          assert len(x['summaryByConfig'])==5
+          print('S1_PILOT_ONLY_5_CONFIG_4_WORLD_200_SHORT_RUNS_STRUCTURAL_QA_PASS')
+          PY
+      - name: Upload aggregate summary only; do not commit or publish full pilot traces
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio08-s1-pilot-only-archive-config-feasibility
+          path: _studio08_pilotonly_screen/PILOT_ONLY_FEASIBILITY_REPORT.json
+          retention-days: 90
+          if-no-files-found: error
