@@ -30,6 +30,10 @@ jobs:
         run: node experiments/studio08/code/test_endogenous_cues.mjs
       - name: Operator-described Studio07b smooth-rule distinction QA
         run: node experiments/studio08/code/test_studio07b_smooth_description_contract.mjs
+      - name: S1 pre-choice nonhash candidate sensors and metadata-isolation QA
+        run: node experiments/studio08/code/test_closed_circuit_sensors.mjs
+      - name: S1 deterministic receiver and delayed-credit gating QA
+        run: node experiments/studio08/code/test_learning_cue_gate.mjs
       - name: Exact source file and default-on patch custody
         run: node experiments/studio08/code/source_diff_gate.mjs
       - name: Runtime copy default fidelity and cue-off V/K/N isolation
