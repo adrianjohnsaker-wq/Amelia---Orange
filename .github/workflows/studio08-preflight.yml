@@ -1,5 +1,11 @@
 name: STUDIO08 isolated input-pathway engineering preflight
 on:
+  push:
+    branches:
+      - studio08-closed-circuit-20261025
+    paths:
+      - 'experiments/studio08/**'
+      - '.github/workflows/studio08-preflight.yml'
   pull_request:
     paths:
       - 'experiments/studio08/**'
