@@ -45,7 +45,9 @@ The maximal Q is selected, with fixed expert-order ties. `t` counts cue decision
 
 Learning target is a prespecified **24-transition future window** after each selected cue. After 24 actual transitions (or sooner only on absorption/death), settle the selected expert with:
 
-`r = clip((distinctDirectedEdgesAfterChoiceInWindow − 4)/7, 0, 1) − 1{any death within the same window}`.
+`r = −1 if any death occurs within 24 transitions; otherwise r = clip((distinctDirectedEdgesAfterChoiceInWindow − 4)/7, 0, 1)`.
+
+**Pre-science engineering clarification, 25 October 2026:** the first draft subtracted a death penalty from the novelty term, which could yield zero reward for a fatal trajectory with maximal novelty. Before any source import, scientific registration or outcome run, this was amended to make **every death receive −1**, regardless of route novelty. The original exploratory S1 draft had no scientific executions, so this is an openly recorded design change, not a post-result adjustment.
 
 This is a designed exploratory-viability objective, not an independently arising desire. Its attribution to the selected expert is an approximate delayed bandit assignment, not a valid single-choice causal effect because later cues may intervene. The instrument must log every outstanding credit, exposure length, censoring and death.
 
