@@ -28,6 +28,8 @@ jobs:
         run: npm install --ignore-scripts --no-audit --no-fund
       - name: 'Non-hash smooth house cue: pure unit tests'
         run: node experiments/studio08/code/test_endogenous_cues.mjs
+      - name: Exact source file and default-on patch custody
+        run: node experiments/studio08/code/source_diff_gate.mjs
       - name: Runtime copy default fidelity and cue-off V/K/N isolation
         run: npx tsx experiments/studio08/code/input_pathway_audit.mjs
       - name: Full-state forked constant-varying-absent input causal audit
