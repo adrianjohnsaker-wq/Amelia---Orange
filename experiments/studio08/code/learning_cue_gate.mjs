@@ -101,15 +101,19 @@ export class S1LearningCueGate {
       Object.prototype.hasOwnProperty.call(this.pending,token),
       'unknown, null or already-settled decision token');
     const prior=this.pending[token];
-    ensure(Number.isInteger(observedAt)&&observedAt>prior.decisionTick&&
-      observedAt<=this.tick,'future or invalid observation tick');
+    // The chosen transition t is the FIRST of 24 exposed transitions:
+    // t, t+1, ..., t+23. An immediate death at t must be credited.
+    const windowEnd=prior.decisionTick+S1_REWARD_WINDOW-1;
+    ensure(Number.isInteger(observedAt)&&
+      observedAt>=prior.decisionTick&&observedAt<=this.tick,
+      'future or invalid observation tick');
     ensure(typeof deathWithin24==='boolean','invalid deathWithin24');
     if(deathWithin24){
-      ensure(observedAt<=prior.decisionTick+S1_REWARD_WINDOW,
-        'death credited outside the 24-step horizon');
+      ensure(observedAt<=windowEnd,
+        'death credited outside the 24-transition horizon');
     }else{
-      ensure(observedAt===prior.decisionTick+S1_REWARD_WINDOW,
-        'nondeath delayed reward cannot settle before/after 24 steps');
+      ensure(observedAt===windowEnd,
+        'nondeath delayed reward cannot settle before/after 24 transitions');
     }
     const reward=registeredS1Reward(distinctEdges,deathWithin24);
     this.nSettled[prior.sensor]++;
