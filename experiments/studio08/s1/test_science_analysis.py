@@ -37,10 +37,26 @@ def check():
                 arms={}
                 for a in ARMS:
                     path=f"{wid}-{s}-{a}.jsonl"
-                    # Length guard is for gross omissions only, not content proof.
-                    data=json.dumps({"QA_FAKE":True,"wid":wid,"scenario":s,
-                                     "arm":a,"transition":list(range(24)),
-                                     "MUST_NOT_REPORT_AS_EXPERIMENT":True})+"\n"
+                    # Valid-looking but explicitly synthetic 24-row raw transition
+                    # fixture, never a genuine source-model result.
+                    triplet=((1,8),(8,9),(9,1))
+                    ticks=[]
+                    for tick in range(1,25):
+                        frm,to=triplet[(tick-1)%3]
+                        ticks.append({
+                          "schema":"S1_ORIGINAL_WORLD_RAW_TRANSITION_V1",
+                          "worldId":wid,"scenario":s,"arm":a,"tick":tick,
+                          "sourceInput":None,"from":frm,"to":to,"death":False,
+                          "preChoiceStateSha256":sha((path+"|"+str(tick-1)).encode()),
+                          "postChoiceStateSha256":sha((path+"|"+str(tick)).encode()),
+                          "scoreMarginOriginal":0.2,
+                          "scoreMarginWithCue":0.2,
+                          "selectedSensor":None,"selectedTarget":None,
+                          "selectedToken":None,"selectedCueMagnitude":0,
+                          "creditsSettled":[],"pendingRewards":0,
+                          "candidateReadouts":None
+                        })
+                    data="".join(json.dumps(x,sort_keys=True)+"\n" for x in ticks)
                     f=traces/path;f.write_text(data)
                     row={"initialWorldSha256":initial,"class":"other",
                         "lastSeasonDeaths":0,"lesionSeasonDeaths":0,
@@ -66,6 +82,7 @@ def check():
             checks+=1
         result=analyze_data(data,*args)
         assert result["verifiedOutcomeTraceFiles"]==384
+        assert result["independentStructuralTraceChecks"]==384
         assert result["worlds"]==32
         assert result["analysis"]["intact"]["pOneSidedExactMcNemar"]==1
         checks+=1
