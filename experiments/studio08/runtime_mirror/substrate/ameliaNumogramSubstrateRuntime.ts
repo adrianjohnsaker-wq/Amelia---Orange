@@ -39,6 +39,8 @@ export class AmeliaNumogramSubstrateRuntime {
   private currentObjective: string = 'Bounded Zone-9 Phase Coherence & Canalization';
   private suppressRelaySteering: boolean = false;
   public exitBonus: ((from: ZoneId, to: ZoneId) => number) | null = null;
+  /** Studio08 mirror-only intervention. Default true preserves original scoring exactly. */
+  public inputCueEnabled = true;
 
   constructor() {
     this.qabbala = new AmeliaQabbalaInterface();
@@ -122,7 +124,7 @@ export class AmeliaNumogramSubstrateRuntime {
       const score = gate.flux * (1 - gate.resistance)
         + (memReadout.biasVector[target] || 0) * 0.4
         + z.activation * 0.2 + Math.cos(z.phaseAngle) * 0.1
-        + (inputZone === target ? 0.35 : 0)
+        + (this.inputCueEnabled && inputZone === target ? 0.35 : 0)
         + (this.exitBonus ? this.exitBonus(from, target) : 0);
       if (score > best) { best = score; to = target; }
     }
