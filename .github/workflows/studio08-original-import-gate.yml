@@ -1,0 +1,56 @@
+name: STUDIO08 original Studio07 archive admission (no science)
+on:
+  push:
+    branches:
+      - studio08-closed-circuit-20261025
+    paths:
+      - 'experiments/studio08/source_import/**'
+      - 'experiments/studio08/code/archive_gate.py'
+      - 'experiments/studio08/code/studio07_world_checkpoint_gate.py'
+      - 'experiments/studio08/code/studio07_serializer_inventory.mjs'
+      - 'experiments/studio08/code/studio07_original_import_check.py'
+      - '.github/workflows/studio08-original-import-gate.yml'
+  pull_request:
+    paths:
+      - 'experiments/studio08/source_import/**'
+      - 'experiments/studio08/code/archive_gate.py'
+      - 'experiments/studio08/code/studio07_world_checkpoint_gate.py'
+      - 'experiments/studio08/code/studio07_serializer_inventory.mjs'
+      - 'experiments/studio08/code/studio07_original_import_check.py'
+      - '.github/workflows/studio08-original-import-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-source-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install TypeScript compiler for read-only AST inventory
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Fail-closed original-source and eight-world checkpoint verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          SRC=experiments/studio08/source_import
+          test -f "$SRC/STUDIO08_WORKING_PROJECT_SOURCE_MANIFEST_V1.json"
+          test -f "$SRC/STUDIO08_EIGHT_WORLD_ORIGINAL_CHECKPOINTS_V1.json"
+          python3 experiments/studio08/code/studio07_original_import_check.py \
+            --archive-root "$SRC" \
+            --source-manifest "$SRC/STUDIO08_WORKING_PROJECT_SOURCE_MANIFEST_V1.json" \
+            --checkpoint-index "$SRC/STUDIO08_EIGHT_WORLD_ORIGINAL_CHECKPOINTS_V1.json" \
+              | tee "$RUNNER_TEMP/studio08-original-import-admission.json"
+      - name: Export source-custody check record (not scientific evidence)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio08-original-archive-admission-${{ github.run_id }}
+          path: ${{ runner.temp }}/studio08-original-import-admission.json
+          if-no-files-found: ignore
+          retention-days: 30
