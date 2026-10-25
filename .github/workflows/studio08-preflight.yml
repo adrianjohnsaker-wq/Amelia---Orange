@@ -24,9 +24,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'npm'
       - name: Install pinned development dependencies (without lifecycle scripts)
-        run: npm ci --ignore-scripts
+        run: npm install --ignore-scripts --no-audit --no-fund
       - name: 'Non-hash smooth house cue: pure unit tests'
         run: node experiments/studio08/code/test_endogenous_cues.mjs
       - name: Runtime copy default fidelity and cue-off V/K/N isolation
