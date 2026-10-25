@@ -1,0 +1,44 @@
+name: Studio08 S1 evidence and registration engineering preflight
+on:
+  push:
+    branches:
+      - studio08-s1-freshworld-verification-20261025
+    paths:
+      - 'experiments/studio08/s1/**'
+      - '.github/workflows/studio08-s1-evidence-preflight.yml'
+  pull_request:
+    paths:
+      - 'experiments/studio08/s1/**'
+      - '.github/workflows/studio08-s1-evidence-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+jobs:
+  reject-incomplete-or-fabricated-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Basic exact paired analysis and classification QA
+        run: python3 experiments/studio08/s1/science_analysis.py --self-test
+      - name: Full 32-world x 2-scenario x 6-arm manifest adversarial QA
+        run: python3 experiments/studio08/s1/test_science_analysis.py
+      - name: Check pinned 32 seed values against independently computed SHA256
+        run: |
+          python3 - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          f=Path('experiments/studio08/s1/S1_FRESH_WORLD_SEEDS_V1.json')
+          m=json.loads(f.read_text())
+          expected={f'S1-W{i:02d}':hashlib.sha256(f'STUDIO08-S1-V1|S1-W{i:02d}'.encode()).hexdigest() for i in range(32)}
+          assert m['worlds']==expected
+          print('STUDIO08_S1_32_PINNED_WORLD_SEEDS_QA_PASS_NOT_SCIENCE')
+          PY
+      - name: Enforce that no actual science outcome is committed into fixture folder
+        run: |
+          test ! -e experiments/studio08/s1/REAL_WORLD_RESULTS.json
+          test ! -d experiments/studio08/s1/real_traces
