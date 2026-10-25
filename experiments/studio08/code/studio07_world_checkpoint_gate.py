@@ -53,6 +53,33 @@ def digest(path):
             h.update(block)
     return h.hexdigest()
 
+def resolve_json_pointer(file, locator):
+    """Check a world checkpoint inside an ORIGINAL shared JSON file, without extraction."""
+    need(isinstance(locator,str) and locator.startswith("/") and len(locator)>1,
+         "shared checkpoint requires nonempty RFC6901 JSON pointer")
+    try: value=json.loads(file.read_bytes())
+    except (ValueError, UnicodeDecodeError) as e:
+        raise ValueError("JSON pointer source must be an original JSON file") from e
+    for raw in locator.split("/")[1:]:
+        need(not any(raw[i]=="~" and
+                     (i+1>=len(raw) or raw[i+1] not in "01")
+                     for i in range(len(raw))), "invalid JSON pointer escape")
+        key=raw.replace("~1","/").replace("~0","~")
+        if isinstance(value,dict):
+            need(key in value,"missing JSON pointer segment")
+            value=value[key]
+        elif isinstance(value,list):
+            need(key.isdigit() and (key=="0" or not key.startswith("0")),
+                 "invalid array index in JSON pointer")
+            idx=int(key)
+            need(idx<len(value),"array index out of range in JSON pointer")
+            value=value[idx]
+        else:
+            raise ValueError("JSON pointer traverses scalar")
+    need(isinstance(value,(dict,list)) and len(value)>0,
+         "checkpoint JSON pointer must select a nonempty state object or array")
+    return value
+
 def validate(root, manifest):
     root=Path(root).resolve()
     data=json.loads(Path(manifest).read_bytes())
@@ -65,6 +92,7 @@ def validate(root, manifest):
     need(tuple(sorted(worldids))==WORLD_IDS,
          "world IDs must be unique exactly W00..W07")
     used=set()
+    physical_files=set()
     verified=[]
     for row in worlds:
         rid=row["worldId"]
@@ -77,17 +105,28 @@ def validate(root, manifest):
             need(isinstance(expected,str) and len(expected)==64 and
                  all(ch in "0123456789abcdef" for ch in expected),
                  f"{rid} invalid SHA256 for {phase}")
-            need(path not in used,f"checkpoint path reused: {path}")
-            used.add(path)
+            locator=entry.get("locator")
+            need(locator is None or (isinstance(locator,str) and
+                                     locator.startswith("/")),
+                 "invalid checkpoint locator")
+            identity=(path,locator)
+            need(identity not in used,f"checkpoint path/locator reused: {path} {locator}")
+            used.add(identity)
             file=safe_file(root,path)
             actual=digest(file)
             need(actual==expected,
                  f"{rid} original SHA256 mismatch in {phase}: {path}")
-            digests[phase]={"path":path,"sha256":actual,"bytes":file.stat().st_size}
+            if locator is not None:
+                resolve_json_pointer(file,locator)
+            physical_files.add(path)
+            digests[phase]={"path":path,"sha256":actual,
+                            "bytes":file.stat().st_size,"locator":locator}
         verified.append({"worldId":rid,**digests})
     return {"status":"STUDIO08_EIGHT_ORIGINAL_WORLD_CHECKPOINT_HASHES_PASS_NOT_REPLAY",
             "worlds":verified, "verifiedPairs":len(verified),
-            "verifiedFiles":len(used), "scienceRun":False,
+            "verifiedSourceFiles":len(physical_files),
+            "verifiedWorldStateReferences":len(used),
+            "scienceRun":False,
             "allSourceFilesReadOnly":True}
 
 def selftest():
@@ -129,6 +168,24 @@ def selftest():
         try:
             validate(root,path);raise AssertionError("seven worlds not rejected")
         except ValueError as e: need("exactly eight" in str(e),"unexpected size rejection")
+        cases+=1
+        # A single original combined JSON containing 16 states must be addressable
+        # without splitting it into unoriginal files. All selectors are distinct.
+        joined={wid:{"intact":{"state":"intact","wid":wid},
+                     "lesion":{"state":"lesion","wid":wid}} for wid in WORLD_IDS}
+        combined=root/"combined.json"
+        combined.write_bytes(json.dumps({"worlds":joined}).encode())
+        combined_sha=digest(combined)
+        m["worlds"]=[{"worldId":wid,
+                     "intact":{"path":"combined.json","sha256":combined_sha,
+                               "locator":f"/worlds/{wid}/intact"},
+                     "lesion":{"path":"combined.json","sha256":combined_sha,
+                               "locator":f"/worlds/{wid}/lesion"}} for wid in WORLD_IDS]
+        path.write_text(json.dumps(m))
+        result=validate(root,path)
+        need(result["verifiedWorldStateReferences"]==16 and
+             result["verifiedSourceFiles"]==1,
+             "failed to resolve all states in original single source")
         cases+=1
         print(json.dumps({"status":"STUDIO08_EIGHT_WORLD_GATE_SELFTEST_PASS",
                           "cases":cases,"fixtureOnly":True,"scientificWorldsImported":0}))
