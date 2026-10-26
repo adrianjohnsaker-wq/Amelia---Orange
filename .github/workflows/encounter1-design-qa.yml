@@ -24,6 +24,8 @@ jobs:
         run: node --check experiments/encounter1/code/encounter_input.mjs
       - name: Deterministic pilot-only input and permutation proofs
         run: node experiments/encounter1/code/test_encounter_input.mjs
+      - name: Selective receiver and house-code reset engineering checks
+        run: node experiments/encounter1/code/test_challenge_forks.mjs
       - name: No scientific launch marker or registered-world data
         run: |
           test ! -e experiments/encounter1/SCIENCE_SEAL.json
