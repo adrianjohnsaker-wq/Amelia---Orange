@@ -93,6 +93,7 @@ export class E1CEpisodeReceptor {
    * Next transfer tick must be lastEnd+1, so advance continuity to boundary.
    */
   freezeAtBoundary(boundaryTick){
+    must(!this.frozen,'boundary already frozen');
     must(Number.isInteger(boundaryTick)&&boundaryTick>=this.lastEndTick,
          'boundary precedes completed episode');
     let censored=null;
