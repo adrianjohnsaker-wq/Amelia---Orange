@@ -1,0 +1,30 @@
+name: Encounter-1 synthetic stimulus design QA (not scientific execution)
+on:
+  push:
+    branches:
+      - amelia-encounter1-developmental-transformation-20261026
+    paths:
+      - 'experiments/encounter1/**'
+      - '.github/workflows/encounter1-design-qa.yml'
+  pull_request:
+    paths:
+      - 'experiments/encounter1/**'
+      - '.github/workflows/encounter1-design-qa.yml'
+permissions:
+  contents: read
+jobs:
+  design-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source syntax
+        run: node --check experiments/encounter1/code/encounter_input.mjs
+      - name: Deterministic pilot-only input and permutation proofs
+        run: node experiments/encounter1/code/test_encounter_input.mjs
+      - name: No scientific launch marker or registered-world data
+        run: |
+          test ! -e experiments/encounter1/SCIENCE_SEAL.json
+          test ! -d experiments/encounter1/science_results
