@@ -1,0 +1,77 @@
+name: Studio09 E1B one encounter and structural recency test (pilot only)
+on:
+  push:
+    branches:
+      - studio09-e1b-recency-gated-encounter-20261026
+    paths:
+      - 'experiments/studio09/e1b/**'
+      - 'experiments/studio09/code/e1b_integrated_runner.mjs'
+      - '.github/workflows/studio09-e1b-one-encounter.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  one-pilot-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: One precommitted receptor change-point and exogenous source QA
+        run: |
+          node --check experiments/studio09/e1b/e1b_recency_receptor.mjs
+          node --check experiments/studio09/e1b/e1b_exogenous_challenge.mjs
+          node --check experiments/studio09/code/e1b_integrated_runner.mjs
+          python3 -m py_compile experiments/studio09/e1b/e1b_verify_pilot.py
+          node experiments/studio09/e1b/test_e1b_change_point.mjs
+      - name: Run only P0: exogenous sink-oriented encounter and identical heldout forks
+        shell: bash
+        run: |
+          set -euo pipefail
+          D="$RUNNER_TEMP/e1b"
+          mkdir -p "$D"
+          MODEL="$PWD/experiments/studio08/runtime_mirror"
+          SRC="$PWD/experiments/studio09/code/e1b_integrated_runner.mjs"
+          SEED=$(python3 -c 'import hashlib;print(hashlib.sha256(b"STUDIO09-E1-PILOT-V1|E1-P0").hexdigest())')
+          node --experimental-strip-types --no-warnings "$SRC" genesis "$MODEL" E1-P0 "$SEED" "$D/genesis.json"
+          node --experimental-strip-types --no-warnings "$SRC" encounter "$MODEL" "$D/genesis.json" E1-P0 sink-challenge feedback "$D/encounter_checkpoint.json" "$D/encounter.jsonl.gz" "$D/encounter_receipt.json"
+          node --experimental-strip-types --no-warnings "$SRC" transfer "$MODEL" "$D/genesis.json" "$D/encounter_checkpoint.json" E1-P0 carry "$D/carry.jsonl.gz" "$D/carry_receipt.json"
+          node --experimental-strip-types --no-warnings "$SRC" transfer "$MODEL" "$D/genesis.json" "$D/encounter_checkpoint.json" E1-P0 reset "$D/reset.jsonl.gz" "$D/reset_receipt.json"
+          python3 experiments/studio09/e1b/e1b_verify_pilot.py "$D"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=Path(os.environ["RUNNER_TEMP"])/"e1b"
+          x=json.loads((d/"encounter_checkpoint.json").read_text())
+          y=json.loads((d/"encounter_receipt.json").read_text())
+          a=json.loads((d/"carry_receipt.json").read_text())
+          b=json.loads((d/"reset_receipt.json").read_text())
+          flips=sum(x["receptor"]["switches"].values())
+          dcarry=a["metrics"]["deaths"]-y["metrics"]["deaths"]
+          dreset=b["metrics"]["deaths"]-y["metrics"]["deaths"]
+          print("STUDIO09_E1B_PILOT_OBSERVED",
+            json.dumps({"flips":flips,"wiring":x["receptor"]["wiring"],
+                        "carryTransferDeaths":dcarry,"resetTransferDeaths":dreset,
+                        "transferSameTrace":a["traceSha256"]==b["traceSha256"],
+                        "scientificWorldsExecuted":0},sort_keys=True))
+          PY
+      - name: Archive raw pilot sources and receipts, no scientific world
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio09-e1b-one-p0-pilot-traces
+          path: |
+            ${{ runner.temp }}/e1b/genesis.json
+            ${{ runner.temp }}/e1b/encounter_checkpoint.json
+            ${{ runner.temp }}/e1b/encounter_receipt.json
+            ${{ runner.temp }}/e1b/carry_receipt.json
+            ${{ runner.temp }}/e1b/reset_receipt.json
+            ${{ runner.temp }}/e1b/encounter.jsonl.gz
+            ${{ runner.temp }}/e1b/carry.jsonl.gz
+            ${{ runner.temp }}/e1b/reset.jsonl.gz
+          retention-days: 90
+          compression-level: 0
+          if-no-files-found: error
