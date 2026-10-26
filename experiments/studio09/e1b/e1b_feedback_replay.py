@@ -99,7 +99,8 @@ def replay(path,root):
         win=receiver["window"][sensor]
         need(win["values"]==list(windows[sensor]),"rolling window differs")
         need(win["n"]==len(windows[sensor]),"rolling count differs")
-        need(win["sum"]==sum(windows[sensor]),"rolling sum differs")
+        need(abs(win["sum"]-sum(windows[sensor]))<=1e-10,
+             "rolling sum differs beyond floating-point tolerance")
         need(receiver["sinceFlip"][sensor]==since[sensor],
              "cooldown differs from independent replay")
     need(len(receiver["events"])==len(observed),
