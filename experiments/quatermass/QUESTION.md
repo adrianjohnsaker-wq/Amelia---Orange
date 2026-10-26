@@ -28,3 +28,27 @@ An Outside takes the class of at least 24 of 32 pairs; otherwise it is mixed.
 **Validity.** The mirror must come out as *us*, and the noise as *indifferent other*. If either fails, the measure is invalid and is reported as such.
 
 **Primary answer.** Is the live partner an **attending other**? **YES** if at least 24 of 32 pairs are classified so, **NO** otherwise. The monologue partner and the class shares are reported either way.
+
+## Version 2, written before its code or run (26 October 2026)
+
+**Why.** Version 1 was invalid: the mirror control read as *attending other* (Q 0.32), not *us*. Its measure conditioned on only her last two zones, while the mirror draws on a summary of her last 24, so most of its dependence on her was invisible.
+
+**Change: the measure only.** The world, dynamics, the 32 pairs, the four Outsides, the class thresholds, the validity controls and the primary question are all unchanged.
+
+**Predictors.** Two online multinomial logistic predictors of the Outside's next cue X_t over zones 0–9. Each is trained with AdaGrad (learning rate 0.1, weights starting at 0) and scored prequentially: it predicts X_t, is charged −log₂ p(X_t) with p floored at 10⁻⁶, then updates. Ticks 1–3 are skipped. Features, all computed from ticks before t:
+- **own:** a bias, plus one-hot X_{t−1} and X_{t−2};
+- **joint:** the *own* features, plus one-hot Y_{t−1} and Y_{t−2}, plus her visit share of each zone over her last 4, 8 and 24 ticks (10 values each).
+
+**Measures:**
+- `L_own` and `L_joint` are mean losses in bits per tick.
+- `gain = L_own − L_joint` is what her past adds.
+- **Surrogates:** the joint predictor rerun with Y circularly shifted by 5,000 + 5,000·j ticks, for j = 0..19.
+- `corrected = gain − mean(surrogate gains)`. The gain is *significant* if it exceeds every surrogate gain.
+- `Q = corrected / L_own`.
+
+**Classes, validity and the primary answer are exactly as in version 1:**
+- us: Q ≥ 0.5;
+- attending other: significant and Q < 0.5;
+- indifferent other: not significant.
+
+An Outside takes the class of at least 24 of 32 pairs. The measure is valid only if the mirror reads *us* and the noise reads *indifferent other*. **YES** if, under a valid measure, the live partner is an *attending other*.
