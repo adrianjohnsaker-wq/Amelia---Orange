@@ -1,0 +1,57 @@
+name: Studio09 E1C one distinct-episode pilot (NO SCIENCE)
+on:
+  push:
+    branches:
+      - studio09-e1c-independent-episodes-20261026
+    paths:
+      - 'experiments/studio09/e1c/**'
+      - '.github/workflows/studio09-e1c-one-pilot.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  one-original-model-pilot-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate E1C module code and unique episode credit fixture
+        run: |
+          node --check experiments/studio09/e1c/e1c_episode_receptor.mjs
+          node --check experiments/studio09/e1c/e1c_integrated_runner.mjs
+          python3 -m py_compile experiments/studio09/e1c/e1c_episode_verify.py
+          node experiments/studio09/e1c/test_e1c_episode_receptor.mjs
+      - name: Test one P0 ordinary Outside encounter and exactly two same-state transfer forks
+        shell: bash
+        run: |
+          set -euo pipefail
+          D="$RUNNER_TEMP/e1c"
+          mkdir -p "$D"
+          MODEL="$PWD/experiments/studio08/runtime_mirror"
+          SRC="$PWD/experiments/studio09/e1c/e1c_integrated_runner.mjs"
+          SEED=$(python3 -c 'import hashlib;print(hashlib.sha256(b"STUDIO09-E1-PILOT-V1|E1-P0").hexdigest())')
+          node --experimental-strip-types --no-warnings "$SRC" genesis "$MODEL" E1-P0 "$SEED" "$D/genesis.json"
+          node --experimental-strip-types --no-warnings "$SRC" encounter "$MODEL" "$D/genesis.json" E1-P0 ordered feedback "$D/encounter_checkpoint.json" "$D/encounter.jsonl.gz" "$D/encounter_receipt.json"
+          node --experimental-strip-types --no-warnings "$SRC" transfer "$MODEL" "$D/genesis.json" "$D/encounter_checkpoint.json" E1-P0 carry "$D/carry.jsonl.gz" "$D/carry_receipt.json"
+          node --experimental-strip-types --no-warnings "$SRC" transfer "$MODEL" "$D/genesis.json" "$D/encounter_checkpoint.json" E1-P0 reset "$D/reset.jsonl.gz" "$D/reset_receipt.json"
+          python3 experiments/studio09/e1c/e1c_episode_verify.py "$D"
+      - name: Retain full P0 raw evidence, not science-world outcomes
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio09-e1c-distinct-episodes-p0-raw
+          path: |
+            ${{ runner.temp }}/e1c/genesis.json
+            ${{ runner.temp }}/e1c/encounter_checkpoint.json
+            ${{ runner.temp }}/e1c/encounter_receipt.json
+            ${{ runner.temp }}/e1c/carry_receipt.json
+            ${{ runner.temp }}/e1c/reset_receipt.json
+            ${{ runner.temp }}/e1c/encounter.jsonl.gz
+            ${{ runner.temp }}/e1c/carry.jsonl.gz
+            ${{ runner.temp }}/e1c/reset.jsonl.gz
+            ${{ runner.temp }}/e1c/E1C_INDEPENDENT_EPISODE_VERIFICATION.json
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 0
