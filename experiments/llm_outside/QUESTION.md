@@ -35,3 +35,15 @@
 - **The answer is the class of the live model** (at least 24 of 32, else mixed). The monologue model is reported alongside.
 
 With 242 choices per lineage, Primary 2 has far less data than the tick-level assays. A *mixed* or invalid outcome is a real possibility and will be reported as such.
+
+## Amendment before any model call (26 October 2026)
+
+**Why.** A plumbing run of the harness, with a stand-in returning random digits and no model data, showed that the block-level Quatermass measure cannot pass its own validity check. The mirror control read Q = 0.0002, not *us*. Her visit profile barely changes from block to block, and 242 choices are too few for the predictor to learn the mirror's rule. Her real past and the time-shifted surrogates therefore give the same gain (0.110 against 0.110 bits).
+
+**Change.**
+- **Primary 1** (double-video: live minus delayed on the 2→7 pull, two-sided sign test p < 0.05) becomes the **single decisive test**. It is unchanged.
+- **Primary 2 becomes descriptive.** For the live and monologue models, and for the mirror and noise arms:
+  - the **mirror rate:** choices naming her most-visited zone of the previous block;
+  - the **difference rate:** choices naming a zone she did not visit in the previous block;
+  - the **contingency:** mutual information between her previous-block most-visited zone and the choice, with a permutation p over 2,000 within-lineage shuffles.
+- The block-level Q is still computed and reported, but makes no claim.
