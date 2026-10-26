@@ -1,0 +1,17 @@
+arm           pull27  routes deaths 6 seasons deaths last  pull45
+live           0.745    6.84                0           0   0.000
+delayed        0.554    7.09                0           0   0.000
+shuffled       0.722    7.25                0           0   0.000
+monologue      0.724    6.97                0           0   0.000
+secondNoise    0.915    7.50              101          35   0.107
+noiseOnly      0.806    7.00                0           0   0.000
+
+pull 2>7, live minus delayed    : higher 30, lower  0, tied  2;  sign p = 1.863e-09
+pull 2>7, live minus shuffled   : higher 28, lower  2, tied  2;  sign p = 8.68e-07
+pull 2>7, live minus monologue  : higher 27, lower  2, tied  3;  sign p = 1.624e-06
+pull 2>7, live minus secondNoise: higher  0, lower 30, tied  2;  sign p = 1.863e-09
+pull 2>7, live minus noiseOnly  : higher  0, lower 30, tied  2;  sign p = 1.863e-09
+
+PRIMARY ANSWER: YES, contingency registers
+secondary routes live-delayed: higher 0, lower 4, tied 28; p=0.125
+secondary deaths (6 seasons) live-delayed: higher 0, lower 0, tied 32; p=1
