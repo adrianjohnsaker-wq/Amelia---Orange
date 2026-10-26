@@ -47,3 +47,18 @@ With 242 choices per lineage, Primary 2 has far less data than the tick-level as
   - the **difference rate:** choices naming a zone she did not visit in the previous block;
   - the **contingency:** mutual information between her previous-block most-visited zone and the choice, with a permutation p over 2,000 within-lineage shuffles.
 - The block-level Q is still computed and reported, but makes no claim.
+
+## Amendment 2, before the re-run (26 October 2026)
+
+**Run 1 (Actions 40368788558) was a technical failure.** Its scored output is kept in `results_run1_silent/`.
+- **What happened:** the model returned **empty text** in 7,715 of 7,744 live turns and 7,711 of 7,744 monologue turns. It gave a digit only on its very first, history-free turn.
+- **Cause:** Claude Haiku 5.5 thinks by default, and its thinking text is hidden. The registered cap of `max_tokens: 5` was spent on thinking before any visible answer.
+- **Consequence:** the Outside never spoke, so run 1's double-video "NO" says nothing about the model.
+
+**Change: how the model is called only.**
+- **Client:** the official SDK (`@anthropic-ai/sdk`).
+- **Effort:** `output_config: {effort: "low"}`, with adaptive thinking left on (the model's default).
+- **Room to answer:** `max_tokens: 1024`.
+- **Temperature:** no longer sent; the registered 1 is the model's default.
+- **Logging:** each reply's `stop_reason` is recorded.
+- **Unchanged:** the system prompt, the turn content, the rule for a missing digit, all arms, measures and the decisive test.
