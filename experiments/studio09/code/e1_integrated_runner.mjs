@@ -6,8 +6,8 @@ import {e1WorldSeed,e1EncounterInput,e1TransferInput} from './e1_outside_tapes.m
 import fs from 'node:fs';
 import zlib from 'node:zlib';
 import { createHash } from 'node:crypto';
-import { closedCircuitSensorCandidates, SENSOR_IDS } from '../code/closed_circuit_sensors.mjs';
-import { S1LearningCueGate, S1_CUE_STRENGTH, S1_REWARD_WINDOW } from '../code/learning_cue_gate.mjs';
+import { closedCircuitSensorCandidates, SENSOR_IDS } from '../../studio08/code/closed_circuit_sensors.mjs';
+import { S1LearningCueGate, S1_CUE_STRENGTH, S1_REWARD_WINDOW } from '../../studio08/code/learning_cue_gate.mjs';
 
 const EDGES = ['0>9','1>8','2>7','3>6','4>5','1>2','2>4','4>7','7>8','8>9','9>1'];
 const a = 0.002, A = 1, wV = 0.5, wH = 0.35, lamS = 0.002, kappa = 0.0005, lamD = 0.00005, H = 24, eta = 1 / 8;
