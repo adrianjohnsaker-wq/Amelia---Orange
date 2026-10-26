@@ -1,0 +1,30 @@
+name: Language model Outside - rescore run 40368788558 (no model calls)
+on:
+  push:
+    branches: [llm-outside-20261026]
+    paths: ['.github/workflows/llm-outside-score.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  score:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: llm-outside-*
+          path: runs
+          merge-multiple: true
+          run-id: 40368788558
+          github-token: ${{ github.token }}
+      - name: Score and commit results, transcripts included
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/llm_outside/results
+          python3 experiments/llm_outside/score.py runs experiments/llm_outside/results | tee experiments/llm_outside/results/RESULT.txt
+          git config user.name "llm-outside scorer"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/llm_outside/results
+          git commit -m "Language model Outside: run 40368788558 scored (no new model calls), transcripts included"
+          git push origin HEAD:${{ github.ref_name }}

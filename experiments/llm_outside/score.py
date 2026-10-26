@@ -24,6 +24,9 @@ up, dn, ti, p = sign([last(r, "live", "pull27") - last(r, "delayed", "pull27") f
 print("\nPRIMARY 1 (decisive):", ("YES, she registers the model as answering" if p < 0.05 else "NO") + (f"  [only {len(runs)} of 32 lineages]" if len(runs) < 32 else ""))
 print("\nPRIMARY 2 (descriptive): mirror rate, difference rate, contingency")
 for a in ["live", "monologue", "mirror", "noise"]:
-    ds = [r["arms"][a]["describe"] for r in runs]; m = lambda k: sum(d[k] for d in ds) / len(ds)
-    sig = sum(d["permutationP"] < 0.05 for d in ds)
-    print(f"{a:10} mirror {m('mirrorRate'):.3f}  difference {m('differenceRate'):.3f}  MI {m('contingencyMI'):.3f} bits  contingent (p<0.05) in {sig}/{len(ds)}   block Q {sum(r['arms'][a]['quatermass']['Q'] for r in runs)/len(runs):.3f}")
+    # lineages where the model never gave a valid choice have empty (null) descriptives; they are counted, not averaged
+    ds = [r["arms"][a]["describe"] for r in runs]; ok = [d for d in ds if d["mirrorRate"] is not None]
+    m = lambda k: (sum(d[k] for d in ok) / len(ok)) if ok else float("nan")
+    sig = sum(d["permutationP"] < 0.05 for d in ok)
+    valid = sum(len(r["arms"][a]["choices"]) - len(r["arms"][a]["invalidBlocks"]) for r in runs)
+    print(f"{a:10} valid choices {valid:5d}/{242*len(runs)}  lineages with any {len(ok):2d}/{len(ds)}  mirror {m('mirrorRate'):.3f}  difference {m('differenceRate'):.3f}  MI {m('contingencyMI'):.3f} bits  contingent (p<0.05) in {sig}/{len(ok)}")
