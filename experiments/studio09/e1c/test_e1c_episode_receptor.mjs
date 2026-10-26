@@ -56,7 +56,7 @@ reset.resetWiring();
 assert.equal(carried.wiring[sensor],1);
 assert.equal(reset.wiring[sensor],0);
 assert.throws(()=>x.resetWiring(),/frozen/);
-assert.throws(()=>cloned.freezeAtBoundary(tick),/boundary contradicts|missing episode/);
+assert.throws(()=>cloned.freezeAtBoundary(tick),/boundary already frozen/);
 const fixed=new E1CEpisodeReceptor('fixed');
 fixed.beginEpisode({tick:1,sensor});
 const fx=fixed.completeTransition({tick:1,from:1,to:8,death:true});
