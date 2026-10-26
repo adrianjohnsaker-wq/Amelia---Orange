@@ -151,7 +151,7 @@ export class E1BRecencyReceptor {
     });
   }
   importState(state){
-    need(state&&state.schema==='STUDIO09_E1_RECEPTOR_V1'&&
+    need(state&&state.schema==='STUDIO09_E1B_RECEPTOR_V1'&&
       state.mode===this.mode,'schema or mode mismatch');
     need(state.wiring&&state.switches&&state.window&&state.sinceFlip&&
       state.pending&&state.events,'missing receptor fields');
