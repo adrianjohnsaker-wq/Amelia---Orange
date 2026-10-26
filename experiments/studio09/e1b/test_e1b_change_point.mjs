@@ -17,14 +17,15 @@ for(let i=0;i<48;i++){
  const receipt={token,sensor:id,reward};
  const old=original.onSettled(receipt),now=revised.onSettled(receipt);
  if(now)count++;
- if(i<47)assert.equal(now,null);
+ if(i<42)assert.equal(now,null);
+ if(i===42)assert.equal(now?.triggeringToken,'q42');
  assert.equal(old,null);
 }
 assert.equal(count,1);
 assert.equal(original.wiring[id],0);
 assert.equal(revised.wiring[id],1);
 assert.equal(original.window[id].n,48);
-assert.equal(revised.window[id].n,0,'rolling window resets after the switch');
+assert.equal(revised.window[id].n,5,'rolling window restarts at switch; five later credits remain');
 assert.equal(revised.switches[id],1);
 const transfer=new E1BRecencyReceptor().importState(revised.exportState());
 transfer.freezeTransfer();
