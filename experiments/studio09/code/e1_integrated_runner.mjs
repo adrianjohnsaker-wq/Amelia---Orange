@@ -133,7 +133,7 @@ function buildSession(R,ck,mode) {
   born();snaps.push(stamp());
   function step(input,tick,phase){
     const before=stateHash({L:lineageJson(L),life,i,zone:z.at(-1),
-      gate:gate.exportState(),receptor:receptor.exportState()});
+      gateStats:{tick:gate.tick,nSelected:{...gate.nSelected},nSettled:{...gate.nSettled},rewardSums:{...gate.rewardSums},outstanding:Object.keys(gate.pending).length},receptor:receptor.exportState()});
     const proposals=snaps.length>=25?receptor.propose(snaps.slice(-25)):
       SENSOR_IDS.map(id=>({id,target:null}));
     // Original META1 UCB selector remains unchanged in all arms.
@@ -163,7 +163,7 @@ function buildSession(R,ck,mode) {
     if(death){deaths++;life++;born()}
     snaps.push(stamp());if(snaps.length>25)snaps.shift();
     const after=stateHash({L:lineageJson(L),life,i,zone:z.at(-1),
-      gate:gate.exportState(),receptor:receptor.exportState()});
+      gateStats:{tick:gate.tick,nSelected:{...gate.nSelected},nSettled:{...gate.nSettled},rewardSums:{...gate.rewardSums},outstanding:Object.keys(gate.pending).length},receptor:receptor.exportState()});
     return {schema:'STUDIO09_E1_MODEL_STEP_V1',tick,phase,sourceInput:input,
       from,to,death,selectedSensor,target,
       cueMagnitude:target===null?0:S1_CUE_STRENGTH,
