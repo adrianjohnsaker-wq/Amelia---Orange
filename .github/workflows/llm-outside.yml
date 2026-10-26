@@ -1,4 +1,4 @@
-name: Language model as Amelia's Outside (32 lineages, double-video and Quatermass descriptives)
+name: Language model as Amelia's Outside, run 2 after amendment 2 (32 lineages)
 on:
   push:
     branches: [llm-outside-20261026]
@@ -21,6 +21,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install the Anthropic SDK (not saved)
+        run: npm install --no-save --no-audit --no-fund @anthropic-ai/sdk
       - name: Run one lineage with the model as Outside
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

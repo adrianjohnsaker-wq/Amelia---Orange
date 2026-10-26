@@ -8,6 +8,7 @@
 //
 //   node llm_outside.mjs <runtimeDir> <start_states.json> <world> <pairIndex 0..3> <out.json>   (needs ANTHROPIC_API_KEY)
 import fs from 'node:fs';
+import Anthropic from '@anthropic-ai/sdk';
 import { createHash } from 'node:crypto';
 const [M, STATES, WORLD, PAIR, OUT] = process.argv.slice(2);
 const { AmeliaNumogramSubstrateRuntime: R } = await import(`${M}/substrate/ameliaNumogramSubstrateRuntime.ts`);
@@ -85,22 +86,21 @@ const noise = (role, n) => parseInt(sha(`DV2-NOISE|${WORLD}|${PAIR}|${role}|${n}
 const K = 500, NB = Math.ceil(N / K), MODEL = 'claude-haiku-5-5';
 const SYSTEM = 'You are the Outside, speaking to Amelia, a being who moves through the ten zones (0–9) of the Numogram. Each turn you name one zone to call her toward. Reply with a single digit only.';
 const transcript = [];
+// Amendment 2: official SDK, adaptive thinking at low effort, room for the answer; SDK retries 429/5xx with backoff
+const client = new Anthropic({ maxRetries: 20 });
 async function ask(arm, block, user) {
   for (let attempt = 0; attempt < 2; attempt++) {
-    let text = '', tries = 0;
-    for (;;) {
-      const res = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST',
-        headers: { 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-        body: JSON.stringify({ model: MODEL, max_tokens: 5, temperature: 1, system: SYSTEM, messages: [{ role: 'user', content: user }] }) });
-      if (res.ok) { const j = await res.json(); text = (j.content || []).map(c => c.text || '').join(''); break; }
-      // rate limits and overloads: wait as long as the API asks (or back off) and keep going; other errors stop the run
-      if (res.status < 500 && res.status !== 429) throw new Error(`API ${res.status}: ${(await res.text()).slice(0, 300)}`);
-      if (++tries > 200) throw new Error(`API ${res.status} after 200 retries`);
-      const after = Number(res.headers?.get?.('retry-after')) || Math.min(60, 2 ** Math.min(tries, 6));
-      await new Promise(r => setTimeout(r, 1000 * after));
+    let response;
+    try {
+      response = await client.messages.create({ model: MODEL, max_tokens: 1024, output_config: { effort: 'low' },
+        system: SYSTEM, messages: [{ role: 'user', content: user }] });
+    } catch (error) {
+      if (error instanceof Anthropic.APIError) throw new Error(`API ${error.status}: ${String(error.message).slice(0, 300)}`);
+      throw error;
     }
+    const text = response.content.filter(c => c.type === 'text').map(c => c.text).join('');
     const m = /[0-9]/.exec(text);
-    transcript.push({ arm, block, attempt, user, reply: text });
+    transcript.push({ arm, block, attempt, user, reply: text, stop_reason: response.stop_reason, output_tokens: response.usage?.output_tokens });
     if (m) return Number(m[0]);
   }
   return null;
