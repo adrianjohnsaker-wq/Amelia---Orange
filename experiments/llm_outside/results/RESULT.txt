@@ -1,0 +1,22 @@
+lineages completed: 32 of 32
+
+arm        pull 2>7  routes deaths 6 seasons invalid blocks
+live          0.806    6.88                0           7715
+monologue     0.782    6.88                0           7711
+delayed       0.806    6.88                0            726
+shuffled      0.806    6.88                0            726
+noise         0.892    7.19                1              0
+mirror        0.531    7.38                0             32
+
+pull 2>7, live minus delayed  : higher  0, lower  0, tied 32; two-sided sign p = 1
+pull 2>7, live minus monologue: higher  2, lower  0, tied 30; two-sided sign p = 0.5
+pull 2>7, live minus shuffled : higher  0, lower  0, tied 32; two-sided sign p = 1
+pull 2>7, live minus noise    : higher  0, lower 30, tied  2; two-sided sign p = 1.863e-09
+
+PRIMARY 1 (decisive): NO
+
+PRIMARY 2 (descriptive): mirror rate, difference rate, contingency
+live       valid choices    29/7744  lineages with any 29/32  mirror 0.000  difference 0.103  MI 0.000 bits  contingent (p<0.05) in 0/29
+monologue  valid choices    33/7744  lineages with any 32/32  mirror 0.000  difference 0.063  MI 0.000 bits  contingent (p<0.05) in 0/32
+mirror     valid choices  7712/7744  lineages with any 32/32  mirror 1.000  difference 0.000  MI 1.176 bits  contingent (p<0.05) in 32/32
+noise      valid choices  7744/7744  lineages with any 32/32  mirror 0.097  difference 0.533  MI 0.062 bits  contingent (p<0.05) in 1/32
