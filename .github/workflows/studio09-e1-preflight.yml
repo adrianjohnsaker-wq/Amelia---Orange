@@ -30,6 +30,34 @@ jobs:
           node --check experiments/studio09/code/test_e1_receptor_plasticity.mjs
       - name: Verify 3-sensor receptor mutation, prechoice-only readout and matched tapes
         run: node experiments/studio09/code/test_e1_receptor_plasticity.mjs
+      - name: Verify committed model integration runner syntax
+        run: |
+          node --check experiments/studio09/code/e1_integrated_runner.mjs
+          python3 -m py_compile experiments/studio09/code/e1_verify_pilot.py
+      - name: Execute ONE full-model engineering pilot E1-P0 with a matched causal transfer fork
+        shell: bash
+        run: |
+          set -euo pipefail
+          D="$RUNNER_TEMP/studio09-e1"
+          mkdir -p "$D"
+          MODEL="$PWD/experiments/studio08/runtime_mirror"
+          SRC="$PWD/experiments/studio09/code/e1_integrated_runner.mjs"
+          SEED=$(python3 -c 'import hashlib;print(hashlib.sha256(b"STUDIO09-E1-PILOT-V1|E1-P0").hexdigest())')
+          node --experimental-strip-types --no-warnings "$SRC" genesis "$MODEL" E1-P0 "$SEED" "$D/genesis.json"
+          node --experimental-strip-types --no-warnings "$SRC" encounter "$MODEL" "$D/genesis.json" E1-P0 ordered feedback "$D/encounter_checkpoint.json" "$D/encounter.jsonl.gz" "$D/encounter_receipt.json"
+          node --experimental-strip-types --no-warnings "$SRC" transfer "$MODEL" "$D/genesis.json" "$D/encounter_checkpoint.json" E1-P0 carry "$D/carry.jsonl.gz" "$D/carry_receipt.json"
+          node --experimental-strip-types --no-warnings "$SRC" transfer "$MODEL" "$D/genesis.json" "$D/encounter_checkpoint.json" E1-P0 reset "$D/reset.jsonl.gz" "$D/reset_receipt.json"
+          python3 experiments/studio09/code/e1_verify_pilot.py "$D"
+      - name: Keep P0 source and transfer receipts without treating them as scientific data
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio09-e1-pilot-p0-receipts
+          path: |
+            ${{ runner.temp }}/studio09-e1/encounter_receipt.json
+            ${{ runner.temp }}/studio09-e1/carry_receipt.json
+            ${{ runner.temp }}/studio09-e1/reset_receipt.json
+          if-no-files-found: error
+          retention-days: 30
       - name: Ensure no E1-W scientific evidence is created in engineering CI
         run: |
           test ! -d experiments/studio09/e1_registered_worlds
