@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {encounterSequence,commonInput,sha256} from './encounter_input.mjs';
+const s=sha256('E1-SYNTHETIC-QA-P0');
+const a=encounterSequence(s,'structured'),b=encounterSequence(s,'scrambled'),c=encounterSequence(s,'neutral');
+assert.equal(a.length,256);assert.equal(b.length,256);assert.equal(c.length,256);
+assert.deepEqual(a,encounterSequence(s,'structured'));assert.deepEqual(b,encounterSequence(s,'scrambled'));
+assert.notDeepEqual(a,b);assert.notDeepEqual(a,c);
+assert.deepEqual([...a].sort(),[...b].sort());
+assert.equal(new Set(a).size,256);assert.equal(new Set(c).size,256);
+assert.equal(new Set(a.map(x=>x.length)).size,1);assert.equal(new Set(c.map(x=>x.length)).size,1);
+assert.equal(commonInput(s,'washout',1),commonInput(s,'washout',1));
+assert.notEqual(commonInput(s,'washout',1),commonInput(s,'challenge',1));
+assert.throws(()=>encounterSequence('bad','neutral'),/invalid seed/);
+assert.throws(()=>encounterSequence(s,'invented'),/invalid condition/);
+assert.throws(()=>commonInput(s,'encounter',1),/invalid common input/);
+console.log(JSON.stringify({status:'ENCOUNTER1_STIMULUS_ENGINEERING_PASS',assertions:16,scientificRuns:0}));
