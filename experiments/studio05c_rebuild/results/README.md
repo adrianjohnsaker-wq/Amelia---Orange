@@ -20,3 +20,10 @@ It is not bit-exact; later-season deaths differ by a few.
 | R3 | erase 2→7, unchanged Amelias | 0/8: the haunting returns, 386–1,574 deaths per season |
 
 `rebuild_20_seasons.json` and `regeneration_6_seasons.json` hold every world's season-by-season record. `REGENERATION_RESULT.txt` is the per-world table.
+
+**R4, who carries the direction?** (rule written before the run): erase 2→7 *and* wipe her code.
+
+- **By the rule: regenerated in 5/8, so conditional on the world.**
+- **The route itself came back everywhere.** The 2→7 pull was 0.56–0.72 after one season and 0.67–0.88 by the sixth, in all 8 worlds, with routes 6.3–7.9.
+- **Why three worlds fall short of the criterion.** Two have 2 deaths left in the last season. In W1 the 2→7 pull settles at 0.67, its own R0 baseline, and routes at 6.33.
+- **The price is paid in deaths.** Season 1 has 43–75 deaths per world, against 0–3 in R1. Her caution is relearned through dying: by season 6, V(4→5) is back to −0.41 to −0.67 and V(2→4) to −0.13 to −0.40.
