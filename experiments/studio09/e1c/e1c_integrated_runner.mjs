@@ -7,7 +7,7 @@
 // No registered E1-W world may run before a separate final source/protocol seal.
 import {E1CEpisodeReceptor} from '../e1c/e1c_episode_receptor.mjs';
 import {e1bEncounterSource} from '../e1b/e1b_exogenous_challenge.mjs';
-import {e1WorldSeed,e1EncounterInput,e1TransferInput} from './e1_outside_tapes.mjs';
+import {e1WorldSeed,e1EncounterInput,e1TransferInput} from '../code/e1_outside_tapes.mjs';
 import fs from 'node:fs';
 import zlib from 'node:zlib';
 import { createHash } from 'node:crypto';
