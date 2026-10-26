@@ -38,6 +38,32 @@ jobs:
           node --experimental-strip-types --no-warnings "$SRC" transfer "$MODEL" "$D/genesis.json" "$D/encounter_checkpoint.json" E1-P0 carry "$D/carry.jsonl.gz" "$D/carry_receipt.json"
           node --experimental-strip-types --no-warnings "$SRC" transfer "$MODEL" "$D/genesis.json" "$D/encounter_checkpoint.json" E1-P0 reset "$D/reset.jsonl.gz" "$D/reset_receipt.json"
           python3 experiments/studio09/e1c/e1c_episode_verify.py "$D"
+          # Tamper tests: exercise independent rejection of forged episode
+          # reward and duplicated episode ID against the same raw P0 trace.
+          python3 - <<'PY'
+          import os,sys,json
+          from pathlib import Path
+          sys.path.insert(0,'experiments/studio09/e1c')
+          from e1c_episode_verify import encounter_replay
+          d=Path(os.environ["RUNNER_TEMP"])/"e1c"
+          checkpoint=json.loads((d/"encounter_checkpoint.json").read_text())
+          raw=d/"encounter.jsonl.gz"
+          def forged_reward(tick,row):
+              if tick==24:
+                  assert row["episodeCompleted"] is not None
+                  row["episodeCompleted"]["reward"]=0.77
+              return row
+          def duplicate_episode(tick,row):
+              if tick==25:row["episodeId"]="E1C-E1"
+              return row
+          for name,alter in (("forged-reward",forged_reward),("duplicate-id",duplicate_episode)):
+              try:encounter_replay(raw,checkpoint,alter)
+              except ValueError as e:
+                  if not str(e).startswith("E1C_EPISODE_REPLAY_REJECTED"):
+                      raise
+              else:raise RuntimeError("Independent validator accepted "+name)
+          print("STUDIO09_E1C_TWO_ADVERSARIAL_TRACE_TAMPERS_REJECTED")
+          PY
       - name: Retain full P0 raw evidence, not science-world outcomes
         uses: actions/upload-artifact@v4
         with:
