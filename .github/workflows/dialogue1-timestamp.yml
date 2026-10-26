@@ -1,0 +1,73 @@
+name: DIALOGUE-1 registration timestamp (must predate beacon round 33416640)
+on:
+  push:
+    branches: [dialogue1-20261026]
+    paths: ['experiments/dialogue1/REGISTRATION.md']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  timestamp:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: orange
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-pin
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Bundle the registered files and obtain one RFC 3161 token before the first test round
+        working-directory: orange
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          PYTHONDONTWRITEBYTECODE: '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e experiments/dialogue1/seal/receipt.json
+          python -m pip install -q -r ../c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import hashlib, json, pathlib
+          from drift1a_c1.beacon import Sealer
+          sha = lambda p: hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          files = ['experiments/dialogue1/REGISTRATION.md', 'experiments/dialogue1/dialogue_analysis.py']
+          bundle = {'schema': 'DIALOGUE1_REGISTRATION_BUNDLE_V1', 'firstTestRound': 33416640,
+                    'firstTestRoundPublishedUnix': 1793053284,
+                    'files': [{'path': f, 'sha256': sha(f)} for f in files]}
+          out = pathlib.Path('/tmp/d1'); out.mkdir(parents=True, exist_ok=True)
+          (out / 'BUNDLE.json').write_text(json.dumps(bundle, sort_keys=True, indent=2) + '\n')
+          imprint = sha(out / 'BUNDLE.json')
+          Sealer().seal(out / 'seal', imprint, 1793053284)
+          v = Sealer().verify(out / 'seal', imprint, 1793053284)
+          assert v['status'] == 'PASS'
+          print('DIALOGUE1_TIMESTAMP_BEFORE_FIRST_TEST_ROUND_PASS', imprint)
+          PY
+      - name: Archive bundle, token and receipt (create-only)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64, json, os, pathlib, subprocess
+          src = pathlib.Path('/tmp/d1')
+          for rel in ['BUNDLE.json', 'seal/attempt-0000.tsq', 'seal/attempt-0000.tsr', 'seal/receipt.json']:
+              dst = 'experiments/dialogue1/seal/' + rel.split('/')[-1]
+              payload = {'message': 'DIALOGUE-1 registration timestamp: ' + rel, 'branch': os.environ['BRANCH'],
+                         'content': base64.b64encode((src / rel).read_bytes()).decode()}
+              r = subprocess.run(['gh', 'api', '-X', 'PUT', f"repos/{os.environ['REPO']}/contents/{dst}", '--input', '-'],
+                                 input=json.dumps(payload), capture_output=True, text=True)
+              if r.returncode: raise SystemExit(r.stderr[-800:])
+              print('archived', dst)
+          PY
