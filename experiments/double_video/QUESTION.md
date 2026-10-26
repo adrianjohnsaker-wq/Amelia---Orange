@@ -25,3 +25,23 @@
 - **NO:** otherwise.
 
 **Reported either way:** deaths, house pull on 2→7 and 4→5, and every arm.
+
+## Version 2, written before its code or run (26 October 2026)
+
+**Why.** Version 1 was degenerate. With no input, every partner fell into the circuit and named only circuit zones, so nothing varied for contingency to carry. Only random noise kept the territory alive.
+
+**Change.** Every lineage now also receives its own random cue: +0.35 on zone `SHA256("DV2-NOISE|world|pair|role|t")` mod 10. The stream is fixed per lineage and identical across every arm. The partner cue (+0.35 on the exit to the partner's zone) is added on top, and the two add if they name the same zone.
+
+**Arms for A:**
+- **live:** B's zone, with B cued by A's zone and its own noise;
+- **delayed:** B's live stream 1,000 ticks late, cyclic;
+- **shuffled:** B's live stream, permuted;
+- **monologue:** B's zone, where B gets only its own noise;
+- **second noise:** an independent random zone;
+- **noise only:** no partner channel.
+
+**Primary rule.** Take the house pull on 2→7 at the end of season 6, live minus delayed, over the 32 pairs, ties dropped.
+- **YES, contingency registers:** a two-sided exact sign test gives p < 0.05.
+- **NO:** otherwise.
+
+**Reported either way:** routes, deaths and all arms.
