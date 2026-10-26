@@ -42,6 +42,7 @@ jobs:
           node --experimental-strip-types --no-warnings "$SRC" transfer "$MODEL" "$D/genesis.json" "$D/encounter_checkpoint.json" E1-P0 carry "$D/carry.jsonl.gz" "$D/carry_receipt.json"
           node --experimental-strip-types --no-warnings "$SRC" transfer "$MODEL" "$D/genesis.json" "$D/encounter_checkpoint.json" E1-P0 reset "$D/reset.jsonl.gz" "$D/reset_receipt.json"
           python3 experiments/studio09/e1b/e1b_verify_pilot.py "$D"
+          python3 experiments/studio09/e1b/e1b_feedback_replay.py "$D"
           python3 - <<'PY'
           import json,os
           from pathlib import Path
@@ -69,6 +70,7 @@ jobs:
             ${{ runner.temp }}/e1b/encounter_receipt.json
             ${{ runner.temp }}/e1b/carry_receipt.json
             ${{ runner.temp }}/e1b/reset_receipt.json
+            ${{ runner.temp }}/e1b/E1B_INDEPENDENT_FEEDBACK_REPLAY.json
             ${{ runner.temp }}/e1b/encounter.jsonl.gz
             ${{ runner.temp }}/e1b/carry.jsonl.gz
             ${{ runner.temp }}/e1b/reset.jsonl.gz
