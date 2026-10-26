@@ -28,7 +28,7 @@ jobs:
           node --check experiments/studio09/code/e1b_integrated_runner.mjs
           python3 -m py_compile experiments/studio09/e1b/e1b_verify_pilot.py
           node experiments/studio09/e1b/test_e1b_change_point.mjs
-      - name: Run only P0: exogenous sink-oriented encounter and identical heldout forks
+      - name: 'Run only P0: exogenous encounter and identical held-out forks'
         shell: bash
         run: |
           set -euo pipefail
