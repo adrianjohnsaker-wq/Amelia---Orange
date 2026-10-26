@@ -17,3 +17,11 @@
 - **Conditional on the world:** in between.
 
 R0, R2 and R3 are reported with the same rule.
+
+## Follow-up, written before its run (26 October 2026): who carries the direction?
+
+**R4.** Erase the house's 2→7 record *and* wipe her code (V = 0 on every edge) at the same moment. She is still a learner. Start from the same converged d = 3 states, and run 6 seasons with season-start rebirth, as R0–R3.
+
+- **Strong transduction (the direction is regenerated in the encounter):** regenerated, by the same criterion, in ≥ 6 of 8 worlds.
+- **Stored bias (the direction was carried in her inherited code):** 2 or fewer.
+- **Conditional on the world:** in between.

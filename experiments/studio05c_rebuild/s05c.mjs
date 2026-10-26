@@ -4,7 +4,7 @@
 // on a continuous clock; rebirth at zone 0 on entry to zone 5. Fiction: S = D = d on 1>2, 2>4, 4>5.
 //
 //   node s05c.mjs <runtimeDir> <world> <dose|alone> <seasons> <out.json> [stateIn.json] [intervention]
-//   intervention: none | erase27 | eraseDetour | unchanged | erase27_unchanged
+//   intervention: none | erase27 | eraseDetour | unchanged | erase27_unchanged | erase27_blankcode
 import fs from 'node:fs';
 const [M, WORLD, DOSE, SEASONS, OUT, STATE_IN, INTERVENTION = 'none'] = process.argv.slice(2);
 const { AmeliaNumogramSubstrateRuntime: R } = await import(`${M}/substrate/ameliaNumogramSubstrateRuntime.ts`);
@@ -42,6 +42,7 @@ const lin = STATE_IN ? JSON.parse(fs.readFileSync(STATE_IN, 'utf8')).lineages
     });
 for (const L of lin) {
   if (INTERVENTION.startsWith('erase27')) { L.S['2>7'] = 0; L.D['2>7'] = 0; }
+  if (INTERVENTION === 'erase27_blankcode') for (const e of EDGES) L.V[e] = 0; // her code wiped at the same moment
   if (INTERVENTION === 'eraseDetour') for (const e of ['1>2', '2>7', '7>8']) { L.S[e] = 0; L.D[e] = 0; }
 }
 const nS = Number(SEASONS), seasons = [];
