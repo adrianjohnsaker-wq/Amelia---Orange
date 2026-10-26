@@ -1,0 +1,37 @@
+name: Studio 09 E1 development — receptor and Outside tape preflight
+on:
+  push:
+    branches:
+      - studio09-encounter-incorporation-20261026
+    paths:
+      - 'experiments/studio09/**'
+      - '.github/workflows/studio09-e1-preflight.yml'
+  pull_request:
+    paths:
+      - 'experiments/studio09/**'
+      - '.github/workflows/studio09-e1-preflight.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  engineering-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate E1 module syntax
+        run: |
+          node --check experiments/studio09/code/e1_receptor_plasticity.mjs
+          node --check experiments/studio09/code/e1_outside_tapes.mjs
+          node --check experiments/studio09/code/test_e1_receptor_plasticity.mjs
+      - name: Verify 3-sensor receptor mutation, prechoice-only readout and matched tapes
+        run: node experiments/studio09/code/test_e1_receptor_plasticity.mjs
+      - name: Ensure no E1-W scientific evidence is created in engineering CI
+        run: |
+          test ! -d experiments/studio09/e1_registered_worlds
+          test ! -f experiments/studio09/E1_SCIENCE_SEAL.json
+          echo 'STUDIO09_E1_ENGINEERING_ONLY_NO_REGISTERED_WORLD_EXECUTION'
