@@ -1,0 +1,56 @@
+# THE STONE TAPE (A): one RFC3161 token over the registration, code and workflows, before 28 Oct 2026 00:00 UTC.
+name: STONE TAPE seal (one-shot, before the window)
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/stonetape-seal.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: stonetape-seal
+  cancel-in-progress: false
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: main }
+      - uses: actions/checkout@v4
+        with: { ref: 1bcf7e44d6503dcb1e08b31a0f58da0fae21bd16, path: code }
+      - uses: actions/checkout@v4
+        with: { ref: antenna-live, path: live }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: seal before the window
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+        run: |
+          set -euo pipefail
+          if [ -e live/stonetape/seal/STONETAPE_BUNDLE.json ]; then echo STONETAPE_ALREADY_SEALED; exit 0; fi
+          test ! -e live/results/inputs.json
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          mkdir -p live/stonetape/seal
+          python - <<'PY'
+          import hashlib, json, pathlib, datetime
+          from drift1a_c1.beacon import Sealer
+          sha = lambda p: hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          files = ['code/experiments/stonetape/' + f for f in ('REGISTRATION.md', 'stonetape.mjs', 'analysis.py')]
+          files += ['code/experiments/numogram/CCRUNumogram.ts', 'code/experiments/antenna/scan.mjs', 'code/experiments/antenna/start_states.json', 'code/experiments/antenna/entity_names.json']
+          files += ['main/.github/workflows/stonetape-' + f + '.yml' for f in ('seal', 'run')]
+          bundle = {'schema': 'STONETAPE_SEAL_V1', 'codeCommit': '1bcf7e44d6503dcb1e08b31a0f58da0fae21bd16', 'inputs': 'antenna-live results/inputs.json (THE ANTENNA, sealed)',
+                    'inputsExistAtSeal': False, 'sourceSHA256': [{'path': f.split('/', 1)[1], 'sha256': sha(f)} for f in files]}
+          p = pathlib.Path('live/stonetape/seal'); (p / 'STONETAPE_BUNDLE.json').write_text(json.dumps(bundle, sort_keys=True, indent=2) + '\n')
+          imprint = sha(p / 'STONETAPE_BUNDLE.json')
+          before = datetime.datetime(2026, 10, 28, tzinfo=datetime.timezone.utc).timestamp()
+          Sealer().seal(p / 'token', imprint, before)
+          assert Sealer().verify(p / 'token', imprint, before)['status'] == 'PASS'
+          print('STONETAPE_SEALED_BEFORE_WINDOW', imprint)
+          PY
+          cd live && git add -A
+          git -c user.name='stonetape' -c user.email='stonetape@users.noreply.github.com' commit -qm 'THE STONE TAPE (A): seal before the window'
+          for i in 1 2 3 4; do git push -q origin HEAD:antenna-live && exit 0; sleep $((2**i)); git pull -q --rebase origin antenna-live; done; exit 1

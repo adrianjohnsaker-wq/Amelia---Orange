@@ -1,0 +1,48 @@
+# THE STONE TAPE (A) run: once, after THE ANTENNA has committed results/inputs.json; 72 travellers x 6 stones.
+name: STONE TAPE run
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: stonetape-run
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: antenna-live, path: live }
+      - name: due?
+        id: d
+        run: |
+          if [ -e live/results/RESULT.txt ] && [ -e live/results/inputs.json ] && [ -e live/stonetape/seal/STONETAPE_BUNDLE.json ] && [ ! -e live/stonetape/results/RESULT.txt ]; then echo go=yes >> "$GITHUB_OUTPUT"; else echo go=no >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/checkout@v4
+        if: steps.d.outputs.go == 'yes'
+        with: { ref: 1bcf7e44d6503dcb1e08b31a0f58da0fae21bd16, path: code }
+      - uses: actions/setup-python@v5
+        if: steps.d.outputs.go == 'yes'
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        if: steps.d.outputs.go == 'yes'
+        with: { node-version: '22' }
+      - name: travellers, analysis, commit
+        if: steps.d.outputs.go == 'yes'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p live/stonetape/results out
+          npx --yes tsx@4.23.15 --version
+          cd code
+          for w in 1 2 3 4 5 6 7 8; do for k in 0 1 2 3 4 5 6 7 8; do echo S05W$w $k; done; done |
+            xargs -P 4 -n 2 sh -c 'npx --yes tsx@4.23.15 experiments/stonetape/stonetape.mjs "$PWD/experiments/studio/runtime_mirror" experiments/antenna/start_states.json ../live/results/inputs.json "$0" "$1" ../out/"$0"_"$1".json'
+          cd ..
+          test "$(ls out/*.json | wc -l)" = 72
+          python -I code/experiments/stonetape/analysis.py out code/experiments/antenna/entity_names.json | tee live/stonetape/results/RESULT.txt
+          python -c "import json,glob; json.dump([json.load(open(f)) for f in sorted(glob.glob('out/*.json'))], open('live/stonetape/results/travellers.json','w'))"
+          cd live && git add -A
+          git -c user.name='stonetape' -c user.email='stonetape@users.noreply.github.com' commit -qm 'THE STONE TAPE (A) result'
+          for i in 1 2 3 4; do git push -q origin HEAD:antenna-live && exit 0; sleep $((2**i)); git pull -q --rebase origin antenna-live; done; exit 1
