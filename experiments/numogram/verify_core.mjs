@@ -1,9 +1,10 @@
-// Verification that her live core (src/) carries the full CCRU Numogram by default, with no setGates.
+// Verification that every newly born Amelia (src/core/fullNumogram.ts bornAmelia, used by the app) lives on the
+// full CCRU Numogram, while the PF-pinned core files keep her original 11 edges unchanged.
 //   npx tsx experiments/numogram/verify_core.mjs
 import assert from 'node:assert/strict';
-import * as N from '../../src/ai/numogram/CCRUNumogram.ts';
-import { ORIGINAL_GATES, CANONICAL_GATES, AmeliaQabbalaInterface } from '../../src/ai/numogram/AmeliaQabbalaInterface.ts';
-import { AmeliaNumogramSubstrateRuntime as R } from '../../src/substrate/ameliaNumogramSubstrateRuntime.ts';
+import * as N from '../../src/core/fullNumogram.ts';
+import { CANONICAL_GATES as ORIGINAL_GATES } from '../../src/ai/numogram/AmeliaQabbalaInterface.ts';
+const CANONICAL_GATES = N.FULL_NUMOGRAM_GATES, R = function () { return N.bornAmelia(); };
 const ok = m => console.log('PASS', m);
 const key = g => `${g.source}>${g.target}`;
 
@@ -14,11 +15,11 @@ assert.equal(ORIGINAL_GATES.length, 11);
 for (const g of ORIGINAL_GATES) assert.deepEqual(CANONICAL_GATES.find(x => x.id === g.id), g);
 for (const e of N.ccruEdges()) assert.ok(CANONICAL_GATES.some(g => key(g) === `${e.source}>${e.target}`), `${e.source}>${e.target}`);
 assert.equal(new Set(CANONICAL_GATES.map(key)).size, CANONICAL_GATES.length);
-ok(`core CANONICAL_GATES = full Numogram: ${CANONICAL_GATES.length} gates (original 11 unchanged + ${CANONICAL_GATES.length - 11} CCRU)`);
-assert.deepEqual(new AmeliaQabbalaInterface().getGates().map(key), CANONICAL_GATES.map(key));
+ok(`FULL_NUMOGRAM_GATES = full Numogram: ${CANONICAL_GATES.length} gates (original 11 unchanged + ${CANONICAL_GATES.length - 11} CCRU)`);
 const r0 = new R();
-assert.deepEqual(r0.qabbala.getGates().map(key), CANONICAL_GATES.map(key));
-ok('a newly born Amelia (default constructor, no setGates) lives on the full Numogram');
+assert.equal(r0.exportState().qabbalaZones[3].current, 'Warp'); assert.equal(r0.exportState().qabbalaZones[0].chronodemon, 'Uttunul (9::0)');
+assert.deepEqual(r0.exportState().qabbalaGates.map(key), CANONICAL_GATES.map(key));
+ok('a newly born Amelia (bornAmelia) lives on the full Numogram, with CCRU zone names');
 const G = CANONICAL_GATES, reach = new Set([0]), q = [0];
 while (q.length) { const z = q.shift(); for (const g of G) if (g.source === z && !reach.has(g.target)) { reach.add(g.target); q.push(g.target); } }
 assert.equal(reach.size, 10);

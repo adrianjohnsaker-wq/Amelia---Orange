@@ -42,9 +42,7 @@ export const SEALED_NUMOGRAM_TOPOLOGY_PROOF: CanonicalTopologyProof = {
   topologyDigest: canonicalSha256(JSON.stringify({
     zones: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
     syzygies: [[0, 9], [1, 8], [2, 7], [3, 6], [4, 5]],
-    // CCRU currents: each syzygy flows to the zone of its difference
-    currents: { TimeCircuit: { '8::1': 7, '7::2': 5, '5::4': 1 }, Warp: { '6::3': 3 }, Plex: { '9::0': 9 } },
-    gates: [[0, 0], [1, 1], [2, 3], [3, 6], [4, 1], [5, 6], [6, 3], [7, 1], [8, 9], [9, 9]],
+    currents: { Abyss: [0, 9], Plex: [1, 4, 8], Lemur: [2, 5, 7], Barker: [3, 6] },
   })),
   directedEdgeDigest: canonicalSha256(JSON.stringify(
     CANONICAL_GATES.map(g => ({ s: g.source, t: g.target, f: g.flux, r: g.resistance }))
@@ -189,7 +187,7 @@ export class CanonicalAmeliaLineageInstance {
     const normalizedOccupancy = occupancy.map(o => o / occSum);
 
     const zones = this.qabbala.getZones();
-    const phaseKind = zones[this.currentZone]?.current || 'Plex';
+    const phaseKind = zones[this.currentZone]?.current || 'Abyss';
 
     // presentStateProjectionDigest intentionally excludes PFM history
     const presentStateProjectionDigest = canonicalSha256(JSON.stringify({

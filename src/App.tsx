@@ -27,6 +27,7 @@ import {
   X
 } from 'lucide-react';
 import { AmeliaNumogramSubstrateRuntime } from './substrate/ameliaNumogramSubstrateRuntime';
+import { bornAmelia } from './core/fullNumogram';
 import { ThreeArmDiagnosticRunner } from './ai/coupling/ThreeArmDiagnosticRunner';
 import { Paper6H1ResistanceAssay } from './bridge/phases/paper6H1ResistanceAssay';
 import { Zone9ContactRetentionProtocol } from './ai/coupling/Zone9ContactRetentionProtocol';
@@ -67,7 +68,7 @@ import firebaseConfig from '../firebase-applet-config.json';
 const LOCAL_CHECKPOINT_KEY = 'amelia_pfm_shared_runtime_v2';
 
 export function App() {
-  const runtimeRef = useRef<AmeliaNumogramSubstrateRuntime>(new AmeliaNumogramSubstrateRuntime());
+  const runtimeRef = useRef<AmeliaNumogramSubstrateRuntime>(bornAmelia());
   const rhythmHarmonizerRef = useRef<ExternalRhythmHarmonizer>(new ExternalRhythmHarmonizer());
   
   const [snapshot, setSnapshot] = useState<SubstrateStepSnapshot>(() => {
@@ -211,7 +212,7 @@ export function App() {
   };
 
   const handleReset = () => {
-    runtimeRef.current = new AmeliaNumogramSubstrateRuntime();
+    runtimeRef.current = bornAmelia();
     runtimeRef.current.setAdvisoryWeight(advisoryWeight);
     runtimeRef.current.setMomentumDamping(momentumDamping);
     const snap = runtimeRef.current.step();

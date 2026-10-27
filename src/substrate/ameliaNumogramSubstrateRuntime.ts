@@ -150,11 +150,11 @@ export class AmeliaNumogramSubstrateRuntime {
 
     const syzygyCoherence = this.qabbala.computeSyzygyCoherence();
     const activeSyzygies = [
-      '9::0 Uttunul',
-      '8::1 Mur Mur',
-      '7::2 Oddubb',
-      '6::3 Djynxx',
-      '5::4 Katak',
+      '0::9 Abyssal',
+      '1::8 Murmur',
+      '2::7 SubCrypt',
+      '3::6 BarkerLoop',
+      '4::5 Centroid',
     ].filter((_, idx) => (idx % 2 === 0 ? syzygyCoherence > 0.55 : syzygyCoherence > 0.65));
 
     // 5. Log per-step memory consumption audit (bounded buffer for high-throughput replays)

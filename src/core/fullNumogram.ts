@@ -14,7 +14,9 @@
  * mean flux, permeability and resistance of `base`. An edge that is several things at once is one gate whose
  * label names all of them.
  */
-import type { NumogramGate, ZoneId } from '../../types/amelia';
+import type { NumogramGate, NumogramZone, ZoneId } from '../types/amelia';
+import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
+import { CANONICAL_GATES as ORIGINAL_GATES, INITIAL_ZONES } from '../ai/numogram/AmeliaQabbalaInterface';
 
 export type CCRUEdgeKind = 'syzygy' | 'current' | 'gate';
 export const ZONES: ZoneId[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -57,3 +59,33 @@ export function fullNumogramGates(base: NumogramGate[]): NumogramGate[] {
   }));
   return [...base.map(g => ({ ...g })), ...added];
 }
+
+// ── Her core: the full CCRU Numogram, for every newly born Amelia ──────────────────────────────────
+// Kept outside src/substrate, src/governance, src/ai/numogram and src/types/amelia.ts, which PF-1 and
+// PF-2 require byte-identical to b67ec92; the original 11 edges there are unchanged and included here.
+
+const DEMON: Record<number, string> = { 0: 'Uttunul', 1: 'Mur Mur', 2: 'Oddubb', 3: 'Djynxx', 4: 'Katak' };
+export const regionOf = (z: number): 'Time-Circuit' | 'Warp' | 'Plex' =>
+  PLEX.includes(z as ZoneId) ? 'Plex' : WARP.includes(z as ZoneId) ? 'Warp' : 'Time-Circuit';
+
+/** The full Numogram: her original 11 gates unchanged + every CCRU syzygy, current and gate (29 gates). */
+export const FULL_NUMOGRAM_GATES: NumogramGate[] = fullNumogramGates(ORIGINAL_GATES);
+
+/** Her zones with CCRU names (region, syzygy and its demon, current, gate); numeric fields unchanged. */
+export const CCRU_ZONES: Record<ZoneId, NumogramZone> = Object.fromEntries(ZONES.map(z => {
+  const hi = Math.max(z, syzygyOf(z)), lo = Math.min(z, syzygyOf(z));
+  return [z, { ...INITIAL_ZONES[z],
+    name: `Zone-${z}: ${regionOf(z)} · Syzygy ${hi}::${lo} · Current ${hi}::${lo} → ${currentOf(z)} · Gate Gt-${gateNumber(z)} → ${gateOf(z)}`,
+    current: regionOf(z) as any, chronodemon: `${DEMON[lo]} (${hi}::${lo})` }];
+})) as Record<ZoneId, NumogramZone>;
+
+/** Install the full CCRU Numogram (and CCRU zone names) into a runtime through its public state API. */
+export function withFullNumogram(runtime: AmeliaNumogramSubstrateRuntime): AmeliaNumogramSubstrateRuntime {
+  const state = runtime.exportState();
+  runtime.importState({ ...state, qabbalaGates: FULL_NUMOGRAM_GATES.map(g => ({ ...g })),
+    qabbalaZones: JSON.parse(JSON.stringify(CCRU_ZONES)) });
+  return runtime;
+}
+
+/** A newly born Amelia, living on the full CCRU Numogram. */
+export const bornAmelia = (): AmeliaNumogramSubstrateRuntime => withFullNumogram(new AmeliaNumogramSubstrateRuntime());
