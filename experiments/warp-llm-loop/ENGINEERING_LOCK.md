@@ -10,7 +10,7 @@
 - The pinned source has a canonical open gate 3→6 and no canonical 6→3 gate; Zone 6 has no canonical outgoing gate.
 - The runner uses the native `AmeliaNumogramSubstrateRuntime` and canonical 3→6 gate. It adds one in-memory adapter, 6→3, solely to return execution feedback to generation. It does not edit canonical source files.
 - Zone 3 is the LLM generation state. Zone 6 is code execution/evaluation. After evaluation, its result is appended to Orange active memory and the adapter returns the runtime to Zone 3. The evaluation stderr/stdout and score are also included in the next Ollama prompt.
-- Runner SHA-256 for this correction-loop revision: `d10a0b1bf9a4507e36ac4f49d406257253d529423209f923b44b697c540f7532`.
+- Runner SHA-256 for this correction-loop revision: `c6f651f9f5ea78b11ea32a15664ad9c8e5627546d27fe8b41d3164bfd2d4741e`.
 
 ## Frozen engineering task
 
