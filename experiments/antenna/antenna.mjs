@@ -7,15 +7,18 @@ import { createHash } from 'node:crypto';
 import { load } from '../pf1/PF1_A1_R2_SCORER.mjs';
 import { scanCounts } from './scan.mjs';
 import { CANONICAL_GATES } from '../studio/runtime_mirror/ai/numogram/AmeliaQabbalaInterface.ts';
+import { fullNumogramGates } from '../numogram/CCRUNumogram.ts';
 const [M, STATES, SYSTEM, INPUTS, WORLD, K, OUT] = process.argv.slice(2);
 const { AmeliaNumogramSubstrateRuntime: R } = await import(`${M}/substrate/ameliaNumogramSubstrateRuntime.ts`);
 const CANON = ['0>9','1>8','2>7','3>6','4>5','1>2','2>4','4>7','7>8','8>9','9>1'];
 const droot = c => c === 0 ? 0 : 1 + (c - 1) % 9;
 const CCRU = Array.from({ length: 10 }, (_, n) => [n, droot(n * (n + 1) / 2)]);   // Gt-c of zone n
-if (!['canonical', 'ccru'].includes(SYSTEM)) throw new Error('UNKNOWN_SYSTEM');
-const NEW = SYSTEM === 'ccru' ? CCRU.filter(([s, t]) => !CANON.includes(`${s}>${t}`)) : [];
+if (!['canonical', 'ccru', 'full'].includes(SYSTEM)) throw new Error('UNKNOWN_SYSTEM');
+// full (amendment 2): the full CCRU Numogram, ../numogram/CCRUNumogram.ts: her 11 gates unchanged + every syzygy, current and gate
+const FULL = SYSTEM === 'full' ? fullNumogramGates(CANONICAL_GATES) : null;
+const NEW = SYSTEM === 'ccru' ? CCRU.filter(([s, t]) => !CANON.includes(`${s}>${t}`)) : FULL ? FULL.slice(CANONICAL_GATES.length).map(g => [g.source, g.target]) : [];
 const mean = f => CANONICAL_GATES.reduce((x, g) => x + g[f], 0) / CANONICAL_GATES.length;
-const GATES = [...CANONICAL_GATES, ...NEW.map(([s, t]) => ({ id: `gate-${s}-${t}`, source: s, target: t,
+const GATES = FULL ?? [...CANONICAL_GATES, ...NEW.map(([s, t]) => ({ id: `gate-${s}-${t}`, source: s, target: t,
   label: `CCRU Gt-${s * (s + 1) / 2} (${s}->${t})`, flux: mean('flux'), permeability: mean('permeability'), isOpen: true, resistance: mean('resistance') }))];
 const EDGES = [...CANON, ...NEW.map(([s, t]) => `${s}>${t}`)];
 const a = 0.01, A = 1, wV = 0.5, wH = 0.35, lamS = 0.002, kappa = 0.0005, lamD = 0.00005, H = 24, eta = 1 / 8;

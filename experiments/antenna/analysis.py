@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """THE ANTENNA analysis, exactly as REGISTRATION.md.
 
-  python3 analysis.py <dir with canonical/ and ccru/ of S05W*_k.json> <inputs.json> <names.json>
+  python3 analysis.py <dir with canonical/, ccru/ and full/ of S05W*_k.json> <inputs.json> <names.json>
 """
 import glob, json, sys
 from math import comb
 
 OUTER = {0, 3, 6, 9}
 
-def threshold(n=72, p=0.05, alpha=0.05 / 90):
+def threshold(n=72, p=0.05, alpha=0.05 / 135):
     for k in range(n + 1):
         if sum(comb(n, j) * p ** j * (1 - p) ** (n - j) for j in range(k, n + 1)) < alpha:
             return k
@@ -36,9 +36,9 @@ def main(src, inputs_path, names_path):
     for c in ("world", "beacon", "shuffled"):
         z = inp["zones"][c]
         print(f"   {c:8} all {[z.count(i) for i in range(10)]}  syzygies {inp['syzygies'][c]}")
-    print(f"recurrence threshold k = {K} of 72 (binomial tail < 0.05/90 at 5%)")
+    print(f"recurrence threshold k = {K} of 72 (binomial tail < 0.05/135 at 5%)")
     received = []
-    for system in ("canonical", "ccru"):
+    for system in ("canonical", "ccru", "full"):
         runs = [json.load(open(f)) for f in sorted(glob.glob(f"{src}/{system}/S05W*.json"))]
         print(f"\n=== {system.upper()} Numogram  ({len(runs)} travellers)")
         for cond in ("world", "beacon", "shuffled"):
