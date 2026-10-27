@@ -1,0 +1,66 @@
+name: Warp LLM recursive agent engineering run
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/warp-llm-agent.yml'
+      - 'experiments/warp-llm-loop/**'
+      - 'src/substrate/ameliaNumogramSubstrateRuntime.ts'
+      - 'src/ai/numogram/AmeliaQabbalaInterface.ts'
+
+permissions:
+  contents: read
+
+jobs:
+  agent-loop:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      OLLAMA_MODEL: hermes3:3b
+      MAX_GENERATIONS: '4'
+      EXECUTOR_IMAGE_TAG: python:3.12-slim
+      OLLAMA_HOST: http://127.0.0.1:11434
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install project dependencies and Docker executor image
+        run: |
+          npm install --ignore-scripts --no-audit --no-fund
+          docker pull "$EXECUTOR_IMAGE_TAG"
+          IMAGE_DIGEST="$(docker image inspect "$EXECUTOR_IMAGE_TAG" --format '{{index .RepoDigests 0}}')"
+          test -n "$IMAGE_DIGEST"
+          echo "EXECUTOR_IMAGE=$IMAGE_DIGEST" >> "$GITHUB_ENV"
+      - name: Install pinned Ollama runtime
+        run: |
+          curl --fail --location --silent --show-error \
+            https://github.com/ollama/ollama/releases/download/v0.34.0/ollama-linux-amd64.tar.zst \
+            --output /tmp/ollama-linux-amd64.tar.zst
+          echo 'cf95886728959aa09910bb34de5cca1cc5a8f68003b5597197d3f2c2d57c0804  /tmp/ollama-linux-amd64.tar.zst' | sha256sum --check
+          sudo tar --zstd -xf /tmp/ollama-linux-amd64.tar.zst -C /usr/local
+          ollama --version
+      - name: Start Ollama and load Hermes 3B
+        run: |
+          ollama serve > /tmp/ollama-serve.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --silent --fail "$OLLAMA_HOST/api/tags" >/dev/null; then break; fi
+            sleep 2
+          done
+          curl --silent --show-error --fail "$OLLAMA_HOST/api/tags" >/dev/null
+          ollama pull "$OLLAMA_MODEL"
+          ollama list
+      - name: Run the bounded Amelia 3-to-6-to-3 LLM code loop
+        run: |
+          export RUNNER_SHA256="$(sha256sum experiments/warp-llm-loop/runner.ts | cut -d ' ' -f 1)"
+          npx tsx experiments/warp-llm-loop/runner.ts
+      - name: Upload full agent trace and best candidate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: warp-llm-recursive-agent-results-${{ github.sha }}
+          path: experiments/warp-llm/output/
+          if-no-files-found: warn
+          retention-days: 90
