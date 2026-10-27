@@ -11,7 +11,7 @@ HEADLINES = {'bbc': 'https://feeds.bbci.co.uk/news/world/rss.xml',
              'aljazeera': 'https://www.aljazeera.com/xml/rss/all.xml',
              'npr': 'https://feeds.npr.org/1004/rss.xml'}
 MARKETS = ['^GSPC', '^FTSE', '^N225']
-QUAKES = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson'
+QUAKES = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson'
 KP = 'https://services.swpc.noaa.gov/json/planetary_k_index_1m.json'
 KEEP = 5000
 
@@ -41,7 +41,7 @@ def headlines(state, now):
 def markets(state, now):
     out = []
     for sym in MARKETS:
-        r = json.loads(get(f'https://query1.finance.yahoo.com/v8/finance/chart/{sym}?interval=1m&range=1d'))['chart']['result'][0]
+        r = json.loads(get(f'https://query1.finance.yahoo.com/v8/finance/chart/{sym}?interval=1m&range=5d'))['chart']['result'][0]
         closes = r['indicators']['quote'][0]['close']
         last = state['last'].get('markets|' + sym, {'ts': 0, 'text': None})
         for ts, c in zip(r.get('timestamp') or [], closes):
