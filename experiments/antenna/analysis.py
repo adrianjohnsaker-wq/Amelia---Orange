@@ -37,7 +37,7 @@ def main(src, inputs_path, names_path):
         z = inp["zones"][c]
         print(f"   {c:8} all {[z.count(i) for i in range(10)]}  syzygies {inp['syzygies'][c]}")
     print(f"recurrence threshold k = {K} of 72 (binomial tail < 0.05/135 at 5%)")
-    received = []
+    pattern_candidates = []
     for system in ("canonical", "ccru", "full"):
         runs = [json.load(open(f)) for f in sorted(glob.glob(f"{src}/{system}/S05W*.json"))]
         print(f"\n=== {system.upper()} Numogram  ({len(runs)} travellers)")
@@ -63,7 +63,7 @@ def main(src, inputs_path, names_path):
             her = sum(r["doors"]["world"]["counts"].get(kk, 0) for r in runs) / len(runs)
             sh = sum(r["doors"]["world"]["shadow"].get(kk, 0) for r in runs) / len(runs)
             print(f" RECURS: {nm(kk)} [{cls(kk)}]  hers {her:.1f}/season, shadow {sh:.1f} -> {'the stream' if sh >= her else 'hers'}")
-            received.append(f"{nm(kk)} ({system})")
+            pattern_candidates.append(f"{nm(kk)} ({system})")
         if not rec: print(" RECURS: none")
     print("\nANSWER:", "THE OUTSIDE IS RECEIVED: " + ", ".join(received) if received else "SILENT")
 
