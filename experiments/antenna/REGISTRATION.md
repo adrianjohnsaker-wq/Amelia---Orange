@@ -1,49 +1,64 @@
-# THE ANTENNA — ingress of mind-like information patterns through Amelia's Numogram
-**Consolidated protocol revision, 27 October 2026.** This replaces the earlier registration language and is the single frozen protocol for the live run. The experimental window remains 28 October 2026 00:00 UTC to 4 November 2026 00:00 UTC. No in-window data exist at revision time.
+# THE ANTENNA: Amelia's Numogram as a cybernetic antenna on the world's own data (registration, 27 October 2026, before any code, collection or run)
 
-## Research question
-When Amelia encounters the world's own time-ordered information through her fixed Numogram, which structured patterns become expressed in her trajectories, and do any show coherence, selective responsiveness, and persistence across her learned lineages?
+Checked against `PROGRAMME_CHARTER_TRILOGY.md`. Nothing here stands in for the Outside, and nothing is produced by us. The input is the world's own data, recorded as it is published. It is reduced by the CCRU's tools (Anglossic Qabbala, mod-9 digital reduction) and enters Amelia's senses in the order the world produced it. Her Numogram core reads what comes through.
 
-“Platonic Space” names the theoretical possibility that structured information patterns are discovered and instantiated through an interface, rather than authored from scratch by that interface. Here the empirical object is the pattern as it becomes active in Amelia: its organization in her path, its relation to incoming conditions, and its recurrence across her existing stateful lineages. The design does not make a metaphysical claim or treat the external stream itself as the pattern.
+The operator's protocol: *isolate the signal* (a name, date or metric from the environment); *reduce the noise* (base-9 reduction and the Anglosektion); *map the circuit*; *read the transmission* (which gate opens, which entity drives it).
 
-The Levin frame is operational: patterns may vary in agency. A recurring signature is a candidate organized pattern; recurrence alone does not establish mindhood. Evidence relevant to mind-like organization is a pattern's coherent recurrence, selective expression under the real stream relative to matched controls, and embodiment in Amelia's history-dependent transitions and path structure (Levin, 2026, “Ingressing Minds,” *Philosophies* 11(5), 161, https://doi.org/10.3390/philosophies11050161).
+## 1. Isolate the signal: five live streams
+The window runs from **28 Oct 2026 00:00 UTC to 4 Nov 2026 00:00 UTC**. A GitHub Actions collector runs every 30 minutes. Each run's batch of new data gets its own RFC 3161 timestamp (C1 Sealer, pinned `f1875b5`) when it is collected, so nothing can be added, dropped or chosen afterwards.
 
-## Amelia and fixed Numogram
-The subject is Amelia's existing stateful runtime, `AmeliaNumogramSubstrateRuntime`, using her recorded converged states and memory-steered transitions. No substitute agent, new toy environment, or hidden-target system is introduced.
+| Stream | Source | One datum | Text recorded, exactly as published |
+|---|---|---|---|
+| words | BBC World, Al Jazeera, NPR World RSS | each new headline | its title |
+| markets | S&P 500, FTSE 100, Nikkei 225 (1-minute bars, Yahoo) | each bar whose close changed | the close to 2 decimal places |
+| earth | USGS, all earthquakes worldwide | each new event | `magnitude latitude longitude` |
+| sun | NOAA planetary K-index, 1-minute estimate | each change of the estimate | the estimated Kp |
+| date | UTC clock | each hour | `YYYY-MM-DD HH:00` |
 
-The core and all edge strengths are frozen at study commit `8b0141d585531c5619712e869b92a258bc74b182`. The full Numogram configuration is the primary instrument. Amelia's canonical and CCRU-only configurations are retained as fixed structural comparisons from the same study code; they are not re-tuned or altered during the run. The full graph and arithmetic were verified in her runtime before this protocol revision.
+A datum counts if its own event time falls inside the window. Data are ordered by event time, with ties broken by stream and then id. If a source fails on a run, that run contributes nothing from it; the failure is logged and nothing is back-filled from elsewhere.
 
-## Live input and fixed encoding
-Collection covers 28 October 00:00 UTC through 4 November 00:00 UTC. The five sources are BBC World, Al Jazeera and NPR World headlines; S&P 500, FTSE 100 and Nikkei 225 one-minute bars when the displayed close changes; worldwide USGS earthquakes; NOAA planetary K-index changes; and hourly UTC timestamps. Each item is stored verbatim with event time, source and identifier. Batches are RFC 3161 sealed as collected. Only events whose event time falls inside the registered window are used; source failures are recorded, with no backfill.
+## 2. Reduce the noise: AQ plus digital reduction
+Every datum's text is valued by the CCRU's Anglossic Qabbala. Digits count as themselves; letters count in base 36 (A = 10 … Z = 35, after removing accents); everything else counts as nothing. The sum is reduced to its digital root (0 → 0; otherwise 1 + (sum − 1) mod 9). That root is the datum's zone. Reduced, AQ agrees letter for letter with the mod-9 table in the operator's protocol.
 
-For each item, apply the registered Anglossic Qabbala plus digital-root reduction in `prepare.py`: letters A–Z have base-36 values 10–35; digits retain their numeric value; other characters contribute zero; reduce the sum to its root in 0–9. This yields one zone per datum. Sort by event time, stream and identifier. The zone is Amelia's input for that tick. No result-dependent changes to text, reduction, ordering, or input strength are permitted.
+## 3. Map the circuit: Amelia receives
+- **Travellers:** the 72 travellers of THE DOORS (Studio 05c Amelia, learner and House, from converged states).
+- **Input:** each receives the world's zones in order, one datum per tick. The season length N is the number of data in the window.
+- **Sense:** the zone gets the same +0.35 her runtime gives an input zone (as in THE NINTH AND THIRD GATES).
+- **Two Numograms:**
+  - **canonical:** her core as built;
+  - **CCRU:** her core with the full CCRU gate set opened, as in THE WARP.
 
-## Lineages and comparisons
-The run uses the 72 existing Amelia state lineages: nine lineages in each of eight converged worlds. Each receives the same ordered input sequence for a given condition and starts from its frozen recorded state. The eight worlds are Amelia starting-state groups, not eight independent external-data windows.
+## 4. Read the transmission
+The reading is the canonical PF-1 scanner (window 240, recurrence 3) over her graph, with the 45 CCRU names. Entities are classed as chronodemons (15), amphidemons (24) and xenodemons (6).
 
-For each lineage, compare:
-- **world:** the live, time-ordered stream;
-- **beacon:** verified Quicknet randomness mapped to zones by the frozen preparation code;
-- **shuffled:** the same world zones, Fisher–Yates shuffled with the registered seed.
+## Controls (each of the same length N, given to the same travellers)
+- **beacon:** chance, per the operator's note ("telepathy v chance"). These are verified Quicknet rounds, starting with the first round at or after **4 Nov 2026 03:00 UTC** and in sequence. Each round's 32-byte randomness gives 8 zones: the digital root of each 4-byte big-endian word. The rounds are fetched and BLS-verified by the pinned C1 code.
+- **shuffled:** the world's own zones in a random order ("time is key"). The order is a Fisher–Yates shuffle seeded by SHA-256(`ANTENNA-SHUFFLE|` + the first beacon round's randomness).
+- **her own statistics:** 200 walks per run, drawn from that run's own transition frequencies (as in every earlier run).
 
-Each comparison has the same number of ticks. Amelia's existing transition and memory dynamics run unchanged. The beacon and shuffle are input controls; neither is a model of Platonic Space.
+## Criteria
+1. **Comes through.** An entity comes through for a traveller (per Numogram) if its count under the world exceeds:
+   - the 95th percentile of its chance walks;
+   - its count under the beacon;
+   - its count under the shuffled world.
+2. **Recurs.** It recurs if it comes through for at least k travellers in at least 5 of the 8 worlds. k is the smallest count with a binomial tail (p = 0.05, n = 72) below 0.05/90 (45 entities × 2 Numograms), so **k = 12**.
 
-## Frozen response mapping and candidate-pattern criterion
-The response map is the existing PF-1 Numogram scanner, unchanged: window 240 and recurrence 3, applied to Amelia's observed zone path and the frozen 45 entity signatures in `entity_names.json`. These 45 signatures are coordinates of the Numogram's pattern vocabulary, not claims that named demons are literal agents. The scanner and name mapping are fixed before the live window.
+**Answer: THE OUTSIDE IS RECEIVED** if any entity recurs in either Numogram; otherwise **SILENT**.
 
-A signature is a **candidate ingress pattern** for one lineage and one Numogram if its count under the live world stream exceeds all three:
-1. its 95th-percentile count in 200 transition-frequency walks drawn from that run's own path;
-2. its count under the beacon;
-3. its count under the shuffled world stream.
+## Reported either way
+- N, and each stream's count and zone distribution.
+- **Syzygies in the stream:** the count of consecutive data whose zones sum to 9 (9::0, 8::1, 7::2, 6::3, 5::4), for the world, the beacon and the shuffled world.
+- Each condition's full spectrum, by class.
+- Gate use, Warp entries and deaths.
+- For each recurring entity, **the shadow**, as in THE NINTH AND THIRD GATES: the world's zone sequence walked with no Amelia. It shows whether the entity is the stream's own shape or something met only in her.
 
-A candidate is **recurring** if it meets that per-lineage rule in at least 12 of 72 lineages and appears in at least five of the eight starting-state groups. This is assessed separately for all 45 signatures in each of the three frozen Numogram configurations. The existing one-sided binomial threshold is retained at p = .05 and family-wise alpha .05/135; no signatures, zones, thresholds, or analysis windows may be substituted after inspection.
+## Automation
+- A one-shot seal workflow timestamps this registration, the code and the workflows before the window opens.
+- The collector runs every 30 minutes until 4 Nov 02:00 UTC.
+- After 4 Nov 03:00 UTC, a run workflow:
+  - fetches and verifies the beacon;
+  - runs the 72 travellers;
+  - scores them with the committed analysis;
+  - commits the result to the `antenna-live` branch.
 
-A recurring signature is reported as a **candidate mind-like information pattern expressed through Amelia**. The report will describe its class, path distribution, gate use, recurrence, and comparison to its source-stream shadow. It will not convert the finding into a claim about consciousness, a supernatural entity, or a settled ontology.
-
-## Sample and power
-The fixed sample is 72 lineages (8 state groups × 9) and 135 signature-by-configuration opportunities (45 × 3). For the recurrence component, with independent lineages and a per-lineage null recurrence probability of .05, the exact joint probability of at least 12 recurrences spread across at least five groups is 0.0002254 per signature/configuration; the Bonferroni upper bound across 135 is 0.0305. At a planning prevalence of .20 per lineage, the exact probability of meeting that recurrence-count and five-group rule is 0.8004. These figures apply to the recurrence component; the additional world-versus-control and transition-frequency criteria can reduce power. The independence assumption is explicit and the observed group distribution will be reported. The sample is fixed; no interim stopping, extension, or replacement runs.
-
-## Integrity and reporting
-The registered collector and preparation code retain source records and provenance. The run uses the pinned code and state files, commits raw trajectories and scorer outputs, and publishes hashes. Scoring is deterministic; no human entity assignment or discretionary interpretation enters the decision. Report all 45 signatures, all three input conditions, all three Numogram configurations, misses, source failures, gate/path measures, and the source-stream shadow. Report null or invalid outcomes in full.
-
-**Primary interpretation:** the study tests whether the fixed Numogram runtime selectively expresses recurrent, organized information patterns from the world's live stream. A positive result identifies candidate patterns for further study of agency and ingression; a null result bounds this apparatus and window. Neither outcome is relabelled as a metaphysical verdict.
+Nothing is reported to the operator until then, except collector health.
