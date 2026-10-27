@@ -213,6 +213,7 @@ function diagnoseMismatch(expected: unknown, actual: unknown, n: number): string
 function failureClass(exitCode: number | null, stdout: string, stderr: string, correctnessIssue: string | null): string {
   if (/EXECUTOR_TIMEOUT/.test(stderr)) return 'candidate_timeout';
   if (/JSONDecodeError|RESULT_PARSE_ERROR/.test(stderr)) return 'evaluator_or_transport_error';
+  if (exitCode === null) return 'executor_error';
   if (exitCode !== 0) return /SyntaxError/.test(stderr) ? 'candidate_syntax_error' : /Traceback|Error:/.test(stderr) ? 'candidate_runtime_error' : 'executor_error';
   if (correctnessIssue) return 'correctness_mismatch';
   if (!stdout.trim()) return 'empty_evaluator_output';
