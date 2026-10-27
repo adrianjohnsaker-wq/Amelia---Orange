@@ -131,7 +131,7 @@ function dockerEval(candidatePath: string, testInput: string): Promise<{ ok: boo
   return new Promise(resolve => {
     const started = Date.now();
     const child = spawn('docker', [
-      'run', '--rm', '--network=none', '--memory=384m', '--cpus=1', '--pids-limit=16',
+      'run', '--rm', '-i', '--network=none', '--memory=384m', '--cpus=1', '--pids-limit=16',
       '--read-only', '--user=65534:65534', '--cap-drop=ALL', '--security-opt=no-new-privileges',
       '--tmpfs', '/tmp:rw,nosuid,nodev,noexec,size=16m',
       '--mount', `type=bind,src=${candidatePath},dst=/candidate.py,readonly`,
