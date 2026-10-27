@@ -64,3 +64,17 @@ After THE ANTENNA's run has committed `results/inputs.json` to `antenna-live` (a
 3. commits the result to `antenna-live/stonetape/`.
 
 The registration, code and workflows get one RFC 3161 token before 28 Oct 2026 00:00 UTC.
+
+## Revision 1 (27 Oct 2026, before the seal and before any data exist)
+A unit run on THE ANTENNA's synthetic test inputs showed that, as first written, the experiment could not detect anything. With no input, a converged Amelia on the full Numogram is deterministic and locked into her 1–8–9 circuit. A stone acting only as an exit bonus (0.35 · tanh T) left every traveller on the identical path under every stone, so "grip" would have measured only how a stone's shape matched her fixed path. Two corrections follow, both from Kneale's story itself.
+
+1. **Playback (the recording replays to the sensitive).** At each tick, the stone at her current zone plays one of its recorded exits. The exit is chosen with probability proportional to T(e) over that zone's exits, and its zone reaches her senses with the same +0.35 any input zone gets. A stone holding nothing at that zone plays nothing. The chance stream that picks among recorded exits is fixed per traveller (mulberry32, seeded by SHA-256 of `STONE-PLAYBACK|world|lineage`) and identical across all six stones. So the only difference between a traveller's runs is what each stone holds. The 0.35 · tanh T exit bonus stays.
+
+2. **Causal measures.** Every measure uses d(e) = her use under the stone − her use under the blank stone (same traveller, same chance stream). It no longer uses raw use.
+   - Grip = corr(d, T₀).
+   - Circuit = corr(d in Q4, T at Q4) − corr(d in Q1, T₀).
+   - Older surfacing uses d on the old-only stone and on the full stone.
+   - Change in the Other is now the excess change: (1 − cos(T_end, T₀)) − (1 − cos(T₀ + 0.0005 · blank-stone use, T₀)). This is the change beyond what her undisturbed path would have etched.
+   - Also reported: steps moved from the blank-stone path.
+
+Criteria, thresholds, stones, travellers and the answer are unchanged. The unit run after this revision (synthetic inputs, 3 travellers, 2,000 ticks) showed that the stones now move her and move her differently. That run is a check of the apparatus, not a result.
