@@ -100,7 +100,10 @@ async function generate(previousCode: string, feedback: string, generation: numb
         options: { temperature: 0, seed: 420271, num_ctx: 8192, num_predict: 2048 },
       }),
     });
-    invariant(response.ok, `Ollama /api/chat returned ${response.status}: ${(await response.text()).slice(0, 1200)}`);
+    if (!response.ok) {
+      const errorText = (await response.text()).slice(0, 1200);
+      throw new Error(`Ollama /api/chat returned ${response.status}: ${errorText}`);
+    }
     const body = await response.json() as { message?: { content?: string }; model?: string; prompt_eval_count?: number; eval_count?: number };
     invariant(typeof body.message?.content === 'string' && body.message.content.trim(), 'Ollama returned no code');
     return body.message.content.trim().replace(/^```(?:python)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
