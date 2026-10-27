@@ -35,6 +35,8 @@ type Iteration = {
   elapsedMs: number | null;
   executorWallMs: number;
   benchmarkSamplesMs: number[];
+  executorStdout: string;
+  executorStderr: string;
   feedback: string;
 };
 
@@ -82,7 +84,8 @@ async function generate(verifiedCode: string, failedCode: string, feedback: stri
     'Write a Python module whose required public function is named exactly primes_upto(n: int) -> list[int].',
     'The module must return every prime p with 2 <= p <= n, in ascending order.',
     'Use the Sieve of Eratosthenes. In particular, 1 is not prime, and 0 or 1 must never be used as divisors.',
-    'Use a Boolean table from 0 through n, mark composites beginning at p*p, then return the unmarked integers from 2 through n.',
+    'Use a Boolean table of length n+1. For each prime p while p*p <= n, mark every multiple with `for multiple in range(p*p, n+1, p): table[multiple] = False`. The step is p, not p*p or p*p*p.',
+    'Return with a comprehension over (index, boolean) pairs, for example `[i for i, flag in enumerate(table) if flag]`; the yielded flag is already a bool and must not be indexed.',
     'For n < 2 return an empty list.',
     'Use only the Python standard library. Do not read files, access the network, spawn processes, or perform side effects.',
     'The module will be executed in a disposable, network-disabled container with strict time and memory limits.',
@@ -206,8 +209,18 @@ function diagnoseMismatch(expected: unknown, actual: unknown, n: number): string
   const actualValue = index < actual.length ? actual[index] : '<end>';
   const actualType = actual.find(value => !Number.isInteger(value) || value < 2);
   const orderIssue = actual.some((value, i) => i > 0 && value <= actual[i - 1]);
-  const detail = actualType !== undefined ? `; invalid value=${JSON.stringify(actualType)}` : orderIssue ? '; values are not strictly ascending' : '';
+  const firstActual = actual[index];
+  const compositeIssue = Number.isInteger(firstActual) && firstActual >= 2 && !isPrimeReference(firstActual)
+    ? `; ${firstActual} is composite, so mark all multiples from p*p in steps of p`
+    : '';
+  const detail = actualType !== undefined ? `; invalid value=${JSON.stringify(actualType)}` : orderIssue ? '; values are not strictly ascending' : compositeIssue;
   return `n=${n}: first difference at index ${index}; expected ${JSON.stringify(expectedValue)}, got ${JSON.stringify(actualValue)}; expected length=${expected.length}, actual length=${actual.length}${detail}.`;
+}
+
+function isPrimeReference(n: number): boolean {
+  if (n < 2) return false;
+  for (let d = 2; d * d <= n; d++) if (n % d === 0) return false;
+  return true;
 }
 
 function failureClass(exitCode: number | null, stdout: string, stderr: string, correctnessIssue: string | null): string {
@@ -221,11 +234,19 @@ function failureClass(exitCode: number | null, stdout: string, stderr: string, c
 }
 
 function actionableDiagnosis(stderr: string): string {
+  if (/TypeError: ['"]bool['"] object is not subscriptable/.test(stderr)) {
+    const frame = stderr.match(/File "\/candidate\.py", line \d+\n\s*(.*)/);
+    return `Diagnosis: the traceback points to ${frame?.[1]?.trim() ?? 'the return expression'}. enumerate(table) yields (index, bool); the second value is already a boolean. Return [i for i, flag in enumerate(table) if flag], without writing flag[i].`;
+  }
+  if (/TypeError:/.test(stderr)) {
+    const error = stderr.match(/TypeError:[^\n]*/)?.[0] ?? 'TypeError';
+    const frame = stderr.match(/File "\/candidate\.py", line \d+\n\s*(.*)/);
+    return `Diagnosis: ${error}. Inspect the candidate line ${frame?.[1]?.trim() ?? 'shown in the traceback'} and correct the operation/type mismatch; preserve the function contract.`;
+  }
   if (/ZeroDivisionError/.test(stderr)) return 'Diagnosis: the candidate divided by zero. Do not include 0 or 1 in a divisor list; begin candidates at 2 and use the Boolean sieve requested.';
   if (/ModuleNotFoundError/.test(stderr)) return 'Diagnosis: the candidate imported a package unavailable in the sandbox. Use only Python built-ins or the standard library.';
   if (/missing primes_upto/.test(stderr)) return 'Diagnosis: the required public function name is exactly primes_upto.';
   if (/SyntaxError/.test(stderr)) return 'Diagnosis: the generated module has invalid Python syntax. Return only a complete, syntactically valid module.';
-  if (/TypeError/.test(stderr)) return 'Diagnosis: primes_upto must return a list of integers.';
   if (/JSONDecodeError/.test(stderr)) return 'Evaluator transport error: the test payload was not received. This is a runner fault, not a candidate failure.';
   return 'Diagnosis: use the traceback to locate and correct the failing line while preserving the exact function contract.';
 }
@@ -248,7 +269,7 @@ async function main() {
   const saveResults = (complete: boolean) => {
     if (bestCode) writeFileSync(join(OUTPUT_DIR, 'best_solution.py'), bestCode);
     const result = {
-      protocol: 'WARP-LLM-ENGINEERING-v1',
+      protocol: 'WARP-LLM-ENGINEERING-v2',
       classification: 'Bounded engineering demonstration; not a confirmatory test of a Warp-specific persistent development effect.',
       sourceCommit: SOURCE_COMMIT,
       model: MODEL,
@@ -336,14 +357,14 @@ async function main() {
         `executor_exit=${evalResult.containerExit}; correctness=${correctness}; function_median_ms=${benchmarkMedianMs ?? 'unavailable'}; samples_ms=${JSON.stringify(benchmarkSamplesMs)}; best_correct=${bestCorrect}; best_function_median_ms=${bestElapsed ?? 'none'}`,
         `failure_class=${candidateFailureClass ?? 'none'}; correction_mode=${correctionMode}; candidate_sha256=${codeSha256}; verified_reference_sha256=${verifiedReferenceSha256 ?? 'none'}; actual_output_sha256=${actualOutputDigest ?? 'unavailable'}`,
       ];
-      if (!correctness) {
+      if (infrastructureFailure) {
+        feedbackParts.push('This was classified as an executor/evaluator fault, not a candidate defect. Do not rewrite the source in response; the run must stop for infrastructure diagnosis.');
+      } else if (!correctness) {
         if (correctnessIssue) feedbackParts.push('Correctness mismatch: ' + correctnessIssue);
         feedbackParts.push(actionableDiagnosis(evalResult.stderr));
-        feedbackParts.push(`EXECUTOR_STDERR:\n${evalResult.stderr || '(empty)'}`);
-        feedbackParts.push(`EXECUTOR_STDOUT:\n${evalResult.stdout || '(empty)'}`);
+        feedbackParts.push(`TRACEBACK_TAIL:\n${evalResult.stderr ? evalResult.stderr.slice(-3000) : '(empty)'}`);
+        feedbackParts.push(`Raw executor streams are preserved in the iteration record; stdout bytes=${Buffer.byteLength(evalResult.stdout)}; stderr bytes=${Buffer.byteLength(evalResult.stderr)}.`);
         feedbackParts.push(`Expected evaluator output: JSON with result keys ${QUERIES.join(', ')} and three benchmark_ms samples.`);
-      } else if (infrastructureFailure) {
-        feedbackParts.push('This was classified as an executor/evaluator fault, not a candidate defect. Do not rewrite the source in response; the run must stop for infrastructure diagnosis.');
       } else if (!improved) {
         feedbackParts.push('The correct candidate did not improve the best measured runtime. Preserve correctness and seek a faster method.');
       } else {
@@ -351,7 +372,7 @@ async function main() {
       }
 
       const memoryEvent = {
-        protocol: 'WARP-LLM-ENGINEERING-v1', generation,
+        protocol: 'WARP-LLM-ENGINEERING-v2', generation,
         outcome: correctness ? 'correct' : 'failure', elapsedMs: benchmarkMedianMs ?? evalResult.elapsedMs,
         fluxDelta: correctness ? 0.05 : 0.18, phaseCoherence: 1, strainRelaxation: 0.025,
         errorDigest: createHash('sha256').update(evalResult.stderr + evalResult.stdout).digest('hex'),
@@ -365,7 +386,7 @@ async function main() {
       const backToGenerator = rt.step(signalForZone(3, `generation-${generation}-feedback`));
       invariant(rt.getCurrentZone() === 3, `executor did not route back to Zone 3 at generation ${generation}`);
       feedback = feedbackParts.join('\n');
-      iterations.push({ generation, repairBaseSha256: verifiedReferenceSha256, correctionMode, transitionIntoExecution: toExecutor.lastTransition, transitionBackToGeneration: backToGenerator.lastTransition, codeSha256, candidateSource: currentCode, correctness, failureClass: candidateFailureClass, elapsedMs: benchmarkMedianMs, executorWallMs: evalResult.elapsedMs, benchmarkSamplesMs, feedback });
+      iterations.push({ generation, repairBaseSha256: verifiedReferenceSha256, correctionMode, transitionIntoExecution: toExecutor.lastTransition, transitionBackToGeneration: backToGenerator.lastTransition, codeSha256, candidateSource: currentCode, correctness, failureClass: candidateFailureClass, elapsedMs: benchmarkMedianMs, executorWallMs: evalResult.elapsedMs, benchmarkSamplesMs, executorStdout: evalResult.stdout, executorStderr: evalResult.stderr, feedback });
       console.log(JSON.stringify({ generation, zoneLoop: `${toExecutor.lastTransition?.from}->${toExecutor.lastTransition?.to}->${backToGenerator.lastTransition?.to}`, codeSha256, correctness, functionMedianMs: benchmarkMedianMs, executorWallMs: evalResult.elapsedMs, bestCorrect, bestElapsed }));
       saveResults(false);
       if (infrastructureFailure) {
