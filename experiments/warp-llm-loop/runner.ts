@@ -24,11 +24,14 @@ type Gate = {
 };
 type Iteration = {
   generation: number;
+  repairBaseSha256: string | null;
+  correctionMode: 'initial' | 'repair' | 'optimization';
   transitionIntoExecution: unknown;
   transitionBackToGeneration: unknown;
   codeSha256: string;
   candidateSource: string;
   correctness: boolean;
+  failureClass: string | null;
   elapsedMs: number | null;
   executorWallMs: number;
   benchmarkSamplesMs: number[];
@@ -73,7 +76,7 @@ async function ollamaDigest(): Promise<string> {
   return item.digest;
 }
 
-async function generate(previousCode: string, feedback: string, generation: number): Promise<string> {
+async function generate(verifiedCode: string, failedCode: string, feedback: string, generation: number): Promise<string> {
   const system = [
     'You are a code generation component in a bounded engineering loop.',
     'Write a Python module whose required public function is named exactly primes_upto(n: int) -> list[int].',
@@ -90,9 +93,14 @@ async function generate(previousCode: string, feedback: string, generation: numb
     `Generation: ${generation}/${MAX_GENERATIONS}.`,
     `Locked correctness inputs: ${JSON.stringify(QUERIES)}. A correct answer must pass all inputs.`,
     'After correctness passes, use the evaluator-reported median function runtime (which excludes container startup) to seek a faster correct implementation.',
-    'When feedback identifies an exception, fix its stated cause directly. Do not repeat the previous algorithm with only cosmetic changes.',
+    'If a verified reference module is supplied, preserve its correctness first. A failed candidate is diagnostic evidence, not a replacement starting point.',
+    'On a correctness failure, repair the specific reported defect and do not optimize or redesign unrelated parts. On an exception, fix the traceback line and stated cause.',
+    'Do not use list deletion or resizing to mark sieve composites. Keep the Boolean table length exactly n+1; mark composites by assigning False/True at indices without changing table length.',
+    'Only attempt a performance optimization when feedback explicitly says the current candidate passed correctness. If a proposed optimization fails, return to the verified reference and make one small change.',
     `Previous run feedback:\n${feedback}`,
-    previousCode ? `Previous complete module:\n${previousCode}` : 'No prior module. Create the first implementation.',
+    verifiedCode ? `VERIFIED REFERENCE MODULE (known to pass every locked correctness input; preserve this behavior):\n${verifiedCode}` : 'No verified module exists yet. Create a simple correct implementation first.',
+    failedCode ? `MOST RECENT CANDIDATE (may be broken; use only to inspect the diagnosed defect):\n${failedCode}` : '',
+    verifiedCode ? 'Correction rule: base the replacement on the verified reference. Do not carry forward unverified changes unless you can show they address the reported defect without changing the contract.' : 'Correction rule: use the exact failure report to repair the latest attempt.',
   ].join('\n\n');
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), MAX_MODEL_MS);
@@ -187,6 +195,30 @@ function median(values: number[]): number {
   return sorted[Math.floor(sorted.length / 2)];
 }
 
+function diagnoseMismatch(expected: unknown, actual: unknown, n: number): string {
+  if (!Array.isArray(actual)) return `n=${n}: expected a list of ${Array.isArray(expected) ? expected.length : '?'} primes; got ${actual === null ? 'null' : typeof actual}.`;
+  if (!Array.isArray(expected)) return `n=${n}: reference result was not an array (evaluator fault).`;
+  const shared = Math.min(expected.length, actual.length);
+  let index = 0;
+  while (index < shared && actual[index] === expected[index]) index++;
+  if (index === shared && actual.length === expected.length) return `n=${n}: values match.`;
+  const expectedValue = index < expected.length ? expected[index] : '<end>';
+  const actualValue = index < actual.length ? actual[index] : '<end>';
+  const actualType = actual.find(value => !Number.isInteger(value) || value < 2);
+  const orderIssue = actual.some((value, i) => i > 0 && value <= actual[i - 1]);
+  const detail = actualType !== undefined ? `; invalid value=${JSON.stringify(actualType)}` : orderIssue ? '; values are not strictly ascending' : '';
+  return `n=${n}: first difference at index ${index}; expected ${JSON.stringify(expectedValue)}, got ${JSON.stringify(actualValue)}; expected length=${expected.length}, actual length=${actual.length}${detail}.`;
+}
+
+function failureClass(exitCode: number | null, stdout: string, stderr: string, correctnessIssue: string | null): string {
+  if (/EXECUTOR_TIMEOUT/.test(stderr)) return 'candidate_timeout';
+  if (/JSONDecodeError|RESULT_PARSE_ERROR/.test(stderr)) return 'evaluator_or_transport_error';
+  if (exitCode !== 0) return /SyntaxError/.test(stderr) ? 'candidate_syntax_error' : /Traceback|Error:/.test(stderr) ? 'candidate_runtime_error' : 'executor_error';
+  if (correctnessIssue) return 'correctness_mismatch';
+  if (!stdout.trim()) return 'empty_evaluator_output';
+  return 'unknown_failure';
+}
+
 function actionableDiagnosis(stderr: string): string {
   if (/ZeroDivisionError/.test(stderr)) return 'Diagnosis: the candidate divided by zero. Do not include 0 or 1 in a divisor list; begin candidates at 2 and use the Boolean sieve requested.';
   if (/ModuleNotFoundError/.test(stderr)) return 'Diagnosis: the candidate imported a package unavailable in the sandbox. Use only Python built-ins or the standard library.';
@@ -238,7 +270,7 @@ async function main() {
     for (let generation = 1; generation <= MAX_GENERATIONS; generation++) {
       invariant(rt.getCurrentZone() === 3, `generator expected at Zone 3, got ${rt.getCurrentZone()}`);
       try {
-        currentCode = await generate(currentCode, feedback, generation);
+        currentCode = await generate(bestCode, currentCode, feedback, generation);
       } catch (error) {
         terminationReason = 'model_generation_failed';
         modelErrors.push({ generation, error: String(error) });
@@ -258,20 +290,23 @@ async function main() {
       let benchmarkSamplesMs: number[] = [];
       let benchmarkMedianMs: number | null = null;
       let correctnessIssue: string | null = null;
+      let actualOutputDigest: string | null = null;
+      const verifiedReferenceSha256 = bestCode ? createHash('sha256').update(bestCode).digest('hex') : null;
       if (evalResult.ok) {
         try {
           const output = JSON.parse(evalResult.stdout.trim().split('\n').at(-1) ?? '') as { results?: unknown; benchmark_ms?: unknown };
           const expected = Object.fromEntries(QUERIES.map(n => [String(n), referencePrimes(n)]));
+          actualOutputDigest = createHash('sha256').update(JSON.stringify(output.results ?? null)).digest('hex');
           benchmarkSamplesMs = Array.isArray(output.benchmark_ms) ? output.benchmark_ms.filter((x): x is number => typeof x === 'number' && Number.isFinite(x) && x >= 0) : [];
           correctness = JSON.stringify(output.results) === JSON.stringify(expected) && benchmarkSamplesMs.length === BENCHMARK_REPEATS;
+          if (!output.results || typeof output.results !== 'object') correctnessIssue = 'Evaluator result field is missing or is not a JSON object.';
           if (!correctness && output.results && typeof output.results === 'object') {
             const actualResults = output.results as Record<string, unknown>;
             for (const n of QUERIES) {
               const expectedList = expected[String(n)];
               const actualList = actualResults[String(n)];
               if (JSON.stringify(actualList) !== JSON.stringify(expectedList)) {
-                correctnessIssue = 'n=' + n + ': expected ' + expectedList.length + ' ascending primes; got ' +
-                  (Array.isArray(actualList) ? actualList.length + ' values, first=' + JSON.stringify(actualList.slice(0, 8)) : typeof actualList) + '.';
+                correctnessIssue = diagnoseMismatch(expectedList, actualList, n);
                 break;
               }
             }
@@ -292,8 +327,13 @@ async function main() {
         previousBestElapsed = benchmarkMedianMs;
       }
 
+      const correctionMode: Iteration['correctionMode'] = generation === 1 ? 'initial' : correctness ? 'optimization' : 'repair';
+      const candidateFailureClass = correctness ? null : failureClass(evalResult.containerExit, evalResult.stdout, evalResult.stderr, correctnessIssue);
+      const infrastructureFailure = candidateFailureClass === 'evaluator_or_transport_error' || candidateFailureClass === 'executor_error' || candidateFailureClass === 'empty_evaluator_output' || candidateFailureClass === 'unknown_failure';
+
       const feedbackParts = [
         `executor_exit=${evalResult.containerExit}; correctness=${correctness}; function_median_ms=${benchmarkMedianMs ?? 'unavailable'}; samples_ms=${JSON.stringify(benchmarkSamplesMs)}; best_correct=${bestCorrect}; best_function_median_ms=${bestElapsed ?? 'none'}`,
+        `failure_class=${candidateFailureClass ?? 'none'}; correction_mode=${correctionMode}; candidate_sha256=${codeSha256}; verified_reference_sha256=${verifiedReferenceSha256 ?? 'none'}; actual_output_sha256=${actualOutputDigest ?? 'unavailable'}`,
       ];
       if (!correctness) {
         if (correctnessIssue) feedbackParts.push('Correctness mismatch: ' + correctnessIssue);
@@ -301,6 +341,8 @@ async function main() {
         feedbackParts.push(`EXECUTOR_STDERR:\n${evalResult.stderr || '(empty)'}`);
         feedbackParts.push(`EXECUTOR_STDOUT:\n${evalResult.stdout || '(empty)'}`);
         feedbackParts.push(`Expected evaluator output: JSON with result keys ${QUERIES.join(', ')} and three benchmark_ms samples.`);
+      } else if (infrastructureFailure) {
+        feedbackParts.push('This was classified as an executor/evaluator fault, not a candidate defect. Do not rewrite the source in response; the run must stop for infrastructure diagnosis.');
       } else if (!improved) {
         feedbackParts.push('The correct candidate did not improve the best measured runtime. Preserve correctness and seek a faster method.');
       } else {
@@ -322,9 +364,13 @@ async function main() {
       const backToGenerator = rt.step(signalForZone(3, `generation-${generation}-feedback`));
       invariant(rt.getCurrentZone() === 3, `executor did not route back to Zone 3 at generation ${generation}`);
       feedback = feedbackParts.join('\n');
-      iterations.push({ generation, transitionIntoExecution: toExecutor.lastTransition, transitionBackToGeneration: backToGenerator.lastTransition, codeSha256, candidateSource: currentCode, correctness, elapsedMs: benchmarkMedianMs, executorWallMs: evalResult.elapsedMs, benchmarkSamplesMs, feedback });
+      iterations.push({ generation, repairBaseSha256: verifiedReferenceSha256, correctionMode, transitionIntoExecution: toExecutor.lastTransition, transitionBackToGeneration: backToGenerator.lastTransition, codeSha256, candidateSource: currentCode, correctness, failureClass: candidateFailureClass, elapsedMs: benchmarkMedianMs, executorWallMs: evalResult.elapsedMs, benchmarkSamplesMs, feedback });
       console.log(JSON.stringify({ generation, zoneLoop: `${toExecutor.lastTransition?.from}->${toExecutor.lastTransition?.to}->${backToGenerator.lastTransition?.to}`, codeSha256, correctness, functionMedianMs: benchmarkMedianMs, executorWallMs: evalResult.elapsedMs, bestCorrect, bestElapsed }));
       saveResults(false);
+      if (infrastructureFailure) {
+        terminationReason = 'executor_or_evaluator_failed';
+        break;
+      }
     }
 
     saveResults(true);
