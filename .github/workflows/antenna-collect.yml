@@ -1,0 +1,52 @@
+# THE ANTENNA collector: every 30 minutes from the seal until 4 Nov 2026 02:00 UTC; each batch gets its own RFC3161 token.
+name: ANTENNA collect
+on:
+  schedule:
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: antenna-live
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: window
+        id: w
+        run: |
+          if [ "$(date -u +%s)" -gt "$(date -u -d '2026-11-04T02:00:00Z' +%s)" ]; then echo go=no >> "$GITHUB_OUTPUT"; else echo go=yes >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/checkout@v4
+        if: steps.w.outputs.go == 'yes'
+        with: { ref: a321e0f00f94098bb82275f170b108174bede804, path: code }
+      - uses: actions/checkout@v4
+        if: steps.w.outputs.go == 'yes'
+        with: { ref: antenna-live, path: live }
+      - uses: actions/checkout@v4
+        if: steps.w.outputs.go == 'yes'
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        if: steps.w.outputs.go == 'yes'
+        with: { python-version: '3.12' }
+      - name: collect, seal the batch, commit
+        if: steps.w.outputs.go == 'yes'
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+        run: |
+          set -euo pipefail
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          stamp=$(python code/experiments/antenna/collect.py live | tee /dev/stderr | tail -1 | cut -d' ' -f1)
+          python - "$stamp" <<'PY' || echo "ANTENNA_BATCH_SEAL_FAILED $stamp" | tee -a live/seal_failures.txt
+          import hashlib, pathlib, sys
+          from drift1a_c1.beacon import Sealer
+          b = pathlib.Path('live/batches') / (sys.argv[1] + '.json')
+          imprint = hashlib.sha256(b.read_bytes()).hexdigest()
+          Sealer().seal(pathlib.Path('live/seals') / sys.argv[1], imprint)
+          print('ANTENNA_BATCH_SEALED', sys.argv[1], imprint)
+          PY
+          cd live && git add -A
+          git -c user.name='antenna' -c user.email='antenna@users.noreply.github.com' commit -qm "THE ANTENNA batch $stamp"
+          for i in 1 2 3 4; do git push -q origin HEAD:antenna-live && exit 0; sleep $((2**i)); git pull -q --rebase origin antenna-live; done; exit 1
