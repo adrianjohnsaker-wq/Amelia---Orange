@@ -1,6 +1,7 @@
 export type ZoneId = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
-export type NumogramCurrent = 'Barker' | 'Lemur' | 'Plex' | 'Abyss' | 'Pandemonium' | 'Hyperborean';
+// CCRU regions: the Time-Circuit (1, 2, 4, 5, 7, 8), the Warp (3, 6), the Plex (0, 9)
+export type NumogramCurrent = 'Time-Circuit' | 'Warp' | 'Plex';
 
 export interface NumogramZone {
   id: ZoneId;

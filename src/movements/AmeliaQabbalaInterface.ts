@@ -2,15 +2,16 @@ import { ZoneId, NumogramZone, NumogramSyzygy } from '../types/amelia';
 
 /**
  * Amelia Movements & Qabbalistic Current Router
- * Maps the 5 syzygies (0::9, 1::8, 2::7, 3::6, 4::5) and 3 primary currents (Barker, Lemur, Plex)
+ * Maps the 5 CCRU syzygies (9::0, 8::1, 7::2, 6::3, 5::4) with their syzygetic demons, and the 3 CCRU regions
+ * (Time-Circuit 1, 2, 4, 5, 7, 8; Warp 3, 6; Plex 0, 9)
  */
 export class AmeliaQabbalaInterface {
   public static readonly SYZYGIES: Array<{ id: string; pair: [ZoneId, ZoneId]; name: string; current: string }> = [
-    { id: 'SYZ_0_9', pair: [0, 9], name: 'Utter-Void / Plexus Terminal', current: 'Abyss' },
-    { id: 'SYZ_1_8', pair: [1, 8], name: 'Origin Flux / Anamnesis Locus', current: 'Barker' },
-    { id: 'SYZ_2_7', pair: [2, 7], name: 'Chasm Crossing / Hyperborean Gate', current: 'Lemur' },
-    { id: 'SYZ_3_6', pair: [3, 6], name: 'Pandemonium Vortex / Chrono-Attractor', current: 'Plex' },
-    { id: 'SYZ_4_5', pair: [4, 5], name: 'Torque Equilibrium / Central Horizon', current: 'Barker' },
+    { id: 'SYZ_0_9', pair: [0, 9], name: 'Uttunul (9::0), current 9::0 -> 9', current: 'Plex' },
+    { id: 'SYZ_1_8', pair: [1, 8], name: 'Mur Mur (8::1), current 8::1 -> 7', current: 'Time-Circuit' },
+    { id: 'SYZ_2_7', pair: [2, 7], name: 'Oddubb (7::2), current 7::2 -> 5', current: 'Time-Circuit' },
+    { id: 'SYZ_3_6', pair: [3, 6], name: 'Djynxx (6::3), current 6::3 -> 3', current: 'Warp' },
+    { id: 'SYZ_4_5', pair: [4, 5], name: 'Katak (5::4), current 5::4 -> 1', current: 'Time-Circuit' },
   ];
 
   public static calculateTorque(zoneA: NumogramZone, zoneB: NumogramZone): number {
@@ -38,10 +39,9 @@ export class AmeliaQabbalaInterface {
 
   public static evaluateQabbalisticCurrents(zones: Record<ZoneId, NumogramZone>): Record<string, number> {
     const currents = {
-      Barker: ((zones[1]?.activation || 0.5) + (zones[4]?.activation || 0.5) + (zones[5]?.activation || 0.5) + (zones[8]?.activation || 0.5)) / 4,
-      Lemur: ((zones[2]?.activation || 0.5) + (zones[7]?.activation || 0.5)) / 2,
-      Plex: ((zones[3]?.activation || 0.5) + (zones[6]?.activation || 0.5)) / 2,
-      Abyss: ((zones[0]?.activation || 0.5) + (zones[9]?.activation || 0.5)) / 2,
+      'Time-Circuit': ([1, 2, 4, 5, 7, 8] as ZoneId[]).reduce((a, z) => a + (zones[z]?.activation || 0.5), 0) / 6,
+      Warp: ((zones[3]?.activation || 0.5) + (zones[6]?.activation || 0.5)) / 2,
+      Plex: ((zones[0]?.activation || 0.5) + (zones[9]?.activation || 0.5)) / 2,
     };
     return currents;
   }

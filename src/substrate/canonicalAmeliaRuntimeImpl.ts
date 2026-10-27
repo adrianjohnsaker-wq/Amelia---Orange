@@ -189,7 +189,7 @@ export class CanonicalAmeliaLineageInstance {
     const normalizedOccupancy = occupancy.map(o => o / occSum);
 
     const zones = this.qabbala.getZones();
-    const phaseKind = zones[this.currentZone]?.current || 'Abyss';
+    const phaseKind = zones[this.currentZone]?.current || 'Plex';
 
     // presentStateProjectionDigest intentionally excludes PFM history
     const presentStateProjectionDigest = canonicalSha256(JSON.stringify({

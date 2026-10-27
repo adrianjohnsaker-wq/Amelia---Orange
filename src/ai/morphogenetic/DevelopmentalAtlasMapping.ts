@@ -53,11 +53,11 @@ export class DevelopmentalAtlasMapping {
     zones: Record<ZoneId, NumogramZone>,
     deformationFieldTension: number
   ): DevelopmentalAtlasManifold {
-    // Dimension X: Barker/Lemur balance
+    // Dimension X: triadic modulus, zones 1, 4, 7 against 2, 5, 8
     const dimX = (zones[1].activation + zones[4].activation + zones[7].activation) / 3 -
                  (zones[2].activation + zones[5].activation + zones[8].activation) / 3;
     
-    // Dimension Y: Plex/Abyss gradient
+    // Dimension Y: Warp (3, 6) against Plex (0, 9)
     const dimY = (zones[3].activation + zones[6].activation) / 2 -
                  (zones[0].activation + zones[9].activation) / 2;
 

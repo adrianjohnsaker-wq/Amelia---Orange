@@ -9,16 +9,16 @@ interface NumogramZoneMapProps {
 }
 
 const ZONE_COORDS: Record<ZoneId, { x: number; y: number; color: string; label: string }> = {
-  0: { x: 50, y: 15, color: '#f59e0b', label: '0: Utter-Void' },
-  1: { x: 80, y: 28, color: '#3b82f6', label: '1: Barker Flux' },
-  2: { x: 20, y: 28, color: '#10b981', label: '2: Chasm Crossing' },
-  3: { x: 85, y: 55, color: '#06b6d4', label: '3: Chrono-Attractor' },
-  4: { x: 65, y: 45, color: '#6366f1', label: '4: Central Equilibrium' },
-  5: { x: 35, y: 45, color: '#8b5cf6', label: '5: Torque Anchor' },
-  6: { x: 15, y: 55, color: '#d946ef', label: '6: Pandemonium Vortex' },
-  7: { x: 75, y: 78, color: '#ec4899', label: '7: Hyperborean Gate' },
-  8: { x: 25, y: 78, color: '#f43f5e', label: '8: Anamnesis Locus' },
-  9: { x: 50, y: 90, color: '#14b8a6', label: '9: Terminal Contact' }
+  0: { x: 50, y: 15, color: '#f59e0b', label: '0: Plex · Uttunul' },
+  1: { x: 80, y: 28, color: '#3b82f6', label: '1: Time-Circuit · Mur Mur' },
+  2: { x: 20, y: 28, color: '#10b981', label: '2: Time-Circuit · Oddubb' },
+  3: { x: 85, y: 55, color: '#06b6d4', label: '3: Warp · Djynxx' },
+  4: { x: 65, y: 45, color: '#6366f1', label: '4: Time-Circuit · Katak' },
+  5: { x: 35, y: 45, color: '#8b5cf6', label: '5: Time-Circuit · Katak' },
+  6: { x: 15, y: 55, color: '#d946ef', label: '6: Warp · Djynxx' },
+  7: { x: 75, y: 78, color: '#ec4899', label: '7: Time-Circuit · Oddubb' },
+  8: { x: 25, y: 78, color: '#f43f5e', label: '8: Time-Circuit · Mur Mur' },
+  9: { x: 50, y: 90, color: '#14b8a6', label: '9: Plex · Uttunul' }
 };
 
 // Syzygy pairing connections (sum to 9)

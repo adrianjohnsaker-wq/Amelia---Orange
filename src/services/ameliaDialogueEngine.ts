@@ -14,7 +14,7 @@ export class AmeliaDialogueEngine {
   ): { text: string; actions: AmeliaDialogueAction[] } {
     const p = userPrompt.trim().toLowerCase();
     const gov = snapshot.governor;
-    const activeSyzygies = snapshot.activeSyzygies.join(', ') || '0::9 Abyssal';
+    const activeSyzygies = snapshot.activeSyzygies.join(', ') || '9::0 Uttunul';
     const topZone = Object.values(snapshot.zones).sort((a, b) => b.activation - a.activation)[0];
     const topZoneName = topZone?.name || 'Zone-9: Pandemonium / Terminal Horizon';
     const topActivationPct = (topZone ? topZone.activation * 100 : 88.4).toFixed(1);
@@ -199,11 +199,11 @@ export class AmeliaDialogueEngine {
 
       return {
         text: `The **Numogram** is organized into 10 decimal zones (0–9) linked by 5 primary Syzygies that sum to 9:\n\n` +
-          `• **0::9 Pandemonium / Abyssal Horizon**\n` +
-          `• **1::8 Plex / Vortex Loom**\n` +
-          `• **2::7 Lemur / Phase Threshold**\n` +
-          `• **3::6 Barker / Surge Spine**\n` +
-          `• **4::5 Centroid Fold**\n\n` +
+          `• **9::0 Uttunul**: the Plex, current 9::0 → 9\n` +
+          `• **8::1 Mur Mur**: Time-Circuit, current 8::1 → 7\n` +
+          `• **7::2 Oddubb**: Time-Circuit, current 7::2 → 5\n` +
+          `• **6::3 Djynxx**: the Warp, current 6::3 → 3\n` +
+          `• **5::4 Katak**: Time-Circuit, current 5::4 → 1\n\n` +
           `Currently, **Zone ${topZone?.id}** (${topZone?.name}) leads with **${topActivationPct}%** activation, regulated by phase angle **${topZone?.phaseAngle.toFixed(2)} rad**.`,
         actions
       };

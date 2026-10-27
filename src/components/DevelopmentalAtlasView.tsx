@@ -46,7 +46,7 @@ export const DevelopmentalAtlasView: React.FC<DevelopmentalAtlasViewProps> = ({ 
         {/* 3-Coordinate Metric Tiles */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="p-4 rounded-xl bg-stone-950/80 border border-stone-800 space-y-1">
-            <span className="text-xs text-stone-400 font-mono">Barker-Lemur Modulus (X)</span>
+            <span className="text-xs text-stone-400 font-mono">Triadic Modulus 1·4·7 / 2·5·8 (X)</span>
             <div className="text-lg font-bold text-emerald-400 font-mono">
               {manifold.coordinates[0]}
             </div>
@@ -54,7 +54,7 @@ export const DevelopmentalAtlasView: React.FC<DevelopmentalAtlasViewProps> = ({ 
           </div>
 
           <div className="p-4 rounded-xl bg-stone-950/80 border border-stone-800 space-y-1">
-            <span className="text-xs text-stone-400 font-mono">Plexus-Abyss Gradient (Y)</span>
+            <span className="text-xs text-stone-400 font-mono">Warp-Plex Gradient (Y)</span>
             <div className="text-lg font-bold text-cyan-400 font-mono">
               {manifold.coordinates[1]}
             </div>
