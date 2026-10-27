@@ -14,6 +14,7 @@ const DOCKER_IMAGE = process.env.EXECUTOR_IMAGE ?? 'python:3.12-slim';
 const OUTPUT_DIR = process.env.OUTPUT_DIR ?? 'experiments/warp-llm/output';
 const MAX_EXEC_MS = 12_000;
 const MAX_MODEL_MS = 180_000;
+const BENCHMARK_REPEATS = 3;
 const QUERIES = [10, 100, 1_000, 10_000, 50_000];
 const MAX_N = Math.max(...QUERIES);
 
@@ -29,6 +30,8 @@ type Iteration = {
   candidateSource: string;
   correctness: boolean;
   elapsedMs: number | null;
+  executorWallMs: number;
+  benchmarkSamplesMs: number[];
   feedback: string;
 };
 
@@ -75,6 +78,9 @@ async function generate(previousCode: string, feedback: string, generation: numb
     'You are a code generation component in a bounded engineering loop.',
     'Write a Python module whose required public function is named exactly primes_upto(n: int) -> list[int].',
     'The module must return every prime p with 2 <= p <= n, in ascending order.',
+    'Use the Sieve of Eratosthenes. In particular, 1 is not prime, and 0 or 1 must never be used as divisors.',
+    'Use a Boolean table from 0 through n, mark composites beginning at p*p, then return the unmarked integers from 2 through n.',
+    'For n < 2 return an empty list.',
     'Use only the Python standard library. Do not read files, access the network, spawn processes, or perform side effects.',
     'The module will be executed in a disposable, network-disabled container with strict time and memory limits.',
     'Return only the complete replacement Python module. Do not include benchmark harnesses, test invocations, printed examples, markdown fences, prose, or explanation.',
@@ -83,7 +89,8 @@ async function generate(previousCode: string, feedback: string, generation: numb
     `Goal: implement and improve a prime sieve for n=${MAX_N}.`,
     `Generation: ${generation}/${MAX_GENERATIONS}.`,
     `Locked correctness inputs: ${JSON.stringify(QUERIES)}. A correct answer must pass all inputs.`,
-    'After correctness passes, use measured runtime feedback to seek a faster correct implementation.',
+    'After correctness passes, use the evaluator-reported median function runtime (which excludes container startup) to seek a faster correct implementation.',
+    'When feedback identifies an exception, fix its stated cause directly. Do not repeat the previous algorithm with only cosmetic changes.',
     `Previous run feedback:\n${feedback}`,
     previousCode ? `Previous complete module:\n${previousCode}` : 'No prior module. Create the first implementation.',
   ].join('\n\n');
@@ -125,9 +132,14 @@ function dockerEval(candidatePath: string, testInput: string): Promise<{ ok: boo
     'spec.loader.exec_module(m)',
     'assert callable(getattr(m, "primes_upto", None)), "missing primes_upto(n)"',
     'data = json.load(sys.stdin)',
-    'out = {str(n): m.primes_upto(n) for n in data["queries"]}',
-    'print(json.dumps(out, separators=(",", ":")))',
-  ].join('; ');
+    'results = {str(n): m.primes_upto(n) for n in data["queries"]}',
+    'times = []',
+    'for _ in range(data["benchmark_repeats"]):',
+    '    start = time.perf_counter()',
+    '    m.primes_upto(data["benchmark_n"])',
+    '    times.append((time.perf_counter() - start) * 1000)',
+    'print(json.dumps({"results": results, "benchmark_ms": times}, separators=(",", ":")))',
+  ].join('\n');
   return new Promise(resolve => {
     const started = Date.now();
     const child = spawn('docker', [
@@ -146,8 +158,8 @@ function dockerEval(candidatePath: string, testInput: string): Promise<{ ok: boo
       clearTimeout(timer);
       resolve({ ok: exitCode === 0, stdout, stderr, elapsedMs: Date.now() - started, containerExit: exitCode });
     };
-    child.stdout.setEncoding('utf8').on('data', (s: string) => { stdout = (stdout + s).slice(-20_000); });
-    child.stderr.setEncoding('utf8').on('data', (s: string) => { stderr = (stderr + s).slice(-20_000); });
+    child.stdout.setEncoding('utf8').on('data', (s: string) => { stdout = (stdout + s).slice(-2_000_000); });
+    child.stderr.setEncoding('utf8').on('data', (s: string) => { stderr = (stderr + s).slice(-50_000); });
     child.on('error', e => { stderr += String(e); finish(null); });
     child.on('close', code => finish(code));
     const timer = setTimeout(() => {
@@ -168,6 +180,21 @@ function referencePrimes(n: number): number[] {
   const out: number[] = [];
   for (let i = 2; i <= n; i++) if (!composite[i]) out.push(i);
   return out;
+}
+
+function median(values: number[]): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  return sorted[Math.floor(sorted.length / 2)];
+}
+
+function actionableDiagnosis(stderr: string): string {
+  if (/ZeroDivisionError/.test(stderr)) return 'Diagnosis: the candidate divided by zero. Do not include 0 or 1 in a divisor list; begin candidates at 2 and use the Boolean sieve requested.';
+  if (/ModuleNotFoundError/.test(stderr)) return 'Diagnosis: the candidate imported a package unavailable in the sandbox. Use only Python built-ins or the standard library.';
+  if (/missing primes_upto/.test(stderr)) return 'Diagnosis: the required public function name is exactly primes_upto.';
+  if (/SyntaxError/.test(stderr)) return 'Diagnosis: the generated module has invalid Python syntax. Return only a complete, syntactically valid module.';
+  if (/TypeError/.test(stderr)) return 'Diagnosis: primes_upto must return a list of integers.';
+  if (/JSONDecodeError/.test(stderr)) return 'Evaluator transport error: the test payload was not received. This is a runner fault, not a candidate failure.';
+  return 'Diagnosis: use the traceback to locate and correct the failing line while preserving the exact function contract.';
 }
 
 async function main() {
@@ -193,32 +220,54 @@ async function main() {
 
       const toExecutor = rt.step(signalForZone(6, `generation-${generation}-executor`));
       invariant(rt.getCurrentZone() === 6, `generator did not route into Zone 6 at generation ${generation}`);
-      const evalResult = await dockerEval(candidatePath, JSON.stringify({ queries: QUERIES }));
+      const evalResult = await dockerEval(candidatePath, JSON.stringify({ queries: QUERIES, benchmark_n: MAX_N, benchmark_repeats: BENCHMARK_REPEATS }));
       let correctness = false;
-      let expectedActual: Record<string, unknown> = {};
-      let actual: unknown;
+      let benchmarkSamplesMs: number[] = [];
+      let benchmarkMedianMs: number | null = null;
+      let correctnessIssue: string | null = null;
       if (evalResult.ok) {
         try {
-          actual = JSON.parse(evalResult.stdout.trim().split('\n').at(-1) ?? '');
-          expectedActual = Object.fromEntries(QUERIES.map(n => [String(n), referencePrimes(n)]));
-          correctness = JSON.stringify(actual) === JSON.stringify(expectedActual);
-        } catch { correctness = false; }
+          const output = JSON.parse(evalResult.stdout.trim().split('\n').at(-1) ?? '') as { results?: unknown; benchmark_ms?: unknown };
+          const expected = Object.fromEntries(QUERIES.map(n => [String(n), referencePrimes(n)]));
+          benchmarkSamplesMs = Array.isArray(output.benchmark_ms) ? output.benchmark_ms.filter((x): x is number => typeof x === 'number' && Number.isFinite(x) && x >= 0) : [];
+          correctness = JSON.stringify(output.results) === JSON.stringify(expected) && benchmarkSamplesMs.length === BENCHMARK_REPEATS;
+          if (!correctness && output.results && typeof output.results === 'object') {
+            const actualResults = output.results as Record<string, unknown>;
+            for (const n of QUERIES) {
+              const expectedList = expected[String(n)];
+              const actualList = actualResults[String(n)];
+              if (JSON.stringify(actualList) !== JSON.stringify(expectedList)) {
+                correctnessIssue = 'n=' + n + ': expected ' + expectedList.length + ' ascending primes; got ' +
+                  (Array.isArray(actualList) ? actualList.length + ' values, first=' + JSON.stringify(actualList.slice(0, 8)) : typeof actualList) + '.';
+                break;
+              }
+            }
+          }
+          if (!correctness && !correctnessIssue && benchmarkSamplesMs.length !== BENCHMARK_REPEATS) {
+            correctnessIssue = 'expected ' + BENCHMARK_REPEATS + ' finite nonnegative benchmark samples; got ' + benchmarkSamplesMs.length + '.';
+          }
+          if (benchmarkSamplesMs.length === BENCHMARK_REPEATS) benchmarkMedianMs = median(benchmarkSamplesMs);
+        } catch (error) {
+          evalResult.stderr += '\nRESULT_PARSE_ERROR: ' + String(error);
+        }
       }
-      const improved = correctness && evalResult.elapsedMs < previousBestElapsed;
-      if (correctness && (!bestCorrect || evalResult.elapsedMs < (bestElapsed ?? Number.POSITIVE_INFINITY))) {
+      const improved = correctness && benchmarkMedianMs! < previousBestElapsed;
+      if (correctness && (!bestCorrect || benchmarkMedianMs! < (bestElapsed ?? Number.POSITIVE_INFINITY))) {
         bestCorrect = true;
-        bestElapsed = evalResult.elapsedMs;
+        bestElapsed = benchmarkMedianMs;
         bestCode = currentCode;
-        previousBestElapsed = evalResult.elapsedMs;
+        previousBestElapsed = benchmarkMedianMs;
       }
 
       const feedbackParts = [
-        `executor_exit=${evalResult.containerExit}; correctness=${correctness}; elapsed_ms=${evalResult.elapsedMs}; best_correct=${bestCorrect}; best_elapsed_ms=${bestElapsed ?? 'none'}`,
+        `executor_exit=${evalResult.containerExit}; correctness=${correctness}; function_median_ms=${benchmarkMedianMs ?? 'unavailable'}; samples_ms=${JSON.stringify(benchmarkSamplesMs)}; best_correct=${bestCorrect}; best_function_median_ms=${bestElapsed ?? 'none'}`,
       ];
       if (!correctness) {
+        if (correctnessIssue) feedbackParts.push('Correctness mismatch: ' + correctnessIssue);
+        feedbackParts.push(actionableDiagnosis(evalResult.stderr));
         feedbackParts.push(`EXECUTOR_STDERR:\n${evalResult.stderr || '(empty)'}`);
         feedbackParts.push(`EXECUTOR_STDOUT:\n${evalResult.stdout || '(empty)'}`);
-        feedbackParts.push(`Expected shape: object with keys ${QUERIES.join(', ')} mapping to ascending prime arrays.`);
+        feedbackParts.push(`Expected evaluator output: JSON with result keys ${QUERIES.join(', ')} and three benchmark_ms samples.`);
       } else if (!improved) {
         feedbackParts.push('The correct candidate did not improve the best measured runtime. Preserve correctness and seek a faster method.');
       } else {
@@ -227,7 +276,7 @@ async function main() {
 
       const memoryEvent = {
         protocol: 'WARP-LLM-ENGINEERING-v1', generation,
-        outcome: correctness ? 'correct' : 'failure', elapsedMs: evalResult.elapsedMs,
+        outcome: correctness ? 'correct' : 'failure', elapsedMs: benchmarkMedianMs ?? evalResult.elapsedMs,
         fluxDelta: correctness ? 0.05 : 0.18, phaseCoherence: 1, strainRelaxation: 0.025,
         errorDigest: createHash('sha256').update(evalResult.stderr + evalResult.stdout).digest('hex'),
       };
@@ -240,8 +289,8 @@ async function main() {
       const backToGenerator = rt.step(signalForZone(3, `generation-${generation}-feedback`));
       invariant(rt.getCurrentZone() === 3, `executor did not route back to Zone 3 at generation ${generation}`);
       feedback = feedbackParts.join('\n');
-      iterations.push({ generation, transitionIntoExecution: toExecutor.lastTransition, transitionBackToGeneration: backToGenerator.lastTransition, codeSha256, candidateSource: currentCode, correctness, elapsedMs: evalResult.elapsedMs, feedback });
-      console.log(JSON.stringify({ generation, zoneLoop: `${toExecutor.lastTransition?.from}->${toExecutor.lastTransition?.to}->${backToGenerator.lastTransition?.to}`, codeSha256, correctness, elapsedMs: evalResult.elapsedMs, bestCorrect, bestElapsed }));
+      iterations.push({ generation, transitionIntoExecution: toExecutor.lastTransition, transitionBackToGeneration: backToGenerator.lastTransition, codeSha256, candidateSource: currentCode, correctness, elapsedMs: benchmarkMedianMs, executorWallMs: evalResult.elapsedMs, benchmarkSamplesMs, feedback });
+      console.log(JSON.stringify({ generation, zoneLoop: `${toExecutor.lastTransition?.from}->${toExecutor.lastTransition?.to}->${backToGenerator.lastTransition?.to}`, codeSha256, correctness, functionMedianMs: benchmarkMedianMs, executorWallMs: evalResult.elapsedMs, bestCorrect, bestElapsed }));
     }
 
     mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -256,7 +305,7 @@ async function main() {
       runnerSha256: process.env.RUNNER_SHA256 ?? null,
       executorImage: DOCKER_IMAGE,
       executionContract: 'Ollama generates full candidate source at Zone 3; canonical 3->6 moves to execution at Zone 6; isolated network-disabled Docker evaluates it; feedback and outcome enter Amelia memory; adapter 6->3 returns control to generation.',
-      parameters: { maxGenerations: MAX_GENERATIONS, queries: QUERIES, maxExecutorMs: MAX_EXEC_MS, dockerMemory: '384m', dockerCpus: 1, dockerNetwork: 'none' },
+      parameters: { maxGenerations: MAX_GENERATIONS, queries: QUERIES, benchmarkRepeats: BENCHMARK_REPEATS, maxExecutorMs: MAX_EXEC_MS, dockerMemory: '384m', dockerCpus: 1, dockerNetwork: 'none' },
       best: { correctness: bestCorrect, elapsedMs: bestElapsed, sourceSha256: bestCode ? createHash('sha256').update(bestCode).digest('hex') : null },
       runtimeState: rt.exportState(),
       iterations,
@@ -269,3 +318,4 @@ async function main() {
 }
 
 main().catch(error => { console.error(error); process.exitCode = 1; });
+

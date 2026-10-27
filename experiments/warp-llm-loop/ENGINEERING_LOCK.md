@@ -10,10 +10,11 @@
 - The pinned source has a canonical open gate 3→6 and no canonical 6→3 gate; Zone 6 has no canonical outgoing gate.
 - The runner uses the native `AmeliaNumogramSubstrateRuntime` and canonical 3→6 gate. It adds one in-memory adapter, 6→3, solely to return execution feedback to generation. It does not edit canonical source files.
 - Zone 3 is the LLM generation state. Zone 6 is code execution/evaluation. After evaluation, its result is appended to Orange active memory and the adapter returns the runtime to Zone 3. The evaluation stderr/stdout and score are also included in the next Ollama prompt.
+- Runner SHA-256 for this implementation: `571bae01f6ab1e89239120e97e8c7e17721552c6d4d8decc1f4d0be5df27d879`.
 
 ## Frozen engineering task
 
-The model must write a Python module defining `primes_upto(n: int) -> list[int]`. The evaluator checks exact output for n = 10, 100, 1,000, 10,000, and 50,000 against an independent sieve in the runner. If correctness passes, measured executor runtime is fed back as an optimization target. The loop has a hard limit of four generations; it does not run indefinitely.
+The model must write a Python module defining `primes_upto(n: int) -> list[int]`. The evaluator checks exact output for n = 10, 100, 1,000, 10,000, and 50,000 against an independent sieve in the runner. If correctness passes, the median of three function-only timings for n=50,000 is fed back as an optimization target; these timings exclude container startup. The loop has a hard limit of four generations; it does not run indefinitely.
 
 The model is selected by `OLLAMA_MODEL` and defaults to `hermes3:3b`. The exact Ollama model digest is captured at run time. Generation settings are temperature 0, seed 420271, an 8,192-token context, and 2,048 maximum output tokens. Model calls time out after 180 seconds. The workflow installs Ollama v0.34.0 from its release archive and checks SHA-256 `cf95886728959aa09910bb34de5cca1cc5a8f68003b5597197d3f2c2d57c0804`.
 
@@ -23,6 +24,7 @@ Generated code runs only in a disposable Docker container with `--network=none`,
 
 ## Output and interpretation
 
-The workflow runs a single bounded loop and uploads all iterations, candidate hashes, transition records, correctness results, feedback, best correct candidate, model digest, and executor image digest. The engineering objective is achieved if at least one generated candidate passes the fixed correctness evaluator. Runtime optimization is descriptive. No result is tuned or reclassified to support a preferred theoretical claim.
+The workflow runs a single bounded loop and uploads all iterations, candidate hashes, transition records, correctness results, actionable failure diagnoses, function timing samples, best correct candidate, model digest, and executor image digest. The prompt specifies the Sieve of Eratosthenes and the function contract. When a candidate fails, the runner adds a concise diagnosis to the raw traceback (for example, a zero divisor means the candidate must exclude sentinel 0 and 1); it still returns the unchanged evaluator output. The engineering objective is achieved if at least one generated candidate passes the fixed correctness evaluator. Runtime optimization is descriptive. No result is tuned or reclassified to support a preferred theoretical claim.
 
 The inference is genuinely performed by the configured Ollama model. A stubbed provider, synthetic response, or the coding agent itself is not accepted as a substitute. If model download, inference, or sandbox startup fails, the workflow must report that failure rather than emit a synthetic success.
+
