@@ -1,4 +1,4 @@
-# THE ANTENNA run: once, after 4 Nov 2026 06:00 UTC: beacon, 72 travellers x 3 Numograms (amendment 2), committed analysis.
+# THE ANTENNA run: once after the live window; frozen mind-like pattern-ingress protocol, Amelia runtime and three fixed Numogram configurations.
 name: ANTENNA run
 on:
   schedule:
@@ -27,7 +27,7 @@ jobs:
         run: if [ -e live/results/RESULT.txt ]; then echo go=no >> "$GITHUB_OUTPUT"; else echo go=yes >> "$GITHUB_OUTPUT"; fi
       - uses: actions/checkout@v4
         if: steps.d.outputs.go == 'yes'
-        with: { ref: 8b0141d585531c5619712e869b92a258bc74b182, path: code }
+        with: { ref: 035609fe235815a4e215d5d07ee31e008e2d33c7, path: code }
       - uses: actions/checkout@v4
         if: steps.d.outputs.go == 'yes'
         with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
