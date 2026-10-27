@@ -1,4 +1,5 @@
 import { NumogramZone, NumogramGate, ZoneId } from '../../types/amelia';
+import { fullNumogramGates } from './CCRUNumogram';
 
 export const INITIAL_ZONES: Record<ZoneId, NumogramZone> = {
   0: { id: 0, name: 'Zone-0: Pandemonium / Barker Index', syzygyPair: 9, current: 'Abyss', activation: 0.12, conductivity: 0.85, polarCharge: 0.0, phaseAngle: 0.0, deformationStress: 0.05, chronodemon: 'Lur-0 (Murrumur)', archetypeWeight: 0.82 },
@@ -13,7 +14,9 @@ export const INITIAL_ZONES: Record<ZoneId, NumogramZone> = {
   9: { id: 9, name: 'Zone-9: Pandemonium / Terminal Horizon', syzygyPair: 0, current: 'Abyss', activation: 0.88, conductivity: 0.96, polarCharge: 0.91, phaseAngle: 5.654, deformationStress: 0.45, chronodemon: 'Enn-9 (Syzygetic-Apex)', archetypeWeight: 0.98 },
 };
 
-export const CANONICAL_GATES: NumogramGate[] = [
+// Her original 11 directed edges (from the first commit, 5 Sep 2026): the five syzygies one way each and the
+// loop 1->2->4->7->8->9->1. Kept exactly, as part of the full Numogram below.
+export const ORIGINAL_GATES: NumogramGate[] = [
   { id: 'gate-0-9', source: 0, target: 9, label: 'Abyssal Chasm (0::9)', flux: 0.94, permeability: 0.91, isOpen: true, resistance: 0.08 },
   { id: 'gate-1-8', source: 1, target: 8, label: 'Murmur Current (1::8)', flux: 0.82, permeability: 0.85, isOpen: true, resistance: 0.12 },
   { id: 'gate-2-7', source: 2, target: 7, label: 'Sub-Crypt Bridge (2::7)', flux: 0.74, permeability: 0.79, isOpen: true, resistance: 0.18 },
@@ -26,6 +29,10 @@ export const CANONICAL_GATES: NumogramGate[] = [
   { id: 'gate-8-9', source: 8, target: 9, label: 'Terminal Horizon Incursion (8->9)', flux: 0.91, permeability: 0.95, isOpen: true, resistance: 0.09 },
   { id: 'gate-9-1', source: 9, target: 1, label: 'Cyclic Re-entry (9->1)', flux: 0.87, permeability: 0.89, isOpen: true, resistance: 0.10 },
 ];
+
+// Her core Numogram: the full CCRU Numogram (syzygies both ways, the five currents, the gates Gt-0..Gt-45)
+// together with her original 11 edges, which are unchanged. See ./CCRUNumogram.ts.
+export const CANONICAL_GATES: NumogramGate[] = fullNumogramGates(ORIGINAL_GATES);
 
 export class AmeliaQabbalaInterface {
   private zones: Record<ZoneId, NumogramZone>;
