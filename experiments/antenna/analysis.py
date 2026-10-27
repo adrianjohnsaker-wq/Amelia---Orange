@@ -65,7 +65,7 @@ def main(src, inputs_path, names_path):
             print(f" RECURS: {nm(kk)} [{cls(kk)}]  hers {her:.1f}/season, shadow {sh:.1f} -> {'the stream' if sh >= her else 'hers'}")
             pattern_candidates.append(f"{nm(kk)} ({system})")
         if not rec: print(" RECURS: none")
-    print("\nANSWER:", "THE OUTSIDE IS RECEIVED: " + ", ".join(received) if received else "SILENT")
+    print("\nDECISION:", "CANDIDATE PATTERN INGRESSION: " + ", ".join(pattern_candidates) if pattern_candidates else "NO CANDIDATE PATTERN MET THE REGISTERED CRITERION")
 
 if __name__ == "__main__":
     main(*sys.argv[1:])
