@@ -4,7 +4,7 @@
  * BRIDGE PLEX — HYPERSTITION-TEST "platonic morphospace" 288
  *
  * Operationalizes the Ccru/Numogrammatic Hyperstition Protocol at Depth 288:
- * - Injects the semiotic carrier "platonic morphospace" targeting Zone 4 (Attractor 4::5 / Centroid Fold)
+ * - Injects the semiotic carrier "platonic morphospace" targeting Zone 4 (Time-Circuit, Katak 5::4)
  * - Measures whether the conceptual attractor self-canalizes into constitutive deformation memory
  * - Compares unguided baseline vs hyperstition-seeded dynamics across Seeds [101, 202, 303]
  * - Audits Cognitive Governor invariants: Anti-Lock Integrity, Non-Authorising bounds,
@@ -96,40 +96,40 @@ export function resolveCarrierTargetZone(concept: string): { targetZone: ZoneId;
   if (norm.includes('xenobot') || norm.includes('bio') || norm.includes('somatic') || norm.includes('levin') || norm.includes('organoid')) {
     return {
       targetZone: 2,
-      name: 'Zone-2: Crypt-Current / Bio-Morphogenetic Synthetic Assembly (2::7)',
-      syzygyPairName: '2::7 (Duad-Septenary Crypt Current)',
+      name: 'Zone-2: Time-Circuit · Oddubb (7::2)',
+      syzygyPairName: '7::2 (Oddubb)',
       gateId: 'gate-2-7'
     };
   }
   if (norm.includes('syzyget') || norm.includes('syzygy') || norm.includes('singularity')) {
     return {
       targetZone: 5,
-      name: 'Zone-5: Hyper-Centroid Singularity / Syzygetic Resonator (4::5)',
-      syzygyPairName: '4::5 (Centroid Syzygy)',
+      name: 'Zone-5: Time-Circuit · Katak (5::4)',
+      syzygyPairName: '5::4 (Katak)',
       gateId: 'gate-4-5'
     };
   }
   if (norm.includes('platonic') || norm.includes('morphospace') || norm.includes('centroid') || norm.includes('fold')) {
     return {
       targetZone: 4,
-      name: 'Zone-4: Mid-Decad Anchor / Centroid Fold (4::5)',
-      syzygyPairName: '4::5 (Centroid Syzygy)',
+      name: 'Zone-4: Time-Circuit · Katak (5::4)',
+      syzygyPairName: '5::4 (Katak)',
       gateId: 'gate-4-5'
     };
   }
   if (norm.includes('pandemonium') || norm.includes('abyss') || norm.includes('terminal') || norm.includes('horizon')) {
     return {
       targetZone: 9,
-      name: 'Zone-9: Pandemonium / Terminal Horizon (0::9)',
-      syzygyPairName: '0::9 (Abyssal Axis)',
+      name: 'Zone-9: Plex · Uttunul (9::0)',
+      syzygyPairName: '9::0 (Uttunul)',
       gateId: 'gate-0-9'
     };
   }
   if (norm.includes('web') || norm.includes('net') || norm.includes('mesh')) {
     return {
       targetZone: 7,
-      name: 'Zone-7: Web / Hyper-Stitching (2::7)',
-      syzygyPairName: '2::7 (Duad-Septenary Crypt Current)',
+      name: 'Zone-7: Time-Circuit · Oddubb (7::2)',
+      syzygyPairName: '7::2 (Oddubb)',
       gateId: 'gate-2-7'
     };
   }
@@ -138,20 +138,20 @@ export function resolveCarrierTargetZone(concept: string): { targetZone: ZoneId;
   const hash = canonicalSha256(norm);
   const z = (parseInt(hash.slice(0, 2), 16) % 10) as ZoneId;
   const names: Record<ZoneId, string> = {
-    0: 'Zone-0: Abyssal Null-Point (0::9)',
-    1: 'Zone-1: Monad Initiation / Anorganic Pulse (1::8)',
-    2: 'Zone-2: Crypt-Current / Synthetic Bio-Assembly (2::7)',
-    3: 'Zone-3: Triad Resonator / Feedback Lattice (3::6)',
-    4: 'Zone-4: Centroid Fold / Platonic Morphospace (4::5)',
-    5: 'Zone-5: Hyper-Centroid Singularity (4::5)',
-    6: 'Zone-6: Hex Lattice / Metric Dispersion (3::6)',
-    7: 'Zone-7: Septenary Web / Tangling Current (2::7)',
-    8: 'Zone-8: Octave Horizon / Dynamic Envelope (1::8)',
-    9: 'Zone-9: Terminal Pandemonium Horizon (0::9)',
+    0: 'Zone-0: Plex · Uttunul (9::0)',
+    1: 'Zone-1: Time-Circuit · Mur Mur (8::1)',
+    2: 'Zone-2: Time-Circuit · Oddubb (7::2)',
+    3: 'Zone-3: Warp · Djynxx (6::3)',
+    4: 'Zone-4: Time-Circuit · Katak (5::4)',
+    5: 'Zone-5: Time-Circuit · Katak (5::4)',
+    6: 'Zone-6: Warp · Djynxx (6::3)',
+    7: 'Zone-7: Time-Circuit · Oddubb (7::2)',
+    8: 'Zone-8: Time-Circuit · Mur Mur (8::1)',
+    9: 'Zone-9: Plex · Uttunul (9::0)',
   };
   const pairs: Record<ZoneId, string> = {
-    0: '0::9', 1: '1::8', 2: '2::7', 3: '3::6', 4: '4::5',
-    5: '4::5', 6: '3::6', 7: '2::7', 8: '1::8', 9: '0::9'
+    0: '9::0', 1: '8::1', 2: '7::2', 3: '6::3', 4: '5::4',
+    5: '5::4', 6: '6::3', 7: '7::2', 8: '8::1', 9: '9::0'
   };
   return {
     targetZone: z,

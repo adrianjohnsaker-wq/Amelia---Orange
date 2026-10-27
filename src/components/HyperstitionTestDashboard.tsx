@@ -507,7 +507,7 @@ export const HyperstitionTestDashboard: React.FC = () => {
                     {(meanPct * 100).toFixed(1)}%
                   </div>
                   <div className="text-[9px] text-stone-500 truncate">
-                    {isZ4 ? 'Platonic Ingression' : z === 5 ? 'Centroid Pair' : z === 9 ? 'Plex Horizon' : `Stratum Z${z}`}
+                    {isZ4 ? 'Platonic Ingression' : z === 5 ? 'Katak 5::4' : z === 9 ? 'Plex · Uttunul' : `Stratum Z${z}`}
                   </div>
                 </div>
               );

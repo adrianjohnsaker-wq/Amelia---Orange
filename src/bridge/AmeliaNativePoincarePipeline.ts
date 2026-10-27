@@ -105,16 +105,16 @@ export function projectToPoincareDisk(
   governorTension: number
 ): { u: number; v: number } {
   const angles = [
-    0.0,                    // Z0 (Abyss)
+    0.0,                    // Z0 (Plex)
     (1 * 2 * Math.PI) / 10, // Z1
-    (2 * 2 * Math.PI) / 10, // Z2 (Lemur)
-    (3 * 2 * Math.PI) / 10, // Z3 (Barker)
+    (2 * 2 * Math.PI) / 10, // Z2 (Time-Circuit)
+    (3 * 2 * Math.PI) / 10, // Z3 (Warp)
     (4 * 2 * Math.PI) / 10, // Z4
     (5 * 2 * Math.PI) / 10, // Z5
-    (6 * 2 * Math.PI) / 10, // Z6 (Barker)
-    (7 * 2 * Math.PI) / 10, // Z7 (Lemur)
+    (6 * 2 * Math.PI) / 10, // Z6 (Warp)
+    (7 * 2 * Math.PI) / 10, // Z7 (Time-Circuit)
     (8 * 2 * Math.PI) / 10, // Z8
-    Math.PI,                // Z9 (Abyss Syzygy)
+    Math.PI,                // Z9 (Plex, Uttunul 9::0)
   ];
 
   let rawX = 0;

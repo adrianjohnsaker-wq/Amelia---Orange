@@ -27,7 +27,7 @@ export function runV3ContradictionNoticeR2Cli() {
   console.log(`  Canalized Zone 9               : ${r2.distribution.canalizedZ9Count} / 303 (${r2.distribution.canalizedZ9Percent})`);
   console.log(`  Even-Pole Relaxation (Mode)    : ${r2.distribution.evenPoleRelaxationCount} / 303 (${r2.distribution.evenPoleRelaxationPercent})`);
   console.log(`  Diffuse Multicentric Flux      : ${r2.distribution.diffuseMulticentricFluxCount} / 303 (${r2.distribution.diffuseMulticentricFluxPercent})`);
-  console.log(`  Abyssal Descent Z0             : ${r2.distribution.abyssalDescentZ0Count} / 303 (${r2.distribution.abyssalDescentZ0Percent})`);
+  console.log(`  Plex Descent Z0                : ${r2.distribution.abyssalDescentZ0Count} / 303 (${r2.distribution.abyssalDescentZ0Percent})`);
 
   console.log('\n--- PRECISE INTERPRETIVE CLARIFICATIONS ---');
   console.log('  1. COHORT DISTRIBUTION:');

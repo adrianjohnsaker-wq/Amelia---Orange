@@ -8,8 +8,8 @@ import {
 export class DevelopmentalAtlasMapping {
   public static readonly CANONICAL_ARCHETYPES: ArchetypalTrajectory[] = [
     {
-      id: 'ARCH_LEMURIAN_DESCENT',
-      name: 'Lemurian Descent Basin',
+      id: 'ARCH_TIME_CIRCUIT_TO_PLEX',
+      name: 'Time-Circuit Descent to the Plex',
       primaryAxis: 'Zone 1 -> Zone 4 -> Zone 7 -> Zone 9',
       recurrenceProbability: 0.94,
       basinStability: 0.89,
@@ -17,8 +17,8 @@ export class DevelopmentalAtlasMapping {
       color: '#10b981',
     },
     {
-      id: 'ARCH_PLEXUS_SPIRAL',
-      name: 'Plexus Chrono-Spiral',
+      id: 'ARCH_WARP_CIRCUIT_SPIRAL',
+      name: 'Warp to Time-Circuit Spiral',
       primaryAxis: 'Zone 3 -> Zone 6 -> Zone 8 -> Zone 2',
       recurrenceProbability: 0.87,
       basinStability: 0.82,
@@ -26,8 +26,8 @@ export class DevelopmentalAtlasMapping {
       color: '#06b6d4',
     },
     {
-      id: 'ARCH_ABYSSAL_REBOUND',
-      name: 'Abyssal Invariant Rebound',
+      id: 'ARCH_PLEX_REBOUND',
+      name: 'Plex Rebound',
       primaryAxis: 'Zone 0 -> Zone 5 -> Zone 9',
       recurrenceProbability: 0.79,
       basinStability: 0.95,
@@ -35,8 +35,8 @@ export class DevelopmentalAtlasMapping {
       color: '#f59e0b',
     },
     {
-      id: 'ARCH_BARKER_TORQUE',
-      name: 'Barker Torque Balance',
+      id: 'ARCH_KATAK_TORQUE',
+      name: 'Katak Torque (5::4)',
       primaryAxis: 'Zone 4 -> Zone 5 -> Zone 8',
       recurrenceProbability: 0.91,
       basinStability: 0.88,

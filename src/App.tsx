@@ -739,7 +739,7 @@ export function App() {
                       </div>
                       <div className="flex justify-between py-1 border-b border-stone-800/60">
                         <span className="text-stone-400">Chronodemon Anchor:</span>
-                        <span className="text-purple-300">{snapshot.zones[selectedZone]?.chronodemon || 'Chrono-Attractor 0::9'}</span>
+                        <span className="text-purple-300">{snapshot.zones[selectedZone]?.chronodemon || 'Uttunul (9::0)'}</span>
                       </div>
                     </div>
                   </div>

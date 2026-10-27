@@ -16,9 +16,9 @@ export interface TraitEvolutionSnapshot {
   syzygeticTorqueVector: number[];
   evenPoleEnergy: number;
   oddCurrentEnergy: number;
-  centroidFoldActivation: number; // Z4::Z5
-  subCryptActivation: number;      // Z2::Z7
-  barkerLoopActivation: number;    // Z3::Z6
+  katakActivation: number;        // Katak 5::4
+  oddubbActivation: number;       // Oddubb 7::2
+  djynxxActivation: number;       // Djynxx 6::3
 }
 
 export class TraitEvolution {
@@ -109,9 +109,9 @@ export class TraitEvolution {
       syzygeticTorqueVector,
       evenPoleEnergy: Number(evenEnergy.toFixed(4)),
       oddCurrentEnergy: Number(oddEnergy.toFixed(4)),
-      centroidFoldActivation: Number(((zones[4].activation + zones[5].activation) / 2).toFixed(4)),
-      subCryptActivation: Number(((zones[2].activation + zones[7].activation) / 2).toFixed(4)),
-      barkerLoopActivation: Number(((zones[3].activation + zones[6].activation) / 2).toFixed(4)),
+      katakActivation: Number(((zones[4].activation + zones[5].activation) / 2).toFixed(4)),
+      oddubbActivation: Number(((zones[2].activation + zones[7].activation) / 2).toFixed(4)),
+      djynxxActivation: Number(((zones[3].activation + zones[6].activation) / 2).toFixed(4)),
     };
 
     this.history.push(snapshot);
