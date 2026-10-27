@@ -1,4 +1,5 @@
-# THE ANTENNA collector: every 30 minutes from the seal until 4 Nov 2026 02:00 UTC; each batch gets its own RFC3161 token.
+# THE ANTENNA collector (amendment 1): one long job collecting every 15 minutes for up to 5h40m, then it starts its
+# successor; the schedule is only a backup (GitHub fires this repository's schedules every few hours). Until 4 Nov 02:00 UTC.
 name: ANTENNA collect
 on:
   schedule:
@@ -6,13 +7,14 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  actions: write
 concurrency:
-  group: antenna-live
+  group: antenna-collect
   cancel-in-progress: false
 jobs:
   collect:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 355
     steps:
       - name: window
         id: w
@@ -20,7 +22,7 @@ jobs:
           if [ "$(date -u +%s)" -gt "$(date -u -d '2026-11-04T02:00:00Z' +%s)" ]; then echo go=no >> "$GITHUB_OUTPUT"; else echo go=yes >> "$GITHUB_OUTPUT"; fi
       - uses: actions/checkout@v4
         if: steps.w.outputs.go == 'yes'
-        with: { ref: a321e0f00f94098bb82275f170b108174bede804, path: code }
+        with: { ref: f0e045f592c9369458c146bb5989dd1348572d65, path: code }
       - uses: actions/checkout@v4
         if: steps.w.outputs.go == 'yes'
         with: { ref: antenna-live, path: live }
@@ -30,15 +32,21 @@ jobs:
       - uses: actions/setup-python@v5
         if: steps.w.outputs.go == 'yes'
         with: { python-version: '3.12' }
-      - name: collect, seal the batch, commit
+      - name: collect every 15 minutes, seal each batch, commit; then hand on
         if: steps.w.outputs.go == 'yes'
         shell: bash
         env:
           PYTHONPATH: ${{ github.workspace }}/c1-pin
+          GH_TOKEN: ${{ github.token }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
           python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
-          stamp=$(python code/experiments/antenna/collect.py live | tee /dev/stderr | tail -1 | cut -d' ' -f1)
+          t0=$(date -u +%s); end=$(date -u -d '2026-11-04T02:00:00Z' +%s)
+          cat > "$RUNNER_TEMP/cycle.sh" <<'SH'
+          set -euo pipefail
+          git -C live pull -q --rebase origin antenna-live
+          stamp=$(python code/experiments/antenna/collect.py live | tail -1 | cut -d' ' -f1)
+          test -n "$stamp"
           python - "$stamp" <<'PY' || echo "ANTENNA_BATCH_SEAL_FAILED $stamp" | tee -a live/seal_failures.txt
           import hashlib, pathlib, sys
           from drift1a_c1.beacon import Sealer
@@ -50,3 +58,11 @@ jobs:
           cd live && git add -A
           git -c user.name='antenna' -c user.email='antenna@users.noreply.github.com' commit -qm "THE ANTENNA batch $stamp"
           for i in 1 2 3 4; do git push -q origin HEAD:antenna-live && exit 0; sleep $((2**i)); git pull -q --rebase origin antenna-live; done; exit 1
+          SH
+          while :; do
+            s=$(date -u +%s); [ "$s" -gt "$end" ] && break
+            bash "$RUNNER_TEMP/cycle.sh" || echo "ANTENNA_CYCLE_FAILED $(date -u +%FT%TZ)"
+            [ $(( $(date -u +%s) - t0 )) -gt 20400 ] && break
+            w=$(( 900 - ($(date -u +%s) - s) )); [ "$w" -gt 0 ] && sleep "$w"
+          done
+          if [ "$(date -u +%s)" -lt "$end" ]; then gh workflow run antenna-collect.yml --ref main -R "${{ github.repository }}" && echo ANTENNA_SUCCESSOR_STARTED; fi

@@ -1,0 +1,59 @@
+# THE ANTENNA amendment 1: one RFC3161 token over the amendment, the new code and the workflows, before 28 Oct 2026 00:00 UTC.
+name: ANTENNA amendment 1 seal (one-shot, before the window)
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/antenna-am1-seal.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: antenna-collect
+  cancel-in-progress: false
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: main }
+      - uses: actions/checkout@v4
+        with: { ref: f0e045f592c9369458c146bb5989dd1348572d65, path: code }
+      - uses: actions/checkout@v4
+        with: { ref: antenna-live, path: live }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: seal amendment 1 before the window, then start the collector
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ -e live/seal/am1/ANTENNA_AM1_BUNDLE.json ]; then echo ANTENNA_AM1_ALREADY_SEALED; exit 0; fi
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          mkdir -p live/seal/am1
+          python - <<'PY'
+          import hashlib, json, pathlib, datetime
+          from drift1a_c1.beacon import Sealer
+          sha = lambda p: hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          files = ['code/experiments/antenna/' + f for f in ('REGISTRATION.md', 'AMENDMENT_1.md', 'collect.py', 'prepare.py', 'antenna.mjs', 'analysis.py', 'scan.mjs', 'start_states.json', 'entity_names.json')]
+          files += ['main/.github/workflows/antenna-' + f + '.yml' for f in ('seal', 'am1-seal', 'collect', 'run')]
+          bundle = {'schema': 'ANTENNA_AM1_SEAL_V1', 'codeCommit': 'f0e045f592c9369458c146bb5989dd1348572d65',
+                    'previousCodeCommit': 'a321e0f00f94098bb82275f170b108174bede804',
+                    'originalSealBundleSHA256': sha('live/seal/ANTENNA_SEAL_BUNDLE.json'), 'scienceChanged': False,
+                    'sourceSHA256': [{'path': f.split('/', 1)[1], 'sha256': sha(f)} for f in files]}
+          p = pathlib.Path('live/seal/am1'); (p / 'ANTENNA_AM1_BUNDLE.json').write_text(json.dumps(bundle, sort_keys=True, indent=2) + '\n')
+          imprint = sha(p / 'ANTENNA_AM1_BUNDLE.json')
+          before = datetime.datetime(2026, 10, 28, tzinfo=datetime.timezone.utc).timestamp()
+          Sealer().seal(p / 'token', imprint, before)
+          assert Sealer().verify(p / 'token', imprint, before)['status'] == 'PASS'
+          print('ANTENNA_AM1_SEALED_BEFORE_WINDOW', imprint)
+          PY
+          cd live && git add -A
+          git -c user.name='antenna' -c user.email='antenna@users.noreply.github.com' commit -qm 'THE ANTENNA amendment 1: seal before the window'
+          git push -q origin HEAD:antenna-live
+          gh workflow run antenna-collect.yml --ref main -R "${{ github.repository }}" && echo ANTENNA_COLLECTOR_STARTED
