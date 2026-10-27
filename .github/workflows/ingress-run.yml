@@ -1,0 +1,60 @@
+# INGRESS run (mind-like pattern ingress; operator's separate experiment on THE ANTENNA's data, code 35ad208, sealed 27 Oct 20:36 UTC as
+# antenna-live seal/rev3): once THE ANTENNA has committed results/inputs.json; same inputs, its own results in ingress/results.
+name: INGRESS run
+on:
+  schedule:
+    - cron: '53 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: ingress-run
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 355
+    steps:
+      - name: due
+        id: w
+        run: |
+          if [ "$(date -u +%s)" -lt "$(date -u -d '2026-11-04T06:00:00Z' +%s)" ]; then echo go=no >> "$GITHUB_OUTPUT"; else echo go=yes >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/checkout@v4
+        if: steps.w.outputs.go == 'yes'
+        with: { ref: antenna-live, path: live }
+      - name: already done?
+        id: d
+        if: steps.w.outputs.go == 'yes'
+        run: if [ -e live/results/RESULT.txt ] && [ -e live/results/inputs.json ] && [ ! -e live/ingress/results/RESULT.txt ]; then echo go=yes >> "$GITHUB_OUTPUT"; else echo go=no >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/checkout@v4
+        if: steps.d.outputs.go == 'yes'
+        with: { ref: 35ad2088773b80a013ac7d2a8ffae33ed3569355, path: code }
+      - uses: actions/checkout@v4
+        if: steps.d.outputs.go == 'yes'
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        if: steps.d.outputs.go == 'yes'
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        if: steps.d.outputs.go == 'yes'
+        with: { node-version: '22' }
+      - name: beacon, travellers, analysis, commit
+        if: steps.d.outputs.go == 'yes'
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+        run: |
+          set -euo pipefail
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          mkdir -p live/ingress/results out/canonical out/ccru out/full
+          npx --yes tsx@4.23.15 --version
+          cd code
+          for g in canonical ccru full; do for w in 1 2 3 4 5 6 7 8; do for k in 0 1 2 3 4 5 6 7 8; do echo $g S05W$w $k; done; done; done |
+            xargs -P 4 -n 3 sh -c 'npx --yes tsx@4.23.15 experiments/antenna/antenna.mjs "$PWD/experiments/studio/runtime_mirror" experiments/antenna/start_states.json "$0" ../live/results/inputs.json "$1" "$2" ../out/"$0"/"$1"_"$2".json'
+          cd ..
+          test "$(ls out/*/*.json | wc -l)" = 216
+          python -I code/experiments/antenna/analysis.py out live/results/inputs.json code/experiments/antenna/entity_names.json | tee live/ingress/results/RESULT.txt
+          python -c "import json,glob; [json.dump([json.load(open(f)) for f in sorted(glob.glob('out/'+g+'/*.json'))], open('live/ingress/results/travellers_'+g+'.json','w')) for g in ('canonical','ccru','full')]"
+          cd live && git add -A
+          git -c user.name='antenna' -c user.email='antenna@users.noreply.github.com' commit -qm 'INGRESS result'
+          for i in 1 2 3 4; do git push -q origin HEAD:antenna-live && exit 0; sleep $((2**i)); git pull -q --rebase origin antenna-live; done; exit 1
