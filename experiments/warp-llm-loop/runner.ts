@@ -73,11 +73,11 @@ async function ollamaDigest(): Promise<string> {
 async function generate(previousCode: string, feedback: string, generation: number): Promise<string> {
   const system = [
     'You are a code generation component in a bounded engineering loop.',
-    'Write a Python module that defines primes_upto(n: int) -> list[int].',
-    'It must return every prime p with 2 <= p <= n, in ascending order.',
+    'Write a Python module whose required public function is named exactly primes_upto(n: int) -> list[int].',
+    'The module must return every prime p with 2 <= p <= n, in ascending order.',
     'Use only the Python standard library. Do not read files, access the network, spawn processes, or perform side effects.',
     'The module will be executed in a disposable, network-disabled container with strict time and memory limits.',
-    'Return the entire replacement Python module as raw code, with no markdown fences or explanation.',
+    'Return only the complete replacement Python module. Do not include benchmark harnesses, test invocations, printed examples, markdown fences, prose, or explanation.',
   ].join(' ');
   const user = [
     `Goal: implement and improve a prime sieve for n=${MAX_N}.`,
@@ -106,7 +106,12 @@ async function generate(previousCode: string, feedback: string, generation: numb
     }
     const body = await response.json() as { message?: { content?: string }; model?: string; prompt_eval_count?: number; eval_count?: number };
     invariant(typeof body.message?.content === 'string' && body.message.content.trim(), 'Ollama returned no code');
-    return body.message.content.trim().replace(/^```(?:python)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+    const text = body.message.content.trim();
+    const fenced = [...text.matchAll(/```(?:python)?\s*([\s\S]*?)```/gi)].map(m => m[1].trim());
+    // Local instruct models often wrap code in explanatory prose despite the
+    // raw-code contract. Extract the code block deterministically before execution.
+    const codeBlock = fenced.find(block => /\bdef\s+(?:primes_upto|prime_sieve_up_to)\s*\(/.test(block)) ?? fenced[0];
+    return (codeBlock ?? text.replace(/^```(?:python)?\s*/i, '').replace(/\s*```\s*$/, '')).trim();
   } finally {
     clearTimeout(timer);
   }
