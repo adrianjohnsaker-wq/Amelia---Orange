@@ -1,0 +1,61 @@
+# THE ANTENNA amendment 2: one RFC3161 token over the amendment, the new code and the workflows, before 28 Oct 2026 00:00 UTC.
+name: ANTENNA amendment 2 seal (one-shot, before the window)
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/antenna-am2-seal.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: antenna-am2-seal
+  cancel-in-progress: false
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: main }
+      - uses: actions/checkout@v4
+        with: { ref: 8b0141d585531c5619712e869b92a258bc74b182, path: code }
+      - uses: actions/checkout@v4
+        with: { ref: antenna-live, path: live }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: seal amendment 2 before the window, verified
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ -e live/seal/am2/ANTENNA_AM2_BUNDLE.json ]; then echo ANTENNA_AM2_ALREADY_SEALED; exit 0; fi
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          mkdir -p live/seal/am2
+          ( cd code && npx --yes tsx@4.23.15 experiments/numogram/verify.mjs "$PWD/experiments/studio/runtime_mirror" | tee ../live/seal/am2/NUMOGRAM_VERIFY.txt ) && grep -q CCRU_NUMOGRAM_VERIFIED live/seal/am2/NUMOGRAM_VERIFY.txt
+          python - <<'PY'
+          import hashlib, json, pathlib, datetime
+          from drift1a_c1.beacon import Sealer
+          sha = lambda p: hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          files = ['code/experiments/antenna/' + f for f in ('REGISTRATION.md', 'AMENDMENT_1.md', 'AMENDMENT_2.md', 'collect.py', 'prepare.py', 'antenna.mjs', 'analysis.py', 'scan.mjs', 'start_states.json', 'entity_names.json')] + ['code/experiments/numogram/' + f for f in ('CCRUNumogram.ts', 'verify.mjs')]
+          files += ['main/.github/workflows/antenna-' + f + '.yml' for f in ('seal', 'am1-seal', 'am2-seal', 'collect', 'run')]
+          bundle = {'schema': 'ANTENNA_AM2_SEAL_V1', 'codeCommit': '8b0141d585531c5619712e869b92a258bc74b182',
+                    'previousCodeCommit': 'f0e045f592c9369458c146bb5989dd1348572d65', 'collectorCodeCommit': 'f0e045f592c9369458c146bb5989dd1348572d65',
+                    'originalSealBundleSHA256': sha('live/seal/ANTENNA_SEAL_BUNDLE.json'), 'am1BundleSHA256': sha('live/seal/am1/ANTENNA_AM1_BUNDLE.json'), 'thirdArm': 'full CCRU Numogram', 'scienceChanged': 'third arm added; Bonferroni 0.05/135; k unchanged at 12',
+                    'sourceSHA256': [{'path': f.split('/', 1)[1], 'sha256': sha(f)} for f in files]}
+          p = pathlib.Path('live/seal/am2'); (p / 'ANTENNA_AM2_BUNDLE.json').write_text(json.dumps(bundle, sort_keys=True, indent=2) + '\n')
+          imprint = sha(p / 'ANTENNA_AM2_BUNDLE.json')
+          before = datetime.datetime(2026, 10, 28, tzinfo=datetime.timezone.utc).timestamp()
+          Sealer().seal(p / 'token', imprint, before)
+          assert Sealer().verify(p / 'token', imprint, before)['status'] == 'PASS'
+          print('ANTENNA_AM2_SEALED_BEFORE_WINDOW', imprint)
+          PY
+          cd live && git add -A
+          git -c user.name='antenna' -c user.email='antenna@users.noreply.github.com' commit -qm 'THE ANTENNA amendment 2: seal before the window'
+          for i in 1 2 3 4; do git push -q origin HEAD:antenna-live && exit 0; sleep $((2**i)); git pull -q --rebase origin antenna-live; done; exit 1

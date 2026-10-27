@@ -1,4 +1,4 @@
-# THE ANTENNA run: once, after 4 Nov 2026 06:00 UTC: beacon, 72 travellers x 2 Numograms, committed analysis.
+# THE ANTENNA run: once, after 4 Nov 2026 06:00 UTC: beacon, 72 travellers x 3 Numograms (amendment 2), committed analysis.
 name: ANTENNA run
 on:
   schedule:
@@ -12,7 +12,7 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-24.04
-    timeout-minutes: 340
+    timeout-minutes: 355
     steps:
       - name: due
         id: w
@@ -27,7 +27,7 @@ jobs:
         run: if [ -e live/results/RESULT.txt ]; then echo go=no >> "$GITHUB_OUTPUT"; else echo go=yes >> "$GITHUB_OUTPUT"; fi
       - uses: actions/checkout@v4
         if: steps.d.outputs.go == 'yes'
-        with: { ref: f0e045f592c9369458c146bb5989dd1348572d65, path: code }
+        with: { ref: 8b0141d585531c5619712e869b92a258bc74b182, path: code }
       - uses: actions/checkout@v4
         if: steps.d.outputs.go == 'yes'
         with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
@@ -45,16 +45,16 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
-          mkdir -p live/results out/canonical out/ccru
+          mkdir -p live/results out/canonical out/ccru out/full
           python code/experiments/antenna/prepare.py live live/results/inputs.json
           npx --yes tsx@4.23.15 --version
           cd code
-          for g in canonical ccru; do for w in 1 2 3 4 5 6 7 8; do for k in 0 1 2 3 4 5 6 7 8; do echo $g S05W$w $k; done; done; done |
+          for g in canonical ccru full; do for w in 1 2 3 4 5 6 7 8; do for k in 0 1 2 3 4 5 6 7 8; do echo $g S05W$w $k; done; done; done |
             xargs -P 4 -n 3 sh -c 'npx --yes tsx@4.23.15 experiments/antenna/antenna.mjs "$PWD/experiments/studio/runtime_mirror" experiments/antenna/start_states.json "$0" ../live/results/inputs.json "$1" "$2" ../out/"$0"/"$1"_"$2".json'
           cd ..
-          test "$(ls out/*/*.json | wc -l)" = 144
+          test "$(ls out/*/*.json | wc -l)" = 216
           python -I code/experiments/antenna/analysis.py out live/results/inputs.json code/experiments/antenna/entity_names.json | tee live/results/RESULT.txt
-          python -c "import json,glob; [json.dump([json.load(open(f)) for f in sorted(glob.glob('out/'+g+'/*.json'))], open('live/results/travellers_'+g+'.json','w')) for g in ('canonical','ccru')]"
+          python -c "import json,glob; [json.dump([json.load(open(f)) for f in sorted(glob.glob('out/'+g+'/*.json'))], open('live/results/travellers_'+g+'.json','w')) for g in ('canonical','ccru','full')]"
           cd live && git add -A
           git -c user.name='antenna' -c user.email='antenna@users.noreply.github.com' commit -qm 'THE ANTENNA result'
           for i in 1 2 3 4; do git push -q origin HEAD:antenna-live && exit 0; sleep $((2**i)); git pull -q --rebase origin antenna-live; done; exit 1
