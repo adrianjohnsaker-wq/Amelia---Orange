@@ -1,0 +1,61 @@
+# THE ANTENNA operator revision (consolidated protocol): one RFC3161 token over the amendment, the new code and the workflows, before 28 Oct 2026 00:00 UTC.
+name: ANTENNA operator revision (consolidated protocol) seal (one-shot, before the window)
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/antenna-rev3-seal.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: antenna-rev3-seal
+  cancel-in-progress: false
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: main }
+      - uses: actions/checkout@v4
+        with: { ref: 35ad2088773b80a013ac7d2a8ffae33ed3569355, path: code }
+      - uses: actions/checkout@v4
+        with: { ref: antenna-live, path: live }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: seal operator revision (consolidated protocol) before the window, verified
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ -e live/seal/rev3/ANTENNA_REV3_BUNDLE.json ]; then echo ANTENNA_REV3_ALREADY_SEALED; exit 0; fi
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          mkdir -p live/seal/rev3
+          ( cd code && npx --yes tsx@4.23.15 experiments/numogram/verify.mjs "$PWD/experiments/studio/runtime_mirror" | tee ../live/seal/rev3/NUMOGRAM_VERIFY.txt ) && grep -q CCRU_NUMOGRAM_VERIFIED live/seal/rev3/NUMOGRAM_VERIFY.txt
+          python - <<'PY'
+          import hashlib, json, pathlib, datetime
+          from drift1a_c1.beacon import Sealer
+          sha = lambda p: hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          files = ['code/experiments/antenna/' + f for f in ('REGISTRATION.md', 'AMENDMENT_1.md', 'AMENDMENT_2.md', 'collect.py', 'prepare.py', 'antenna.mjs', 'analysis.py', 'scan.mjs', 'start_states.json', 'entity_names.json')] + ['code/experiments/numogram/' + f for f in ('CCRUNumogram.ts', 'verify.mjs')]
+          files += ['main/.github/workflows/antenna-' + f + '.yml' for f in ('seal', 'am1-seal', 'am2-seal', 'rev3-seal', 'collect', 'run')]
+          bundle = {'schema': 'ANTENNA_REV3_SEAL_V1', 'codeCommit': '35ad2088773b80a013ac7d2a8ffae33ed3569355',
+                    'previousCodeCommit': '8b0141d585531c5619712e869b92a258bc74b182', 'operatorRevisionCommits': ['035609f', '35ad208'], 'runWorkflowRepinCommits': ['dcc2b3f', '524ee7c'], 'collectorCodeCommit': 'f0e045f592c9369458c146bb5989dd1348572d65',
+                    'originalSealBundleSHA256': sha('live/seal/ANTENNA_SEAL_BUNDLE.json'), 'am1BundleSHA256': sha('live/seal/am1/ANTENNA_AM1_BUNDLE.json'), 'am2BundleSHA256': sha('live/seal/am2/ANTENNA_AM2_BUNDLE.json'), 'scienceChanged': 'operator rewording of the registration (mind-like pattern ingress, Levin 2026) and the decision label; criteria, computation and thresholds unchanged',
+                    'sourceSHA256': [{'path': f.split('/', 1)[1], 'sha256': sha(f)} for f in files]}
+          p = pathlib.Path('live/seal/rev3'); (p / 'ANTENNA_REV3_BUNDLE.json').write_text(json.dumps(bundle, sort_keys=True, indent=2) + '\n')
+          imprint = sha(p / 'ANTENNA_REV3_BUNDLE.json')
+          before = datetime.datetime(2026, 10, 28, tzinfo=datetime.timezone.utc).timestamp()
+          Sealer().seal(p / 'token', imprint, before)
+          assert Sealer().verify(p / 'token', imprint, before)['status'] == 'PASS'
+          print('ANTENNA_REV3_SEALED_BEFORE_WINDOW', imprint)
+          PY
+          cd live && git add -A
+          git -c user.name='antenna' -c user.email='antenna@users.noreply.github.com' commit -qm 'THE ANTENNA operator revision (consolidated protocol): seal before the window'
+          for i in 1 2 3 4; do git push -q origin HEAD:antenna-live && exit 0; sleep $((2**i)); git pull -q --rebase origin antenna-live; done; exit 1
