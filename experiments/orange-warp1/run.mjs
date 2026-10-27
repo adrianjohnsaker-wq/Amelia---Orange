@@ -1,0 +1,84 @@
+import { createHash, randomInt } from 'node:crypto';
+import { readFileSync, writeFileSync, renameSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { AmeliaNumogramSubstrateRuntime } from '../../src/substrate/ameliaNumogramSubstrateRuntime.ts';
+import { CANONICAL_GATES, INITIAL_ZONES } from '../../src/ai/numogram/AmeliaQabbalaInterface.ts';
+
+const baseDir = new URL('.', import.meta.url);
+const inputBytes = readFileSync(new URL('./input-tapes.json', baseDir));
+const inputObj = JSON.parse(inputBytes);
+if (inputObj.schema !== 'ORANGE_WARP1_INPUTS_V1' || inputObj.tapes.length !== 512 || inputObj.tapes.some(t => t.length !== 30)) {
+  throw new Error('invalid frozen input tape');
+}
+const sourceCommit = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+if (sourceCommit !== '0c4b7c63b29a13eea3d556b5e02aa7bd87a545f3') throw new Error('unexpected source commit ' + sourceCommit);
+const key = g => String(g.source) + '>' + String(g.target);
+const ingress = ['2>3', '5>6'];
+for (const edge of ingress) if (!CANONICAL_GATES.some(g => key(g) === edge)) throw new Error('missing ingress ' + edge);
+const warpOffGates = CANONICAL_GATES.filter(g => !ingress.includes(key(g)));
+
+function reachesWarp(gates) {
+  const seen = new Set([0]), q = [0];
+  while (q.length) {
+    const at = q.shift();
+    for (const g of gates) if (g.source === at && !seen.has(g.target)) {
+      seen.add(g.target);
+      q.push(g.target);
+    }
+  }
+  return seen.has(3) || seen.has(6);
+}
+if (!reachesWarp(CANONICAL_GATES) || reachesWarp(warpOffGates)) throw new Error('condition reachability check failed');
+
+const lineZones = [1, 2, 4, 8, 7, 5];
+const initialActivation = lineZones.map(z => INITIAL_ZONES[z].activation);
+function runArm(gates, tape) {
+  const runtime = new AmeliaNumogramSubstrateRuntime();
+  runtime.getQabbala().setGates(gates);
+  const trace = [];
+  let response = null;
+  for (let i = 0; i < 30; i++) {
+    const snap = runtime.step(tape[i]);
+    const activations = lineZones.map(z => snap.zones[z].activation);
+    trace.push({
+      step: i + 1,
+      inputToken: tape[i],
+      from: snap.lastTransition.from,
+      to: snap.lastTransition.to,
+      transitionDigest: snap.lastTransition.digest,
+      lineActivations: activations,
+      memoryHistoryLength: snap.memoryHistoryLength,
+      memoryHeadDigest: snap.memoryHeadDigest
+    });
+    if (i === 29) response = activations.map((a, j) => a >= initialActivation[j] ? 1 : 0).join('');
+  }
+  return { response, trace };
+}
+
+const records = [];
+for (let pair = 0; pair < 512; pair++) {
+  const order = randomInt(2) === 0 ? ['on', 'off'] : ['off', 'on'];
+  const arms = {};
+  for (const arm of order) arms[arm] = runArm(arm === 'on' ? CANONICAL_GATES : warpOffGates, inputObj.tapes[pair]);
+  records.push({ pair, order, arms });
+  if ((pair + 1) % 32 === 0) console.log('completed ' + (pair + 1) + '/512 pairs');
+}
+const bytes = Buffer.from(records.map(x => JSON.stringify(x)).join('\n') + '\n');
+const outputPath = new URL('./outputs.jsonl', baseDir);
+const tempPath = new URL('./outputs.jsonl.tmp', baseDir);
+writeFileSync(tempPath, bytes, { mode: 0o444 });
+renameSync(tempPath, outputPath);
+const outputSha256 = createHash('sha256').update(bytes).digest('hex');
+const manifest = {
+  schema: 'ORANGE_WARP1_RUN_MANIFEST_V1',
+  sourceCommit,
+  nPairs: 512,
+  stepsPerArm: 30,
+  inputTapesSha256: createHash('sha256').update(inputBytes).digest('hex'),
+  responseMap: 'zones=[1,2,4,8,7,5], bit=finalActivation>=INITIAL_ZONES.activation after 30 steps',
+  warpOffRemovedEdges: ingress,
+  outputSha256
+};
+const manifestBytes = Buffer.from(JSON.stringify(manifest, null, 2) + '\n');
+writeFileSync(new URL('./completion-manifest.json', baseDir), manifestBytes, { mode: 0o444 });
+console.log(JSON.stringify({ nPairs: records.length, outputSha256, manifestSha256: createHash('sha256').update(manifestBytes).digest('hex') }));
