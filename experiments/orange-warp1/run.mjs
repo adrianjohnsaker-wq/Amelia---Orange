@@ -59,7 +59,14 @@ function runArm(gates, tape) {
     });
     if (i === 29) response = activations.map((a, j) => a >= initialActivation[j] ? 1 : 0).join('');
   }
-  return { response, trace };
+  return { response, trace, warpVisited: trace.some(x => [3, 6].includes(x.from) || [3, 6].includes(x.to)) };
+}
+
+// Pre-run determinism audit on a fixed target-independent tape.
+for (const [name, gates] of [['on', CANONICAL_GATES], ['off', warpOffGates]]) {
+  const first = runArm(gates, tapes[0]);
+  const replay = runArm(gates, tapes[0]);
+  if (JSON.stringify(first) !== JSON.stringify(replay)) throw new Error(name + ' replay mismatch');
 }
 
 const records = [];
