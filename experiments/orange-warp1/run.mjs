@@ -68,6 +68,22 @@ for (const [name, gates] of [['on', CANONICAL_GATES], ['off', warpOffGates]]) {
   const replay = runArm(gates, tapes[0]);
   if (JSON.stringify(first) !== JSON.stringify(replay)) throw new Error(name + ' replay mismatch');
 }
+if (process.argv.includes('--preflight')) {
+  const on = runArm(CANONICAL_GATES, tapes[0]);
+  const off = runArm(warpOffGates, tapes[0]);
+  if (off.warpVisited) throw new Error('Warp-off reached the Warp');
+  console.log(JSON.stringify({
+    status: 'PREFLIGHT_PASS',
+    sourceCommit,
+    inputSeedSha256: createHash('sha256').update(seedBytes).digest('hex'),
+    derivedInputTapesSha256: createHash('sha256').update(inputBytes).digest('hex'),
+    replay: 'byte-identical in both arms',
+    warpOffVisitedWarp: off.warpVisited,
+    warpOnVisitedWarp: on.warpVisited,
+    responseMap: 'zones=[1,2,4,8,7,5], bit=finalActivation>=INITIAL_ZONES.activation'
+  }));
+  process.exit(0);
+}
 
 const records = [];
 for (let pair = 0; pair < 512; pair++) {
