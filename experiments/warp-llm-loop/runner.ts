@@ -99,6 +99,7 @@ async function generate(verifiedCode: string, failedCode: string, feedback: stri
     'If a verified reference module is supplied, preserve its correctness first. A failed candidate is diagnostic evidence, not a replacement starting point.',
     'On a correctness failure, repair the specific reported defect and do not optimize or redesign unrelated parts. On an exception, fix the traceback line and stated cause.',
     'Do not use list deletion or resizing to mark sieve composites. Keep the Boolean table length exactly n+1; mark composites by assigning False/True at indices without changing table length.',
+    'If an IndexError occurs, do not add chained or speculative writes. The only composite-marking assignment should be table[multiple] = False inside range(p*p, n+1, p).',
     'Only attempt a performance optimization when feedback explicitly says the current candidate passed correctness. If a proposed optimization fails, return to the verified reference and make one small change.',
     `Previous run feedback:\n${feedback}`,
     verifiedCode ? `VERIFIED REFERENCE MODULE (known to pass every locked correctness input; preserve this behavior):\n${verifiedCode}` : 'No verified module exists yet. Create a simple correct implementation first.',
@@ -234,6 +235,10 @@ function failureClass(exitCode: number | null, stdout: string, stderr: string, c
 }
 
 function actionableDiagnosis(stderr: string): string {
+  if (/IndexError: list assignment index out of range/.test(stderr)) {
+    const frame = stderr.match(/File "\/candidate\.py", line \d+\n\s*(.*)/);
+    return `Diagnosis: the candidate indexed past the sieve table on ${frame?.[1]?.trim() ?? 'the assignment shown in the traceback'}. Keep the table at exactly n+1 entries; do not delete/slice-delete entries or chain assignments such as table[multiple + p]. For each prime p, only set table[multiple] = False for multiple in range(p*p, n+1, p).`;
+  }
   if (/TypeError: ['"]bool['"] object is not subscriptable/.test(stderr)) {
     const frame = stderr.match(/File "\/candidate\.py", line \d+\n\s*(.*)/);
     return `Diagnosis: the traceback points to ${frame?.[1]?.trim() ?? 'the return expression'}. enumerate(table) yields (index, bool); the second value is already a boolean. Return [i for i, flag in enumerate(table) if flag], without writing flag[i].`;
