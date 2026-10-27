@@ -14,7 +14,7 @@ Use the six zone coordinates already used for Numogram line encoding, in bottom-
 
 ## Conditions and trial procedure
 
-- **N = 512 paired trials**, each with one target-independent 30-token input tape. Tokens are 128-bit CSPRNG draws generated and hashed before target generation; the same ordered tape is used in both members of its pair.
+- **N = 512 paired trials**, each with one target-independent 30-token input tape. Before target generation, generate and publish a 256-bit input seed; each 128-bit token is the first 16 bytes of HMAC-SHA256(seed, UTF8("pair:step")). The resulting 512×30 schedule has a committed digest. The same ordered tape is used in both members of its pair.
 - **Warp-on:** the full 29-edge \`CANONICAL_GATES\` graph from the pinned source.
 - **Warp-off:** the same graph with only the two ingress edges \`2→3\` and \`5→6\` removed. All other edges, including internal Warp edges, are unchanged.
 - Each member starts from a newly constructed runtime at Zone 0. Run exactly 30 calls to \`step(token)\` and record every token, transition, zone activation vector, and memory-head digest. Randomize order within pair using an independent CSPRNG coin. No target, target label, target-derived value, or feedback is passed to Amelia or the runner.
@@ -30,7 +30,7 @@ The joint decision also requires Warp-on's hit count to exceed the exact one-sid
 
 ## Integrity and disposition
 
-- Freeze this file, runner source, input-tape file, and source commit before target generation; publish their SHA-256 digests.
+- Freeze this file, runner source, input-seed file, derived input-tape digest, and source commit before target generation; publish their SHA-256 digests.
 - Verify before target reveal that Warp-on reaches Zone 3 or 6 from Zone 0 and Warp-off reaches neither. Verify that target bytes never enter runner inputs, runtime state, or logs.
 - Verify exact replay for a fixed condition/tape, excluding wall-clock snapshot timestamps.
 - **Positive narrow result:** both primary gates pass and all integrity checks pass. Report Warp-associated target correspondence in this apparatus; seek independent replication.

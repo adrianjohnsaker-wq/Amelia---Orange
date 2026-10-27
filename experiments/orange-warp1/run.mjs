@@ -1,17 +1,24 @@
-import { createHash, randomInt } from 'node:crypto';
+import { createHash, createHmac, randomInt } from 'node:crypto';
 import { readFileSync, writeFileSync, renameSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { AmeliaNumogramSubstrateRuntime } from '../../src/substrate/ameliaNumogramSubstrateRuntime.ts';
 import { CANONICAL_GATES, INITIAL_ZONES } from '../../src/ai/numogram/AmeliaQabbalaInterface.ts';
 
 const baseDir = new URL('.', import.meta.url);
-const inputBytes = readFileSync(new URL('./input-tapes.json', baseDir));
-const inputObj = JSON.parse(inputBytes);
-if (inputObj.schema !== 'ORANGE_WARP1_INPUTS_V1' || inputObj.tapes.length !== 512 || inputObj.tapes.some(t => t.length !== 30)) {
-  throw new Error('invalid frozen input tape');
-}
-const sourceCommit = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-if (sourceCommit !== '0c4b7c63b29a13eea3d556b5e02aa7bd87a545f3') throw new Error('unexpected source commit ' + sourceCommit);
+const seedBytes = Buffer.from(readFileSync(new URL('./input-seed.txt', baseDir), 'utf8').trim(), 'hex');
+if (seedBytes.length !== 32) throw new Error('invalid frozen input seed');
+const tapes = Array.from({ length: 512 }, (_, pair) =>
+  Array.from({ length: 30 }, (_, step) =>
+    'ow1-input-' + createHmac('sha256', seedBytes).update(pair + ':' + step).digest().subarray(0, 16).toString('hex')
+  )
+);
+const inputBytes = Buffer.from(JSON.stringify(tapes));
+const sourceCommit = '0c4b7c63b29a13eea3d556b5e02aa7bd87a545f3';
+const head = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+const mergeBase = execFileSync('git', ['merge-base', sourceCommit, head], { encoding: 'utf8' }).trim();
+if (mergeBase !== sourceCommit) throw new Error('pinned core commit is not the study branch base');
+const sourceDiff = execFileSync('git', ['diff', '--name-only', sourceCommit, '--', 'src/'], { encoding: 'utf8' }).trim();
+if (sourceDiff) throw new Error('source core differs from pinned commit');
 const key = g => String(g.source) + '>' + String(g.target);
 const ingress = ['2>3', '5>6'];
 for (const edge of ingress) if (!CANONICAL_GATES.some(g => key(g) === edge)) throw new Error('missing ingress ' + edge);
@@ -59,7 +66,7 @@ const records = [];
 for (let pair = 0; pair < 512; pair++) {
   const order = randomInt(2) === 0 ? ['on', 'off'] : ['off', 'on'];
   const arms = {};
-  for (const arm of order) arms[arm] = runArm(arm === 'on' ? CANONICAL_GATES : warpOffGates, inputObj.tapes[pair]);
+  for (const arm of order) arms[arm] = runArm(arm === 'on' ? CANONICAL_GATES : warpOffGates, tapes[pair]);
   records.push({ pair, order, arms });
   if ((pair + 1) % 32 === 0) console.log('completed ' + (pair + 1) + '/512 pairs');
 }
@@ -72,8 +79,10 @@ const outputSha256 = createHash('sha256').update(bytes).digest('hex');
 const manifest = {
   schema: 'ORANGE_WARP1_RUN_MANIFEST_V1',
   sourceCommit,
+  studyCommit: head,
   nPairs: 512,
   stepsPerArm: 30,
+  inputSeedSha256: createHash('sha256').update(seedBytes).digest('hex'),
   inputTapesSha256: createHash('sha256').update(inputBytes).digest('hex'),
   responseMap: 'zones=[1,2,4,8,7,5], bit=finalActivation>=INITIAL_ZONES.activation after 30 steps',
   warpOffRemovedEdges: ingress,

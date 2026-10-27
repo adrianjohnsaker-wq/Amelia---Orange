@@ -3,16 +3,11 @@ import { writeFileSync } from 'node:fs';
 
 const N = 512;
 const STEPS = 30;
-const tapes = Array.from({ length: N }, (_, pair) =>
-  Array.from({ length: STEPS }, (_, step) =>
-    'ow1-input-' + pair + '-' + step + '-' + randomBytes(16).toString('hex')
-  )
-);
-const bytes = Buffer.from(JSON.stringify({ schema: 'ORANGE_WARP1_INPUTS_V1', tapes }));
-writeFileSync(new URL('./input-tapes.json', import.meta.url), bytes, { mode: 0o444 });
+const seed = randomBytes(32);
+const bytes = Buffer.from(seed.toString('hex') + '\n');
+writeFileSync(new URL('./input-seed.txt', import.meta.url), bytes, { mode: 0o444 });
 console.log(JSON.stringify({
   n: N,
   steps_per_tape: STEPS,
-  bytes: bytes.length,
-  sha256: createHash('sha256').update(bytes).digest('hex')
+  seedSha256: createHash('sha256').update(seed).digest('hex')
 }));
