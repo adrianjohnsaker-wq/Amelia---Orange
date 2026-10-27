@@ -202,18 +202,51 @@ async function main() {
   const modelDigest = await ollamaDigest();
   const rt = makeWarpRuntime();
   const runDir = mkdtempSync(join(tmpdir(), 'warp-llm-'));
+  mkdirSync(OUTPUT_DIR, { recursive: true });
   const iterations: Iteration[] = [];
+  const modelErrors: Array<{ generation: number; error: string }> = [];
   let currentCode = '';
   let feedback = 'No previous attempt.';
   let bestCode = '';
   let bestElapsed: number | null = null;
   let bestCorrect = false;
   let previousBestElapsed = Number.POSITIVE_INFINITY;
+  let terminationReason = 'max_generations_reached';
+  const saveResults = (complete: boolean) => {
+    if (bestCode) writeFileSync(join(OUTPUT_DIR, 'best_solution.py'), bestCode);
+    const result = {
+      protocol: 'WARP-LLM-ENGINEERING-v1',
+      classification: 'Bounded engineering demonstration; not a confirmatory test of a Warp-specific persistent development effect.',
+      sourceCommit: SOURCE_COMMIT,
+      model: MODEL,
+      modelDigest,
+      workflowCommit: process.env.GITHUB_SHA ?? null,
+      runnerSha256: process.env.RUNNER_SHA256 ?? null,
+      executorImage: DOCKER_IMAGE,
+      executionContract: 'Ollama generates full candidate source at Zone 3; canonical 3->6 moves to execution at Zone 6; isolated network-disabled Docker evaluates it; feedback and outcome enter Amelia memory; adapter 6->3 returns control to generation.',
+      parameters: { maxGenerations: MAX_GENERATIONS, queries: QUERIES, benchmarkRepeats: BENCHMARK_REPEATS, maxExecutorMs: MAX_EXEC_MS, dockerMemory: '384m', dockerCpus: 1, dockerNetwork: 'none' },
+      complete,
+      terminationReason,
+      modelErrors,
+      best: { correctness: bestCorrect, elapsedMs: bestElapsed, sourceSha256: bestCode ? createHash('sha256').update(bestCode).digest('hex') : null },
+      runtimeState: rt.exportState(),
+      iterations,
+    };
+    writeFileSync(join(OUTPUT_DIR, 'results.json'), JSON.stringify(result, null, 2));
+  };
   try {
     for (let generation = 1; generation <= MAX_GENERATIONS; generation++) {
       invariant(rt.getCurrentZone() === 3, `generator expected at Zone 3, got ${rt.getCurrentZone()}`);
-      currentCode = await generate(currentCode, feedback, generation);
+      try {
+        currentCode = await generate(currentCode, feedback, generation);
+      } catch (error) {
+        terminationReason = 'model_generation_failed';
+        modelErrors.push({ generation, error: String(error) });
+        console.error(JSON.stringify({ generation, modelError: String(error), retainedBest: bestCorrect }));
+        break;
+      }
       const codeSha256 = createHash('sha256').update(currentCode).digest('hex');
+      writeFileSync(join(OUTPUT_DIR, `candidate_${String(generation).padStart(2, '0')}.py`), currentCode);
       const candidatePath = join(runDir, `candidate-${generation}.py`);
       writeFileSync(candidatePath, currentCode, { mode: 0o600 });
       chmodSync(candidatePath, 0o444);
@@ -291,26 +324,10 @@ async function main() {
       feedback = feedbackParts.join('\n');
       iterations.push({ generation, transitionIntoExecution: toExecutor.lastTransition, transitionBackToGeneration: backToGenerator.lastTransition, codeSha256, candidateSource: currentCode, correctness, elapsedMs: benchmarkMedianMs, executorWallMs: evalResult.elapsedMs, benchmarkSamplesMs, feedback });
       console.log(JSON.stringify({ generation, zoneLoop: `${toExecutor.lastTransition?.from}->${toExecutor.lastTransition?.to}->${backToGenerator.lastTransition?.to}`, codeSha256, correctness, functionMedianMs: benchmarkMedianMs, executorWallMs: evalResult.elapsedMs, bestCorrect, bestElapsed }));
+      saveResults(false);
     }
 
-    mkdirSync(OUTPUT_DIR, { recursive: true });
-    if (bestCode) writeFileSync(join(OUTPUT_DIR, 'best_solution.py'), bestCode);
-    const result = {
-      protocol: 'WARP-LLM-ENGINEERING-v1',
-      classification: 'Bounded engineering demonstration; not a confirmatory test of a Warp-specific persistent development effect.',
-      sourceCommit: SOURCE_COMMIT,
-      model: MODEL,
-      modelDigest,
-      workflowCommit: process.env.GITHUB_SHA ?? null,
-      runnerSha256: process.env.RUNNER_SHA256 ?? null,
-      executorImage: DOCKER_IMAGE,
-      executionContract: 'Ollama generates full candidate source at Zone 3; canonical 3->6 moves to execution at Zone 6; isolated network-disabled Docker evaluates it; feedback and outcome enter Amelia memory; adapter 6->3 returns control to generation.',
-      parameters: { maxGenerations: MAX_GENERATIONS, queries: QUERIES, benchmarkRepeats: BENCHMARK_REPEATS, maxExecutorMs: MAX_EXEC_MS, dockerMemory: '384m', dockerCpus: 1, dockerNetwork: 'none' },
-      best: { correctness: bestCorrect, elapsedMs: bestElapsed, sourceSha256: bestCode ? createHash('sha256').update(bestCode).digest('hex') : null },
-      runtimeState: rt.exportState(),
-      iterations,
-    };
-    writeFileSync(join(OUTPUT_DIR, 'results.json'), JSON.stringify(result, null, 2));
+    saveResults(true);
     invariant(bestCorrect, `no correct candidate after ${MAX_GENERATIONS} generations; full failure trace saved`);
   } finally {
     rmSync(runDir, { recursive: true, force: true });

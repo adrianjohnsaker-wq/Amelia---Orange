@@ -10,7 +10,7 @@
 - The pinned source has a canonical open gate 3→6 and no canonical 6→3 gate; Zone 6 has no canonical outgoing gate.
 - The runner uses the native `AmeliaNumogramSubstrateRuntime` and canonical 3→6 gate. It adds one in-memory adapter, 6→3, solely to return execution feedback to generation. It does not edit canonical source files.
 - Zone 3 is the LLM generation state. Zone 6 is code execution/evaluation. After evaluation, its result is appended to Orange active memory and the adapter returns the runtime to Zone 3. The evaluation stderr/stdout and score are also included in the next Ollama prompt.
-- Runner SHA-256 for this implementation: `571bae01f6ab1e89239120e97e8c7e17721552c6d4d8decc1f4d0be5df27d879`.
+- Runner SHA-256 for this implementation: `fe12fd007e25697e0f31ad90fed06694907c9a2ed30ffbab59fb806e55241769`.
 
 ## Frozen engineering task
 
@@ -24,7 +24,7 @@ Generated code runs only in a disposable Docker container with `--network=none`,
 
 ## Output and interpretation
 
-The workflow runs a single bounded loop and uploads all iterations, candidate hashes, transition records, correctness results, actionable failure diagnoses, function timing samples, best correct candidate, model digest, and executor image digest. The prompt specifies the Sieve of Eratosthenes and the function contract. When a candidate fails, the runner adds a concise diagnosis to the raw traceback (for example, a zero divisor means the candidate must exclude sentinel 0 and 1); it still returns the unchanged evaluator output. The engineering objective is achieved if at least one generated candidate passes the fixed correctness evaluator. Runtime optimization is descriptive. No result is tuned or reclassified to support a preferred theoretical claim.
+The workflow checkpoints each generated candidate and result after every evaluation, so a later inference timeout cannot erase earlier work. It uploads all iterations, candidate hashes, transition records, correctness results, actionable failure diagnoses, function timing samples, best correct candidate, model digest, executor image digest, and any model error. The prompt specifies the Sieve of Eratosthenes and the function contract. When a candidate fails, the runner adds a concise diagnosis to the raw traceback (for example, a zero divisor means the candidate must exclude sentinel 0 and 1); it still returns the unchanged evaluator output. The engineering objective is achieved if at least one generated candidate passes the fixed correctness evaluator. If inference fails before any candidate passes, the workflow fails and preserves the trace. If inference fails after a candidate passes, it retains that candidate and records the incomplete optimization attempt. Runtime optimization is descriptive. No result is tuned or reclassified to support a preferred theoretical claim.
 
-The inference is genuinely performed by the configured Ollama model. A stubbed provider, synthetic response, or the coding agent itself is not accepted as a substitute. If model download, inference, or sandbox startup fails, the workflow must report that failure rather than emit a synthetic success.
+The inference is genuinely performed by the configured Ollama model. A stubbed provider, synthetic response, or the coding agent itself is not accepted as a substitute. Model download or sandbox startup failure prevents a valid run; later inference errors are recorded with any already verified candidate retained.
 
