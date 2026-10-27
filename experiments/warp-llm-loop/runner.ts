@@ -236,7 +236,6 @@ async function main() {
       invariant(rt.getCurrentZone() === 3, `executor did not route back to Zone 3 at generation ${generation}`);
       feedback = feedbackParts.join('\n');
       iterations.push({ generation, transitionIntoExecution: toExecutor.lastTransition, transitionBackToGeneration: backToGenerator.lastTransition, codeSha256, candidateSource: currentCode, correctness, elapsedMs: evalResult.elapsedMs, feedback });
-      writeFileSync(join(runDir, `candidate-${generation}.py`), currentCode);
       console.log(JSON.stringify({ generation, zoneLoop: `${toExecutor.lastTransition?.from}->${toExecutor.lastTransition?.to}->${backToGenerator.lastTransition?.to}`, codeSha256, correctness, elapsedMs: evalResult.elapsedMs, bestCorrect, bestElapsed }));
     }
 
