@@ -23,6 +23,7 @@ import {
 } from '../services/ameliaLocalMemory';
 import { SubstrateStepSnapshot, Paper6AssayResult, CanalizationArmResult } from '../types/amelia';
 import { AmeliaIndexedMemory } from '../services/ameliaIndexedMemory';
+import { AmeliaSupabaseMemory, AmeliaCloudSession } from '../services/ameliaSupabaseMemory';
 
 interface LocalMemoryHubProps {
   currentSnapshot: SubstrateStepSnapshot;
@@ -32,6 +33,8 @@ interface LocalMemoryHubProps {
   threeArmResults: Record<string, CanalizationArmResult>;
   selectedDepth: number;
   selectedSeed: number;
+  onCloudRestore?: (state: unknown) => void;
+  onCloudStatusChange?: (connected: boolean) => void;
 }
 
 export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
@@ -41,7 +44,9 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
   allP6Results,
   threeArmResults,
   selectedDepth,
-  selectedSeed
+  selectedSeed,
+  onCloudRestore,
+  onCloudStatusChange
 }) => {
   const [records, setRecords] = useState<LocalProcessMemoryRecord[]>([]);
   const [runs, setRuns] = useState<LocalCanalizationRun[]>([]);
@@ -51,6 +56,78 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
   const [autoSync, setAutoSync] = useState<boolean>(true);
   const [lastSyncTime, setLastSyncTime] = useState<string>('Just now');
   const [activeSubTab, setActiveSubTab] = useState<'process' | 'canalization' | 'paper6'>('process');
+  const [cloudSession, setCloudSession] = useState<AmeliaCloudSession | null>(null);
+  const [cloudEmail, setCloudEmail] = useState('');
+  const [cloudPassword, setCloudPassword] = useState('');
+  const [cloudBusy, setCloudBusy] = useState(false);
+  const [cloudError, setCloudError] = useState('');
+  const [cloudMessage, setCloudMessage] = useState('');
+
+  const activateCloudSession = async (session: AmeliaCloudSession | null, mounted = true) => {
+    setCloudSession(session);
+    if (!session) {
+      AmeliaIndexedMemory.setCloudAdapter(null);
+      onCloudStatusChange?.(false);
+      return;
+    }
+    setCloudBusy(true);
+    setCloudError('');
+    try {
+      const result = await AmeliaSupabaseMemory.syncLocalMemory(session);
+      if (!mounted) return;
+      onCloudStatusChange?.(true);
+      if (result.runtimeCheckpoint?.state) onCloudRestore?.(result.runtimeCheckpoint.state);
+      setCloudMessage('Supabase synced · ' + result.uploaded + ' uploaded · ' + result.downloaded + ' restored');
+    } catch (error) {
+      if (!mounted) return;
+      AmeliaIndexedMemory.setCloudAdapter(null);
+      onCloudStatusChange?.(false);
+      setCloudError(error instanceof Error ? error.message : 'Supabase memory sync failed.');
+    } finally {
+      if (mounted) setCloudBusy(false);
+    }
+  };
+
+  const handleCloudSignIn = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setCloudBusy(true);
+    setCloudError('');
+    setCloudMessage('');
+    try {
+      await AmeliaSupabaseMemory.signIn(cloudEmail, cloudPassword);
+      setCloudPassword('');
+    } catch (error) {
+      setCloudError(error instanceof Error ? error.message : 'Supabase sign-in failed.');
+      setCloudBusy(false);
+    }
+  };
+
+  const handleCloudSignUp = async () => {
+    setCloudBusy(true);
+    setCloudError('');
+    setCloudMessage('');
+    try {
+      const result = await AmeliaSupabaseMemory.signUp(cloudEmail, cloudPassword);
+      setCloudPassword('');
+      if (result.confirmationRequired) {
+        setCloudMessage('Check your email to confirm the account, then sign in here.');
+        setCloudBusy(false);
+      }
+    } catch (error) {
+      setCloudError(error instanceof Error ? error.message : 'Supabase account creation failed.');
+      setCloudBusy(false);
+    }
+  };
+
+  const handleCloudSync = async () => {
+    const session = await AmeliaSupabaseMemory.getSession();
+    if (session) await activateCloudSession(session);
+  };
+
+  const handleCloudSignOut = async () => {
+    await AmeliaSupabaseMemory.signOut();
+    setCloudMessage('Signed out · local memory remains available on this device');
+  };
 
   // Load and subscribe to the local IndexedDB memory archive
   useEffect(() => {
@@ -98,6 +175,22 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
     return () => {
       if (unsubscribeMemory) unsubscribeMemory();
       if (unsubscribeRuns) unsubscribeRuns();
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    const unsubscribe = AmeliaSupabaseMemory.subscribe(session => {
+      void activateCloudSession(session, mounted);
+    });
+    void AmeliaSupabaseMemory.getSession()
+      .then(session => activateCloudSession(session, mounted))
+      .catch(error => {
+        if (mounted) setCloudError(error instanceof Error ? error.message : 'Could not restore Supabase session.');
+      });
+    return () => {
+      mounted = false;
+      unsubscribe();
     };
   }, []);
 
@@ -178,6 +271,48 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
 
   return (
     <div className="space-y-6">
+      <section className="p-5 rounded-2xl bg-stone-900/70 border border-emerald-900/70 shadow-xl space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 className="text-base font-bold text-stone-100 flex items-center gap-2">
+              <CloudCheck className="w-5 h-5 text-emerald-400" /> Supabase Research Memory
+            </h3>
+            <p className="text-xs text-stone-400 mt-1">
+              Durable, account-backed copies of Amelia’s runtime checkpoints, dialogue, and assay records. The Numogram substrate remains the source of runtime state and actions.
+            </p>
+          </div>
+          <span className={"px-2.5 py-1 rounded-full text-xs font-mono border " + (cloudSession ? "text-emerald-300 bg-emerald-950/50 border-emerald-800" : "text-stone-400 bg-stone-950 border-stone-700")}>
+            {cloudSession ? "ACCOUNT CONNECTED" : "LOCAL ONLY"}
+          </span>
+        </div>
+        {cloudSession ? (
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-sm text-stone-300">{cloudSession.user.email || "Authenticated research account"}</span>
+            <button onClick={() => void handleCloudSync()} disabled={cloudBusy} className="px-3 py-2 rounded-lg bg-emerald-900/70 hover:bg-emerald-800 text-emerald-100 border border-emerald-700 text-xs font-semibold">
+              {cloudBusy ? "Syncing…" : "Sync now"}
+            </button>
+            <button onClick={() => void handleCloudSignOut()} disabled={cloudBusy} className="px-3 py-2 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700 text-xs font-semibold">
+              Sign out
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleCloudSignIn} className="flex flex-wrap items-end gap-3">
+            <label className="flex-1 min-w-48 text-xs text-stone-400">Account email
+              <input type="email" autoComplete="email" value={cloudEmail} onChange={event => setCloudEmail(event.target.value)} required className="mt-1 w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-sm text-stone-100" />
+            </label>
+            <label className="flex-1 min-w-48 text-xs text-stone-400">Password
+              <input type="password" autoComplete="current-password" value={cloudPassword} onChange={event => setCloudPassword(event.target.value)} required minLength={8} className="mt-1 w-full rounded-lg bg-stone-950 border border-stone-700 px-3 py-2 text-sm text-stone-100" />
+            </label>
+            <button type="submit" disabled={cloudBusy} className="px-3 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white text-xs font-semibold">
+              {cloudBusy ? "Connecting…" : "Sign in"}
+            </button>
+            <button type="button" onClick={() => void handleCloudSignUp()} disabled={cloudBusy || !cloudEmail || cloudPassword.length < 8} className="px-3 py-2 rounded-lg bg-stone-800 hover:bg-stone-700 disabled:opacity-50 text-stone-200 border border-stone-700 text-xs font-semibold">
+              Create account
+            </button>
+          </form>
+        )}
+        {(cloudError || cloudMessage) && <p className={"text-xs " + (cloudError ? "text-rose-300" : "text-emerald-300")}>{cloudError || cloudMessage}</p>}
+      </section>
       {/* Local Memory & Persistence Card */}
       <div className="p-6 rounded-2xl bg-stone-900/70 border border-stone-800 shadow-xl space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
