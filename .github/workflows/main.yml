@@ -31,7 +31,7 @@ jobs:
       - name: Install web dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Build Amelia UI and substrate for local-only Android
+      - name: Build Amelia UI with local substrate checkpointing and Supabase available
         env:
           VITE_AMELIA_LOCAL_ONLY: '1'
         run: npx vite build
@@ -43,7 +43,7 @@ jobs:
           mkdir -p android/app/src/main/java/org/amelia/orange android/app/src/main/assets
           cp -R dist/. android/app/src/main/assets/
           echo "$GITHUB_SHA" > BUILD_COMMIT.txt
-          echo "LOCAL_ONLY=1 - no Firestore reads or writes" > BUILD_MODE.txt
+          echo "LOCAL_ONLY=1 - no Firebase/Firestore; authenticated Supabase memory available" > BUILD_MODE.txt
           find dist -type f -print0 | sort -z | xargs -0 sha256sum > WEB_ASSET_SHA256.txt
           cat > android/settings.gradle <<'EOF'
           pluginManagement {
@@ -70,8 +70,8 @@ jobs:
                   applicationId 'org.amelia.orange'
                   minSdk 24
                   targetSdk 35
-                  versionCode 1
-                  versionName '0.1.0'
+                  versionCode 2
+                  versionName '0.1.1'
               }
               compileOptions {
                   sourceCompatibility JavaVersion.VERSION_17
