@@ -63,6 +63,7 @@ import { AmeliaDialogueWindow } from './components/AmeliaDialogueWindow';
 import { LiveMorphogeneticLab } from './components/LiveMorphogeneticLab';
 import { Thread3EncodingActivationLab } from './components/Thread3EncodingActivationLab';
 import { AmeliaIndexedMemory } from './services/ameliaIndexedMemory';
+import { AmeliaSupabaseMemory, AmeliaCloudSession } from './services/ameliaSupabaseMemory';
 
 const LOCAL_CHECKPOINT_KEY = 'amelia_pfm_shared_runtime_v2';
 
@@ -83,6 +84,7 @@ export function App() {
     return runtimeRef.current.getSnapshots().at(-1) ?? runtimeRef.current.step();
   });
   const [checkpointError, setCheckpointError] = useState(false);
+  const [cloudConnected, setCloudConnected] = useState(false);
   const [checkpointHydrated, setCheckpointHydrated] = useState(false);
   const [history, setHistory] = useState<SubstrateStepSnapshot[]>([]);
   const [runtimeEpoch, setRuntimeEpoch] = useState(0);
@@ -133,31 +135,76 @@ export function App() {
     setAuditLog(prev => [msg, ...prev]);
   };
 
-  // Restore and save the live PFM/Qabbala/Governor state in browser IndexedDB.
-  // This is a continuity checkpoint, not a tamper-evident research seal.
+  // Restore local memory first, then merge the signed-in account's Supabase archive.
   useEffect(() => {
     let cancelled = false;
+    let initializing = true;
+
+    const restoreRuntime = (state: unknown) => {
+      runtimeRef.current.importState(state as any);
+      const restored = runtimeRef.current.getSnapshots().at(-1);
+      if (restored) {
+        setSnapshot(restored);
+        setHistory([restored]);
+        setRuntimeEpoch(value => value + 1);
+      }
+    };
+
+    const syncAccount = async (session: AmeliaCloudSession | null) => {
+      if (!session) {
+        AmeliaIndexedMemory.setCloudAdapter(null);
+        if (!cancelled) setCloudConnected(false);
+        return;
+      }
+      try {
+        const result = await AmeliaSupabaseMemory.syncLocalMemory(session);
+        if (cancelled) return;
+        setCloudConnected(true);
+        if (result.runtimeCheckpoint?.state) restoreRuntime(result.runtimeCheckpoint.state);
+      } catch (error) {
+        AmeliaIndexedMemory.setCloudAdapter(null);
+        if (!cancelled) {
+          setCloudConnected(false);
+          console.warn('Supabase memory sync unavailable; continuing with local memory.', error);
+        }
+      }
+    };
+
+    const unsubscribe = AmeliaSupabaseMemory.subscribe(session => {
+      if (!initializing) void syncAccount(session);
+    });
+
     const restore = async () => {
       try {
-        let saved = await AmeliaIndexedMemory.get<{ id: string; version: number; state: unknown }>('runtime', 'live-checkpoint');
-        if (!saved && tabletLocalMode) {
-          const legacy = localStorage.getItem(LOCAL_CHECKPOINT_KEY);
-          if (legacy) saved = JSON.parse(legacy);
+        const saved = await AmeliaIndexedMemory.get<{ id: string; version: number; state: unknown }>('runtime', 'live-checkpoint');
+        let legacy = saved;
+        if (!legacy && tabletLocalMode) {
+          const raw = localStorage.getItem(LOCAL_CHECKPOINT_KEY);
+          if (raw) legacy = JSON.parse(raw);
         }
-        if (!cancelled && saved?.version === 2 && saved.state) {
-          runtimeRef.current.importState(saved.state as any);
-          const restored = runtimeRef.current.getSnapshots().at(-1);
-          if (restored) { setSnapshot(restored); setHistory([restored]); }
-        }
-      } catch (err) {
-        console.warn('Local PFM checkpoint restore failed; starting from current state', err);
+        if (!cancelled && legacy?.version === 2 && legacy.state) restoreRuntime(legacy.state);
+      } catch (error) {
+        console.warn('Local PFM checkpoint restore failed; starting from current state', error);
         if (!cancelled) setCheckpointError(true);
+      }
+
+      try {
+        const session = await AmeliaSupabaseMemory.getSession();
+        if (session) await syncAccount(session);
+      } catch (error) {
+        AmeliaIndexedMemory.setCloudAdapter(null);
+        console.warn('Supabase session restore unavailable; continuing with local memory.', error);
       } finally {
+        initializing = false;
         if (!cancelled) setCheckpointHydrated(true);
       }
     };
+
     void restore();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
   }, [tabletLocalMode]);
 
   useEffect(() => {
@@ -363,10 +410,10 @@ export function App() {
               <span 
                 className="text-xs px-2.5 py-0.5 rounded-full font-mono font-semibold bg-amber-950/80 border border-amber-600/80 text-amber-300 flex items-center gap-1.5 cursor-pointer hover:bg-amber-900/80 transition-colors" 
                 onClick={() => setActiveTab('firebase')} 
-                title="Open local process-memory archive"
+                title="Open local and Supabase process-memory archive"
               >
                 <Flame className="w-3 h-3 text-amber-400" />
-                {checkpointError ? 'LOCAL MEMORY WARNING' : 'LOCAL MEMORY'}
+                {checkpointError ? 'MEMORY WARNING' : cloudConnected ? 'SUPABASE MEMORY' : 'LOCAL MEMORY'}
               </span>
             </div>
             <p className="text-xs text-stone-400 font-mono">
