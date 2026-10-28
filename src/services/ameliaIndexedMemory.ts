@@ -50,6 +50,14 @@ function notify(store: AmeliaMemoryStore): void {
   for (const listener of listeners.get(store) ?? []) listener();
 }
 
+function reportCloudError(error: unknown): void {
+  if (typeof console !== 'undefined') console.warn('Amelia cloud memory sync failed; the local copy remains available.', error);
+  if (typeof window !== 'undefined') {
+    const message = error instanceof Error ? error.message : 'Supabase memory sync failed.';
+    window.dispatchEvent(new CustomEvent('amelia-cloud-sync-error', { detail: message }));
+  }
+}
+
 function idFor(prefix: string): string {
   const randomId = globalThis.crypto?.randomUUID?.();
   return randomId ? `${prefix}-${randomId}` : `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -110,7 +118,7 @@ export class AmeliaIndexedMemory {
         await cloudAdapter.upsert(store, value as Record<string, unknown>);
       } catch (error) {
         persisted = false;
-        if (typeof console !== 'undefined') console.warn('Amelia cloud memory sync failed; the local copy remains available.', error);
+        reportCloudError(error);
       }
     }
     notify(store);
@@ -152,7 +160,7 @@ export class AmeliaIndexedMemory {
       try {
         await cloudAdapter.clear(store);
       } catch (error) {
-        if (typeof console !== 'undefined') console.warn('Amelia cloud memory delete failed.', error);
+        reportCloudError(error);
       }
     }
   }
