@@ -63,7 +63,7 @@ import { AmeliaDialogueWindow } from './components/AmeliaDialogueWindow';
 import { LiveMorphogeneticLab } from './components/LiveMorphogeneticLab';
 import { Thread3EncodingActivationLab } from './components/Thread3EncodingActivationLab';
 import { AmeliaFirebaseMemoryService } from './services/ameliaFirebaseMemory';
-import firebaseConfig from '../firebase-applet-config.json';
+import { AmeliaIndexedMemory } from './services/ameliaIndexedMemory';
 
 const LOCAL_CHECKPOINT_KEY = 'amelia_pfm_shared_runtime_v2';
 
@@ -84,6 +84,7 @@ export function App() {
     return runtimeRef.current.getSnapshots().at(-1) ?? runtimeRef.current.step();
   });
   const [checkpointError, setCheckpointError] = useState(false);
+  const [checkpointHydrated, setCheckpointHydrated] = useState(false);
   const [history, setHistory] = useState<SubstrateStepSnapshot[]>([]);
   const [runtimeEpoch, setRuntimeEpoch] = useState(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -122,7 +123,7 @@ export function App() {
   );
 
   const [auditLog, setAuditLog] = useState<string[]>([
-    tabletLocalMode ? '[STORAGE] Local-only tablet build; remote memory disabled' : `[FIREBASE] Configured for ${firebaseConfig.projectId}; connection not verified`,
+    '[STORAGE] IndexedDB-backed local memory enabled; no remote database connection',
     `[INIT] Amelia Morphogenetic Substrate initialized at ${new Date().toLocaleTimeString()}`,
     `[GOVERNOR] Invariants validated: AntiLock=99.4%, IdentityContinuity=0.965, Scaffolding=Stage 3`,
     `[DEMO] Three-arm and Paper 6 displays are formula-based; no experimental inference`,
@@ -133,24 +134,50 @@ export function App() {
     setAuditLog(prev => [msg, ...prev]);
   };
 
-  // Local checkpoint continuity: saves the whole live PFM/Qabbala/Governor state,
-  // including gates, phase and trait history. This is NOT a tamper-evident research seal.
+  // Restore and save the live PFM/Qabbala/Governor state in browser IndexedDB.
+  // This is a continuity checkpoint, not a tamper-evident research seal.
   useEffect(() => {
-    if (!tabletLocalMode) return;
-    const persist = () => {
+    let cancelled = false;
+    const restore = async () => {
       try {
-        const record = { version: 2, state: runtimeRef.current.exportState() };
+        let saved = await AmeliaIndexedMemory.get<{ id: string; version: number; state: unknown }>('runtime', 'live-checkpoint');
+        if (!saved && tabletLocalMode) {
+          const legacy = localStorage.getItem(LOCAL_CHECKPOINT_KEY);
+          if (legacy) saved = JSON.parse(legacy);
+        }
+        if (!cancelled && saved?.version === 2 && saved.state) {
+          runtimeRef.current.importState(saved.state as any);
+          const restored = runtimeRef.current.getSnapshots().at(-1);
+          if (restored) { setSnapshot(restored); setHistory([restored]); }
+        }
+      } catch (err) {
+        console.warn('Local PFM checkpoint restore failed; starting from current state', err);
+        if (!cancelled) setCheckpointError(true);
+      } finally {
+        if (!cancelled) setCheckpointHydrated(true);
+      }
+    };
+    void restore();
+    return () => { cancelled = true; };
+  }, [tabletLocalMode]);
+
+  useEffect(() => {
+    if (!checkpointHydrated) return;
+    const persist = () => {
+      const record = { version: 2, state: runtimeRef.current.exportState() };
+      try {
         localStorage.setItem(LOCAL_CHECKPOINT_KEY, JSON.stringify(record));
         setCheckpointError(false);
       } catch (err) {
-        console.warn('Local PFM checkpoint storage unavailable', err);
+        console.warn('Legacy local checkpoint cache unavailable', err);
         setCheckpointError(true);
       }
+      void AmeliaIndexedMemory.put('runtime', { id: 'live-checkpoint', ...record, updatedAt: new Date().toISOString() });
     };
     const task = setTimeout(persist, 220);
     window.addEventListener('pagehide', persist);
     return () => { clearTimeout(task); window.removeEventListener('pagehide', persist); };
-  }, [snapshot, tabletLocalMode]);
+  }, [snapshot, checkpointHydrated]);
 
   const handleExportCheckpoint = () => {
     const capsule = { kind: 'AMELIA_LOCAL_CHECKPOINT_V2', createdAt: new Date().toISOString(),
@@ -326,11 +353,11 @@ export function App() {
               </span>
               <span 
                 className="text-xs px-2.5 py-0.5 rounded-full font-mono font-semibold bg-amber-950/80 border border-amber-600/80 text-amber-300 flex items-center gap-1.5 cursor-pointer hover:bg-amber-900/80 transition-colors" 
-                onClick={() => { if (!tabletLocalMode) setActiveTab('firebase'); }} 
-                title="Click to open Firestore Process Memory Hub"
+                onClick={() => setActiveTab('firebase')} 
+                title="Open local process-memory archive"
               >
                 <Flame className="w-3 h-3 text-amber-400" />
-                {tabletLocalMode ? (checkpointError ? 'CHECKPOINT ERROR' : 'LOCAL STORAGE') : 'FIRESTORE: CONFIGURED'}
+                {checkpointError ? 'LOCAL MEMORY WARNING' : 'LOCAL MEMORY'}
               </span>
             </div>
             <p className="text-xs text-stone-400 font-mono">
@@ -643,7 +670,7 @@ export function App() {
             }`}
           >
             <Flame className="w-4 h-4 text-orange-400" />
-            Firestore Process Memory
+            Local Memory & Persistence
           </button>
 
           <button
