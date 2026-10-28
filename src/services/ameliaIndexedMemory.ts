@@ -111,7 +111,7 @@ export class AmeliaIndexedMemory {
     } catch {
       persistenceAvailable = false;
       const records = [...(fallback.get(store)?.values() ?? [])] as T[];
-      return records.sort((a, b) => String(b.timestamp ?? '').localeCompare(String(a.timestamp ?? ''))).slice(0, limit);
+      return records.sort((a, b) => String((b as any).timestamp ?? '').localeCompare(String((a as any).timestamp ?? ''))).slice(0, limit);
     }
   }
 
