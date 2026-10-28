@@ -16,12 +16,14 @@ type StoredRecord = { id: string; [key: string]: unknown };
 
 const listeners = new Map<AmeliaMemoryStore, Set<() => void>>();
 const fallback = new Map<AmeliaMemoryStore, Map<string, StoredRecord>>();
+let persistenceAvailable = true;
 let dbPromise: Promise<IDBDatabase> | null = null;
 
 function openDatabase(): Promise<IDBDatabase> {
   if (dbPromise) return dbPromise;
   dbPromise = new Promise((resolve, reject) => {
     if (typeof indexedDB === 'undefined') {
+      persistenceAvailable = false;
       reject(new Error('IndexedDB is unavailable in this browser.'));
       return;
     }
@@ -33,7 +35,7 @@ function openDatabase(): Promise<IDBDatabase> {
       }
     };
     request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error ?? new Error('Could not open Amelia local memory.'));
+    request.onerror = () => { persistenceAvailable = false; reject(request.error ?? new Error('Could not open Amelia local memory.')); };
   });
   return dbPromise;
 }
@@ -52,6 +54,10 @@ function idFor(prefix: string): string {
  * Records remain in this app's browser storage and are never sent to a cloud database.
  */
 export class AmeliaIndexedMemory {
+  static isPersistent(): boolean {
+    return persistenceAvailable;
+  }
+
   static createId(prefix: string): string {
     return idFor(prefix);
   }
@@ -65,11 +71,13 @@ export class AmeliaIndexedMemory {
         request.onerror = () => reject(request.error);
       });
     } catch {
+      persistenceAvailable = false;
       return (fallback.get(store)?.get(id) as T | undefined) ?? null;
     }
   }
 
-  static async put<T extends { id: string }>(store: AmeliaMemoryStore, value: T): Promise<void> {
+  static async put<T extends { id: string }>(store: AmeliaMemoryStore, value: T): Promise<boolean> {
+    let persisted = true;
     try {
       const db = await openDatabase();
       await new Promise<void>((resolve, reject) => {
@@ -80,12 +88,15 @@ export class AmeliaIndexedMemory {
         tx.onabort = () => reject(tx.error ?? new Error('Local memory write was aborted.'));
       });
     } catch (error) {
+      persistenceAvailable = false;
+      persisted = false;
       let records = fallback.get(store);
       if (!records) { records = new Map(); fallback.set(store, records); }
       records.set(value.id, value as StoredRecord);
       if (typeof console !== 'undefined') console.warn('Amelia IndexedDB unavailable; using memory for this session.', error);
     }
     notify(store);
+    return persisted;
   }
 
   static async list<T = StoredRecord>(store: AmeliaMemoryStore, limit = 200): Promise<T[]> {
@@ -98,6 +109,7 @@ export class AmeliaIndexedMemory {
       });
       return records.sort((a, b) => String((b as any).timestamp ?? '').localeCompare(String((a as any).timestamp ?? ''))).slice(0, limit);
     } catch {
+      persistenceAvailable = false;
       const records = [...(fallback.get(store)?.values() ?? [])] as T[];
       return records.sort((a, b) => String(b.timestamp ?? '').localeCompare(String(a.timestamp ?? ''))).slice(0, limit);
     }
@@ -114,6 +126,7 @@ export class AmeliaIndexedMemory {
         tx.onabort = () => reject(tx.error ?? new Error('Local memory clear was aborted.'));
       });
     } catch {
+      persistenceAvailable = false;
       fallback.set(store, new Map());
     }
     notify(store);
