@@ -1,19 +1,10 @@
-import { 
-  collection, 
-  doc, 
-  setDoc, 
-  addDoc, 
-  getDocs, 
-  query, 
-  orderBy, 
-  limit, 
-  onSnapshot, 
-  deleteDoc, 
-  writeBatch,
-  Timestamp 
-} from 'firebase/firestore';
-import { db, initFirebaseAuth } from '../lib/firebase';
-import { SubstrateStepSnapshot, CanalizationArmResult, Paper6AssayResult, GovernorTelemetry, AmeliaDialogueMessage } from '../types/amelia';
+import { AmeliaIndexedMemory } from './ameliaIndexedMemory';
+import {
+  SubstrateStepSnapshot,
+  CanalizationArmResult,
+  Paper6AssayResult,
+  AmeliaDialogueMessage,
+} from '../types/amelia';
 
 export interface FirebaseProcessMemoryRecord {
   id?: string;
@@ -42,46 +33,31 @@ export interface FirebaseCanalizationRun {
   timestamp: string;
 }
 
+/**
+ * Backwards-compatible service facade. Persistence now lives in browser IndexedDB;
+ * Firestore is not initialized or contacted by this application.
+ */
 export class AmeliaFirebaseMemoryService {
-  private static isInitialized = false;
-  private static readonly localOnly = import.meta.env.VITE_AMELIA_LOCAL_ONLY === '1';
-
-  public static async init() {
-    if (this.localOnly) return;
-    if (!this.isInitialized) {
-      await initFirebaseAuth();
-      this.isInitialized = true;
-    }
+  public static async init(): Promise<void> {
+    await AmeliaIndexedMemory.list('runtime', 1);
   }
 
-  /**
-   * Save a live substrate state snapshot to Firestore
-   */
   public static async saveSnapshot(snapshot: SubstrateStepSnapshot): Promise<string> {
-    if (this.localOnly) return 'local-only';
-    await this.init();
-    const docRef = doc(db, 'amelia_substrate_snapshots', 'latest');
-    await setDoc(docRef, {
+    const timestamp = snapshot.timestamp || new Date().toISOString();
+    await AmeliaIndexedMemory.put('snapshots', {
+      id: 'latest',
       step: snapshot.step,
-      timestamp: snapshot.timestamp,
-      zones: snapshot.zones,
-      governor: snapshot.governor,
-      activeSyzygies: snapshot.activeSyzygies,
-      deformationVector: snapshot.deformationVector,
-      selectedObjective: snapshot.selectedObjective,
-      updatedAt: new Date().toISOString()
+      timestamp,
+      snapshot,
+      updatedAt: new Date().toISOString(),
     });
     return 'latest';
   }
 
-  /**
-   * Record a process memory checkpoint into constitutive deformation field memory
-   */
   public static async recordProcessMemory(snapshot: SubstrateStepSnapshot): Promise<string> {
-    if (this.localOnly) return 'local-only';
-    await this.init();
-    const colRef = collection(db, 'amelia_process_memory');
+    const id = AmeliaIndexedMemory.createId('process');
     const record: FirebaseProcessMemoryRecord = {
+      id,
       step: snapshot.step,
       timestamp: new Date().toISOString(),
       objective: snapshot.selectedObjective,
@@ -93,22 +69,18 @@ export class AmeliaFirebaseMemoryService {
       deformationVector: snapshot.deformationVector,
       activeSyzygies: snapshot.activeSyzygies,
     };
-    const res = await addDoc(colRef, record);
-    return res.id;
+    await AmeliaIndexedMemory.put('processMemory', record as FirebaseProcessMemoryRecord & { id: string });
+    return id;
   }
 
-  /**
-   * Save Canalization Assay Run
-   */
   public static async saveCanalizationRun(
-    depth: number, 
-    seed: number, 
+    depth: number,
+    seed: number,
     results: Record<'FROZEN' | 'NULL_BASELINE' | 'ACTIVE_C1', CanalizationArmResult>
   ): Promise<string> {
-    if (this.localOnly) return 'local-only';
-    await this.init();
-    const colRef = collection(db, 'amelia_canalization_runs');
-    const run: FirebaseCanalizationRun = {
+    const id = AmeliaIndexedMemory.createId('canalization');
+    const run: FirebaseCanalizationRun & { id: string } = {
+      id,
       depth,
       seed,
       activeC1Retention: results.ACTIVE_C1.zone9ContactRetention,
@@ -119,172 +91,61 @@ export class AmeliaFirebaseMemoryService {
       meanTrajectoryEntropy: results.ACTIVE_C1.meanTrajectoryEntropy,
       timestamp: new Date().toISOString(),
     };
-    const docRes = await addDoc(colRef, run);
-    return docRes.id;
+    await AmeliaIndexedMemory.put('canalizationRuns', run);
+    return id;
   }
 
-  /**
-   * Save Paper 6 Assay Result
-   */
   public static async savePaper6Assay(assay: Paper6AssayResult): Promise<string> {
-    if (this.localOnly) return 'local-only';
-    await this.init();
-    const docRef = doc(db, 'amelia_paper6_assays', assay.id);
-    await setDoc(docRef, {
-      ...assay,
-      timestamp: new Date().toISOString()
-    });
+    const record = { ...assay, timestamp: new Date().toISOString() };
+    await AmeliaIndexedMemory.put('paper6Assays', record as Paper6AssayResult & { id: string });
     return assay.id;
   }
 
-  /**
-   * Fetch recent process memory records
-   */
   public static async fetchProcessMemory(maxRecords = 25): Promise<FirebaseProcessMemoryRecord[]> {
-    if (this.localOnly) return [];
-    await this.init();
-    const q = query(collection(db, 'amelia_process_memory'), orderBy('timestamp', 'desc'), limit(maxRecords));
-    const querySnapshot = await getDocs(q);
-    const records: FirebaseProcessMemoryRecord[] = [];
-    querySnapshot.forEach((docSnap) => {
-      records.push({ id: docSnap.id, ...(docSnap.data() as FirebaseProcessMemoryRecord) });
-    });
-    return records;
+    return AmeliaIndexedMemory.list<FirebaseProcessMemoryRecord & { id: string }>('processMemory', maxRecords);
   }
 
-  /**
-   * Fetch saved canalization runs
-   */
   public static async fetchCanalizationRuns(maxRuns = 30): Promise<FirebaseCanalizationRun[]> {
-    if (this.localOnly) return [];
-    await this.init();
-    const q = query(collection(db, 'amelia_canalization_runs'), orderBy('timestamp', 'desc'), limit(maxRuns));
-    const querySnapshot = await getDocs(q);
-    const runs: FirebaseCanalizationRun[] = [];
-    querySnapshot.forEach((docSnap) => {
-      runs.push({ id: docSnap.id, ...(docSnap.data() as FirebaseCanalizationRun) });
-    });
-    return runs;
+    return AmeliaIndexedMemory.list<FirebaseCanalizationRun & { id: string }>('canalizationRuns', maxRuns);
   }
 
-  /**
-   * Fetch saved Paper 6 assays
-   */
   public static async fetchPaper6Assays(): Promise<Paper6AssayResult[]> {
-    if (this.localOnly) return [];
-    await this.init();
-    const q = query(collection(db, 'amelia_paper6_assays'), orderBy('timestamp', 'desc'), limit(40));
-    const querySnapshot = await getDocs(q);
-    const assays: Paper6AssayResult[] = [];
-    querySnapshot.forEach((docSnap) => {
-      assays.push(docSnap.data() as Paper6AssayResult);
-    });
-    return assays;
+    return AmeliaIndexedMemory.list<Paper6AssayResult & { id: string }>('paper6Assays', 100);
   }
 
-  /**
-   * Realtime subscription to process memory
-   */
-  public static subscribeProcessMemory(callback: (records: FirebaseProcessMemoryRecord[]) => void) {
-    if (this.localOnly) { callback([]); return () => {}; }
-    this.init();
-    const q = query(collection(db, 'amelia_process_memory'), orderBy('timestamp', 'desc'), limit(30));
-    return onSnapshot(q, (snapshot) => {
-      const records: FirebaseProcessMemoryRecord[] = [];
-      snapshot.forEach((docSnap) => {
-        records.push({ id: docSnap.id, ...(docSnap.data() as FirebaseProcessMemoryRecord) });
-      });
-      callback(records);
-    }, (err) => {
-      console.warn('Process memory subscription notice:', err);
-    });
+  public static subscribeProcessMemory(callback: (records: FirebaseProcessMemoryRecord[]) => void): () => void {
+    const emit = () => { void this.fetchProcessMemory(30).then(callback); };
+    const unsubscribe = AmeliaIndexedMemory.subscribe('processMemory', emit);
+    emit();
+    return unsubscribe;
   }
 
-  /**
-   * Realtime subscription to Canalization runs
-   */
-  public static subscribeCanalizationRuns(callback: (runs: FirebaseCanalizationRun[]) => void) {
-    if (this.localOnly) { callback([]); return () => {}; }
-    this.init();
-    const q = query(collection(db, 'amelia_canalization_runs'), orderBy('timestamp', 'desc'), limit(30));
-    return onSnapshot(q, (snapshot) => {
-      const runs: FirebaseCanalizationRun[] = [];
-      snapshot.forEach((docSnap) => {
-        runs.push({ id: docSnap.id, ...(docSnap.data() as FirebaseCanalizationRun) });
-      });
-      callback(runs);
-    }, (err) => {
-      console.warn('Canalization runs subscription notice:', err);
-    });
+  public static subscribeCanalizationRuns(callback: (runs: FirebaseCanalizationRun[]) => void): () => void {
+    const emit = () => { void this.fetchCanalizationRuns(30).then(callback); };
+    const unsubscribe = AmeliaIndexedMemory.subscribe('canalizationRuns', emit);
+    emit();
+    return unsubscribe;
   }
 
-  /**
-   * Save a dialogue message to Firestore
-   */
   public static async saveDialogueMessage(msg: AmeliaDialogueMessage): Promise<string> {
-    if (this.localOnly) return msg.id;
-    await this.init();
-    const colRef = collection(db, 'amelia_dialogue_messages');
-    const docData: any = {
-      sender: msg.sender,
-      text: msg.text,
-      timestamp: msg.timestamp || new Date().toISOString(),
-      step: msg.step ?? 0,
-      activeSyzygy: msg.activeSyzygy || '',
-      deformationTension: msg.deformationTension ?? 0,
-      governorStatus: msg.governorStatus || 'NOMINAL',
-      identityContinuityScore: msg.identityContinuityScore ?? 1.0,
-      suggestedActions: msg.suggestedActions || []
-    };
-    const res = await addDoc(colRef, docData);
-    return res.id;
+    const record = { ...msg, id: msg.id || AmeliaIndexedMemory.createId('dialogue') };
+    await AmeliaIndexedMemory.put('dialogue', record as AmeliaDialogueMessage & { id: string });
+    return record.id;
   }
 
-  /**
-   * Fetch recent dialogue messages
-   */
   public static async fetchDialogueMessages(maxMessages = 50): Promise<AmeliaDialogueMessage[]> {
-    if (this.localOnly) return [];
-    await this.init();
-    const q = query(collection(db, 'amelia_dialogue_messages'), orderBy('timestamp', 'asc'), limit(maxMessages));
-    const querySnapshot = await getDocs(q);
-    const messages: AmeliaDialogueMessage[] = [];
-    querySnapshot.forEach((docSnap) => {
-      messages.push({ id: docSnap.id, ...(docSnap.data() as any) });
-    });
-    return messages;
+    const records = await AmeliaIndexedMemory.list<AmeliaDialogueMessage & { id: string }>('dialogue', maxMessages);
+    return records.reverse();
   }
 
-  /**
-   * Realtime subscription to dialogue messages
-   */
-  public static subscribeDialogueMessages(callback: (messages: AmeliaDialogueMessage[]) => void) {
-    if (this.localOnly) { callback([]); return () => {}; }
-    this.init();
-    const q = query(collection(db, 'amelia_dialogue_messages'), orderBy('timestamp', 'asc'), limit(60));
-    return onSnapshot(q, (snapshot) => {
-      const messages: AmeliaDialogueMessage[] = [];
-      snapshot.forEach((docSnap) => {
-        messages.push({ id: docSnap.id, ...(docSnap.data() as any) });
-      });
-      callback(messages);
-    }, (err) => {
-      console.warn('Dialogue messages subscription notice:', err);
-    });
+  public static subscribeDialogueMessages(callback: (messages: AmeliaDialogueMessage[]) => void): () => void {
+    const emit = () => { void this.fetchDialogueMessages(60).then(callback); };
+    const unsubscribe = AmeliaIndexedMemory.subscribe('dialogue', emit);
+    emit();
+    return unsubscribe;
   }
 
-  /**
-   * Clear dialogue history from Firestore
-   */
   public static async clearDialogueHistory(): Promise<void> {
-    if (this.localOnly) return;
-    await this.init();
-    const q = query(collection(db, 'amelia_dialogue_messages'), limit(100));
-    const snapshot = await getDocs(q);
-    const batch = writeBatch(db);
-    snapshot.forEach((docSnap) => {
-      batch.delete(docSnap.ref);
-    });
-    await batch.commit();
+    await AmeliaIndexedMemory.clear('dialogue');
   }
 }
