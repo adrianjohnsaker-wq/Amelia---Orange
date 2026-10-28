@@ -89,7 +89,6 @@ export function AmeliaDialogueWindow({
   isFloating = false,
   onCloseFloating
 }: AmeliaDialogueWindowProps) {
-  const tabletLocalMode = import.meta.env.VITE_AMELIA_LOCAL_ONLY === '1';
   const [messagesHydrated, setMessagesHydrated] = useState(false);
   const [messages, setMessages] = useState<AmeliaDialogueMessage[]>(() => {
     const saved = localStorage.getItem('amelia_dialogue_cache');
@@ -295,7 +294,7 @@ export function AmeliaDialogueWindow({
       try {
         await AmeliaFirebaseMemoryService.clearDialogueHistory();
       } catch (e) {
-        console.warn('Could not clear Firestore dialogue history:', e);
+        console.warn('Could not clear local dialogue history:', e);
       }
     }
   };
@@ -367,6 +366,14 @@ export function AmeliaDialogueWindow({
         {/* Action controls */}
         <div className="flex items-center gap-1.5">
           <button
+            id="btn-language-relay-settings"
+            onClick={() => setIsRelaySettingsOpen(!isRelaySettingsOpen)}
+            className="p-1.5 rounded-lg bg-stone-800/80 border border-stone-700 text-stone-400 hover:text-emerald-300 transition-colors"
+            title="Configure Gemini language-only relay"
+          >
+            <Settings2 className="w-3.5 h-3.5" />
+          </button>
+          <button
             id="btn-toggle-voice"
             onClick={() => setVoiceEnabled(!voiceEnabled)}
             className={`p-1.5 rounded-lg border text-xs transition-colors flex items-center gap-1 ${
@@ -422,6 +429,36 @@ export function AmeliaDialogueWindow({
           )}
         </div>
       </div>
+
+      {isRelaySettingsOpen && (
+        <div className="px-5 py-3 bg-stone-950/80 border-b border-stone-800 space-y-2">
+          <label className="block text-[10px] font-mono text-stone-400">
+            Gemini relay endpoint
+            <input
+              type="url"
+              value={relayEndpoint}
+              onChange={e => setRelayEndpoint(e.target.value)}
+              placeholder="https://your-private-relay.example/api/amelia-language"
+              className="mt-1 w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100"
+            />
+          </label>
+          <label className="block text-[10px] font-mono text-stone-400">
+            Amelia relay access token
+            <input
+              type="password"
+              value={relayToken}
+              onChange={e => setRelayToken(e.target.value)}
+              autoComplete="off"
+              placeholder="Issued by your private relay host"
+              className="mt-1 w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100"
+            />
+          </label>
+          <p className="text-[10px] text-stone-500">
+            The Gemini API key stays on the relay host. This session sends your prompt and Amelia’s current substrate readout to Gemini for language rendering only; substrate state and actions remain local.
+          </p>
+          {relayError && <p className="text-[10px] text-rose-300">{relayError}</p>}
+        </div>
+      )}
 
       {/* Message Stream */}
       <div className="flex-1 p-5 overflow-y-auto space-y-4 font-sans text-xs">
@@ -604,7 +641,7 @@ export function AmeliaDialogueWindow({
         </form>
 
         <div className="mt-2 flex items-center justify-between text-[10px] font-mono text-stone-400">
-          <span>{tabletLocalMode ? 'PFM-conditioned local relay · no cloud LLM' : 'Non-Authorising Governor Disciplines Active'}</span>
+          <span>{relayEndpoint && relayToken ? 'Gemini text relay · substrate owns state and actions' : 'Local rule-composed relay · configure Gemini for language rendering'}</span>
           <span>Shift+Enter for newline</span>
         </div>
       </div>
