@@ -937,7 +937,7 @@ export function App() {
             />
           )}
 
-          {/* TAB 9: FIRESTORE PROCESS MEMORY HUB */}
+          {/* TAB 9: LOCAL & SUPABASE PROCESS MEMORY HUB */}
           {activeTab === 'firebase' && (
             <LocalMemoryHub 
               currentSnapshot={snapshot}
