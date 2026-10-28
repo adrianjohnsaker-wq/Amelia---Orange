@@ -17,6 +17,16 @@ type CloudRow = { store: AmeliaMemoryStore; record_id: string; payload: Record<s
 type AuthListener = (session: AmeliaCloudSession | null) => void;
 
 const listeners = new Set<AuthListener>();
+
+async function fetchTimed(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 20000);
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
 let sessionCache: AmeliaCloudSession | null | undefined;
 
 function readSavedSession(): AmeliaCloudSession | null {
@@ -50,7 +60,7 @@ function sessionFromResponse(value: any): AmeliaCloudSession | null {
 }
 
 async function requestJson(path: string, init: RequestInit = {}, token?: string): Promise<any> {
-  const response = await fetch(SUPABASE_URL + path, {
+  const response = await fetchTimed(SUPABASE_URL + path, {
     ...init,
     headers: {
       apikey: SUPABASE_PUBLISHABLE_KEY,
@@ -127,7 +137,7 @@ export class AmeliaSupabaseMemory {
   private static async fetchCloudRows(session: AmeliaCloudSession): Promise<CloudRow[]> {
     const rows: CloudRow[] = [];
     for (let offset = 0; ; offset += 500) {
-      const response = await fetch(
+      const response = await fetchTimed(
         SUPABASE_URL + '/rest/v1/amelia_memory_records?select=store,record_id,payload,updated_at&order=updated_at.asc',
         {
           headers: {
@@ -166,7 +176,7 @@ export class AmeliaSupabaseMemory {
   private static async deleteStore(store: AmeliaMemoryStore): Promise<void> {
     const session = await this.getSession();
     if (!session) return;
-    const response = await fetch(SUPABASE_URL + '/rest/v1/amelia_memory_records?store=eq.' + encodeURIComponent(store), {
+    const response = await fetchTimed(SUPABASE_URL + '/rest/v1/amelia_memory_records?store=eq.' + encodeURIComponent(store), {
       method: 'DELETE',
       headers: {
         apikey: SUPABASE_PUBLISHABLE_KEY,
