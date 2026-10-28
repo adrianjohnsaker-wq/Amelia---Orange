@@ -63,29 +63,8 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
   const [cloudError, setCloudError] = useState('');
   const [cloudMessage, setCloudMessage] = useState('');
 
-  const activateCloudSession = async (session: AmeliaCloudSession | null, mounted = true) => {
+  const activateCloudSession = (session: AmeliaCloudSession | null) => {
     setCloudSession(session);
-    if (!session) {
-      AmeliaIndexedMemory.setCloudAdapter(null);
-      onCloudStatusChange?.(false);
-      return;
-    }
-    setCloudBusy(true);
-    setCloudError('');
-    try {
-      const result = await AmeliaSupabaseMemory.syncLocalMemory(session);
-      if (!mounted) return;
-      onCloudStatusChange?.(true);
-      if (result.runtimeCheckpoint?.state) onCloudRestore?.(result.runtimeCheckpoint.state);
-      setCloudMessage('Supabase synced · ' + result.uploaded + ' uploaded · ' + result.downloaded + ' restored');
-    } catch (error) {
-      if (!mounted) return;
-      AmeliaIndexedMemory.setCloudAdapter(null);
-      onCloudStatusChange?.(false);
-      setCloudError(error instanceof Error ? error.message : 'Supabase memory sync failed.');
-    } finally {
-      if (mounted) setCloudBusy(false);
-    }
   };
 
   const handleCloudSignIn = async (event: React.FormEvent) => {
@@ -96,6 +75,8 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
     try {
       await AmeliaSupabaseMemory.signIn(cloudEmail, cloudPassword);
       setCloudPassword('');
+      setCloudMessage('Signed in · cloud memory sync is starting.');
+      setCloudBusy(false);
     } catch (error) {
       setCloudError(error instanceof Error ? error.message : 'Supabase sign-in failed.');
       setCloudBusy(false);
@@ -121,7 +102,18 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
 
   const handleCloudSync = async () => {
     const session = await AmeliaSupabaseMemory.getSession();
-    if (session) await activateCloudSession(session);
+    if (!session) return;
+    setCloudBusy(true);
+    setCloudError('');
+    try {
+      const result = await AmeliaSupabaseMemory.syncLocalMemory(session);
+      if (result.runtimeCheckpoint?.state) onCloudRestore?.(result.runtimeCheckpoint.state);
+      setCloudMessage('Supabase synced · ' + result.uploaded + ' uploaded · ' + result.downloaded + ' restored');
+    } catch (error) {
+      setCloudError(error instanceof Error ? error.message : 'Supabase memory sync failed.');
+    } finally {
+      setCloudBusy(false);
+    }
   };
 
   const handleCloudSignOut = async () => {
@@ -181,10 +173,10 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
   useEffect(() => {
     let mounted = true;
     const unsubscribe = AmeliaSupabaseMemory.subscribe(session => {
-      void activateCloudSession(session, mounted);
+      if (mounted) activateCloudSession(session);
     });
     void AmeliaSupabaseMemory.getSession()
-      .then(session => activateCloudSession(session, mounted))
+      .then(session => { if (mounted) activateCloudSession(session); })
       .catch(error => {
         if (mounted) setCloudError(error instanceof Error ? error.message : 'Could not restore Supabase session.');
       });
