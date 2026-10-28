@@ -27,7 +27,7 @@ async function check(id: string, scope: string, finding: string, probe: () => un
 }
 const app = readFileSync("src/App.tsx", "utf8");
 const dialogue = readFileSync("src/components/AmeliaDialogueWindow.tsx", "utf8");
-const firestore = readFileSync("src/services/ameliaFirebaseMemory.ts", "utf8");
+const supabaseMemory = readFileSync("src/services/ameliaSupabaseMemory.ts", "utf8");
 const threeArmSource = readFileSync("src/ai/coupling/ThreeArmDiagnosticRunner.ts", "utf8");
 const paper6Source = readFileSync("src/bridge/phases/paper6H1ResistanceAssay.ts", "utf8");
 const runtimeSource = readFileSync("src/substrate/ameliaNumogramSubstrateRuntime.ts", "utf8");
@@ -154,12 +154,14 @@ async function main() {
     assert(app.includes("runtime.setMomentumDamping(momentumDamping)"));
     return { tuningApplied: true };
   });
-  await check("T13", "Storage", "Tablet build bypasses remote Firestore and uses localStorage for chat", () => {
-    assert(firestore.includes("import.meta.env.VITE_AMELIA_LOCAL_ONLY === '1'"));
-    assert(firestore.includes("if (this.localOnly) return msg.id;"));
-    assert(dialogue.includes("localStorage.setItem("));
+  await check("T13", "Storage", "Tablet mode keeps the IndexedDB cache and authenticated Supabase memory path without Firestore", () => {
+    assert(app.includes("VITE_AMELIA_LOCAL_ONLY"));
+    assert(app.includes("AmeliaIndexedMemory"));
+    assert(app.includes("AmeliaSupabaseMemory.syncLocalMemory(session)"));
+    assert(supabaseMemory.includes("/rest/v1/amelia_memory_records"));
+    assert(dialogue.includes("AmeliaLocalMemoryService.saveDialogueMessage("));
     return { buildFlag: process.env.VITE_AMELIA_LOCAL_ONLY ?? "unset",
-      transcriptStorage: "WebView localStorage; not sealed PFM" };
+      localCache: "IndexedDB", cloudArchive: "Supabase", firestoreReadsWrites: false };
   }, "LIMITATION_CONFIRMED");
   await check("T14", "Shared morphogenetic field", "Field consumes the exact existing main runtime object", () => {
     const a = initMorphogeneticState(12, 12, "SYZYGETIC_GRID", 101, 0.003, undefined, runtime);
