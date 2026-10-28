@@ -105,12 +105,15 @@ export class AmeliaIndexedMemory {
       records.set(value.id, value as StoredRecord);
       if (typeof console !== 'undefined') console.warn('Amelia IndexedDB unavailable; using memory for this session.', error);
     }
-    notify(store);
     if (cloudAdapter) {
-      void cloudAdapter.upsert(store, value as Record<string, unknown>).catch(error => {
-        if (typeof console !== 'undefined') console.warn('Amelia cloud memory sync is pending.', error);
-      });
+      try {
+        await cloudAdapter.upsert(store, value as Record<string, unknown>);
+      } catch (error) {
+        persisted = false;
+        if (typeof console !== 'undefined') console.warn('Amelia cloud memory sync failed; the local copy remains available.', error);
+      }
     }
+    notify(store);
     return persisted;
   }
 
@@ -146,9 +149,11 @@ export class AmeliaIndexedMemory {
     }
     notify(store);
     if (cloudAdapter) {
-      void cloudAdapter.clear(store).catch(error => {
-        if (typeof console !== 'undefined') console.warn('Amelia cloud memory delete is pending.', error);
-      });
+      try {
+        await cloudAdapter.clear(store);
+      } catch (error) {
+        if (typeof console !== 'undefined') console.warn('Amelia cloud memory delete failed.', error);
+      }
     }
   }
 
