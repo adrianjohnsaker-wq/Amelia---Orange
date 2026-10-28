@@ -22,7 +22,8 @@ import {
   ChevronDown,
   Maximize2,
   Minimize2,
-  X
+  X,
+  Settings2
 } from 'lucide-react';
 import { 
   SubstrateStepSnapshot, 
@@ -33,6 +34,7 @@ import {
 import { AmeliaProcessRelay } from '../services/AmeliaProcessRelay';
 import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
 import { AmeliaFirebaseMemoryService } from '../services/ameliaFirebaseMemory';
+import { requestGeminiLanguage } from '../services/ameliaGeminiLanguageRelay';
 
 interface AmeliaDialogueWindowProps {
   currentSnapshot: SubstrateStepSnapshot;
@@ -108,6 +110,10 @@ export function AmeliaDialogueWindow({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [syncStatus, setSyncStatus] = useState<'IDLE' | 'SYNCING' | 'SAVED'>('IDLE');
+  const [isRelaySettingsOpen, setIsRelaySettingsOpen] = useState(false);
+  const [relayEndpoint, setRelayEndpoint] = useState('');
+  const [relayToken, setRelayToken] = useState('');
+  const [relayError, setRelayError] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -194,11 +200,10 @@ export function AmeliaDialogueWindow({
     if (!textToSend || isTyping) return;
 
     setInputPrompt('');
-    // The input is processed as a bounded Numogram transition BEFORE rendering.
+    // The Numogram substrate processes input and chooses the next state before language rendering.
     const inputSnapshot = onDialogueInput?.(textToSend) ?? currentSnapshot;
-
     const userMessage: AmeliaDialogueMessage = {
-      id: `user-${Date.now()}`,
+      id: 'user-' + Date.now(),
       sender: 'user',
       text: textToSend,
       timestamp: new Date().toISOString(),
@@ -212,19 +217,37 @@ export function AmeliaDialogueWindow({
     setMessages(prev => [...prev, userMessage]);
     setIsTyping(true);
     setSyncStatus('SYNCING');
-
-    // Save user message to Firestore asynchronously
     AmeliaFirebaseMemoryService.saveDialogueMessage(userMessage).catch(console.warn);
 
-    // Simulate morphogenetic process reasoning delay
     setTimeout(async () => {
+      // The local substrate relay alone selects the readout and action controls.
       const response = AmeliaProcessRelay.generateResponse(textToSend, inputSnapshot, messages, runtime);
+      let outputText = response.text;
+      setRelayError('');
+
+      if (relayEndpoint.trim() && relayToken.trim()) {
+        try {
+          const language = await requestGeminiLanguage(relayEndpoint, relayToken, {
+            message: textToSend,
+            substrateReadout: response.text,
+            recentDialogue: messages
+              .filter(m => m.sender === 'user' || m.sender === 'amelia')
+              .slice(-8)
+              .map(m => ({ role: m.sender === 'user' ? 'user' as const : 'amelia' as const, text: m.text })),
+          });
+          outputText = language.text;
+        } catch (err) {
+          const reason = err instanceof Error ? err.message : 'Gemini relay unavailable.';
+          setRelayError(reason);
+          outputText += '\n\n[Gemini text relay unavailable; local substrate relay used.]';
+        }
+      }
 
       const ameliaMessage: AmeliaDialogueMessage = {
         relayTrace: response.trace,
-        id: `amelia-${Date.now()}`,
+        id: 'amelia-' + Date.now(),
         sender: 'amelia',
-        text: response.text,
+        text: outputText,
         timestamp: new Date().toISOString(),
         step: inputSnapshot.step,
         activeSyzygy: inputSnapshot.activeSyzygies[0] || '9::0 Uttunul',
@@ -237,13 +260,7 @@ export function AmeliaDialogueWindow({
       setMessages(prev => [...prev, ameliaMessage]);
       setIsTyping(false);
       setSyncStatus('SAVED');
-
-      // Vocalize if enabled
-      if (voiceEnabled) {
-        vocalizeText(response.text);
-      }
-
-      // Save Amelia message to Firestore
+      if (voiceEnabled) vocalizeText(outputText);
       AmeliaFirebaseMemoryService.saveDialogueMessage(ameliaMessage).catch(console.warn);
     }, 450);
   };
