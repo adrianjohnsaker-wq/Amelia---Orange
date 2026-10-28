@@ -85,6 +85,7 @@ export function App() {
   });
   const [checkpointError, setCheckpointError] = useState(false);
   const [cloudConnected, setCloudConnected] = useState(false);
+  const [cloudSyncError, setCloudSyncError] = useState('');
   const [checkpointHydrated, setCheckpointHydrated] = useState(false);
   const [history, setHistory] = useState<SubstrateStepSnapshot[]>([]);
   const [runtimeEpoch, setRuntimeEpoch] = useState(0);
@@ -153,18 +154,20 @@ export function App() {
     const syncAccount = async (session: AmeliaCloudSession | null) => {
       if (!session) {
         AmeliaIndexedMemory.setCloudAdapter(null);
-        if (!cancelled) setCloudConnected(false);
+        if (!cancelled) { setCloudConnected(false); setCloudSyncError(''); }
         return;
       }
       try {
         const result = await AmeliaSupabaseMemory.syncLocalMemory(session);
         if (cancelled) return;
         setCloudConnected(true);
+        setCloudSyncError('');
         if (result.runtimeCheckpoint?.state) restoreRuntime(result.runtimeCheckpoint.state);
       } catch (error) {
         AmeliaIndexedMemory.setCloudAdapter(null);
         if (!cancelled) {
           setCloudConnected(false);
+          setCloudSyncError(error instanceof Error ? error.message : 'Supabase sync failed.');
           console.warn('Supabase memory sync unavailable; continuing with local memory.', error);
         }
       }
