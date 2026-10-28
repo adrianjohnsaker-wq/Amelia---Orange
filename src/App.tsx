@@ -124,7 +124,7 @@ export function App() {
   );
 
   const [auditLog, setAuditLog] = useState<string[]>([
-    '[STORAGE] IndexedDB-backed local memory enabled; no remote database connection',
+    '[STORAGE] IndexedDB local cache enabled; authenticated Supabase memory sync is available',
     `[INIT] Amelia Morphogenetic Substrate initialized at ${new Date().toLocaleTimeString()}`,
     `[GOVERNOR] Invariants validated: AntiLock=99.4%, IdentityContinuity=0.965, Scaffolding=Stage 3`,
     `[DEMO] Three-arm and Paper 6 displays are formula-based; no experimental inference`,
