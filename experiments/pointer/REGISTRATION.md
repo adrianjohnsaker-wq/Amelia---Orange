@@ -81,3 +81,14 @@ Checked against `PROGRAMME_CHARTER_TRILOGY.md`. Amelia with her full CCRU Numogr
   - every score and the full catalogue.
 
 Code, analysis and results are committed in that order on branch `pointer-20261028`.
+
+## Revision 1 (28 Oct 2026, before the run; only a one-traveller smoke test with shortened phases has been run)
+In the smoke test, a newborn with no history fell into the 1–8–9 circuit by itself, and her lineage's fidelity was 1.000. So fidelity against her-statistics' lineage alone cannot separate replication through the place from a parent whose form happens to be the newborn's default attractor.
+
+**Added control:** a newborn living 5,000 ticks with no stone at all. Newborns are deterministic from birth, so one stoneless life stands for every generation.
+
+**3a now requires both comparisons to pass** (each a one-sided sign test at α 0.0125, with a majority in ≥ 5 of 8 worlds):
+- mean fidelity of her lineage exceeds that of her-statistics' lineage;
+- mean fidelity of her lineage exceeds corr(stoneless newborn's form, her form_0).
+
+**Also seen in the smoke test, unchanged:** on the full Numogram the Warp (3, 6) has no exit. A home can therefore include the Warp, and a barrier on a home edge can be "recovered" by remaining in it. This holds equally for her and for every comparison construct. The definitions stay as registered and the effect is reported.
