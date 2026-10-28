@@ -1,0 +1,55 @@
+# THE POINTER IV: one RFC3161 token over the registration, code and answers, which must precede 29 Oct 2026 12:00 UTC (the first target round).
+name: POINTER IV seal (one-shot, before the targets exist)
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pointer4-seal.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: pointer4
+  cancel-in-progress: false
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: main }
+      - uses: actions/checkout@v4
+        with: { ref: 99530f292672227c2a1e228d205da0bd0178fd13, path: code }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: seal answers before the targets
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+        run: |
+          set -euo pipefail
+          if git -C main ls-remote --exit-code --heads origin pointer4-live >/dev/null; then echo POINTER4_ALREADY_SEALED; exit 0; fi
+          test "$(sha256sum code/experiments/pointer4/answers.json | cut -d' ' -f1)" = e0b32090f535ed6fb4201d02542b3ed9b0344b695daeaf59eeb73f84c3972f72
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          mkdir -p live/seal && cp code/experiments/pointer4/answers.json live/answers.json
+          python - <<'PY'
+          import hashlib, json, pathlib, datetime
+          from drift1a_c1.beacon import Sealer
+          sha = lambda p: hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          files = ['code/experiments/pointer4/' + f for f in ('REGISTRATION.md', 'answers.mjs', 'targets.py', 'score.py', 'fresh_start_states.json', 'answers.json')]
+          files += ['code/experiments/pointer3/s05c_full.mjs', 'code/experiments/numogram/CCRUNumogram.ts']
+          files += ['main/.github/workflows/pointer4-' + f + '.yml' for f in ('seal', 'score')]
+          bundle = {'schema': 'POINTER4_SEAL_V1', 'codeCommit': '99530f292672227c2a1e228d205da0bd0178fd13', 'targetsFromUTC': '2026-10-29T12:00:00Z',
+                    'sourceSHA256': [{'path': f.split('/', 1)[1], 'sha256': sha(f)} for f in files]}
+          p = pathlib.Path('live/seal'); (p / 'POINTER4_BUNDLE.json').write_text(json.dumps(bundle, sort_keys=True, indent=2) + '\n')
+          imprint = sha(p / 'POINTER4_BUNDLE.json')
+          before = datetime.datetime(2026, 10, 29, 12, tzinfo=datetime.timezone.utc).timestamp()
+          Sealer().seal(p / 'token', imprint, before)
+          assert Sealer().verify(p / 'token', imprint, before)['status'] == 'PASS'
+          print('POINTER4_SEALED_BEFORE_TARGETS', imprint)
+          PY
+          cd live && git init -q -b pointer4-live && git add -A
+          git -c user.name='pointer4' -c user.email='pointer4@users.noreply.github.com' commit -qm 'THE POINTER IV: answers sealed before the targets exist'
+          git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          git push -q origin pointer4-live

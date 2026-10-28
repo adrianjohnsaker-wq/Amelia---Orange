@@ -1,0 +1,59 @@
+# THE POINTER IV scoring: once, after 29 Oct 2026 12:15 UTC: verify the seal, fetch and BLS-verify the target rounds, score.
+name: POINTER IV score
+on:
+  schedule:
+    - cron: '47 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: pointer4
+  cancel-in-progress: false
+jobs:
+  score:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: due
+        id: w
+        run: |
+          if [ "$(date -u +%s)" -lt "$(date -u -d '2026-10-29T12:15:00Z' +%s)" ]; then echo go=no >> "$GITHUB_OUTPUT"; else echo go=yes >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/checkout@v4
+        if: steps.w.outputs.go == 'yes'
+        with: { ref: pointer4-live, path: live }
+      - name: already scored?
+        id: d
+        if: steps.w.outputs.go == 'yes'
+        run: if [ -e live/results/RESULT.txt ]; then echo go=no >> "$GITHUB_OUTPUT"; else echo go=yes >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/checkout@v4
+        if: steps.d.outputs.go == 'yes'
+        with: { ref: 99530f292672227c2a1e228d205da0bd0178fd13, path: code }
+      - uses: actions/checkout@v4
+        if: steps.d.outputs.go == 'yes'
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        if: steps.d.outputs.go == 'yes'
+        with: { python-version: '3.12' }
+      - name: verify seal, fetch targets, score, commit
+        if: steps.d.outputs.go == 'yes'
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+        run: |
+          set -euo pipefail
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          cmp live/answers.json code/experiments/pointer4/answers.json
+          python - <<'PY'
+          import hashlib, pathlib, datetime
+          from drift1a_c1.beacon import Sealer
+          imprint = hashlib.sha256(pathlib.Path('live/seal/POINTER4_BUNDLE.json').read_bytes()).hexdigest()
+          before = datetime.datetime(2026, 10, 29, 12, tzinfo=datetime.timezone.utc).timestamp()
+          assert Sealer().verify('live/seal/token', imprint, before)['status'] == 'PASS'
+          print('POINTER4_SEAL_VERIFIED_BEFORE_TARGETS')
+          PY
+          mkdir -p live/results
+          python code/experiments/pointer4/targets.py live/answers.json live/results/targets.json
+          python -I code/experiments/pointer4/score.py live/answers.json live/results/targets.json | tee live/results/RESULT.txt
+          cd live && git add -A
+          git -c user.name='pointer4' -c user.email='pointer4@users.noreply.github.com' commit -qm 'THE POINTER IV result'
+          for i in 1 2 3 4; do git push -q origin HEAD:pointer4-live && exit 0; sleep $((2**i)); git pull -q --rebase origin pointer4-live; done; exit 1
