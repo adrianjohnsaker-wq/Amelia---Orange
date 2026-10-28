@@ -3,6 +3,7 @@ import { AmeliaIndexedMemory, AmeliaMemoryStore } from './ameliaIndexedMemory';
 const SUPABASE_URL = 'https://rcgmtdponfljpribggsq.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3v_kyheXh9ODr0qQl1cXdg_5kPbHQIm';
 const SESSION_KEY = 'amelia_supabase_session_v1';
+const OWNER_KEY = 'amelia_supabase_memory_owner_v1';
 const STORES: AmeliaMemoryStore[] = ['runtime', 'dialogue', 'processMemory', 'canalizationRuns', 'paper6Assays', 'snapshots'];
 
 export interface AmeliaCloudSession {
@@ -165,7 +166,7 @@ export class AmeliaSupabaseMemory {
   private static async deleteStore(store: AmeliaMemoryStore): Promise<void> {
     const session = await this.getSession();
     if (!session) return;
-    await fetch(SUPABASE_URL + '/rest/v1/amelia_memory_records?store=eq.' + encodeURIComponent(store), {
+    const response = await fetch(SUPABASE_URL + '/rest/v1/amelia_memory_records?store=eq.' + encodeURIComponent(store), {
       method: 'DELETE',
       headers: {
         apikey: SUPABASE_PUBLISHABLE_KEY,
@@ -173,6 +174,7 @@ export class AmeliaSupabaseMemory {
         Prefer: 'return=minimal',
       },
     });
+    if (!response.ok) throw new Error('Supabase memory delete failed (' + response.status + ').');
   }
 
   static async syncLocalMemory(session: AmeliaCloudSession): Promise<{
@@ -180,6 +182,13 @@ export class AmeliaSupabaseMemory {
     uploaded: number;
     downloaded: number;
   }> {
+    const savedOwner = (() => {
+      try { return localStorage.getItem(OWNER_KEY); } catch { return null; }
+    })();
+    if (savedOwner && savedOwner !== session.user.id) {
+      throw new Error('This device’s local cache is linked to a different Supabase account. Export it before switching accounts.');
+    }
+    const sameOwner = savedOwner === session.user.id;
     AmeliaIndexedMemory.setCloudAdapter(null);
     const [remoteRows, localArchive] = await Promise.all([
       this.fetchCloudRows(session),
@@ -202,7 +211,7 @@ export class AmeliaSupabaseMemory {
       const local = localByKey.get(key);
       const localTime = local ? Date.parse(String(local.payload.updatedAt || local.payload.timestamp || '')) || 0 : 0;
       const remoteTime = remote ? Date.parse(remote.updated_at) || 0 : 0;
-      if (remote && (!local || remoteTime > localTime)) {
+      if (remote && (!local || !sameOwner || remoteTime > localTime)) {
         await AmeliaIndexedMemory.put(remote.store, remote.payload as { id: string });
         downloaded++;
       } else if (local) {
@@ -211,6 +220,7 @@ export class AmeliaSupabaseMemory {
       }
     }
 
+    try { localStorage.setItem(OWNER_KEY, session.user.id); } catch { /* Account link survives for this session only. */ }
     AmeliaIndexedMemory.setCloudAdapter({
       upsert: (store, record) => this.upsertRecord(store, record),
       clear: store => this.deleteStore(store),
