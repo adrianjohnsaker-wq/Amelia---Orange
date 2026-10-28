@@ -34,7 +34,6 @@ interface LocalMemoryHubProps {
   selectedDepth: number;
   selectedSeed: number;
   onCloudRestore?: (state: unknown) => void;
-  onCloudStatusChange?: (connected: boolean) => void;
 }
 
 export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
@@ -45,8 +44,7 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
   threeArmResults,
   selectedDepth,
   selectedSeed,
-  onCloudRestore,
-  onCloudStatusChange
+  onCloudRestore
 }) => {
   const [records, setRecords] = useState<LocalProcessMemoryRecord[]>([]);
   const [runs, setRuns] = useState<LocalCanalizationRun[]>([]);
@@ -92,6 +90,9 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
       setCloudPassword('');
       if (result.confirmationRequired) {
         setCloudMessage('Check your email to confirm the account, then sign in here.');
+        setCloudBusy(false);
+      } else {
+        setCloudMessage('Account created · cloud memory sync is starting.');
         setCloudBusy(false);
       }
     } catch (error) {
