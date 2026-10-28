@@ -57,12 +57,11 @@ import { MidPlexProbeResults } from './components/MidPlexProbeResults';
 import { HyperstitionTestDashboard } from './components/HyperstitionTestDashboard';
 import { DevelopmentalBenchmarkMatrix } from './components/DevelopmentalBenchmarkMatrix';
 import { ExternalRhythmAdvisoryPanel } from './components/ExternalRhythmAdvisoryPanel';
-import { FirebaseMemoryHub } from './components/FirebaseMemoryHub';
+import { LocalMemoryHub } from './components/FirebaseMemoryHub';
 import { SubstrateAuditConsole } from './components/SubstrateAuditConsole';
 import { AmeliaDialogueWindow } from './components/AmeliaDialogueWindow';
 import { LiveMorphogeneticLab } from './components/LiveMorphogeneticLab';
 import { Thread3EncodingActivationLab } from './components/Thread3EncodingActivationLab';
-import { AmeliaFirebaseMemoryService } from './services/ameliaFirebaseMemory';
 import { AmeliaIndexedMemory } from './services/ameliaIndexedMemory';
 
 const LOCAL_CHECKPOINT_KEY = 'amelia_pfm_shared_runtime_v2';
@@ -857,7 +856,7 @@ export function App() {
 
           {/* TAB 9: FIRESTORE PROCESS MEMORY HUB */}
           {activeTab === 'firebase' && (
-            <FirebaseMemoryHub 
+            <LocalMemoryHub 
               currentSnapshot={snapshot}
               allP6Results={allP6Results}
               threeArmResults={threeArmResults}
