@@ -17,15 +17,15 @@ import {
   Lock
 } from 'lucide-react';
 import { 
-  Amelialocal archiveMemoryService, 
-  local archiveProcessMemoryRecord, 
-  local archiveCanalizationRun 
-} from '../services/amelialocal archiveMemory';
+  AmeliaFirebaseMemoryService, 
+  FirebaseProcessMemoryRecord, 
+  FirebaseCanalizationRun 
+} from '../services/ameliaFirebaseMemory';
 import { SubstrateStepSnapshot, Paper6AssayResult, CanalizationArmResult } from '../types/amelia';
 
-interface local archiveMemoryHubProps {
+interface FirebaseMemoryHubProps {
   currentSnapshot: SubstrateStepSnapshot;
-  onRestoreSnapshot?: (record: local archiveProcessMemoryRecord) => void;
+  onRestoreSnapshot?: (record: FirebaseProcessMemoryRecord) => void;
   onLog: (msg: string) => void;
   allP6Results: Paper6AssayResult[];
   threeArmResults: Record<string, CanalizationArmResult>;
@@ -33,7 +33,7 @@ interface local archiveMemoryHubProps {
   selectedSeed: number;
 }
 
-export const local archiveMemoryHub: React.FC<local archiveMemoryHubProps> = ({
+export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
   currentSnapshot,
   onRestoreSnapshot,
   onLog,
@@ -42,8 +42,8 @@ export const local archiveMemoryHub: React.FC<local archiveMemoryHubProps> = ({
   selectedDepth,
   selectedSeed
 }) => {
-  const [records, setRecords] = useState<local archiveProcessMemoryRecord[]>([]);
-  const [runs, setRuns] = useState<local archiveCanalizationRun[]>([]);
+  const [records, setRecords] = useState<FirebaseProcessMemoryRecord[]>([]);
+  const [runs, setRuns] = useState<FirebaseCanalizationRun[]>([]);
   const [p6Assays, setP6Assays] = useState<Paper6AssayResult[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
@@ -59,13 +59,13 @@ export const local archiveMemoryHub: React.FC<local archiveMemoryHubProps> = ({
     const initLocalMemory = async () => {
       setLoading(true);
       try {
-        await Amelialocal archiveMemoryService.init();
+        await AmeliaFirebaseMemoryService.init();
         
         // Initial fetches
         const [initialMem, initialRuns, initialP6] = await Promise.all([
-          Amelialocal archiveMemoryService.fetchProcessMemory(30),
-          Amelialocal archiveMemoryService.fetchCanalizationRuns(30),
-          Amelialocal archiveMemoryService.fetchPaper6Assays()
+          AmeliaFirebaseMemoryService.fetchProcessMemory(30),
+          AmeliaFirebaseMemoryService.fetchCanalizationRuns(30),
+          AmeliaFirebaseMemoryService.fetchPaper6Assays()
         ]);
         
         setRecords(initialMem);
@@ -74,12 +74,12 @@ export const local archiveMemoryHub: React.FC<local archiveMemoryHubProps> = ({
         setLastSyncTime(new Date().toLocaleTimeString());
 
         // Realtime subscriptions
-        unsubscribeMemory = Amelialocal archiveMemoryService.subscribeProcessMemory((newRecords) => {
+        unsubscribeMemory = AmeliaFirebaseMemoryService.subscribeProcessMemory((newRecords) => {
           setRecords(newRecords);
           setLastSyncTime(new Date().toLocaleTimeString());
         });
 
-        unsubscribeRuns = Amelialocal archiveMemoryService.subscribeCanalizationRuns((newRuns) => {
+        unsubscribeRuns = AmeliaFirebaseMemoryService.subscribeCanalizationRuns((newRuns) => {
           setRuns(newRuns);
           setLastSyncTime(new Date().toLocaleTimeString());
         });
@@ -105,10 +105,10 @@ export const local archiveMemoryHub: React.FC<local archiveMemoryHubProps> = ({
     if (!autoSync) return;
     const syncInterval = setInterval(async () => {
       try {
-        await Amelialocal archiveMemoryService.saveSnapshot(currentSnapshot);
+        await AmeliaFirebaseMemoryService.saveSnapshot(currentSnapshot);
         // Only record process memory periodically
         if (currentSnapshot.step % 10 === 0) {
-          await Amelialocal archiveMemoryService.recordProcessMemory(currentSnapshot);
+          await AmeliaFirebaseMemoryService.recordProcessMemory(currentSnapshot);
           setLastSyncTime(new Date().toLocaleTimeString());
         }
       } catch (e) {
@@ -122,8 +122,8 @@ export const local archiveMemoryHub: React.FC<local archiveMemoryHubProps> = ({
   const handleManualCommit = async () => {
     setIsSyncing(true);
     try {
-      const memId = await Amelialocal archiveMemoryService.recordProcessMemory(currentSnapshot);
-      await Amelialocal archiveMemoryService.saveSnapshot(currentSnapshot);
+      const memId = await AmeliaFirebaseMemoryService.recordProcessMemory(currentSnapshot);
+      await AmeliaFirebaseMemoryService.saveSnapshot(currentSnapshot);
       setLastSyncTime(new Date().toLocaleTimeString());
       onLog(`[STORAGE-COMMIT] Substrate Step #${currentSnapshot.step} memory stored locally (ID: ${memId})`);
     } catch (err: any) {
@@ -137,19 +137,19 @@ export const local archiveMemoryHub: React.FC<local archiveMemoryHubProps> = ({
     setIsSyncing(true);
     try {
       // Commit 3-arm run
-      const runId = await Amelialocal archiveMemoryService.saveCanalizationRun(selectedDepth, selectedSeed, threeArmResults as any);
+      const runId = await AmeliaFirebaseMemoryService.saveCanalizationRun(selectedDepth, selectedSeed, threeArmResults as any);
       
       // Batch commit all P6 results
       let count = 0;
       for (const assay of allP6Results) {
-        await Amelialocal archiveMemoryService.savePaper6Assay(assay);
+        await AmeliaFirebaseMemoryService.savePaper6Assay(assay);
         count++;
       }
 
       onLog(`[STORAGE-ASSAYS] Saved Canalization Run (ID: ${runId}) and ${count} Paper 6 rows locally`);
       
       // Refresh assays
-      const updatedP6 = await Amelialocal archiveMemoryService.fetchPaper6Assays();
+      const updatedP6 = await AmeliaFirebaseMemoryService.fetchPaper6Assays();
       setP6Assays(updatedP6);
       setLastSyncTime(new Date().toLocaleTimeString());
     } catch (err: any) {
