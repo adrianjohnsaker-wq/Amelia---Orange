@@ -9,14 +9,14 @@ export interface AmeliaLanguageRelayReply {
   model: string;
 }
 
-export async function requestGeminiLanguage(
+export async function requestAnthropicLanguage(
   endpoint: string,
   relayToken: string,
   payload: AmeliaLanguageRelayRequest,
   signal?: AbortSignal
 ): Promise<AmeliaLanguageRelayReply> {
   const url = endpoint.trim();
-  if (!url) throw new Error('Gemini relay endpoint is not configured.');
+  if (!url) throw new Error('Anthropic relay endpoint is not configured.');
   if (!relayToken.trim()) throw new Error('Enter the Amelia relay access token.');
   const response = await fetch(url, {
     method: 'POST',
@@ -29,10 +29,10 @@ export async function requestGeminiLanguage(
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(typeof data.error === 'string' ? data.error : `Gemini relay request failed (${response.status}).`);
+    throw new Error(typeof data.error === 'string' ? data.error : `Anthropic relay request failed (${response.status}).`);
   }
   if (typeof data.text !== 'string' || !data.text.trim()) {
-    throw new Error('Gemini relay returned no text.');
+    throw new Error('Anthropic relay returned no text.');
   }
-  return { text: data.text.trim(), model: typeof data.model === 'string' ? data.model : 'Gemini' };
+  return { text: data.text.trim(), model: typeof data.model === 'string' ? data.model : 'Anthropic' };
 }

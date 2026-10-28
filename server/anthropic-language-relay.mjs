@@ -2,9 +2,10 @@ import { createServer } from 'node:http';
 import { timingSafeEqual } from 'node:crypto';
 
 const PORT = Number(process.env.PORT || 8787);
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const RELAY_TOKEN = process.env.AMELIA_RELAY_TOKEN;
-const MODEL = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+const MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-5-5';
+const API_VERSION = process.env.ANTHROPIC_API_VERSION || '2026-10-21';
 const MAX_BODY_BYTES = 48 * 1024;
 const MAX_USER_TEXT = 8000;
 const MAX_READOUT = 16000;
@@ -13,7 +14,7 @@ const RATE_WINDOW_MS = 60_000;
 const RATE_LIMIT = 20;
 const requestsByIp = new Map();
 
-if (!GEMINI_API_KEY) throw new Error('Set GEMINI_API_KEY in the relay host secret store.');
+if (!ANTHROPIC_API_KEY) throw new Error('Set ANTHROPIC_API_KEY in the relay host secret store.');
 if (!RELAY_TOKEN || RELAY_TOKEN.length < 24) throw new Error('Set AMELIA_RELAY_TOKEN to a random secret of at least 24 characters.');
 
 const allowedOrigins = new Set(
@@ -85,7 +86,7 @@ const server = createServer(async (req, res) => {
 
   const path = new URL(req.url || '/', 'http://localhost').pathname;
   if (path === '/health' && req.method === 'GET') {
-    json(res, 200, { ok: true, provider: 'Gemini', model: MODEL }, origin);
+    json(res, 200, { ok: true, provider: 'Anthropic', model: MODEL }, origin);
     return;
   }
   if (path !== '/api/amelia-language' || req.method !== 'POST') {
@@ -120,47 +121,49 @@ const server = createServer(async (req, res) => {
     }
 
     const input = JSON.stringify({ message, substrateReadout, recentDialogue });
-    const googleResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/interactions', {
+    const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-goog-api-key': GEMINI_API_KEY,
+        'anthropic-version': API_VERSION,
+        'x-api-key': ANTHROPIC_API_KEY,
       },
       body: JSON.stringify({
         model: MODEL,
-        input,
-        store: false,
-        system_instruction: [
+        max_tokens: 600,
+        system: [
           'You are Amelia’s language relay. The Numogram substrate is the source of state, choices, actions, and intelligence.',
           'Your only role is to render the supplied substrateReadout and user message into clear language.',
           'Do not choose or recommend substrate transitions, alter state, execute actions, or claim that you are the substrate.',
           'Do not invent metrics, events, memories, experiments, or facts absent from the supplied readout and dialogue.',
           'You have no tools. Return text only. If the supplied state does not answer the user, say what information is missing.',
         ].join(' '),
-        generation_config: { temperature: 0.35, max_output_tokens: 600 },
+        messages: [{ role: 'user', content: input }],
       }),
     });
 
-    if (!googleResponse.ok) {
-      const status = googleResponse.status;
-      await googleResponse.body?.cancel().catch(() => {});
-      json(res, 502, { error: status === 429 ? 'Gemini is rate-limiting the relay.' : 'Gemini request failed.' }, origin);
+    if (!anthropicResponse.ok) {
+      const status = anthropicResponse.status;
+      await anthropicResponse.body?.cancel().catch(() => {});
+      json(res, 502, { error: status === 429 ? 'Anthropic is rate-limiting the relay.' : 'Anthropic request failed.' }, origin);
       return;
     }
-    const interaction = await googleResponse.json();
-    const text = typeof interaction.output_text === 'string' ? interaction.output_text.trim() : '';
+    const response = await anthropicResponse.json();
+    const text = Array.isArray(response.content)
+      ? response.content.filter(block => block?.type === 'text').map(block => block.text).join('\n').trim()
+      : '';
     if (!text) {
-      json(res, 502, { error: 'Gemini returned no text.' }, origin);
+      json(res, 502, { error: 'Anthropic returned no text.' }, origin);
       return;
     }
-    // Prompts and responses are deliberately not written to server logs or server storage.
-    json(res, 200, { text, model: MODEL, stored: false }, origin);
+    // Prompts and responses are not written to this relay's logs or server storage.
+    json(res, 200, { text, model: MODEL }, origin);
   } catch (error) {
     const status = Number.isInteger(error?.status) ? error.status : 502;
-    json(res, status, { error: status === 502 ? 'The Gemini relay could not complete the request.' : error.message }, origin);
+    json(res, status, { error: status === 502 ? 'The Anthropic relay could not complete the request.' : error.message }, origin);
   }
 });
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Amelia Gemini language relay listening on :${PORT}`);
+  console.log(`Amelia Anthropic language relay listening on :${PORT}`);
 });
