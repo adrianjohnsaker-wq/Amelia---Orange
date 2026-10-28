@@ -162,20 +162,30 @@ export function App() {
 
   useEffect(() => {
     if (!checkpointHydrated) return;
-    const persist = () => {
+    const persist = async () => {
       const record = { version: 2, state: runtimeRef.current.exportState() };
       try {
         localStorage.setItem(LOCAL_CHECKPOINT_KEY, JSON.stringify(record));
-        setCheckpointError(false);
       } catch (err) {
+        // IndexedDB is the primary store; this legacy cache is best-effort only.
         console.warn('Legacy local checkpoint cache unavailable', err);
-        setCheckpointError(true);
       }
-      void AmeliaIndexedMemory.put('runtime', { id: 'live-checkpoint', ...record, updatedAt: new Date().toISOString() });
+      const snapshotRecord = {
+        id: 'step-' + snapshot.step,
+        step: snapshot.step,
+        timestamp: snapshot.timestamp || new Date().toISOString(),
+        snapshot,
+      };
+      const [checkpointSaved, snapshotSaved] = await Promise.all([
+        AmeliaIndexedMemory.put('runtime', { id: 'live-checkpoint', ...record, updatedAt: new Date().toISOString() }),
+        AmeliaIndexedMemory.put('snapshots', snapshotRecord),
+      ]);
+      setCheckpointError(!checkpointSaved || !snapshotSaved);
     };
-    const task = setTimeout(persist, 220);
-    window.addEventListener('pagehide', persist);
-    return () => { clearTimeout(task); window.removeEventListener('pagehide', persist); };
+    const task = setTimeout(() => { void persist(); }, 220);
+    const onPageHide = () => { void persist(); };
+    window.addEventListener('pagehide', onPageHide);
+    return () => { clearTimeout(task); window.removeEventListener('pagehide', onPageHide); };
   }, [snapshot, checkpointHydrated]);
 
   const handleExportCheckpoint = () => {
