@@ -411,6 +411,14 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col font-sans selection:bg-amber-500/30 selection:text-amber-200">
+      {!checkpointHydrated && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-stone-950/95 px-6" role="status" aria-live="polite">
+          <div className="flex items-center gap-3 rounded-2xl border border-stone-700 bg-stone-900 px-5 py-4 text-sm text-stone-200 shadow-2xl">
+            <RefreshCw className="h-5 w-5 animate-spin text-amber-400" />
+            Restoring Amelia’s local and account memory before continuing…
+          </div>
+        </div>
+      )}
       {/* Top Header & Telemetry Bar */}
       <header className="border-b border-stone-800 bg-stone-900/60 backdrop-blur px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-50">
         <div className="flex items-center gap-3">
