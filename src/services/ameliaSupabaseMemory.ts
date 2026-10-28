@@ -28,6 +28,43 @@ async function fetchTimed(input: RequestInfo | URL, init: RequestInit = {}): Pro
   }
 }
 let sessionCache: AmeliaCloudSession | null | undefined;
+let redirectSessionPromise: Promise<AmeliaCloudSession | null> | null = null;
+
+async function restoreAuthRedirect(): Promise<AmeliaCloudSession | null> {
+  if (typeof window === 'undefined' || !window.location.hash) return null;
+  const params = new URLSearchParams(window.location.hash.slice(1));
+  const error = params.get('error_description') || params.get('error');
+  if (error) {
+    window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search);
+    throw new Error(error);
+  }
+  const accessToken = params.get('access_token');
+  const refreshToken = params.get('refresh_token');
+  if (!accessToken || !refreshToken) return null;
+
+  const user = await requestJson('/auth/v1/user', { method: 'GET' }, accessToken);
+  if (!user?.id) throw new Error('Supabase confirmation returned no user identity.');
+  const session: AmeliaCloudSession = {
+    access_token: accessToken,
+    refresh_token: refreshToken,
+    expires_at: Date.now() + Number(params.get('expires_in') || 3600) * 1000,
+    user: { id: user.id, email: user.email },
+  };
+  setSession(session);
+  window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search);
+  return session;
+}
+
+async function getRedirectSession(): Promise<AmeliaCloudSession | null> {
+  if (!redirectSessionPromise) {
+    redirectSessionPromise = restoreAuthRedirect();
+  }
+  try {
+    return await redirectSessionPromise;
+  } finally {
+    redirectSessionPromise = null;
+  }
+}
 
 function readSavedSession(): AmeliaCloudSession | null {
   try {
@@ -118,7 +155,11 @@ export class AmeliaSupabaseMemory {
 
   static async getSession(): Promise<AmeliaCloudSession | null> {
     if (sessionCache === undefined) sessionCache = readSavedSession();
-    if (!sessionCache) return null;
+    if (!sessionCache) {
+      const redirected = await getRedirectSession();
+      if (redirected) return redirected;
+      return null;
+    }
     if (sessionCache.expires_at > Date.now() + 60_000) return sessionCache;
 
     try {
