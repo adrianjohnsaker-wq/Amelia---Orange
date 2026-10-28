@@ -22,7 +22,8 @@ import {
   ChevronDown,
   Maximize2,
   Minimize2,
-  X
+  X,
+  Settings2
 } from 'lucide-react';
 import { 
   SubstrateStepSnapshot, 
@@ -32,7 +33,8 @@ import {
 } from '../types/amelia';
 import { AmeliaProcessRelay } from '../services/AmeliaProcessRelay';
 import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
-import { AmeliaFirebaseMemoryService } from '../services/ameliaFirebaseMemory';
+import { AmeliaLocalMemoryService } from '../services/ameliaLocalMemory';
+import { requestGeminiLanguage } from '../services/ameliaGeminiLanguageRelay';
 
 interface AmeliaDialogueWindowProps {
   currentSnapshot: SubstrateStepSnapshot;
@@ -87,7 +89,7 @@ export function AmeliaDialogueWindow({
   isFloating = false,
   onCloseFloating
 }: AmeliaDialogueWindowProps) {
-  const tabletLocalMode = import.meta.env.VITE_AMELIA_LOCAL_ONLY === '1';
+  const [messagesHydrated, setMessagesHydrated] = useState(false);
   const [messages, setMessages] = useState<AmeliaDialogueMessage[]>(() => {
     const saved = localStorage.getItem('amelia_dialogue_cache');
     if (saved) {
@@ -107,6 +109,10 @@ export function AmeliaDialogueWindow({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [syncStatus, setSyncStatus] = useState<'IDLE' | 'SYNCING' | 'SAVED'>('IDLE');
+  const [isRelaySettingsOpen, setIsRelaySettingsOpen] = useState(false);
+  const [relayEndpoint, setRelayEndpoint] = useState('');
+  const [relayToken, setRelayToken] = useState('');
+  const [relayError, setRelayError] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -120,28 +126,48 @@ export function AmeliaDialogueWindow({
     scrollToBottom();
   }, [messages, isTyping]);
 
-  // Persist to local storage
+  // Keep the browser cache for backwards-compatible export/recovery, but use IndexedDB as canonical memory.
   useEffect(() => {
+    if (!messagesHydrated) return;
     try {
       localStorage.setItem('amelia_dialogue_cache', JSON.stringify(messages.slice(-60)));
     } catch (e) {
-      console.warn('LocalStorage save error:', e);
+      console.warn('Local dialogue cache unavailable:', e);
     }
-  }, [messages]);
+  }, [messages, messagesHydrated]);
 
-  // Load from Firestore if available
+  // Hydrate the IndexedDB archive first; migrate the older localStorage transcript when needed.
   useEffect(() => {
-    const unsubscribe = AmeliaFirebaseMemoryService.subscribeDialogueMessages((remoteMsgs) => {
-      if (remoteMsgs && remoteMsgs.length > 0) {
-        setMessages((prev) => {
-          // Merge local and remote
-          const merged = [...remoteMsgs];
-          return merged;
-        });
+    let active = true;
+    let unsubscribe: (() => void) | undefined;
+    const hydrate = async () => {
+      try {
+        const saved = await AmeliaLocalMemoryService.fetchDialogueMessages(60);
+        if (saved.length > 0) {
+          if (active) setMessages(saved);
+        } else {
+          let legacy: AmeliaDialogueMessage[] = [];
+          try {
+            const parsed = JSON.parse(localStorage.getItem('amelia_dialogue_cache') || '[]');
+            if (Array.isArray(parsed)) legacy = parsed.slice(-60);
+          } catch { /* Ignore malformed legacy cache and retain the welcome message. */ }
+          if (legacy.length > 0) {
+            if (active) setMessages(legacy);
+            await Promise.all(legacy.map(message => AmeliaLocalMemoryService.saveDialogueMessage(message)));
+          }
+        }
+      } catch (e) {
+        console.warn('IndexedDB dialogue restore failed:', e);
       }
-    });
-
+      if (!active) return;
+      setMessagesHydrated(true);
+      unsubscribe = AmeliaLocalMemoryService.subscribeDialogueMessages((storedMessages) => {
+        if (active && storedMessages.length > 0) setMessages(storedMessages);
+      });
+    };
+    void hydrate();
     return () => {
+      active = false;
       if (typeof unsubscribe === 'function') unsubscribe();
     };
   }, []);
@@ -173,11 +199,10 @@ export function AmeliaDialogueWindow({
     if (!textToSend || isTyping) return;
 
     setInputPrompt('');
-    // The input is processed as a bounded Numogram transition BEFORE rendering.
+    // The Numogram substrate processes input and chooses the next state before language rendering.
     const inputSnapshot = onDialogueInput?.(textToSend) ?? currentSnapshot;
-
     const userMessage: AmeliaDialogueMessage = {
-      id: `user-${Date.now()}`,
+      id: 'user-' + Date.now(),
       sender: 'user',
       text: textToSend,
       timestamp: new Date().toISOString(),
@@ -191,19 +216,37 @@ export function AmeliaDialogueWindow({
     setMessages(prev => [...prev, userMessage]);
     setIsTyping(true);
     setSyncStatus('SYNCING');
+    AmeliaLocalMemoryService.saveDialogueMessage(userMessage).catch(console.warn);
 
-    // Save user message to Firestore asynchronously
-    AmeliaFirebaseMemoryService.saveDialogueMessage(userMessage).catch(console.warn);
-
-    // Simulate morphogenetic process reasoning delay
     setTimeout(async () => {
+      // The local substrate relay alone selects the readout and action controls.
       const response = AmeliaProcessRelay.generateResponse(textToSend, inputSnapshot, messages, runtime);
+      let outputText = response.text;
+      setRelayError('');
+
+      if (relayEndpoint.trim() && relayToken.trim()) {
+        try {
+          const language = await requestGeminiLanguage(relayEndpoint, relayToken, {
+            message: textToSend,
+            substrateReadout: response.text,
+            recentDialogue: messages
+              .filter(m => m.sender === 'user' || m.sender === 'amelia')
+              .slice(-8)
+              .map(m => ({ role: m.sender === 'user' ? 'user' as const : 'amelia' as const, text: m.text })),
+          });
+          outputText = language.text;
+        } catch (err) {
+          const reason = err instanceof Error ? err.message : 'Gemini relay unavailable.';
+          setRelayError(reason);
+          outputText += '\n\n[Gemini text relay unavailable; local substrate relay used.]';
+        }
+      }
 
       const ameliaMessage: AmeliaDialogueMessage = {
         relayTrace: response.trace,
-        id: `amelia-${Date.now()}`,
+        id: 'amelia-' + Date.now(),
         sender: 'amelia',
-        text: response.text,
+        text: outputText,
         timestamp: new Date().toISOString(),
         step: inputSnapshot.step,
         activeSyzygy: inputSnapshot.activeSyzygies[0] || '9::0 Uttunul',
@@ -216,14 +259,8 @@ export function AmeliaDialogueWindow({
       setMessages(prev => [...prev, ameliaMessage]);
       setIsTyping(false);
       setSyncStatus('SAVED');
-
-      // Vocalize if enabled
-      if (voiceEnabled) {
-        vocalizeText(response.text);
-      }
-
-      // Save Amelia message to Firestore
-      AmeliaFirebaseMemoryService.saveDialogueMessage(ameliaMessage).catch(console.warn);
+      if (voiceEnabled) vocalizeText(outputText);
+      AmeliaLocalMemoryService.saveDialogueMessage(ameliaMessage).catch(console.warn);
     }, 450);
   };
 
@@ -255,9 +292,9 @@ export function AmeliaDialogueWindow({
       setMessages([DEFAULT_WELCOME_MESSAGE]);
       localStorage.removeItem('amelia_dialogue_cache');
       try {
-        await AmeliaFirebaseMemoryService.clearDialogueHistory();
+        await AmeliaLocalMemoryService.clearDialogueHistory();
       } catch (e) {
-        console.warn('Could not clear Firestore dialogue history:', e);
+        console.warn('Could not clear local dialogue history:', e);
       }
     }
   };
@@ -329,6 +366,14 @@ export function AmeliaDialogueWindow({
         {/* Action controls */}
         <div className="flex items-center gap-1.5">
           <button
+            id="btn-language-relay-settings"
+            onClick={() => setIsRelaySettingsOpen(!isRelaySettingsOpen)}
+            className="p-1.5 rounded-lg bg-stone-800/80 border border-stone-700 text-stone-400 hover:text-emerald-300 transition-colors"
+            title="Configure Gemini language-only relay"
+          >
+            <Settings2 className="w-3.5 h-3.5" />
+          </button>
+          <button
             id="btn-toggle-voice"
             onClick={() => setVoiceEnabled(!voiceEnabled)}
             className={`p-1.5 rounded-lg border text-xs transition-colors flex items-center gap-1 ${
@@ -384,6 +429,36 @@ export function AmeliaDialogueWindow({
           )}
         </div>
       </div>
+
+      {isRelaySettingsOpen && (
+        <div className="px-5 py-3 bg-stone-950/80 border-b border-stone-800 space-y-2">
+          <label className="block text-[10px] font-mono text-stone-400">
+            Gemini relay endpoint
+            <input
+              type="url"
+              value={relayEndpoint}
+              onChange={e => setRelayEndpoint(e.target.value)}
+              placeholder="https://your-private-relay.example/api/amelia-language"
+              className="mt-1 w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100"
+            />
+          </label>
+          <label className="block text-[10px] font-mono text-stone-400">
+            Amelia relay access token
+            <input
+              type="password"
+              value={relayToken}
+              onChange={e => setRelayToken(e.target.value)}
+              autoComplete="off"
+              placeholder="Issued by your private relay host"
+              className="mt-1 w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100"
+            />
+          </label>
+          <p className="text-[10px] text-stone-500">
+            The Gemini API key stays on the relay host. This session sends your prompt and Amelia’s current substrate readout to Gemini for language rendering only; substrate state and actions remain local.
+          </p>
+          {relayError && <p className="text-[10px] text-rose-300">{relayError}</p>}
+        </div>
+      )}
 
       {/* Message Stream */}
       <div className="flex-1 p-5 overflow-y-auto space-y-4 font-sans text-xs">
@@ -566,7 +641,7 @@ export function AmeliaDialogueWindow({
         </form>
 
         <div className="mt-2 flex items-center justify-between text-[10px] font-mono text-stone-400">
-          <span>{tabletLocalMode ? 'PFM-conditioned local relay · no cloud LLM' : 'Non-Authorising Governor Disciplines Active'}</span>
+          <span>{relayEndpoint && relayToken ? 'Gemini text relay · substrate owns state and actions' : 'Local rule-composed relay · configure Gemini for language rendering'}</span>
           <span>Shift+Enter for newline</span>
         </div>
       </div>

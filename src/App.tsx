@@ -57,13 +57,13 @@ import { MidPlexProbeResults } from './components/MidPlexProbeResults';
 import { HyperstitionTestDashboard } from './components/HyperstitionTestDashboard';
 import { DevelopmentalBenchmarkMatrix } from './components/DevelopmentalBenchmarkMatrix';
 import { ExternalRhythmAdvisoryPanel } from './components/ExternalRhythmAdvisoryPanel';
-import { FirebaseMemoryHub } from './components/FirebaseMemoryHub';
+import { LocalMemoryHub } from './components/FirebaseMemoryHub';
 import { SubstrateAuditConsole } from './components/SubstrateAuditConsole';
 import { AmeliaDialogueWindow } from './components/AmeliaDialogueWindow';
 import { LiveMorphogeneticLab } from './components/LiveMorphogeneticLab';
 import { Thread3EncodingActivationLab } from './components/Thread3EncodingActivationLab';
-import { AmeliaFirebaseMemoryService } from './services/ameliaFirebaseMemory';
-import firebaseConfig from '../firebase-applet-config.json';
+import { AmeliaIndexedMemory } from './services/ameliaIndexedMemory';
+import { AmeliaSupabaseMemory, AmeliaCloudSession } from './services/ameliaSupabaseMemory';
 
 const LOCAL_CHECKPOINT_KEY = 'amelia_pfm_shared_runtime_v2';
 
@@ -84,6 +84,9 @@ export function App() {
     return runtimeRef.current.getSnapshots().at(-1) ?? runtimeRef.current.step();
   });
   const [checkpointError, setCheckpointError] = useState(false);
+  const [cloudConnected, setCloudConnected] = useState(false);
+  const [cloudSyncError, setCloudSyncError] = useState('');
+  const [checkpointHydrated, setCheckpointHydrated] = useState(false);
   const [history, setHistory] = useState<SubstrateStepSnapshot[]>([]);
   const [runtimeEpoch, setRuntimeEpoch] = useState(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -122,7 +125,7 @@ export function App() {
   );
 
   const [auditLog, setAuditLog] = useState<string[]>([
-    tabletLocalMode ? '[STORAGE] Local-only tablet build; remote memory disabled' : `[FIREBASE] Configured for ${firebaseConfig.projectId}; connection not verified`,
+    '[STORAGE] IndexedDB local cache enabled; authenticated Supabase memory sync is available',
     `[INIT] Amelia Morphogenetic Substrate initialized at ${new Date().toLocaleTimeString()}`,
     `[GOVERNOR] Invariants validated: AntiLock=99.4%, IdentityContinuity=0.965, Scaffolding=Stage 3`,
     `[DEMO] Three-arm and Paper 6 displays are formula-based; no experimental inference`,
@@ -133,24 +136,122 @@ export function App() {
     setAuditLog(prev => [msg, ...prev]);
   };
 
-  // Local checkpoint continuity: saves the whole live PFM/Qabbala/Governor state,
-  // including gates, phase and trait history. This is NOT a tamper-evident research seal.
+  // Restore local memory first, then merge the signed-in account's Supabase archive.
   useEffect(() => {
-    if (!tabletLocalMode) return;
-    const persist = () => {
-      try {
-        const record = { version: 2, state: runtimeRef.current.exportState() };
-        localStorage.setItem(LOCAL_CHECKPOINT_KEY, JSON.stringify(record));
-        setCheckpointError(false);
-      } catch (err) {
-        console.warn('Local PFM checkpoint storage unavailable', err);
-        setCheckpointError(true);
+    let cancelled = false;
+    let initializing = true;
+
+    const restoreRuntime = (state: unknown) => {
+      runtimeRef.current.importState(state as any);
+      const restored = runtimeRef.current.getSnapshots().at(-1);
+      if (restored) {
+        setSnapshot(restored);
+        setHistory([restored]);
+        setRuntimeEpoch(value => value + 1);
       }
     };
-    const task = setTimeout(persist, 220);
-    window.addEventListener('pagehide', persist);
-    return () => { clearTimeout(task); window.removeEventListener('pagehide', persist); };
-  }, [snapshot, tabletLocalMode]);
+
+    const syncAccount = async (session: AmeliaCloudSession | null) => {
+      if (!session) {
+        AmeliaIndexedMemory.setCloudAdapter(null);
+        if (!cancelled) { setCloudConnected(false); setCloudSyncError(''); }
+        return;
+      }
+      try {
+        const result = await AmeliaSupabaseMemory.syncLocalMemory(session);
+        if (cancelled) return;
+        setCloudConnected(true);
+        setCloudSyncError('');
+        if (result.runtimeCheckpoint?.state) restoreRuntime(result.runtimeCheckpoint.state);
+      } catch (error) {
+        AmeliaIndexedMemory.setCloudAdapter(null);
+        if (!cancelled) {
+          setCloudConnected(false);
+          setCloudSyncError(error instanceof Error ? error.message : 'Supabase sync failed.');
+          console.warn('Supabase memory sync unavailable; continuing with local memory.', error);
+        }
+      }
+    };
+
+    const unsubscribe = AmeliaSupabaseMemory.subscribe(session => {
+      if (!initializing) void syncAccount(session);
+    });
+    const onCloudSyncError = (event: Event) => {
+      if (cancelled) return;
+      const detail = (event as CustomEvent<string>).detail;
+      setCloudConnected(false);
+      setCloudSyncError(detail || 'Supabase sync failed; local memory is still available.');
+    };
+    window.addEventListener('amelia-cloud-sync-error', onCloudSyncError);
+    const onOnline = () => {
+      void AmeliaSupabaseMemory.getSession().then(session => {
+        if (session && !initializing) return syncAccount(session);
+      }).catch(error => console.warn('Could not resume Supabase sync after reconnect.', error));
+    };
+    window.addEventListener('online', onOnline);
+
+    const restore = async () => {
+      try {
+        const saved = await AmeliaIndexedMemory.get<{ id: string; version: number; state: unknown }>('runtime', 'live-checkpoint');
+        let legacy = saved;
+        if (!legacy && tabletLocalMode) {
+          const raw = localStorage.getItem(LOCAL_CHECKPOINT_KEY);
+          if (raw) legacy = JSON.parse(raw);
+        }
+        if (!cancelled && legacy?.version === 2 && legacy.state) restoreRuntime(legacy.state);
+      } catch (error) {
+        console.warn('Local PFM checkpoint restore failed; starting from current state', error);
+        if (!cancelled) setCheckpointError(true);
+      }
+
+      try {
+        const session = await AmeliaSupabaseMemory.getSession();
+        if (session) await syncAccount(session);
+      } catch (error) {
+        AmeliaIndexedMemory.setCloudAdapter(null);
+        console.warn('Supabase session restore unavailable; continuing with local memory.', error);
+      } finally {
+        initializing = false;
+        if (!cancelled) setCheckpointHydrated(true);
+      }
+    };
+
+    void restore();
+    return () => {
+      cancelled = true;
+      unsubscribe();
+      window.removeEventListener('amelia-cloud-sync-error', onCloudSyncError);
+      window.removeEventListener('online', onOnline);
+    };
+  }, [tabletLocalMode]);
+
+  useEffect(() => {
+    if (!checkpointHydrated) return;
+    const persist = async () => {
+      const record = { version: 2, state: runtimeRef.current.exportState() };
+      try {
+        localStorage.setItem(LOCAL_CHECKPOINT_KEY, JSON.stringify(record));
+      } catch (err) {
+        // IndexedDB is the primary store; this legacy cache is best-effort only.
+        console.warn('Legacy local checkpoint cache unavailable', err);
+      }
+      const snapshotRecord = {
+        id: 'step-' + snapshot.step,
+        step: snapshot.step,
+        timestamp: snapshot.timestamp || new Date().toISOString(),
+        snapshot,
+      };
+      const [checkpointSaved, snapshotSaved] = await Promise.all([
+        AmeliaIndexedMemory.put('runtime', { id: 'live-checkpoint', ...record, updatedAt: new Date().toISOString() }),
+        AmeliaIndexedMemory.put('snapshots', snapshotRecord),
+      ]);
+      setCheckpointError(!checkpointSaved || !snapshotSaved);
+    };
+    const task = setTimeout(() => { void persist(); }, 220);
+    const onPageHide = () => { void persist(); };
+    window.addEventListener('pagehide', onPageHide);
+    return () => { clearTimeout(task); window.removeEventListener('pagehide', onPageHide); };
+  }, [snapshot, checkpointHydrated]);
 
   const handleExportCheckpoint = () => {
     const capsule = { kind: 'AMELIA_LOCAL_CHECKPOINT_V2', createdAt: new Date().toISOString(),
@@ -310,6 +411,14 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col font-sans selection:bg-amber-500/30 selection:text-amber-200">
+      {!checkpointHydrated && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-stone-950/95 px-6" role="status" aria-live="polite">
+          <div className="flex items-center gap-3 rounded-2xl border border-stone-700 bg-stone-900 px-5 py-4 text-sm text-stone-200 shadow-2xl">
+            <RefreshCw className="h-5 w-5 animate-spin text-amber-400" />
+            Restoring Amelia’s local and account memory before continuing…
+          </div>
+        </div>
+      )}
       {/* Top Header & Telemetry Bar */}
       <header className="border-b border-stone-800 bg-stone-900/60 backdrop-blur px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-50">
         <div className="flex items-center gap-3">
@@ -326,11 +435,11 @@ export function App() {
               </span>
               <span 
                 className="text-xs px-2.5 py-0.5 rounded-full font-mono font-semibold bg-amber-950/80 border border-amber-600/80 text-amber-300 flex items-center gap-1.5 cursor-pointer hover:bg-amber-900/80 transition-colors" 
-                onClick={() => { if (!tabletLocalMode) setActiveTab('firebase'); }} 
-                title="Click to open Firestore Process Memory Hub"
+                onClick={() => setActiveTab('firebase')} 
+                title="Open local and Supabase process-memory archive"
               >
                 <Flame className="w-3 h-3 text-amber-400" />
-                {tabletLocalMode ? (checkpointError ? 'CHECKPOINT ERROR' : 'LOCAL STORAGE') : 'FIRESTORE: CONFIGURED'}
+                {checkpointError ? 'MEMORY WARNING' : cloudConnected ? 'SUPABASE MEMORY' : 'LOCAL MEMORY'}
               </span>
             </div>
             <p className="text-xs text-stone-400 font-mono">
@@ -643,7 +752,7 @@ export function App() {
             }`}
           >
             <Flame className="w-4 h-4 text-orange-400" />
-            Firestore Process Memory
+            Local Memory & Persistence
           </button>
 
           <button
@@ -828,15 +937,30 @@ export function App() {
             />
           )}
 
-          {/* TAB 9: FIRESTORE PROCESS MEMORY HUB */}
+          {/* TAB 9: LOCAL & SUPABASE PROCESS MEMORY HUB */}
           {activeTab === 'firebase' && (
-            <FirebaseMemoryHub 
+            <LocalMemoryHub 
               currentSnapshot={snapshot}
               allP6Results={allP6Results}
               threeArmResults={threeArmResults}
               selectedDepth={selectedDepth}
               selectedSeed={selectedSeed}
               onLog={addLogMessage}
+              cloudConnected={cloudConnected}
+              cloudSyncError={cloudSyncError}
+              onCloudStatusChange={(connected, error) => {
+                setCloudConnected(connected);
+                setCloudSyncError(error || '');
+              }}
+              onCloudRestore={(state) => {
+                runtimeRef.current.importState(state as any);
+                const restored = runtimeRef.current.getSnapshots().at(-1);
+                if (restored) {
+                  setSnapshot(restored);
+                  setHistory([restored]);
+                  setRuntimeEpoch(value => value + 1);
+                }
+              }}
             />
           )}
 
