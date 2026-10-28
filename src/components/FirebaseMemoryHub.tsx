@@ -22,6 +22,7 @@ import {
   LocalCanalizationRun 
 } from '../services/ameliaLocalMemory';
 import { SubstrateStepSnapshot, Paper6AssayResult, CanalizationArmResult } from '../types/amelia';
+import { AmeliaIndexedMemory } from '../services/ameliaIndexedMemory';
 
 interface LocalMemoryHubProps {
   currentSnapshot: SubstrateStepSnapshot;
@@ -119,6 +120,22 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
     return () => clearInterval(syncInterval);
   }, [autoSync, currentSnapshot]);
 
+  const handleExportLocalArchive = async () => {
+    const archive = await AmeliaIndexedMemory.exportAll();
+    const payload = {
+      kind: 'AMELIA_LOCAL_MEMORY_ARCHIVE_V1',
+      exportedAt: new Date().toISOString(),
+      note: 'Local continuity archive; not a signed or tamper-evident research record.',
+      stores: archive,
+    };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = 'amelia-local-memory-' + new Date().toISOString().replace(/[:.]/g, '-') + '.json';
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleManualCommit = async () => {
     setIsSyncing(true);
     try {
@@ -185,6 +202,14 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
           </div>
 
           <div className="flex items-center gap-2.5">
+            <button
+              onClick={handleExportLocalArchive}
+              className="px-3.5 py-2 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            >
+              <DownloadCloud className="w-3.5 h-3.5 text-cyan-400" />
+              Export Local Archive
+            </button>
+
             <button
               onClick={handleManualCommit}
               disabled={isSyncing}
