@@ -20,6 +20,12 @@ npm run start:relay
 
 The app's **Dialogue & Chat → settings icon** needs the deployed `/api/amelia-language` URL and the matching relay token. The Gemini API key is never requested by or placed in the browser build.
 
+## Durable research memory
+
+The browser/WebView keeps an IndexedDB cache and can sync it to the Amelia Supabase project after sign-in. Supabase Auth accounts identify the owner; the `amelia_memory_records` table is protected by row-level security and does not grant access to anonymous clients. The app's publishable key is public by design; row policies enforce access. Do not place a Supabase service-role key in the app.
+
+On first use, create an account or sign in from **Local Memory & Persistence**. Configure the deployed app origin in Supabase Auth's Site URL and Redirect URLs so account confirmation links return to Amelia. After the first successful sync, the app restores the latest runtime checkpoint on subsequent launches. The same account can restore its archive on another browser or device. If local browser data is cleared, sign in again to download the cloud archive.
+
 ## Data boundary
 
 The relay uses Gemini's Interactions API with `store: false`. It does not write prompts or responses to a database or log them. The substrate readout and message are sent to Gemini to render the reply. Gemini has no tools and returns no actions; action buttons continue to come from the local substrate relay.
