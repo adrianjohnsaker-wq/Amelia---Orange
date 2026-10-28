@@ -176,6 +176,13 @@ export function App() {
     const unsubscribe = AmeliaSupabaseMemory.subscribe(session => {
       if (!initializing) void syncAccount(session);
     });
+    const onCloudSyncError = (event: Event) => {
+      if (cancelled) return;
+      const detail = (event as CustomEvent<string>).detail;
+      setCloudConnected(false);
+      setCloudSyncError(detail || 'Supabase sync failed; local memory is still available.');
+    };
+    window.addEventListener('amelia-cloud-sync-error', onCloudSyncError);
 
     const restore = async () => {
       try {
@@ -207,6 +214,7 @@ export function App() {
     return () => {
       cancelled = true;
       unsubscribe();
+      window.removeEventListener('amelia-cloud-sync-error', onCloudSyncError);
     };
   }, [tabletLocalMode]);
 
