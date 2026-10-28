@@ -56,7 +56,7 @@ export class AmeliaIndexedMemory {
     return idFor(prefix);
   }
 
-  static async get<T extends StoredRecord>(store: AmeliaMemoryStore, id: string): Promise<T | null> {
+  static async get<T = StoredRecord>(store: AmeliaMemoryStore, id: string): Promise<T | null> {
     try {
       const db = await openDatabase();
       return await new Promise((resolve, reject) => {
@@ -69,7 +69,7 @@ export class AmeliaIndexedMemory {
     }
   }
 
-  static async put<T extends StoredRecord>(store: AmeliaMemoryStore, value: T): Promise<void> {
+  static async put<T extends { id: string }>(store: AmeliaMemoryStore, value: T): Promise<void> {
     try {
       const db = await openDatabase();
       await new Promise<void>((resolve, reject) => {
@@ -82,13 +82,13 @@ export class AmeliaIndexedMemory {
     } catch (error) {
       let records = fallback.get(store);
       if (!records) { records = new Map(); fallback.set(store, records); }
-      records.set(value.id, value);
+      records.set(value.id, value as StoredRecord);
       if (typeof console !== 'undefined') console.warn('Amelia IndexedDB unavailable; using memory for this session.', error);
     }
     notify(store);
   }
 
-  static async list<T extends StoredRecord>(store: AmeliaMemoryStore, limit = 200): Promise<T[]> {
+  static async list<T = StoredRecord>(store: AmeliaMemoryStore, limit = 200): Promise<T[]> {
     try {
       const db = await openDatabase();
       const records = await new Promise<T[]>((resolve, reject) => {
@@ -96,7 +96,7 @@ export class AmeliaIndexedMemory {
         request.onsuccess = () => resolve(request.result as T[]);
         request.onerror = () => reject(request.error);
       });
-      return records.sort((a, b) => String(b.timestamp ?? '').localeCompare(String(a.timestamp ?? ''))).slice(0, limit);
+      return records.sort((a, b) => String((b as any).timestamp ?? '').localeCompare(String((a as any).timestamp ?? ''))).slice(0, limit);
     } catch {
       const records = [...(fallback.get(store)?.values() ?? [])] as T[];
       return records.sort((a, b) => String(b.timestamp ?? '').localeCompare(String(a.timestamp ?? ''))).slice(0, limit);
