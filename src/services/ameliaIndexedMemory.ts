@@ -14,6 +14,12 @@ const STORE_NAMES: AmeliaMemoryStore[] = [
 
 type StoredRecord = { id: string; [key: string]: unknown };
 
+export interface AmeliaCloudAdapter {
+  upsert(store: AmeliaMemoryStore, record: Record<string, unknown>): Promise<void>;
+  clear(store: AmeliaMemoryStore): Promise<void>;
+}
+
+let cloudAdapter: AmeliaCloudAdapter | null = null;
 const listeners = new Map<AmeliaMemoryStore, Set<() => void>>();
 const fallback = new Map<AmeliaMemoryStore, Map<string, StoredRecord>>();
 let persistenceAvailable = true;
@@ -54,6 +60,10 @@ function idFor(prefix: string): string {
  * Records remain in this app's browser storage and are never sent to a cloud database.
  */
 export class AmeliaIndexedMemory {
+  static setCloudAdapter(adapter: AmeliaCloudAdapter | null): void {
+    cloudAdapter = adapter;
+  }
+
   static isPersistent(): boolean {
     return persistenceAvailable;
   }
@@ -96,6 +106,11 @@ export class AmeliaIndexedMemory {
       if (typeof console !== 'undefined') console.warn('Amelia IndexedDB unavailable; using memory for this session.', error);
     }
     notify(store);
+    if (cloudAdapter) {
+      void cloudAdapter.upsert(store, value as Record<string, unknown>).catch(error => {
+        if (typeof console !== 'undefined') console.warn('Amelia cloud memory sync is pending.', error);
+      });
+    }
     return persisted;
   }
 
@@ -130,6 +145,11 @@ export class AmeliaIndexedMemory {
       fallback.set(store, new Map());
     }
     notify(store);
+    if (cloudAdapter) {
+      void cloudAdapter.clear(store).catch(error => {
+        if (typeof console !== 'undefined') console.warn('Amelia cloud memory delete is pending.', error);
+      });
+    }
   }
 
   static subscribe(store: AmeliaMemoryStore, callback: () => void): () => void {
