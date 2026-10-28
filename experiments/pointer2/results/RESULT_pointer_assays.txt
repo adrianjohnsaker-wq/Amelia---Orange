@@ -1,0 +1,43 @@
+THE POINTER: 72 travellers; sign tests at alpha 0.0125, majority in >= 5 of 8 worlds
+
+ASSAY 1  same goal by different means (score, success, share of returns by new means)
+   her        score 0.385  success 0.511  new means 0.260
+   stats      score 0.469  success 0.625  new means 0.090
+   newborn    score 0.498  success 0.694  new means 0.396
+   noLearner  score 0.363  success 0.513  new means 0.403
+   noHouse    score 0.709  success 0.954  new means 0.502
+   her vs her-statistics: 18+ / 54-  p=1.00e+00  worlds with majority 0/8 fail
+
+ASSAY 2  barrier and delayed gratification (score = recovery + DG rate)
+   her        score 0.904  recovery 0.900  DG rate 0.003  recovered 66/72
+   stats      score 0.432  recovery 0.432  DG rate 0.000  recovered 32/72
+   newborn    score 0.988  recovery 0.988  DG rate 0.000  recovered 72/72
+   noLearner  score 0.959  recovery 0.946  DG rate 0.013  recovered 69/72
+   noHouse    score 0.988  recovery 0.988  DG rate 0.000  recovered 72/72
+   blocked edges: ['3>6', '6>3', '8>9', '9>1']   her vs her-statistics: 40+ / 2-  p=2.06e-10  worlds with majority 5/8 PASS
+
+ASSAY 3  self-replication through the place
+   mean fidelity: her lineage 1.000   her-statistics lineage 0.403   stoneless newborn to her form -0.041
+   3a fidelity, her vs her-statistics lineage: 72+ / 0-  p=2.12e-22  worlds with majority 8/8 PASS
+   3a fidelity, her lineage vs stoneless newborn: 72+ / 0-  p=2.12e-22  worlds with majority 8/8 PASS
+   3b specificity, own parent vs other parents: 70+ / 2-  p=5.57e-19  worlds with majority 8/8 PASS
+   convergence: distinct dominant forms among parents 1 ['1-8-9']; among generation 5 1 ['1-8-9']
+   generation-5 dominant forms in no parent: none
+
+ASSAY 4  catalogue of forms
+   composite forms, travellers for whom she makes them more than her statistics (k = 11):
+     1-7-8-9       42 travellers, 8 worlds   Pandemonium: Bubbamu, Nuttubab, Ummnu, Tutagool
+     1-7           35 travellers, 8 worlds   Pandemonium: Bubbamu
+     7-8           20 travellers, 8 worlds   Pandemonium: Mombbo
+     1-2-7         19 travellers, 8 worlds   Pandemonium: Doogu, Oddubb, Bubbamu
+     1-7-8         11 travellers, 6 worlds   Pandemonium: Bubbamu, Mombbo, Mur Mur
+     1-2-7-8        8 travellers, 5 worlds   Pandemonium: Nammamad, Doogu, Mombbo
+     1-8-7          4 travellers, 3 worlds   Pandemonium: Mur Mur, Mombbo, Bubbamu
+   NOT PUT THERE: 7-8, 1-7-8, 1-7-8-9, 1-7, 1-2-7
+     7-8: zones [7, 8], regions ['Time-Circuit'], Pandemonium Mombbo
+     1-7-8: zones [1, 7, 8], regions ['Time-Circuit'], Pandemonium Bubbamu, Mombbo, Mur Mur
+     1-7-8-9: zones [1, 7, 8, 9], regions ['Plex', 'Time-Circuit'], Pandemonium Bubbamu, Nuttubab, Ummnu, Tutagool
+     1-7: zones [1, 7], regions ['Time-Circuit'], Pandemonium Bubbamu
+     1-2-7: zones [1, 2, 7], regions ['Time-Circuit'], Pandemonium Doogu, Oddubb, Bubbamu
+
+ANSWER: COMPETENCIES NOT PUT THERE AND NEW FORMS COME THROUGH
