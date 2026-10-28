@@ -17,16 +17,15 @@ import {
   Lock
 } from 'lucide-react';
 import { 
-  AmeliaFirebaseMemoryService, 
-  FirebaseProcessMemoryRecord, 
-  FirebaseCanalizationRun 
-} from '../services/ameliaFirebaseMemory';
+  Amelialocal archiveMemoryService, 
+  local archiveProcessMemoryRecord, 
+  local archiveCanalizationRun 
+} from '../services/amelialocal archiveMemory';
 import { SubstrateStepSnapshot, Paper6AssayResult, CanalizationArmResult } from '../types/amelia';
-import firebaseConfig from '../../firebase-applet-config.json';
 
-interface FirebaseMemoryHubProps {
+interface local archiveMemoryHubProps {
   currentSnapshot: SubstrateStepSnapshot;
-  onRestoreSnapshot?: (record: FirebaseProcessMemoryRecord) => void;
+  onRestoreSnapshot?: (record: local archiveProcessMemoryRecord) => void;
   onLog: (msg: string) => void;
   allP6Results: Paper6AssayResult[];
   threeArmResults: Record<string, CanalizationArmResult>;
@@ -34,7 +33,7 @@ interface FirebaseMemoryHubProps {
   selectedSeed: number;
 }
 
-export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
+export const local archiveMemoryHub: React.FC<local archiveMemoryHubProps> = ({
   currentSnapshot,
   onRestoreSnapshot,
   onLog,
@@ -43,8 +42,8 @@ export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
   selectedDepth,
   selectedSeed
 }) => {
-  const [records, setRecords] = useState<FirebaseProcessMemoryRecord[]>([]);
-  const [runs, setRuns] = useState<FirebaseCanalizationRun[]>([]);
+  const [records, setRecords] = useState<local archiveProcessMemoryRecord[]>([]);
+  const [runs, setRuns] = useState<local archiveCanalizationRun[]>([]);
   const [p6Assays, setP6Assays] = useState<Paper6AssayResult[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
@@ -52,21 +51,21 @@ export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
   const [lastSyncTime, setLastSyncTime] = useState<string>('Just now');
   const [activeSubTab, setActiveSubTab] = useState<'process' | 'canalization' | 'paper6'>('process');
 
-  // Load and subscribe to Firestore memory collections
+  // Load and subscribe to the local IndexedDB memory archive
   useEffect(() => {
     let unsubscribeMemory: (() => void) | undefined;
     let unsubscribeRuns: (() => void) | undefined;
 
-    const initFirebaseData = async () => {
+    const initLocalMemory = async () => {
       setLoading(true);
       try {
-        await AmeliaFirebaseMemoryService.init();
+        await Amelialocal archiveMemoryService.init();
         
         // Initial fetches
         const [initialMem, initialRuns, initialP6] = await Promise.all([
-          AmeliaFirebaseMemoryService.fetchProcessMemory(30),
-          AmeliaFirebaseMemoryService.fetchCanalizationRuns(30),
-          AmeliaFirebaseMemoryService.fetchPaper6Assays()
+          Amelialocal archiveMemoryService.fetchProcessMemory(30),
+          Amelialocal archiveMemoryService.fetchCanalizationRuns(30),
+          Amelialocal archiveMemoryService.fetchPaper6Assays()
         ]);
         
         setRecords(initialMem);
@@ -75,25 +74,25 @@ export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
         setLastSyncTime(new Date().toLocaleTimeString());
 
         // Realtime subscriptions
-        unsubscribeMemory = AmeliaFirebaseMemoryService.subscribeProcessMemory((newRecords) => {
+        unsubscribeMemory = Amelialocal archiveMemoryService.subscribeProcessMemory((newRecords) => {
           setRecords(newRecords);
           setLastSyncTime(new Date().toLocaleTimeString());
         });
 
-        unsubscribeRuns = AmeliaFirebaseMemoryService.subscribeCanalizationRuns((newRuns) => {
+        unsubscribeRuns = Amelialocal archiveMemoryService.subscribeCanalizationRuns((newRuns) => {
           setRuns(newRuns);
           setLastSyncTime(new Date().toLocaleTimeString());
         });
 
       } catch (err) {
-        console.error('Firebase initial load error:', err);
-        onLog(`[FIREBASE] Connection initialized with Firestore database: ${firebaseConfig.firestoreDatabaseId}`);
+        console.error('Local memory load error:', err);
+        onLog('[STORAGE] Local IndexedDB memory archive opened');
       } finally {
         setLoading(false);
       }
     };
 
-    initFirebaseData();
+    initLocalMemory();
 
     return () => {
       if (unsubscribeMemory) unsubscribeMemory();
@@ -101,15 +100,15 @@ export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
     };
   }, []);
 
-  // Periodic automatic checkpointing to Firebase
+  // Periodic automatic checkpointing to local IndexedDB
   useEffect(() => {
     if (!autoSync) return;
     const syncInterval = setInterval(async () => {
       try {
-        await AmeliaFirebaseMemoryService.saveSnapshot(currentSnapshot);
+        await Amelialocal archiveMemoryService.saveSnapshot(currentSnapshot);
         // Only record process memory periodically
         if (currentSnapshot.step % 10 === 0) {
-          await AmeliaFirebaseMemoryService.recordProcessMemory(currentSnapshot);
+          await Amelialocal archiveMemoryService.recordProcessMemory(currentSnapshot);
           setLastSyncTime(new Date().toLocaleTimeString());
         }
       } catch (e) {
@@ -123,12 +122,12 @@ export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
   const handleManualCommit = async () => {
     setIsSyncing(true);
     try {
-      const memId = await AmeliaFirebaseMemoryService.recordProcessMemory(currentSnapshot);
-      await AmeliaFirebaseMemoryService.saveSnapshot(currentSnapshot);
+      const memId = await Amelialocal archiveMemoryService.recordProcessMemory(currentSnapshot);
+      await Amelialocal archiveMemoryService.saveSnapshot(currentSnapshot);
       setLastSyncTime(new Date().toLocaleTimeString());
-      onLog(`[FIREBASE-COMMIT] Substrate Step #${currentSnapshot.step} deformation memory committed to Firestore (ID: ${memId})`);
+      onLog(`[STORAGE-COMMIT] Substrate Step #${currentSnapshot.step} memory stored locally (ID: ${memId})`);
     } catch (err: any) {
-      onLog(`[FIREBASE-ERROR] Commit failed: ${err.message || err}`);
+      onLog(`[STORAGE-ERROR] Local commit failed: ${err.message || err}`);
     } finally {
       setIsSyncing(false);
     }
@@ -138,23 +137,23 @@ export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
     setIsSyncing(true);
     try {
       // Commit 3-arm run
-      const runId = await AmeliaFirebaseMemoryService.saveCanalizationRun(selectedDepth, selectedSeed, threeArmResults as any);
+      const runId = await Amelialocal archiveMemoryService.saveCanalizationRun(selectedDepth, selectedSeed, threeArmResults as any);
       
       // Batch commit all P6 results
       let count = 0;
       for (const assay of allP6Results) {
-        await AmeliaFirebaseMemoryService.savePaper6Assay(assay);
+        await Amelialocal archiveMemoryService.savePaper6Assay(assay);
         count++;
       }
 
-      onLog(`[FIREBASE-ASSAYS] Saved Canalization Run (ID: ${runId}) and synced ${count} Paper 6 canonical replication assays to Firestore`);
+      onLog(`[STORAGE-ASSAYS] Saved Canalization Run (ID: ${runId}) and ${count} Paper 6 rows locally`);
       
       // Refresh assays
-      const updatedP6 = await AmeliaFirebaseMemoryService.fetchPaper6Assays();
+      const updatedP6 = await Amelialocal archiveMemoryService.fetchPaper6Assays();
       setP6Assays(updatedP6);
       setLastSyncTime(new Date().toLocaleTimeString());
     } catch (err: any) {
-      onLog(`[FIREBASE-ERROR] Assay sync failed: ${err.message || err}`);
+      onLog(`[STORAGE-ERROR] Local assay save failed: ${err.message || err}`);
     } finally {
       setIsSyncing(false);
     }
@@ -162,7 +161,7 @@ export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Firebase Memory Connectivity Card */}
+      {/* Local Memory & Persistence Card */}
       <div className="p-6 rounded-2xl bg-stone-900/70 border border-stone-800 shadow-xl space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -172,15 +171,15 @@ export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-bold text-stone-100 flex items-center gap-2">
-                  Firestore Constitutive Process Memory
+                  Local Constitutive Process Memory
                 </h2>
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-950/80 border border-amber-600/80 text-amber-300 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
-                  LIVE CLOUD SYNC
+                  ON-DEVICE MEMORY
                 </span>
               </div>
               <p className="text-xs text-stone-400 font-mono mt-0.5">
-                Database: <span className="text-stone-300 font-semibold">{firebaseConfig.firestoreDatabaseId}</span> • Project: <span className="text-stone-300 font-semibold">{firebaseConfig.projectId}</span>
+                Database: <span className="text-stone-300 font-semibold">IndexedDB</span> • Scope: <span className="text-stone-300 font-semibold">this browser / WebView</span>
               </p>
             </div>
           </div>
@@ -201,7 +200,7 @@ export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
               className="px-3.5 py-2 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
             >
               <Database className="w-3.5 h-3.5 text-amber-400" />
-              Sync All Assays to Cloud
+              Save All Assays Locally
             </button>
           </div>
         </div>
@@ -213,7 +212,7 @@ export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
             <div className="text-xl font-bold text-amber-400 font-mono mt-1">
               {records.length} Checkpoints
             </div>
-            <span className="text-[10px] text-stone-500 font-mono">Real-time Firestore stream</span>
+            <span className="text-[10px] text-stone-500 font-mono">Local IndexedDB stream</span>
           </div>
 
           <div className="p-3.5 rounded-xl bg-stone-950/80 border border-stone-800 flex flex-col justify-between">
@@ -285,7 +284,7 @@ export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
           }`}
         >
           <Flame className="w-4 h-4" />
-          Paper 6 Cloud Canary Assays ({p6Assays.length > 0 ? p6Assays.length : allP6Results.length})
+          Paper 6 Canary Assays ({p6Assays.length > 0 ? p6Assays.length : allP6Results.length})
         </button>
       </div>
 
@@ -305,13 +304,13 @@ export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
           {records.length === 0 ? (
             <div className="p-8 text-center rounded-xl bg-stone-950/60 border border-stone-800/80 space-y-2">
               <p className="text-xs text-stone-400 font-mono">
-                No checkpoints stored in Firestore yet. Click "Commit Current Step" above or keep auto-sync active to populate memory records.
+                No checkpoints stored locally yet. Click "Commit Current Step" above or keep auto-sync active to populate memory records.
               </p>
               <button
                 onClick={handleManualCommit}
                 className="px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold font-mono"
               >
-                Initialize First Firestore Checkpoint
+                Save First Local Checkpoint
               </button>
             </div>
           ) : (
@@ -374,13 +373,13 @@ export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
           {runs.length === 0 ? (
             <div className="p-8 text-center rounded-xl bg-stone-950/60 border border-stone-800/80 space-y-2">
               <p className="text-xs text-stone-400 font-mono">
-                No canalization runs saved to Firestore yet.
+                No canalization runs saved locally yet.
               </p>
               <button
                 onClick={handleCommitCurrentAssays}
                 className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold font-mono"
               >
-                Save Current 3-Arm Run to Firebase
+                Save Current 3-Arm Run Locally
               </button>
             </div>
           ) : (
@@ -428,7 +427,7 @@ export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-stone-200 font-mono flex items-center gap-2">
               <Flame className="w-4 h-4 text-rose-400" />
-              Paper 6 Cloud Canary Assays (Stored in collection: <code className="text-rose-300">amelia_paper6_assays</code>)
+              Paper 6 Canary Assays (Stored in collection: <code className="text-rose-300">amelia_paper6_assays</code>)
             </h3>
           </div>
 
