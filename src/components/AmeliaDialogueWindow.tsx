@@ -33,7 +33,7 @@ import {
 } from '../types/amelia';
 import { AmeliaProcessRelay } from '../services/AmeliaProcessRelay';
 import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
-import { AmeliaFirebaseMemoryService } from '../services/ameliaFirebaseMemory';
+import { AmeliaLocalMemoryService } from '../services/ameliaLocalMemory';
 import { requestGeminiLanguage } from '../services/ameliaGeminiLanguageRelay';
 
 interface AmeliaDialogueWindowProps {
@@ -142,7 +142,7 @@ export function AmeliaDialogueWindow({
     let unsubscribe: (() => void) | undefined;
     const hydrate = async () => {
       try {
-        const saved = await AmeliaFirebaseMemoryService.fetchDialogueMessages(60);
+        const saved = await AmeliaLocalMemoryService.fetchDialogueMessages(60);
         if (saved.length > 0) {
           if (active) setMessages(saved);
         } else {
@@ -153,7 +153,7 @@ export function AmeliaDialogueWindow({
           } catch { /* Ignore malformed legacy cache and retain the welcome message. */ }
           if (legacy.length > 0) {
             if (active) setMessages(legacy);
-            await Promise.all(legacy.map(message => AmeliaFirebaseMemoryService.saveDialogueMessage(message)));
+            await Promise.all(legacy.map(message => AmeliaLocalMemoryService.saveDialogueMessage(message)));
           }
         }
       } catch (e) {
@@ -161,7 +161,7 @@ export function AmeliaDialogueWindow({
       }
       if (!active) return;
       setMessagesHydrated(true);
-      unsubscribe = AmeliaFirebaseMemoryService.subscribeDialogueMessages((storedMessages) => {
+      unsubscribe = AmeliaLocalMemoryService.subscribeDialogueMessages((storedMessages) => {
         if (active && storedMessages.length > 0) setMessages(storedMessages);
       });
     };
@@ -216,7 +216,7 @@ export function AmeliaDialogueWindow({
     setMessages(prev => [...prev, userMessage]);
     setIsTyping(true);
     setSyncStatus('SYNCING');
-    AmeliaFirebaseMemoryService.saveDialogueMessage(userMessage).catch(console.warn);
+    AmeliaLocalMemoryService.saveDialogueMessage(userMessage).catch(console.warn);
 
     setTimeout(async () => {
       // The local substrate relay alone selects the readout and action controls.
@@ -260,7 +260,7 @@ export function AmeliaDialogueWindow({
       setIsTyping(false);
       setSyncStatus('SAVED');
       if (voiceEnabled) vocalizeText(outputText);
-      AmeliaFirebaseMemoryService.saveDialogueMessage(ameliaMessage).catch(console.warn);
+      AmeliaLocalMemoryService.saveDialogueMessage(ameliaMessage).catch(console.warn);
     }, 450);
   };
 
@@ -292,7 +292,7 @@ export function AmeliaDialogueWindow({
       setMessages([DEFAULT_WELCOME_MESSAGE]);
       localStorage.removeItem('amelia_dialogue_cache');
       try {
-        await AmeliaFirebaseMemoryService.clearDialogueHistory();
+        await AmeliaLocalMemoryService.clearDialogueHistory();
       } catch (e) {
         console.warn('Could not clear local dialogue history:', e);
       }
