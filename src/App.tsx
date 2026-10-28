@@ -183,6 +183,12 @@ export function App() {
       setCloudSyncError(detail || 'Supabase sync failed; local memory is still available.');
     };
     window.addEventListener('amelia-cloud-sync-error', onCloudSyncError);
+    const onOnline = () => {
+      void AmeliaSupabaseMemory.getSession().then(session => {
+        if (session && !initializing) return syncAccount(session);
+      }).catch(error => console.warn('Could not resume Supabase sync after reconnect.', error));
+    };
+    window.addEventListener('online', onOnline);
 
     const restore = async () => {
       try {
@@ -215,6 +221,7 @@ export function App() {
       cancelled = true;
       unsubscribe();
       window.removeEventListener('amelia-cloud-sync-error', onCloudSyncError);
+      window.removeEventListener('online', onOnline);
     };
   }, [tabletLocalMode]);
 
