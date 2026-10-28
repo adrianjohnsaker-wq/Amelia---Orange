@@ -36,6 +36,7 @@ interface LocalMemoryHubProps {
   onCloudRestore?: (state: unknown) => void;
   cloudConnected: boolean;
   cloudSyncError: string;
+  onCloudStatusChange?: (connected: boolean, error?: string) => void;
 }
 
 export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
@@ -48,7 +49,8 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
   selectedSeed,
   onCloudRestore,
   cloudConnected,
-  cloudSyncError
+  cloudSyncError,
+  onCloudStatusChange
 }) => {
   const [records, setRecords] = useState<LocalProcessMemoryRecord[]>([]);
   const [runs, setRuns] = useState<LocalCanalizationRun[]>([]);
@@ -113,9 +115,12 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
     try {
       const result = await AmeliaSupabaseMemory.syncLocalMemory(session);
       if (result.runtimeCheckpoint?.state) onCloudRestore?.(result.runtimeCheckpoint.state);
+      onCloudStatusChange?.(true, '');
       setCloudMessage('Supabase synced · ' + result.uploaded + ' uploaded · ' + result.downloaded + ' restored');
     } catch (error) {
-      setCloudError(error instanceof Error ? error.message : 'Supabase memory sync failed.');
+      const message = error instanceof Error ? error.message : 'Supabase memory sync failed.';
+      onCloudStatusChange?.(false, message);
+      setCloudError(message);
     } finally {
       setCloudBusy(false);
     }
