@@ -88,6 +88,7 @@ export function AmeliaDialogueWindow({
   onCloseFloating
 }: AmeliaDialogueWindowProps) {
   const tabletLocalMode = import.meta.env.VITE_AMELIA_LOCAL_ONLY === '1';
+  const [messagesHydrated, setMessagesHydrated] = useState(false);
   const [messages, setMessages] = useState<AmeliaDialogueMessage[]>(() => {
     const saved = localStorage.getItem('amelia_dialogue_cache');
     if (saved) {
@@ -120,28 +121,48 @@ export function AmeliaDialogueWindow({
     scrollToBottom();
   }, [messages, isTyping]);
 
-  // Persist to local storage
+  // Keep the browser cache for backwards-compatible export/recovery, but use IndexedDB as canonical memory.
   useEffect(() => {
+    if (!messagesHydrated) return;
     try {
       localStorage.setItem('amelia_dialogue_cache', JSON.stringify(messages.slice(-60)));
     } catch (e) {
-      console.warn('LocalStorage save error:', e);
+      console.warn('Local dialogue cache unavailable:', e);
     }
-  }, [messages]);
+  }, [messages, messagesHydrated]);
 
-  // Load from Firestore if available
+  // Hydrate the IndexedDB archive first; migrate the older localStorage transcript when needed.
   useEffect(() => {
-    const unsubscribe = AmeliaFirebaseMemoryService.subscribeDialogueMessages((remoteMsgs) => {
-      if (remoteMsgs && remoteMsgs.length > 0) {
-        setMessages((prev) => {
-          // Merge local and remote
-          const merged = [...remoteMsgs];
-          return merged;
-        });
+    let active = true;
+    let unsubscribe: (() => void) | undefined;
+    const hydrate = async () => {
+      try {
+        const saved = await AmeliaFirebaseMemoryService.fetchDialogueMessages(60);
+        if (saved.length > 0) {
+          if (active) setMessages(saved);
+        } else {
+          let legacy: AmeliaDialogueMessage[] = [];
+          try {
+            const parsed = JSON.parse(localStorage.getItem('amelia_dialogue_cache') || '[]');
+            if (Array.isArray(parsed)) legacy = parsed.slice(-60);
+          } catch { /* Ignore malformed legacy cache and retain the welcome message. */ }
+          if (legacy.length > 0) {
+            if (active) setMessages(legacy);
+            await Promise.all(legacy.map(message => AmeliaFirebaseMemoryService.saveDialogueMessage(message)));
+          }
+        }
+      } catch (e) {
+        console.warn('IndexedDB dialogue restore failed:', e);
       }
-    });
-
+      if (!active) return;
+      setMessagesHydrated(true);
+      unsubscribe = AmeliaFirebaseMemoryService.subscribeDialogueMessages((storedMessages) => {
+        if (active && storedMessages.length > 0) setMessages(storedMessages);
+      });
+    };
+    void hydrate();
     return () => {
+      active = false;
       if (typeof unsubscribe === 'function') unsubscribe();
     };
   }, []);
