@@ -1,15 +1,16 @@
-# Amelia Gemini language relay
+# Amelia Anthropic language relay
 
 This process is a server-side text renderer. The Numogram substrate remains the authority for runtime state, transition choices, and action controls. The relay receives a substrate readout, the current user message, and a short dialogue window, then returns text only.
 
 ## Runtime configuration
 
-Set these values in the relay host's secret/environment configuration. Do not commit a real Gemini key or relay token.
+Set these values in the relay host's secret/environment configuration. Do not commit a real Anthropic key or relay token.
 
-- `GEMINI_API_KEY`: a newly issued Gemini API key. Keep it on the server.
+- `ANTHROPIC_API_KEY`: the Anthropic API key. Keep it on the server.
 - `AMELIA_RELAY_TOKEN`: a random private bearer token of at least 24 characters. Amelia's UI holds this only in memory for the current page session.
 - `AMELIA_ALLOWED_ORIGINS`: comma-separated exact origins allowed to call the relay. Include the actual browser origin and `https://appassets.androidplatform.net` for the bundled Android WebView when needed.
-- `GEMINI_MODEL`: optional; defaults to `gemini-3.8-flash`.
+- `ANTHROPIC_MODEL`: optional; defaults to `claude-haiku-5-5`.
+- `ANTHROPIC_API_VERSION`: optional; defaults to `2026-10-21`.
 - `PORT`: optional; defaults to `8787`.
 
 Run with Node 22 or later:
@@ -18,7 +19,7 @@ Run with Node 22 or later:
 npm run start:relay
 ```
 
-The app's **Dialogue & Chat → settings icon** needs the deployed `/api/amelia-language` URL and the matching relay token. The Gemini API key is never requested by or placed in the browser build.
+The app's **Dialogue & Chat → settings icon** needs the deployed `/api/amelia-language` URL and the matching relay token. The Anthropic API key is never requested by or placed in the browser build. A GitHub repository secret is only available to GitHub Actions; it is not automatically copied to a separately hosted relay. If deployment is automated from Actions, the workflow must explicitly pass `ANTHROPIC_API_KEY` to the relay host's secret configuration.
 
 ## Durable research memory
 
@@ -28,6 +29,6 @@ On first use, create an account or sign in from **Local Memory & Persistence**. 
 
 ## Data boundary
 
-The relay uses Gemini's Interactions API with `store: false`. It does not write prompts or responses to a database or log them. The substrate readout and message are sent to Gemini to render the reply. Gemini has no tools and returns no actions; action buttons continue to come from the local substrate relay.
+The relay sends the current message, a bounded substrate readout, and up to eight recent dialogue turns to Anthropic's Messages API. Amelia's app and this relay do not store prompts or responses on the relay server or write them to Supabase. Anthropic processes the request under the API retention terms and settings for the account; the relay does not set a separate provider-side no-retention flag. The relay has no tools and returns text only; the local substrate continues to own state transitions and action controls.
 
 The server applies an origin allowlist, bearer-token check, request-size limit, and per-process IP rate limit. The rate limit is process-local; put the endpoint behind a hosting provider's rate limiting/authentication for a public deployment.
