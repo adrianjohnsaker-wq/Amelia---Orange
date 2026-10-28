@@ -923,6 +923,21 @@ export function App() {
               selectedDepth={selectedDepth}
               selectedSeed={selectedSeed}
               onLog={addLogMessage}
+              cloudConnected={cloudConnected}
+              cloudSyncError={cloudSyncError}
+              onCloudStatusChange={(connected, error) => {
+                setCloudConnected(connected);
+                setCloudSyncError(error || '');
+              }}
+              onCloudRestore={(state) => {
+                runtimeRef.current.importState(state as any);
+                const restored = runtimeRef.current.getSnapshots().at(-1);
+                if (restored) {
+                  setSnapshot(restored);
+                  setHistory([restored]);
+                  setRuntimeEpoch(value => value + 1);
+                }
+              }}
             />
           )}
 
