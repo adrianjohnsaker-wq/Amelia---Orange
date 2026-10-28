@@ -92,3 +92,10 @@ In the smoke test, a newborn with no history fell into the 1–8–9 circuit by 
 - mean fidelity of her lineage exceeds corr(stoneless newborn's form, her form_0).
 
 **Also seen in the smoke test, unchanged:** on the full Numogram the Warp (3, 6) has no exit. A home can therefore include the Warp, and a barrier on a home edge can be "recovered" by remaining in it. This holds equally for her and for every comparison construct. The definitions stay as registered and the effect is reported.
+
+## Revision 2 (28 Oct 2026, after the first full run: a bug fix, disclosed)
+The first full run's catalogue (assay 4) counted cycles across a death. A step into zone 5 ends a life, and the next life begins at zone 0. The cycle finder joined "… → 5" to the next life's "0 → 9 …", which created 5 → 9 steps that do not exist on the place. Three of the six forms reported "not put there" passed through zone 5: 1-7-5-9, 1-2-5-9 and 1-2-7-5-9.
+
+**Fix:** the cycle finder breaks the path at every death, for Amelia and the comparison walker alike. No definition, threshold or criterion changes. Assays 1–3 do not use the cycle finder. The run is deterministic, so they are re-run unchanged.
+
+The first run's output is kept as `results/RESULT_run1_death_bug.txt`.

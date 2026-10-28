@@ -151,6 +151,7 @@ function cycles(path) {
       if (!comp.has(best)) comp.set(best, []); comp.get(best).push(t); break;
     }
     if (seg.length > 64) seg = seg.slice(-16);
+    if (p[1] === 5) flush();   // revision 2: death at 5 ends the life; the next life starts at 0, no cycle crosses it
   }
   const out = {};
   for (const [f, ts] of comp) { let ok = false; for (let i = 2; i < ts.length; i++) if (ts[i] - ts[i - 2] < TRIAL) { ok = true; break; } if (ok) out[f] = ts.length; }
