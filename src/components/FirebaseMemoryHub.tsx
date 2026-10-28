@@ -34,6 +34,8 @@ interface LocalMemoryHubProps {
   selectedDepth: number;
   selectedSeed: number;
   onCloudRestore?: (state: unknown) => void;
+  cloudConnected: boolean;
+  cloudSyncError: string;
 }
 
 export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
@@ -44,7 +46,9 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
   threeArmResults,
   selectedDepth,
   selectedSeed,
-  onCloudRestore
+  onCloudRestore,
+  cloudConnected,
+  cloudSyncError
 }) => {
   const [records, setRecords] = useState<LocalProcessMemoryRecord[]>([]);
   const [runs, setRuns] = useState<LocalCanalizationRun[]>([]);
@@ -275,7 +279,7 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
             </p>
           </div>
           <span className={"px-2.5 py-1 rounded-full text-xs font-mono border " + (cloudSession ? "text-emerald-300 bg-emerald-950/50 border-emerald-800" : "text-stone-400 bg-stone-950 border-stone-700")}>
-            {cloudSession ? "ACCOUNT CONNECTED" : "LOCAL ONLY"}
+            {cloudConnected ? "SUPABASE SYNCED" : cloudSession ? "SIGNED IN" : "LOCAL ONLY"}
           </span>
         </div>
         {cloudSession ? (
@@ -304,7 +308,7 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
             </button>
           </form>
         )}
-        {(cloudError || cloudMessage) && <p className={"text-xs " + (cloudError ? "text-rose-300" : "text-emerald-300")}>{cloudError || cloudMessage}</p>}
+        {(cloudError || cloudSyncError || cloudMessage) && <p className={"text-xs " + (cloudError || cloudSyncError ? "text-rose-300" : "text-emerald-300")}>{cloudError || cloudSyncError || cloudMessage}</p>}
       </section>
       {/* Local Memory & Persistence Card */}
       <div className="p-6 rounded-2xl bg-stone-900/70 border border-stone-800 shadow-xl space-y-5">
