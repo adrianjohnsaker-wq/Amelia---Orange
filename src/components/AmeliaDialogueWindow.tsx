@@ -34,7 +34,7 @@ import {
 import { AmeliaProcessRelay } from '../services/AmeliaProcessRelay';
 import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
 import { AmeliaLocalMemoryService } from '../services/ameliaLocalMemory';
-import { requestGeminiLanguage } from '../services/ameliaGeminiLanguageRelay';
+import { requestAnthropicLanguage } from '../services/ameliaAnthropicLanguageRelay';
 
 interface AmeliaDialogueWindowProps {
   currentSnapshot: SubstrateStepSnapshot;
@@ -226,7 +226,7 @@ export function AmeliaDialogueWindow({
 
       if (relayEndpoint.trim() && relayToken.trim()) {
         try {
-          const language = await requestGeminiLanguage(relayEndpoint, relayToken, {
+          const language = await requestAnthropicLanguage(relayEndpoint, relayToken, {
             message: textToSend,
             substrateReadout: response.text,
             recentDialogue: messages
@@ -236,9 +236,9 @@ export function AmeliaDialogueWindow({
           });
           outputText = language.text;
         } catch (err) {
-          const reason = err instanceof Error ? err.message : 'Gemini relay unavailable.';
+          const reason = err instanceof Error ? err.message : 'Anthropic relay unavailable.';
           setRelayError(reason);
-          outputText += '\n\n[Gemini text relay unavailable; local substrate relay used.]';
+          outputText += '\n\n[Anthropic text relay unavailable; local substrate relay used.]';
         }
       }
 
@@ -369,7 +369,7 @@ export function AmeliaDialogueWindow({
             id="btn-language-relay-settings"
             onClick={() => setIsRelaySettingsOpen(!isRelaySettingsOpen)}
             className="p-1.5 rounded-lg bg-stone-800/80 border border-stone-700 text-stone-400 hover:text-emerald-300 transition-colors"
-            title="Configure Gemini language-only relay"
+            title="Configure Anthropic language-only relay"
           >
             <Settings2 className="w-3.5 h-3.5" />
           </button>
@@ -433,7 +433,7 @@ export function AmeliaDialogueWindow({
       {isRelaySettingsOpen && (
         <div className="px-5 py-3 bg-stone-950/80 border-b border-stone-800 space-y-2">
           <label className="block text-[10px] font-mono text-stone-400">
-            Gemini relay endpoint
+            Anthropic relay endpoint
             <input
               type="url"
               value={relayEndpoint}
@@ -454,7 +454,7 @@ export function AmeliaDialogueWindow({
             />
           </label>
           <p className="text-[10px] text-stone-500">
-            The Gemini API key stays on the relay host. This session sends your prompt and Amelia’s current substrate readout to Gemini for language rendering only; substrate state and actions remain local.
+            The Anthropic API key stays on the relay host. This session sends your prompt and Amelia’s current substrate readout to Anthropic for language rendering only; substrate state and actions remain local.
           </p>
           {relayError && <p className="text-[10px] text-rose-300">{relayError}</p>}
         </div>
@@ -641,7 +641,7 @@ export function AmeliaDialogueWindow({
         </form>
 
         <div className="mt-2 flex items-center justify-between text-[10px] font-mono text-stone-400">
-          <span>{relayEndpoint && relayToken ? 'Gemini text relay · substrate owns state and actions' : 'Local rule-composed relay · configure Gemini for language rendering'}</span>
+          <span>{relayEndpoint && relayToken ? 'Anthropic text relay · substrate owns state and actions' : 'Local rule-composed relay · configure Anthropic for language rendering'}</span>
           <span>Shift+Enter for newline</span>
         </div>
       </div>
