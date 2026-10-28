@@ -79,7 +79,9 @@ async function requestJson(path: string, init: RequestInit = {}, token?: string)
 
 export class AmeliaSupabaseMemory {
   static async signUp(email: string, password: string): Promise<{ session: AmeliaCloudSession | null; confirmationRequired: boolean }> {
-    const redirect = typeof window !== 'undefined' ? '?redirect_to=' + encodeURIComponent(window.location.origin) : '';
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const useWebRedirect = origin && !origin.includes('appassets.androidplatform.net');
+    const redirect = useWebRedirect ? '?redirect_to=' + encodeURIComponent(origin) : '';
     const value = await requestJson('/auth/v1/signup' + redirect, {
       method: 'POST',
       body: JSON.stringify({ email: email.trim(), password }),
@@ -196,7 +198,7 @@ export class AmeliaSupabaseMemory {
       try { return localStorage.getItem(OWNER_KEY); } catch { return null; }
     })();
     if (savedOwner && savedOwner !== session.user.id) {
-      throw new Error('This device’s local cache is linked to a different Supabase account. Export it before switching accounts.');
+      throw new Error('This device’s local cache is linked to a different Supabase account. Export and clear this device’s app data before switching accounts.');
     }
     const sameOwner = savedOwner === session.user.id;
     AmeliaIndexedMemory.setCloudAdapter(null);
