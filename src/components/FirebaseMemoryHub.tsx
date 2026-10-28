@@ -23,7 +23,7 @@ import {
 } from '../services/ameliaLocalMemory';
 import { SubstrateStepSnapshot, Paper6AssayResult, CanalizationArmResult } from '../types/amelia';
 
-interface FirebaseMemoryHubProps {
+interface LocalMemoryHubProps {
   currentSnapshot: SubstrateStepSnapshot;
   onRestoreSnapshot?: (record: LocalProcessMemoryRecord) => void;
   onLog: (msg: string) => void;
@@ -33,7 +33,7 @@ interface FirebaseMemoryHubProps {
   selectedSeed: number;
 }
 
-export const FirebaseMemoryHub: React.FC<FirebaseMemoryHubProps> = ({
+export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
   currentSnapshot,
   onRestoreSnapshot,
   onLog,
