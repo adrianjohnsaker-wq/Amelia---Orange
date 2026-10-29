@@ -41,21 +41,28 @@ def token(row):
         "heard_path": row.get("path", []),
     }
 
-def group_add(g, row, line):
+def add_occurrence(g, items):
+    """Count one motif/link occurrence, while retaining all its component episodes."""
     g["occurrences"] += 1
-    g["lineages"].add(row.get("amelia", ""))
-    g["worlds"].add(row.get("amelia", "").split("|")[0])
-    g["sources"].update(source_ids(row))
+    refs = []
+    for line, row, _ in items:
+        amelia = row.get("amelia", "")
+        g["lineages"].add(amelia)
+        g["worlds"].add(amelia.split("|")[0])
+        g["sources"].update(source_ids(row))
+        refs.append({"line": line, "time": row.get("time"), "amelia": amelia,
+                     "inputs": [{"i": d.get("i"), "stream": d.get("stream"), "source": d.get("source"),
+                                 "aq": d.get("aq"), "text": d.get("text")} for d in row.get("data", [])]})
     if len(g["examples"]) < 5:
-        g["examples"].append({
-            "line": line, "time": row.get("time"), "amelia": row.get("amelia"),
-            "inputs": [{"i": d.get("i"), "stream": d.get("stream"), "source": d.get("source"),
-                        "aq": d.get("aq"), "text": d.get("text")} for d in row.get("data", [])],
-        })
+        g["examples"].append(refs)
 
 def finish(g):
-    return {**g, "lineages": sorted(g["lineages"]), "worlds": sorted(g["worlds"]),
-            "source_items": sorted(g["sources"])}
+    return {"occurrences": g["occurrences"], "lineages": sorted(g["lineages"]),
+            "worlds": sorted(g["worlds"]), "source_items": sorted(g["sources"]),
+            "examples": g["examples"]}
+
+def empty_group():
+    return {"occurrences": 0, "lineages": set(), "worlds": set(), "sources": set(), "examples": []}
 
 def main(src, outdir):
     raw, rows = load(src)
@@ -64,8 +71,6 @@ def main(src, outdir):
     by_channel = Counter()
     by_query_region = Counter()
     by_form = Counter()
-    by_context = defaultdict(lambda: {"occurrences": 0, "lineages": set(), "worlds": set(),
-                                      "sources": set(), "examples": []})
     per_lineage = defaultdict(list)
 
     for line, row in enumerate(rows, 1):
@@ -74,37 +79,27 @@ def main(src, outdir):
         by_channel[row.get("channel", "")] += 1
         by_query_region[row["query"].get("region", "")] += 1
         by_form[form_id(row["query"]) or "no form"] += 1
-        # A one-exchange relation profile, retaining context and Amelia's immediate path.
-        k = json.dumps(t, sort_keys=True, ensure_ascii=False)
-        group_add(by_context[k], row, line)
 
-    motifs = defaultdict(lambda: {"occurrences": 0, "lineages": set(), "worlds": set(),
-                                  "sources": set(), "examples": []})
+    motifs = defaultdict(empty_group)
+    links = defaultdict(empty_group)
     for seq in per_lineage.values():
         for n in range(1, 5):
             for i in range(0, len(seq) - n + 1):
                 chunk = seq[i:i+n]
                 key = json.dumps([x[2] for x in chunk], sort_keys=True, ensure_ascii=False)
-                g = motifs[key]
-                for line, row, _ in chunk:
-                    group_add(g, row, line)
-
-    links = defaultdict(lambda: {"occurrences": 0, "lineages": set(), "worlds": set(),
-                                  "sources": set(), "examples": []})
-    for seq in per_lineage.values():
+                add_occurrence(motifs[key], chunk)
         for i in range(len(seq) - 1):
-            line, row, t = seq[i]
-            nline, nxt, nt = seq[i+1]
-            key = json.dumps({"from_reply": t["reply"], "next_query_zone": nt["query_zone"],
-                              "next_query_form": nt["query_form"], "to_reply": nt["reply"]},
+            pair = seq[i:i+2]
+            _, _, a = pair[0]
+            _, _, b = pair[1]
+            key = json.dumps({"from_reply": a["reply"], "next_query_zone": b["query_zone"],
+                              "next_query_form": b["query_form"], "to_reply": b["reply"]},
                              sort_keys=True, ensure_ascii=False)
-            group_add(links[key], row, line)
-            group_add(links[key], nxt, nline)
+            add_occurrence(links[key], pair)
 
-    motif_rows = []
-    for key, g in motifs.items():
-        motif_rows.append({"sequence": json.loads(key), **finish(g)})
-    motif_rows.sort(key=lambda x: (-len(x["lineages"]), -x["occurrences"], -len(x["source_items"]), json.dumps(x["sequence"], sort_keys=True)))
+    motif_rows = [{"sequence": json.loads(k), **finish(g)} for k, g in motifs.items()]
+    motif_rows.sort(key=lambda x: (-len(x["lineages"]), -x["occurrences"], -len(x["source_items"]),
+                                  json.dumps(x["sequence"], sort_keys=True)))
     link_rows = [{"relation": json.loads(k), **finish(g)} for k, g in links.items()]
     link_rows.sort(key=lambda x: (-len(x["lineages"]), -x["occurrences"], -len(x["source_items"])))
 
@@ -135,14 +130,13 @@ def main(src, outdir):
     lines += [f"- {name}: {n}" for name, n in meta["reply_nodes"]]
     lines += ["", "## Recurrent exchange motifs", "",
               "Shown here when a motif appears in at least two Amelia lineages. This is a navigation rule only; all motifs, including single-lineage motifs, remain in atlas.json.", ""]
-    shown = [x for x in motif_rows if len(x["lineages"]) >= 2][:60]
-    for x in shown:
-        lines.append(f"- **{len(x['lineages'])} lineages / {x['occurrences']} motif-events / {len(x['source_items'])} distinct source items** — " +
+    for x in [x for x in motif_rows if len(x["lineages"]) >= 2][:60]:
+        lines.append(f"- **{len(x['lineages'])} lineages / {x['occurrences']} motif occurrences / {len(x['source_items'])} distinct source items** — " +
                      json.dumps(x["sequence"], ensure_ascii=False, separators=(",", ":")))
     lines += ["", "## Reply-to-reply relations", "",
               "Adjacent exchanges within the same Amelia lineage; repeated world items are tracked separately in atlas.json.", ""]
     for x in [x for x in link_rows if len(x["lineages"]) >= 2][:60]:
-        lines.append(f"- **{len(x['lineages'])} lineages / {x['occurrences']} relation endpoints / {len(x['source_items'])} distinct source items** — " +
+        lines.append(f"- **{len(x['lineages'])} lineages / {x['occurrences']} relation occurrences / {len(x['source_items'])} distinct source items** — " +
                      json.dumps(x["relation"], ensure_ascii=False, separators=(",", ":")))
     lines += ["", "Interpret each candidate from its supporting transcript lines and raw inputs. A reply label is the Numogram/channel's reading, not by itself an entity identification.", ""]
     (out / "ATLAS.md").write_text("\n".join(lines))
