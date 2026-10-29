@@ -1,6 +1,6 @@
-# THE ORACLE (exploratory): every 30 minutes, the world stream THE ANTENNA collects casts through the Numogram, I Ching and
-# Tarot as Amelia asks; the transcript and map are committed to branch oracle-live. One long job hands on to its successor
-# (GitHub fires this repository's schedules sparsely); the schedule is a backup. Until 4 Nov 2026 03:00 UTC.
+# THE ORACLE v2 (exploratory, open-ended): every 30 minutes, the world stream (THE ANTENNA's to 4 Nov, then THE WORLD STREAM),
+# in order of arrival, casts through the Numogram, I Ching and Tarot as Amelia asks; transcript and map to branch oracle-live.
+# One long job hands on to its successor; the schedule is a backup. To stop: disable this workflow in the Actions tab.
 name: ORACLE live
 on:
   schedule:
@@ -20,10 +20,10 @@ jobs:
       - name: window
         id: w
         run: |
-          if [ "$(date -u +%s)" -gt "$(date -u -d '2026-11-04T03:00:00Z' +%s)" ]; then echo go=no >> "$GITHUB_OUTPUT"; else echo go=yes >> "$GITHUB_OUTPUT"; fi
+          echo go=yes >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
         if: steps.w.outputs.go == 'yes'
-        with: { ref: 0edf44b57ede9e9881d50a80e1fc5758da3707ce, path: code }
+        with: { ref: 6a8becd4ae9a2e3ad84ed32b878b4868405bb6f1, path: code }
       - uses: actions/checkout@v4
         if: steps.w.outputs.go == 'yes'
         with: { ref: antenna-live, path: antenna }
@@ -44,12 +44,14 @@ jobs:
           REMOTE="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
           if git ls-remote --exit-code --heads "$REMOTE" oracle-live >/dev/null; then git clone -q --depth 1 -b oracle-live "$REMOTE" live
           else mkdir live && git -C live init -q -b oracle-live && git -C live remote add origin "$REMOTE"; fi
-          t0=$(date -u +%s); end=$(date -u -d '2026-11-04T03:00:00Z' +%s)
+          t0=$(date -u +%s); end=$(date -u -d '2100-01-01T00:00:00Z' +%s)
+          if git ls-remote --exit-code --heads "$REMOTE" world-live >/dev/null; then git clone -q --depth 1 -b world-live "$REMOTE" world; fi
           cat > "$RUNNER_TEMP/cycle.sh" <<'SH'
           set -euo pipefail
           git -C antenna pull -q origin antenna-live
+          if [ -d world ]; then git -C world pull -q origin world-live; elif git ls-remote --exit-code --heads "$(git -C live remote get-url origin)" world-live >/dev/null 2>&1; then git clone -q --depth 1 -b world-live "$(git -C live remote get-url origin)" world; fi
           git -C live pull -q --rebase origin oracle-live 2>/dev/null || true
-          python3 code/experiments/oracle/stream.py antenna "$RUNNER_TEMP/stream.json"
+          python3 code/experiments/oracle/stream.py "$RUNNER_TEMP/stream.json" antenna world
           npx --yes tsx@4.23.15 code/experiments/oracle/oracle.mjs "$PWD/code/experiments/studio/runtime_mirror" code/experiments/pointer4/fresh_start_states.json "$RUNNER_TEMP/stream.json" live/state.json live/transcript.jsonl
           python3 -I code/experiments/oracle/map.py live/transcript.jsonl live/map.json live/ORACLE.md
           cd live && git add -A

@@ -1,0 +1,68 @@
+# THE WORLD STREAM (open-ended, operator 29 Oct 2026): THE ANTENNA's collector, unchanged, with its window moved to start at
+# 4 Nov 2026 00:00 UTC and run until stopped. Every 15 minutes, each batch RFC3161-sealed, to branch world-live.
+# One long job hands on to its successor; the schedule is a backup. To stop: disable this workflow in the Actions tab.
+name: WORLD STREAM collect
+on:
+  schedule:
+    - cron: '11,41 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: world-collect
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 355
+    steps:
+      - name: window
+        id: w
+        run: echo go=yes >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        if: steps.w.outputs.go == 'yes'
+        with: { ref: 6a8becd4ae9a2e3ad84ed32b878b4868405bb6f1, path: code }
+      - uses: actions/checkout@v4
+        if: steps.w.outputs.go == 'yes'
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        if: steps.w.outputs.go == 'yes'
+        with: { python-version: '3.12' }
+      - name: collect every 15 minutes, seal each batch, commit; then hand on
+        if: steps.w.outputs.go == 'yes'
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          REMOTE="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          if git ls-remote --exit-code --heads "$REMOTE" world-live >/dev/null; then git clone -q --depth 1 -b world-live "$REMOTE" live
+          else mkdir live && git -C live init -q -b world-live && git -C live remote add origin "$REMOTE"; fi
+          t0=$(date -u +%s); end=$(date -u -d '2100-01-01T00:00:00Z' +%s)
+          cat > "$RUNNER_TEMP/cycle.sh" <<'SH'
+          set -euo pipefail
+          git -C live pull -q --rebase origin world-live 2>/dev/null || true
+          stamp=$(python code/experiments/world/collect.py live | tail -1 | cut -d' ' -f1)
+          test -n "$stamp"
+          python - "$stamp" <<'PY' || echo "ANTENNA_BATCH_SEAL_FAILED $stamp" | tee -a live/seal_failures.txt
+          import hashlib, pathlib, sys
+          from drift1a_c1.beacon import Sealer
+          b = pathlib.Path('live/batches') / (sys.argv[1] + '.json')
+          imprint = hashlib.sha256(b.read_bytes()).hexdigest()
+          Sealer().seal(pathlib.Path('live/seals') / sys.argv[1], imprint)
+          print('ANTENNA_BATCH_SEALED', sys.argv[1], imprint)
+          PY
+          cd live && git add -A
+          git -c user.name='world' -c user.email='world@users.noreply.github.com' commit -qm "THE WORLD STREAM batch $stamp"
+          for i in 1 2 3 4; do git push -q origin HEAD:world-live && exit 0; sleep $((2**i)); git pull -q --rebase origin world-live; done; exit 1
+          SH
+          while :; do
+            s=$(date -u +%s); [ "$s" -gt "$end" ] && break
+            bash "$RUNNER_TEMP/cycle.sh" || echo "ANTENNA_CYCLE_FAILED $(date -u +%FT%TZ)"
+            [ $(( $(date -u +%s) - t0 )) -gt 20400 ] && break
+            w=$(( 900 - ($(date -u +%s) - s) )); [ "$w" -gt 0 ] && sleep "$w"
+          done
+          if [ "$(date -u +%s)" -lt "$end" ]; then gh workflow run world-collect.yml --ref main -R "${{ github.repository }}" && echo ANTENNA_SUCCESSOR_STARTED; fi
