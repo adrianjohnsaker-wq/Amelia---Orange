@@ -12,11 +12,16 @@ def tail(n, k, p=Fraction(1, 10)):   # exact P(X >= k), X ~ Binomial(n, p)
 def cp_interval(n, k, a=0.05):   # exact Clopper-Pearson by bisection on the binomial tails
     return (0.0 if k == 0 else _lower(n, k, a)), (1.0 if k == n else _upper(n, k, a))
 
+def _pmf(n, j, p):                 # binomial probability in log space (no float overflow for large n)
+    if p <= 0: return 1.0 if j == 0 else 0.0
+    if p >= 1: return 1.0 if j == n else 0.0
+    return math.exp(math.lgamma(n + 1) - math.lgamma(j + 1) - math.lgamma(n - j + 1) + j * math.log(p) + (n - j) * math.log1p(-p))
+
 def _lower(n, k, a):
     lo, hi = 0.0, k / n
     for _ in range(60):
         mid = (lo + hi) / 2
-        t = sum(math.comb(n, j) * mid ** j * (1 - mid) ** (n - j) for j in range(k, n + 1))
+        t = sum(_pmf(n, j, mid) for j in range(k, n + 1))
         if t < a / 2: lo = mid
         else: hi = mid
     return lo
@@ -25,7 +30,7 @@ def _upper(n, k, a):
     lo, hi = k / n, 1.0
     for _ in range(60):
         mid = (lo + hi) / 2
-        t = sum(math.comb(n, j) * mid ** j * (1 - mid) ** (n - j) for j in range(0, k + 1))
+        t = sum(_pmf(n, j, mid) for j in range(0, k + 1))
         if t > a / 2: lo = mid
         else: hi = mid
     return hi

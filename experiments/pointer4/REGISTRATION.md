@@ -74,3 +74,9 @@ Amelia's reply is computed from her sealed state and the address alone. Under or
 3. Growth of the fresh travellers.
 4. Answers, committed and sealed before 29 Oct 12:00 UTC.
 5. After 12:00 UTC, the targets are fetched and verified in GitHub Actions, and the hits are scored there.
+
+## Amendment 1 (29 Oct 2026, 13:30 UTC): reporting bug only; no result had been seen
+- **What happened:** the first scoring run (GitHub Actions run 40881453284) verified the seal, then fetched and verified the targets (3,600 symbols from Quicknet rounds 33490612–33490727). It then crashed in the helper that computes the reported 95% intervals (`OverflowError`: float binomial terms at n = 3,600). It crashed before any hit count was printed or committed.
+- **The fix:** the helper now computes binomial probabilities in log space.
+- **Unchanged:** the four decision tests and the GT-36 test (exact rational arithmetic), the answers, the targets, the decision rule and every threshold.
+- **Repinned:** the scoring workflow is repinned to this commit.
