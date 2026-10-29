@@ -1,0 +1,107 @@
+# PF S1 amendment 1: one RFC3161 token over the amendment and the corrected migration (experiments/pf_storage/PF_S1_AMENDMENT_1.md).
+name: PF S1 amendment 1 ONE RFC3161 seal — zero admitted
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf-s1-a1-seal.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: orange, ref: main, fetch-depth: 0 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: B0 pins and recorded facts
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          test -e experiments/pf_storage/seal/receipt.json
+          test ! -e experiments/pf_storage/seal_a1/receipt.json
+          test -f drift1a_c1/runner_state/completions/40614134740-1.json
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import hashlib,json,pathlib
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          g1=json.loads(pathlib.Path('experiments/pf1/live/GENESIS.json').read_text())
+          m1=json.loads(pathlib.Path('experiments/pf1/PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          for x in g1['liveOperationalSourceHashes']+m1['immutableSource']['operationalSourceFileHashes']: assert h(x['path'])==x['sha256'],x['path']
+          s1=json.loads(pathlib.Path('experiments/pf1/live/STATE.json').read_text()); l1=json.loads(pathlib.Path('experiments/pf1/live/SILENT_LEDGER.json').read_text())
+          assert s1['status']=='running' and s1['admittedTicks']==len(l1['rows'])==10203
+          assert s1['headDigest']=='45f5de735d624816b3c48365b2936f6452767eff21afa2b39d6d54d922c2825f'==l1['rows'][-1]['digest']
+          root=pathlib.Path('drift1a_c1/runner_state')
+          un=sorted(p.name for p in (root/'leases').glob('*.json') if not (root/'completions'/p.name).exists())
+          assert un==[],un
+          b=json.loads(pathlib.Path('experiments/pf2/live/GENESIS_SIGNED_BUNDLE.json').read_text())
+          for x in b['frozenSourceSHA256']+b['originalFourFileSHA256']:
+            if x['path']=='.github/workflows/pf2-live-observe.yml': continue
+            assert h(x['path'])==x['sha256'],x['path']
+          for f in ['experiments/pf2/operational_ad1/seal/AD1_SIGNED_BUNDLE.json','experiments/pf2/operational_ad2/seal/AD2_SIGNED_BUNDLE.json']:
+            for x in json.loads(pathlib.Path(f).read_text())['sourceSHA256']: assert h(x['path'])==x['sha256'],x['path']
+          s2=json.loads(pathlib.Path('experiments/pf2/live/STATE.json').read_text())
+          assert s2['status']=='halted' and s2['admittedTicks']==7150 and s2['openHalt']['lastSealedTick']==7150
+          assert s2['headDigest']==s2['openHalt']['lastSealedHead']=='ee20117a4aebd1698ab232095f6f265098f19ecc668fc758398531e699566926'
+          print('PF_S1_PINS_AND_FACTS_PASS')
+          PY
+      - name: B1 offline S1 unit
+        working-directory: orange
+        env: { PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -q -r ../c1-pin/drift1a_c1/requirements.txt
+          python experiments/pf_storage/PF_S1_UNIT.py "${{ github.workspace }}/c1-pin"
+          test -z "$(git status --porcelain --untracked-files=all)"
+      - name: B2 S1 amendment 1 bundle and ONE genuine RFC3161 token
+        working-directory: orange
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          p=pathlib.Path('/tmp/pfs1a1'); p.mkdir(parents=True,exist_ok=True)
+          sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          files=['experiments/pf_storage/PF_S1_AMENDMENT_1.md','.github/workflows/pf-s1-migrate-a1.yml','.github/workflows/pf-s1-a1-seal.yml']
+          bundle={'schema':'PF_S1_A1_OPERATIONAL_SHA256_V1','amends':'experiments/pf_storage/seal/S1_SIGNED_BUNDLE.json',
+            'S1BundleSHA256':sha('experiments/pf_storage/seal/S1_SIGNED_BUNDLE.json'),'failedMigrationRun':'40964688563',
+            'committedByFailedRun':['5e818b14 PF-1 lease 40614134740-1 completion'],'scienceChanged':False,'notificationsEnabled':False,
+            'sourceSHA256':[{'path':f,'sha256':sha(f)} for f in files]}
+          (p/'S1_A1_SIGNED_BUNDLE.json').write_text(json.dumps(bundle,sort_keys=True,indent=2)+'\n')
+          imprint=sha(p/'S1_A1_SIGNED_BUNDLE.json')
+          Sealer().seal(p/'seal',imprint)
+          assert Sealer().verify(p/'seal',imprint)['status']=='PASS'
+          print('PF_S1_A1_ONE_RFC3161_PASS',imprint)
+          PY
+      - name: B3 create-only archive of the amendment bundle, token and receipt
+        env: { GH_TOKEN: '${{ github.token }}', REPO: '${{ github.repository }}' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,json,os,pathlib,subprocess
+          p=pathlib.Path('/tmp/pfs1a1')
+          files={'S1_A1_SIGNED_BUNDLE.json':p/'S1_A1_SIGNED_BUNDLE.json'}
+          for n in ['attempt-0000.tsq','attempt-0000.tsr','receipt.json']:
+            assert (p/'seal'/n).exists(),'MISSING '+n; files[n]=p/'seal'/n
+          for name in sorted(files,key=lambda k:k=='receipt.json'):
+            dst='experiments/pf_storage/seal_a1/'+name
+            payload={'message':'PF S1 amendment 1: ONE RFC3161 token, create-only '+name+'; zero admitted','branch':'main','content':base64.b64encode(files[name].read_bytes()).decode()}
+            r=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dst,'--input','-'],input=json.dumps(payload),capture_output=True,text=True)
+            if r.returncode: raise RuntimeError('S1_A1_CREATE_ONLY_FAILED '+dst+' '+r.stderr[-800:])
+            print('PF_S1_A1_ARCHIVED',dst)
+          PY

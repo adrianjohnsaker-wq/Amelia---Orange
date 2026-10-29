@@ -1,0 +1,116 @@
+# PF S1 amendment 1 one-time migration (experiments/pf_storage/PF_S1_AMENDMENT_1.md): as pf-s1-migrate.yml, with the PF-1
+# lease completion (already made) verified rather than repeated, and no bytecode written anywhere. Once only.
+name: PF S1 amendment 1 one-time migration — halt, storage (no scientific writes)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+jobs:
+  migrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: write
+      actions: read
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: orange, ref: main, fetch-depth: 0 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: M0 S1 seal archived and verified; sources unchanged since sealing; not yet migrated
+        working-directory: orange
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          test -e experiments/pf_storage/seal/receipt.json
+          test -e experiments/pf_storage/seal_a1/receipt.json
+          test ! -e experiments/pf_storage/MIGRATED.json
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python -m pip install -q -r ../c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          d=pathlib.Path('experiments/pf_storage/seal'); b=json.loads((d/'S1_SIGNED_BUNDLE.json').read_text())
+          assert Sealer().verify(d,h(d/'S1_SIGNED_BUNDLE.json'))['status']=='PASS'
+          for x in b['sourceSHA256']: assert h(x['path'])==x['sha256'],'S1_SOURCE_CHANGED '+x['path']
+          assert h('experiments/pf1/live/STATE.json')==b['PF1']['stateSHA256'] and h('experiments/pf1/live/SILENT_LEDGER.json')==b['PF1']['ledgerSHA256']
+          assert h('experiments/pf2/live/STATE.json')==b['PF2']['stateSHA256']
+          print('PF_S1_SEAL_AND_SOURCES_AND_STATE_AT_SEAL_VERIFIED')
+          d=pathlib.Path('experiments/pf_storage/seal_a1'); a=json.loads((d/'S1_A1_SIGNED_BUNDLE.json').read_text())
+          assert Sealer().verify(d,h(d/'S1_A1_SIGNED_BUNDLE.json'))['status']=='PASS'
+          for x in a['sourceSHA256']: assert h(x['path'])==x['sha256'],'S1_A1_SOURCE_CHANGED '+x['path']
+          print('PF_S1_AMENDMENT_1_SEAL_VERIFIED')
+          PY
+      - name: M1 PF-1 orphan lease 40614134740-1 already completed (5e818b14) — verify only
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f drift1a_c1/runner_state/completions/40614134740-1.json
+          python - <<'PY'
+          import hashlib,json,pathlib
+          base=pathlib.Path('drift1a_c1/runner_state')
+          lease=json.loads((base/'leases/40614134740-1.json').read_text()); done=json.loads((base/'completions/40614134740-1.json').read_text())
+          assert done['workflow_run']=='40614134740-1'
+          assert done['lease_digest']==hashlib.sha256(json.dumps(lease,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+          assert not [p.name for p in (base/'leases').glob('*.json') if not (base/'completions'/p.name).exists()]
+          print('PF_S1_A1_PF1_LEASE_COMPLETION_PRESENT_NO_OPEN_LEASE')
+          PY
+          git config user.name 'PF S1 authorised migration'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+      - name: M2 PF-2 halt recovery at its sealed prefix (tick 7150)
+        working-directory: orange
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false', PF2_S1_RECOVERY_OPERATOR_CONTINUE: 'true', PF2_S1_SEAL_VERIFIED: 'true' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/pf2/PF2_LIVE_CHECK.py
+          python experiments/pf2/PF2_S1_RECOVER.py
+          python experiments/pf2/PF2_LIVE_CHECK.py
+      - name: M3 sharded storage; joins must reproduce the bytes exactly; record and publish
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          F1=experiments/pf1/live/STATE.json; F2=experiments/pf1/live/SILENT_LEDGER.json; F3=experiments/pf2/live/STATE.json
+          python experiments/pf_storage/PF_SHARD.py split $F1 $F2 $F3
+          python experiments/pf_storage/PF_SHARD.py verify $F1 $F2 $F3
+          printf '/STATE.json\n/SILENT_LEDGER.json\n' > experiments/pf1/live/.gitignore
+          printf '/STATE.json\n' > experiments/pf2/live/.gitignore
+          printf '*.bin binary\n' > experiments/pf1/live/.gitattributes
+          printf '*.bin binary\n' > experiments/pf2/live/.gitattributes
+          git rm -q --cached -- $F1 $F2 $F3
+          python - <<'PY'
+          import hashlib,json,pathlib,datetime,shutil,tempfile,sys
+          sys.path.insert(0,'experiments/pf_storage'); import PF_SHARD
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          files=['experiments/pf1/live/STATE.json','experiments/pf1/live/SILENT_LEDGER.json','experiments/pf2/live/STATE.json']
+          out={}
+          for f in files:
+            with tempfile.TemporaryDirectory() as td:
+              t=pathlib.Path(td)/pathlib.Path(f).name; shutil.copytree(PF_SHARD.shard_dir(f),PF_SHARD.shard_dir(t)); PF_SHARD.join(t)
+              assert h(t)==h(f),'PF_S1_JOIN_NOT_IDENTICAL '+f
+            out[f]={'sha256':h(f),'bytes':pathlib.Path(f).stat().st_size,'parts':len(list(PF_SHARD.shard_dir(f).glob('part-*.bin')))}
+          rec={'schema':'PF_S1_MIGRATED_V1','atUTC':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+               'files':out,'PF1':{'orphanLeaseCompleted':'40614134740-1','admittedTicks':10203},'PF2':{'recovery':'experiments/pf2/live/RECOVERY_S1.json','admittedTicks':7150},
+               'scienceChanged':False,'seal':'experiments/pf_storage/seal/receipt.json'}
+          pathlib.Path('experiments/pf_storage/MIGRATED.json').write_text(json.dumps(rec,sort_keys=True,indent=2)+'\n')
+          print('PF_S1_MIGRATION_RECORD',json.dumps(out))
+          PY
+          git add -- experiments/pf1/live/.gitignore experiments/pf2/live/.gitignore experiments/pf1/live/.gitattributes experiments/pf2/live/.gitattributes "$F1.shards" "$F2.shards" "$F3.shards" experiments/pf2/live/RECOVERY_S1.json experiments/pf_storage/MIGRATED.json
+          git status --porcelain --untracked-files=all
+          test -z "$(git status --porcelain --untracked-files=all | grep -v '^[ADMR] ' || true)"
+          git commit -qm 'PF S1: PF-2 reopened at its sealed prefix (tick 7150); PF-1 and PF-2 live state stored as verified shards; no scientific writes'
+          git push -q origin HEAD:main
+          git fetch -q origin main && test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)"
+          echo PF_S1_MIGRATION_COMPLETE
