@@ -1,0 +1,973 @@
+# INGRESS — evolving cluster atlas
+
+Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, or automated entity claims.
+
+- Exchanges: 4415; lineages: 8
+- Span: ['2026-10-28T00:00:00Z', '2026-10-29T22:00:00Z']
+- Transcript SHA-256: `8c0e0652d27a21305a4124d98c05a9b2877c220aacbc50b585fef33926742a3a`
+- Channels: {'Numogram': 3076, 'Tarot': 319, 'I Ching': 1020}
+- Query regions: {'Plex': 563, 'Time-Circuit': 1339, 'Warp': 2513}
+- Query forms: {'no form': 4284, '7-8': 24, '1-7-8-9': 84, '1-7': 23}
+
+## Reply nodes
+
+- NUM:Oddubb:7::2@7: 385
+- NUM:Katak:5::4@4: 372
+- NUM:Djynxx:6::3@6: 368
+- NUM:Oddubb:7::2@2: 342
+- NUM:Mur Mur:8::1@1: 334
+- NUM:Mur Mur:8::1@8: 315
+- NUM:Katak:5::4@5: 306
+- NUM:Djynxx:6::3@3: 293
+- NUM:Uttunul:9::0@9: 282
+- NUM:Uttunul:9::0@0: 79
+- TAR:Seven of Wands:U: 21
+- TAR:Three of Wands:U: 14
+- TAR:Five of Wands:U: 14
+- TAR:Two of Wands:U: 13
+- TAR:Nine of Wands:U: 12
+- TAR:Page of Wands:U: 12
+- TAR:Seven of Cups:U: 10
+- ICH:58:The Joyous->49: 9
+- TAR:Six of Wands:U: 9
+- TAR:The Chariot:U: 9
+- TAR:The Magician:U: 9
+- TAR:Queen of Wands:U: 9
+- TAR:Eight of Wands:U: 9
+- ICH:4:Youthful Folly->19: 8
+- ICH:3:Difficulty at the Beginning->-: 8
+- TAR:The Fool:U: 8
+- TAR:Four of Wands:U: 7
+- TAR:Ten of Wands:U: 7
+- TAR:Knight of Wands:U: 7
+- TAR:The World:U: 7
+- TAR:The Sun:U: 7
+- TAR:King of Wands:U: 6
+- TAR:Two of Cups:U: 6
+- ICH:37:The Family->1: 5
+- ICH:30:The Clinging->27: 5
+- ICH:15:Modesty->11: 5
+- ICH:2:The Receptive->16: 5
+- ICH:34:Great Power->53: 5
+- ICH:33:Retreat->59: 5
+- ICH:4:Youthful Folly->28: 5
+- TAR:The Lovers:U: 5
+- TAR:Ten of Cups:U: 5
+- TAR:The High Priestess:U: 5
+- ICH:23:Splitting Apart->2: 5
+- ICH:18:Work on the Decayed->26: 5
+- TAR:Ace of Wands:U: 5
+- ICH:45:Gathering Together->4: 4
+- ICH:56:The Wanderer->36: 4
+- ICH:59:Dispersion->44: 4
+- ICH:29:The Abysmal->64: 4
+- ICH:12:Standstill->27: 4
+- ICH:44:Coming to Meet->29: 4
+- ICH:2:The Receptive->48: 4
+- ICH:39:Obstruction->32: 4
+- ICH:18:Work on the Decayed->20: 4
+- ICH:16:Enthusiasm->17: 4
+- ICH:24:Return->11: 4
+- TAR:Ace of Cups:U: 4
+- TAR:Temperance:U: 4
+- ICH:51:The Arousing->54: 4
+- ICH:16:Enthusiasm->39: 4
+- TAR:Four of Swords:U: 4
+- TAR:Five of Cups:U: 4
+- TAR:Three of Cups:U: 4
+- TAR:Four of Cups:U: 4
+- ICH:59:Dispersion->62: 4
+- ICH:16:Enthusiasm->10: 4
+- TAR:Strength:U: 4
+- TAR:Nine of Cups:U: 3
+- ICH:12:Standstill->25: 3
+- ICH:16:Enthusiasm->4: 3
+- ICH:58:The Joyous->63: 3
+- ICH:57:The Gentle->58: 3
+- ICH:39:Obstruction->2: 3
+- ICH:31:Influence->54: 3
+- ICH:23:Splitting Apart->7: 3
+- ICH:29:The Abysmal->20: 3
+- ICH:53:Development->38: 3
+- ICH:1:The Creative->28: 3
+- ICH:58:The Joyous->31: 3
+- ICH:30:The Clinging->14: 3
+- ICH:14:Great Possession->10: 3
+- ICH:16:Enthusiasm->5: 3
+- ICH:59:Dispersion->60: 3
+- ICH:7:The Army->47: 3
+- ICH:29:The Abysmal->62: 3
+- ICH:9:Small Taming->21: 3
+- ICH:5:Waiting->-: 3
+- ICH:61:Inner Truth->50: 3
+- ICH:36:Darkening of the Light->55: 3
+- ICH:23:Splitting Apart->47: 3
+- ICH:64:Before Completion->55: 3
+- ICH:45:Gathering Together->53: 3
+- TAR:The Star:U: 3
+- TAR:Judgement:U: 3
+- TAR:The Tower:U: 3
+- TAR:Death:U: 3
+- ICH:15:Modesty->55: 3
+- ICH:21:Biting Through->56: 2
+- ICH:39:Obstruction->5: 2
+- ICH:33:Retreat->18: 2
+- ICH:32:Duration->31: 2
+- ICH:17:Following->50: 2
+- ICH:43:Breakthrough->62: 2
+- ICH:3:Difficulty at the Beginning->56: 2
+- ICH:9:Small Taming->61: 2
+- ICH:15:Modesty->40: 2
+- ICH:6:Conflict->8: 2
+- ICH:3:Difficulty at the Beginning->2: 2
+- ICH:40:Deliverance->38: 2
+- ICH:26:Great Taming->39: 2
+- ICH:27:Nourishment->25: 2
+- ICH:4:Youthful Folly->30: 2
+- ICH:39:Obstruction->12: 2
+- ICH:13:Fellowship->42: 2
+- ICH:57:The Gentle->1: 2
+- ICH:52:Keeping Still->16: 2
+- ICH:17:Following->14: 2
+- ICH:50:The Cauldron->8: 2
+- ICH:45:Gathering Together->40: 2
+- ICH:43:Breakthrough->-: 2
+- ICH:5:Waiting->56: 2
+- ICH:8:Holding Together->42: 2
+- ICH:3:Difficulty at the Beginning->41: 2
+- ICH:25:Innocence->29: 2
+- ICH:6:Conflict->14: 2
+- ICH:15:Modesty->32: 2
+- ICH:27:Nourishment->56: 2
+- TAR:Nine of Cups:R: 2
+- TAR:Page of Cups:R: 2
+- ICH:59:Dispersion->3: 2
+- ICH:28:Great Exceeding->12: 2
+- ICH:59:Dispersion->56: 2
+- ICH:14:Great Possession->60: 2
+- ICH:56:The Wanderer->4: 2
+- ICH:52:Keeping Still->40: 2
+- ICH:51:The Arousing->31: 2
+- ICH:39:Obstruction->46: 2
+- ICH:50:The Cauldron->23: 2
+- ICH:30:The Clinging->57: 2
+- ICH:28:Great Exceeding->6: 2
+- ICH:21:Biting Through->23: 2
+- ICH:54:The Marrying Maiden->60: 2
+- ICH:26:Great Taming->53: 2
+- ICH:39:Obstruction->15: 2
+- TAR:The Devil:U: 2
+- TAR:The World:R: 2
+- ICH:41:Decrease->4: 2
+- ICH:45:Gathering Together->22: 2
+- ICH:43:Breakthrough->21: 2
+- ICH:38:Opposition->33: 2
+- ICH:7:The Army->57: 2
+- ICH:23:Splitting Apart->4: 2
+- ICH:13:Fellowship->43: 2
+- TAR:Ace of Pentacles:U: 2
+- ICH:28:Great Exceeding->50: 2
+- ICH:56:The Wanderer->20: 2
+- ICH:49:Revolution->5: 2
+- ICH:46:Pushing Upward->38: 2
+- ICH:33:Retreat->40: 2
+- ICH:27:Nourishment->34: 2
+- ICH:19:Approach->7: 2
+- ICH:56:The Wanderer->37: 2
+- ICH:31:Influence->38: 2
+- ICH:39:Obstruction->48: 2
+- ICH:18:Work on the Decayed->42: 2
+- ICH:42:Increase->54: 2
+- ICH:11:Peace->19: 2
+- ICH:43:Breakthrough->31: 2
+- ICH:37:The Family->41: 2
+- ICH:4:Youthful Folly->16: 2
+- TAR:Knight of Pentacles:R: 2
+- ICH:14:Great Possession->58: 2
+- ICH:28:Great Exceeding->10: 2
+- ICH:12:Standstill->32: 2
+- ICH:46:Pushing Upward->27: 2
+- ICH:14:Great Possession->30: 2
+- ICH:40:Deliverance->26: 2
+- ICH:16:Enthusiasm->45: 2
+- ICH:56:The Wanderer->40: 2
+- ICH:32:Duration->52: 2
+- ICH:61:Inner Truth->7: 2
+- ICH:4:Youthful Folly->50: 2
+- ICH:15:Modesty->29: 2
+- ICH:4:Youthful Folly->1: 2
+- ICH:16:Enthusiasm->61: 2
+- ICH:39:Obstruction->55: 2
+- ICH:62:Small Exceeding->41: 2
+- ICH:40:Deliverance->12: 2
+- ICH:57:The Gentle->34: 2
+- ICH:61:Inner Truth->45: 2
+- ICH:58:The Joyous->28: 2
+- ICH:2:The Receptive->17: 2
+- ICH:40:Deliverance->61: 2
+- ICH:49:Revolution->54: 2
+- ICH:45:Gathering Together->5: 2
+- ICH:51:The Arousing->38: 2
+- ICH:43:Breakthrough->29: 2
+- TAR:The Moon:U: 2
+- ICH:53:Development->43: 2
+- ICH:1:The Creative->44: 2
+- ICH:7:The Army->34: 2
+- ICH:9:Small Taming->57: 2
+- ICH:24:Return->45: 2
+- ICH:27:Nourishment->58: 2
+- ICH:40:Deliverance->16: 2
+- ICH:50:The Cauldron->30: 2
+- ICH:42:Increase->61: 2
+- ICH:16:Enthusiasm->29: 2
+- ICH:55:Abundance->53: 2
+- ICH:16:Enthusiasm->-: 2
+- ICH:41:Decrease->49: 2
+- ICH:45:Gathering Together->44: 2
+- ICH:40:Deliverance->4: 2
+- ICH:12:Standstill->64: 2
+- TAR:Five of Swords:U: 2
+- TAR:The Empress:R: 2
+- ICH:7:The Army->56: 2
+- TAR:Eight of Pentacles:R: 2
+- ICH:38:Opposition->45: 2
+- TAR:Six of Cups:R: 2
+- ICH:12:Standstill->-: 2
+- TAR:Six of Swords:R: 2
+- ICH:25:Innocence->17: 2
+- ICH:20:Contemplation->61: 2
+- ICH:39:Obstruction->63: 2
+- ICH:8:Holding Together->54: 2
+- ICH:52:Keeping Still->3: 2
+- TAR:Eight of Cups:U: 2
+- ICH:63:After Completion->13: 2
+- ICH:14:Great Possession->49: 2
+- ICH:59:Dispersion->16: 2
+- ICH:58:The Joyous->21: 2
+- ICH:32:Duration->33: 2
+- ICH:20:Contemplation->17: 2
+- ICH:45:Gathering Together->47: 2
+- ICH:37:The Family->39: 2
+- ICH:49:Revolution->10: 2
+- ICH:35:Progress->41: 2
+- ICH:13:Fellowship->29: 2
+- ICH:14:Great Possession->55: 2
+- ICH:61:Inner Truth->31: 2
+- ICH:32:Duration->26: 2
+- ICH:24:Return->18: 1
+- ICH:24:Return->53: 1
+- ICH:19:Approach->47: 1
+- ICH:38:Opposition->48: 1
+- ICH:33:Retreat->58: 1
+- ICH:20:Contemplation->33: 1
+- ICH:53:Development->12: 1
+- ICH:18:Work on the Decayed->41: 1
+- ICH:60:Limitation->21: 1
+- ICH:63:After Completion->36: 1
+- ICH:10:Treading->17: 1
+- ICH:23:Splitting Apart->12: 1
+- ICH:30:The Clinging->5: 1
+- ICH:40:Deliverance->7: 1
+- ICH:30:The Clinging->43: 1
+- ICH:45:Gathering Together->16: 1
+- ICH:12:Standstill->6: 1
+- ICH:51:The Arousing->29: 1
+- ICH:18:Work on the Decayed->12: 1
+- ICH:23:Splitting Apart->18: 1
+- ICH:41:Decrease->15: 1
+- ICH:60:Limitation->10: 1
+- ICH:21:Biting Through->44: 1
+- ICH:52:Keeping Still->8: 1
+- ICH:39:Obstruction->33: 1
+- ICH:27:Nourishment->11: 1
+- ICH:2:The Receptive->24: 1
+- ICH:1:The Creative->54: 1
+- ICH:35:Progress->14: 1
+- ICH:6:Conflict->44: 1
+- ICH:27:Nourishment->13: 1
+- ICH:55:Abundance->15: 1
+- ICH:58:The Joyous->2: 1
+- ICH:43:Breakthrough->47: 1
+- ICH:3:Difficulty at the Beginning->42: 1
+- ICH:17:Following->41: 1
+- ICH:16:Enthusiasm->55: 1
+- ICH:14:Great Possession->6: 1
+- ICH:46:Pushing Upward->52: 1
+- ICH:39:Obstruction->27: 1
+- ICH:6:Conflict->37: 1
+- ICH:50:The Cauldron->14: 1
+- ICH:13:Fellowship->15: 1
+- ICH:18:Work on the Decayed->57: 1
+- ICH:21:Biting Through->29: 1
+- ICH:10:Treading->30: 1
+- ICH:6:Conflict->49: 1
+- ICH:45:Gathering Together->60: 1
+- ICH:59:Dispersion->29: 1
+- ICH:41:Decrease->64: 1
+- ICH:59:Dispersion->38: 1
+- ICH:60:Limitation->45: 1
+- ICH:17:Following->45: 1
+- ICH:40:Deliverance->36: 1
+- ICH:62:Small Exceeding->51: 1
+- ICH:26:Great Taming->45: 1
+- ICH:54:The Marrying Maiden->12: 1
+- ICH:63:After Completion->34: 1
+- ICH:3:Difficulty at the Beginning->54: 1
+- TAR:Eight of Swords:R: 1
+- ICH:64:Before Completion->6: 1
+- ICH:4:Youthful Folly->56: 1
+- ICH:29:The Abysmal->5: 1
+- TAR:Eight of Pentacles:U: 1
+- TAR:Queen of Swords:U: 1
+- TAR:Ten of Swords:U: 1
+- TAR:Page of Swords:U: 1
+- TAR:Three of Cups:R: 1
+- ICH:23:Splitting Apart->62: 1
+- ICH:6:Conflict->51: 1
+- ICH:63:After Completion->43: 1
+- ICH:59:Dispersion->45: 1
+- ICH:50:The Cauldron->58: 1
+- ICH:51:The Arousing->16: 1
+- ICH:8:Holding Together->2: 1
+- ICH:26:Great Taming->4: 1
+- ICH:46:Pushing Upward->23: 1
+- ICH:53:Development->3: 1
+- ICH:42:Increase->28: 1
+- ICH:22:Grace->17: 1
+- ICH:40:Deliverance->1: 1
+- ICH:64:Before Completion->58: 1
+- ICH:4:Youthful Folly->11: 1
+- ICH:17:Following->26: 1
+- ICH:31:Influence->42: 1
+- ICH:33:Retreat->31: 1
+- ICH:32:Duration->49: 1
+- ICH:2:The Receptive->39: 1
+- ICH:35:Progress->49: 1
+- ICH:7:The Army->5: 1
+- ICH:40:Deliverance->37: 1
+- ICH:62:Small Exceeding->49: 1
+- ICH:24:Return->50: 1
+- ICH:14:Great Possession->41: 1
+- ICH:60:Limitation->20: 1
+- ICH:23:Splitting Apart->21: 1
+- ICH:7:The Army->14: 1
+- ICH:33:Retreat->13: 1
+- ICH:19:Approach->20: 1
+- ICH:17:Following->34: 1
+- ICH:34:Great Power->22: 1
+- ICH:19:Approach->60: 1
+- ICH:54:The Marrying Maiden->11: 1
+- ICH:26:Great Taming->42: 1
+- ICH:46:Pushing Upward->19: 1
+- ICH:5:Waiting->40: 1
+- ICH:7:The Army->20: 1
+- ICH:4:Youthful Folly->40: 1
+- ICH:52:Keeping Still->37: 1
+- ICH:58:The Joyous->37: 1
+- ICH:56:The Wanderer->42: 1
+- ICH:29:The Abysmal->52: 1
+- ICH:56:The Wanderer->5: 1
+- ICH:5:Waiting->35: 1
+- ICH:62:Small Exceeding->22: 1
+- ICH:55:Abundance->54: 1
+- ICH:46:Pushing Upward->62: 1
+- ICH:28:Great Exceeding->52: 1
+- ICH:35:Progress->26: 1
+- ICH:29:The Abysmal->16: 1
+- ICH:62:Small Exceeding->13: 1
+- ICH:14:Great Possession->44: 1
+- ICH:54:The Marrying Maiden->1: 1
+- ICH:52:Keeping Still->48: 1
+- ICH:50:The Cauldron->54: 1
+- ICH:48:The Well->18: 1
+- ICH:29:The Abysmal->42: 1
+- ICH:25:Innocence->48: 1
+- ICH:42:Increase->19: 1
+- ICH:19:Approach->33: 1
+- ICH:56:The Wanderer->16: 1
+- ICH:18:Work on the Decayed->62: 1
+- ICH:30:The Clinging->1: 1
+- ICH:40:Deliverance->39: 1
+- ICH:19:Approach->15: 1
+- ICH:14:Great Possession->2: 1
+- ICH:15:Modesty->59: 1
+- ICH:64:Before Completion->-: 1
+- ICH:49:Revolution->34: 1
+- ICH:44:Coming to Meet->6: 1
+- ICH:11:Peace->36: 1
+- ICH:44:Coming to Meet->63: 1
+- ICH:14:Great Possession->27: 1
+- ICH:53:Development->20: 1
+- ICH:28:Great Exceeding->54: 1
+- ICH:9:Small Taming->13: 1
+- ICH:33:Retreat->25: 1
+- ICH:54:The Marrying Maiden->25: 1
+- ICH:2:The Receptive->47: 1
+- ICH:56:The Wanderer->13: 1
+- ICH:6:Conflict->30: 1
+- ICH:33:Retreat->9: 1
+- ICH:15:Modesty->1: 1
+- ICH:22:Grace->18: 1
+- ICH:44:Coming to Meet->20: 1
+- ICH:47:Oppression->13: 1
+- ICH:60:Limitation->50: 1
+- ICH:10:Treading->40: 1
+- ICH:44:Coming to Meet->14: 1
+- ICH:61:Inner Truth->47: 1
+- ICH:3:Difficulty at the Beginning->10: 1
+- ICH:23:Splitting Apart->5: 1
+- ICH:14:Great Possession->19: 1
+- ICH:49:Revolution->28: 1
+- ICH:4:Youthful Folly->23: 1
+- ICH:19:Approach->50: 1
+- ICH:15:Modesty->45: 1
+- ICH:35:Progress->39: 1
+- ICH:27:Nourishment->62: 1
+- ICH:58:The Joyous->53: 1
+- ICH:61:Inner Truth->15: 1
+- ICH:23:Splitting Apart->32: 1
+- ICH:55:Abundance->31: 1
+- ICH:24:Return->22: 1
+- ICH:6:Conflict->18: 1
+- ICH:63:After Completion->56: 1
+- ICH:2:The Receptive->64: 1
+- ICH:41:Decrease->45: 1
+- ICH:15:Modesty->13: 1
+- ICH:23:Splitting Apart->1: 1
+- ICH:39:Obstruction->54: 1
+- ICH:62:Small Exceeding->11: 1
+- ICH:34:Great Power->25: 1
+- ICH:45:Gathering Together->46: 1
+- ICH:48:The Well->17: 1
+- ICH:26:Great Taming->-: 1
+- ICH:27:Nourishment->30: 1
+- ICH:21:Biting Through->64: 1
+- ICH:32:Duration->48: 1
+- ICH:1:The Creative->33: 1
+- ICH:53:Development->60: 1
+- ICH:38:Opposition->1: 1
+- ICH:52:Keeping Still->42: 1
+- ICH:8:Holding Together->56: 1
+- ICH:55:Abundance->20: 1
+- ICH:51:The Arousing->63: 1
+- ICH:28:Great Exceeding->7: 1
+- ICH:43:Breakthrough->48: 1
+- ICH:27:Nourishment->32: 1
+- ICH:27:Nourishment->41: 1
+- ICH:61:Inner Truth->21: 1
+- ICH:45:Gathering Together->28: 1
+- ICH:55:Abundance->45: 1
+- ICH:52:Keeping Still->31: 1
+- ICH:35:Progress->23: 1
+- ICH:2:The Receptive->6: 1
+- ICH:37:The Family->20: 1
+- ICH:52:Keeping Still->46: 1
+- ICH:58:The Joyous->15: 1
+- ICH:37:The Family->40: 1
+- ICH:1:The Creative->4: 1
+- ICH:32:Duration->38: 1
+- ICH:20:Contemplation->62: 1
+- ICH:51:The Arousing->42: 1
+- ICH:59:Dispersion->50: 1
+- ICH:8:Holding Together->58: 1
+- ICH:47:Oppression->15: 1
+- ICH:36:Darkening of the Light->14: 1
+- ICH:49:Revolution->62: 1
+- ICH:28:Great Exceeding->59: 1
+- ICH:12:Standstill->19: 1
+- ICH:34:Great Power->55: 1
+- ICH:35:Progress->9: 1
+- ICH:64:Before Completion->35: 1
+- ICH:22:Grace->2: 1
+- ICH:52:Keeping Still->45: 1
+- ICH:50:The Cauldron->29: 1
+- ICH:14:Great Possession->50: 1
+- ICH:26:Great Taming->31: 1
+- ICH:13:Fellowship->39: 1
+- ICH:59:Dispersion->27: 1
+- ICH:29:The Abysmal->46: 1
+- ICH:39:Obstruction->37: 1
+- ICH:13:Fellowship->40: 1
+- ICH:44:Coming to Meet->61: 1
+- ICH:20:Contemplation->23: 1
+- ICH:60:Limitation->-: 1
+- ICH:44:Coming to Meet->55: 1
+- ICH:47:Oppression->33: 1
+- ICH:61:Inner Truth->3: 1
+- ICH:51:The Arousing->39: 1
+- ICH:14:Great Possession->9: 1
+- ICH:14:Great Possession->26: 1
+- ICH:19:Approach->23: 1
+- ICH:3:Difficulty at the Beginning->21: 1
+- ICH:50:The Cauldron->48: 1
+- ICH:53:Development->31: 1
+- ICH:38:Opposition->40: 1
+- ICH:57:The Gentle->44: 1
+- ICH:62:Small Exceeding->52: 1
+- ICH:30:The Clinging->17: 1
+- ICH:43:Breakthrough->28: 1
+- TAR:Nine of Wands:R: 1
+- TAR:Queen of Cups:R: 1
+- ICH:41:Decrease->19: 1
+- ICH:40:Deliverance->-: 1
+- TAR:Two of Pentacles:R: 1
+- TAR:Eight of Swords:U: 1
+- TAR:Knight of Swords:R: 1
+- TAR:Knight of Cups:U: 1
+- TAR:King of Swords:R: 1
+- TAR:Seven of Swords:U: 1
+- ICH:63:After Completion->59: 1
+- ICH:55:Abundance->22: 1
+- ICH:13:Fellowship->53: 1
+- ICH:55:Abundance->14: 1
+- ICH:56:The Wanderer->17: 1
+- ICH:23:Splitting Apart->13: 1
+- ICH:36:Darkening of the Light->49: 1
+- ICH:40:Deliverance->43: 1
+- ICH:54:The Marrying Maiden->42: 1
+- ICH:64:Before Completion->24: 1
+- ICH:30:The Clinging->-: 1
+- ICH:56:The Wanderer->54: 1
+- ICH:59:Dispersion->9: 1
+- ICH:4:Youthful Folly->59: 1
+- ICH:48:The Well->63: 1
+- ICH:36:Darkening of the Light->24: 1
+- ICH:58:The Joyous->55: 1
+- ICH:9:Small Taming->32: 1
+- ICH:6:Conflict->35: 1
+- ICH:4:Youthful Folly->15: 1
+- ICH:51:The Arousing->55: 1
+- ICH:36:Darkening of the Light->3: 1
+- ICH:4:Youthful Folly->22: 1
+- ICH:39:Obstruction->44: 1
+- ICH:35:Progress->22: 1
+- ICH:38:Opposition->2: 1
+- ICH:11:Peace->5: 1
+- ICH:35:Progress->16: 1
+- ICH:2:The Receptive->54: 1
+- ICH:24:Return->46: 1
+- ICH:6:Conflict->36: 1
+- ICH:35:Progress->19: 1
+- ICH:57:The Gentle->55: 1
+- ICH:31:Influence->24: 1
+- ICH:45:Gathering Together->61: 1
+- ICH:9:Small Taming->7: 1
+- ICH:41:Decrease->9: 1
+- ICH:14:Great Possession->33: 1
+- ICH:15:Modesty->60: 1
+- ICH:44:Coming to Meet->17: 1
+- ICH:36:Darkening of the Light->58: 1
+- ICH:45:Gathering Together->57: 1
+- ICH:29:The Abysmal->44: 1
+- ICH:27:Nourishment->43: 1
+- ICH:33:Retreat->57: 1
+- ICH:62:Small Exceeding->5: 1
+- ICH:40:Deliverance->57: 1
+- ICH:52:Keeping Still->14: 1
+- TAR:Four of Pentacles:U: 1
+- TAR:Three of Swords:R: 1
+- ICH:18:Work on the Decayed->50: 1
+- ICH:2:The Receptive->59: 1
+- ICH:53:Development->24: 1
+- ICH:35:Progress->55: 1
+- ICH:52:Keeping Still->5: 1
+- ICH:6:Conflict->40: 1
+- ICH:33:Retreat->47: 1
+- ICH:2:The Receptive->25: 1
+- ICH:41:Decrease->21: 1
+- ICH:57:The Gentle->25: 1
+- ICH:21:Biting Through->4: 1
+- ICH:4:Youthful Folly->33: 1
+- ICH:63:After Completion->44: 1
+- ICH:63:After Completion->9: 1
+- ICH:47:Oppression->28: 1
+- ICH:61:Inner Truth->34: 1
+- ICH:12:Standstill->41: 1
+- ICH:31:Influence->6: 1
+- ICH:2:The Receptive->21: 1
+- ICH:5:Waiting->12: 1
+- ICH:36:Darkening of the Light->56: 1
+- ICH:30:The Clinging->35: 1
+- TAR:Page of Swords:R: 1
+- TAR:King of Pentacles:U: 1
+- ICH:23:Splitting Apart->9: 1
+- ICH:5:Waiting->42: 1
+- ICH:51:The Arousing->12: 1
+- ICH:20:Contemplation->39: 1
+- ICH:27:Nourishment->9: 1
+- ICH:49:Revolution->30: 1
+- ICH:46:Pushing Upward->39: 1
+- ICH:59:Dispersion->22: 1
+- ICH:30:The Clinging->7: 1
+- ICH:33:Retreat->55: 1
+- ICH:10:Treading->-: 1
+- ICH:54:The Marrying Maiden->9: 1
+- ICH:14:Great Possession->51: 1
+- ICH:49:Revolution->26: 1
+- ICH:39:Obstruction->58: 1
+- ICH:63:After Completion->53: 1
+- ICH:59:Dispersion->2: 1
+- ICH:1:The Creative->43: 1
+- ICH:12:Standstill->10: 1
+- ICH:57:The Gentle->18: 1
+- ICH:19:Approach->62: 1
+- ICH:19:Approach->35: 1
+- ICH:46:Pushing Upward->37: 1
+- ICH:20:Contemplation->36: 1
+- ICH:28:Great Exceeding->55: 1
+- ICH:27:Nourishment->54: 1
+- ICH:8:Holding Together->41: 1
+- ICH:12:Standstill->9: 1
+- ICH:27:Nourishment->12: 1
+- TAR:Seven of Pentacles:U: 1
+- ICH:13:Fellowship->57: 1
+- ICH:50:The Cauldron->45: 1
+- ICH:27:Nourishment->18: 1
+- ICH:56:The Wanderer->33: 1
+- ICH:46:Pushing Upward->36: 1
+- ICH:49:Revolution->16: 1
+- ICH:17:Following->51: 1
+- ICH:47:Oppression->61: 1
+- ICH:44:Coming to Meet->33: 1
+- ICH:20:Contemplation->47: 1
+- ICH:5:Waiting->46: 1
+- ICH:17:Following->44: 1
+- ICH:12:Standstill->16: 1
+- ICH:11:Peace->63: 1
+- ICH:58:The Joyous->17: 1
+- ICH:27:Nourishment->55: 1
+- ICH:59:Dispersion->6: 1
+- ICH:38:Opposition->16: 1
+- ICH:24:Return->29: 1
+- ICH:50:The Cauldron->63: 1
+- ICH:31:Influence->17: 1
+- ICH:33:Retreat->42: 1
+- ICH:56:The Wanderer->23: 1
+- ICH:25:Innocence->42: 1
+- ICH:5:Waiting->32: 1
+- ICH:45:Gathering Together->48: 1
+- ICH:28:Great Exceeding->41: 1
+- ICH:47:Oppression->60: 1
+- ICH:16:Enthusiasm->23: 1
+- ICH:25:Innocence->1: 1
+- TAR:Wheel of Fortune:U: 1
+- ICH:58:The Joyous->48: 1
+- ICH:62:Small Exceeding->45: 1
+- ICH:13:Fellowship->51: 1
+- ICH:8:Holding Together->34: 1
+- ICH:17:Following->6: 1
+- ICH:28:Great Exceeding->33: 1
+- ICH:5:Waiting->1: 1
+- ICH:58:The Joyous->29: 1
+- ICH:63:After Completion->21: 1
+- ICH:20:Contemplation->46: 1
+- ICH:3:Difficulty at the Beginning->39: 1
+- ICH:51:The Arousing->2: 1
+- ICH:4:Youthful Folly->9: 1
+- ICH:47:Oppression->6: 1
+- ICH:17:Following->3: 1
+- ICH:8:Holding Together->36: 1
+- ICH:44:Coming to Meet->13: 1
+- ICH:18:Work on the Decayed->8: 1
+- TAR:Queen of Cups:U: 1
+- TAR:Six of Swords:U: 1
+- TAR:Six of Pentacles:U: 1
+- TAR:Six of Cups:U: 1
+- ICH:21:Biting Through->9: 1
+- ICH:32:Duration->51: 1
+- ICH:10:Treading->46: 1
+- ICH:36:Darkening of the Light->23: 1
+- ICH:35:Progress->50: 1
+- ICH:10:Treading->51: 1
+- ICH:32:Duration->54: 1
+- ICH:38:Opposition->18: 1
+- ICH:9:Small Taming->43: 1
+- ICH:61:Inner Truth->22: 1
+- ICH:48:The Well->38: 1
+- ICH:26:Great Taming->44: 1
+- ICH:26:Great Taming->1: 1
+- ICH:35:Progress->61: 1
+- ICH:59:Dispersion->7: 1
+- ICH:60:Limitation->38: 1
+- ICH:49:Revolution->9: 1
+- ICH:17:Following->29: 1
+- ICH:9:Small Taming->12: 1
+- ICH:51:The Arousing->21: 1
+- ICH:62:Small Exceeding->15: 1
+- ICH:5:Waiting->28: 1
+- ICH:45:Gathering Together->38: 1
+- ICH:33:Retreat->38: 1
+- ICH:38:Opposition->52: 1
+- ICH:58:The Joyous->54: 1
+- ICH:10:Treading->35: 1
+- ICH:17:Following->59: 1
+- ICH:24:Return->10: 1
+- ICH:40:Deliverance->6: 1
+- ICH:63:After Completion->1: 1
+- ICH:5:Waiting->4: 1
+- ICH:39:Obstruction->7: 1
+- ICH:47:Oppression->-: 1
+- ICH:52:Keeping Still->50: 1
+- ICH:15:Modesty->22: 1
+- ICH:30:The Clinging->64: 1
+- ICH:40:Deliverance->19: 1
+- ICH:5:Waiting->20: 1
+- ICH:53:Development->8: 1
+- ICH:36:Darkening of the Light->51: 1
+- ICH:60:Limitation->47: 1
+- ICH:35:Progress->13: 1
+- ICH:5:Waiting->24: 1
+- ICH:32:Duration->14: 1
+- ICH:3:Difficulty at the Beginning->8: 1
+- ICH:24:Return->5: 1
+- ICH:7:The Army->62: 1
+- TAR:Six of Wands:R: 1
+- ICH:24:Return->61: 1
+- ICH:21:Biting Through->18: 1
+- ICH:5:Waiting->44: 1
+- ICH:55:Abundance->40: 1
+- ICH:25:Innocence->30: 1
+- ICH:33:Retreat->16: 1
+- ICH:14:Great Possession->38: 1
+- ICH:46:Pushing Upward->43: 1
+- ICH:20:Contemplation->5: 1
+- ICH:56:The Wanderer->63: 1
+- ICH:28:Great Exceeding->26: 1
+- ICH:30:The Clinging->15: 1
+- ICH:56:The Wanderer->9: 1
+- ICH:17:Following->18: 1
+- ICH:29:The Abysmal->1: 1
+- ICH:64:Before Completion->18: 1
+- ICH:54:The Marrying Maiden->38: 1
+- ICH:42:Increase->5: 1
+- ICH:19:Approach->54: 1
+- ICH:47:Oppression->9: 1
+- ICH:10:Treading->58: 1
+- ICH:29:The Abysmal->19: 1
+- ICH:55:Abundance->7: 1
+- ICH:47:Oppression->22: 1
+- ICH:50:The Cauldron->22: 1
+- ICH:62:Small Exceeding->54: 1
+- ICH:1:The Creative->42: 1
+- ICH:25:Innocence->18: 1
+- ICH:29:The Abysmal->13: 1
+- ICH:41:Decrease->11: 1
+- ICH:20:Contemplation->10: 1
+- ICH:15:Modesty->33: 1
+- ICH:45:Gathering Together->64: 1
+- ICH:5:Waiting->15: 1
+- ICH:43:Breakthrough->44: 1
+- ICH:25:Innocence->44: 1
+- ICH:47:Oppression->52: 1
+- ICH:44:Coming to Meet->40: 1
+- ICH:7:The Army->18: 1
+- ICH:46:Pushing Upward->50: 1
+- ICH:53:Development->26: 1
+- ICH:13:Fellowship->12: 1
+- ICH:23:Splitting Apart->53: 1
+- ICH:21:Biting Through->38: 1
+- ICH:50:The Cauldron->55: 1
+- ICH:61:Inner Truth->13: 1
+- ICH:60:Limitation->31: 1
+- ICH:8:Holding Together->61: 1
+- ICH:3:Difficulty at the Beginning->7: 1
+- ICH:64:Before Completion->33: 1
+- ICH:21:Biting Through->13: 1
+- ICH:39:Obstruction->43: 1
+- ICH:28:Great Exceeding->45: 1
+- TAR:Four of Swords:R: 1
+- ICH:19:Approach->32: 1
+- ICH:11:Peace->54: 1
+- ICH:6:Conflict->39: 1
+- ICH:61:Inner Truth->18: 1
+- ICH:38:Opposition->53: 1
+- ICH:39:Obstruction->29: 1
+- ICH:9:Small Taming->56: 1
+- ICH:4:Youthful Folly->34: 1
+- ICH:9:Small Taming->51: 1
+- ICH:28:Great Exceeding->21: 1
+- ICH:42:Increase->9: 1
+- ICH:19:Approach->45: 1
+- ICH:16:Enthusiasm->41: 1
+- ICH:26:Great Taming->20: 1
+- ICH:2:The Receptive->30: 1
+- ICH:5:Waiting->55: 1
+- ICH:23:Splitting Apart->6: 1
+- ICH:50:The Cauldron->2: 1
+- ICH:57:The Gentle->19: 1
+- ICH:38:Opposition->27: 1
+- ICH:25:Innocence->31: 1
+- ICH:46:Pushing Upward->33: 1
+- ICH:47:Oppression->34: 1
+- ICH:32:Duration->30: 1
+- ICH:28:Great Exceeding->16: 1
+- ICH:55:Abundance->61: 1
+- ICH:19:Approach->56: 1
+- ICH:56:The Wanderer->3: 1
+- ICH:60:Limitation->30: 1
+- ICH:31:Influence->5: 1
+- ICH:42:Increase->3: 1
+- ICH:32:Duration->7: 1
+- ICH:34:Great Power->14: 1
+- ICH:20:Contemplation->64: 1
+- ICH:21:Biting Through->59: 1
+- ICH:52:Keeping Still->35: 1
+- ICH:53:Development->44: 1
+- ICH:34:Great Power->29: 1
+- ICH:26:Great Taming->13: 1
+- ICH:39:Obstruction->1: 1
+- ICH:57:The Gentle->24: 1
+- ICH:56:The Wanderer->34: 1
+- ICH:35:Progress->10: 1
+- TAR:Two of Pentacles:U: 1
+- ICH:37:The Family->54: 1
+- ICH:26:Great Taming->33: 1
+- ICH:7:The Army->45: 1
+- ICH:48:The Well->46: 1
+- ICH:48:The Well->57: 1
+- TAR:King of Pentacles:R: 1
+- TAR:Five of Pentacles:U: 1
+- TAR:Seven of Swords:R: 1
+- TAR:Page of Wands:R: 1
+- ICH:8:Holding Together->33: 1
+- ICH:15:Modesty->51: 1
+- ICH:27:Nourishment->59: 1
+- TAR:Two of Wands:R: 1
+- ICH:7:The Army->22: 1
+- ICH:17:Following->60: 1
+- TAR:Nine of Swords:R: 1
+- ICH:62:Small Exceeding->14: 1
+- ICH:4:Youthful Folly->64: 1
+- TAR:Knight of Swords:U: 1
+
+## Recurrent exchange motifs
+
+Shown here when a motif appears in at least two Amelia lineages. This is a navigation rule only; all motifs, including single-lineage motifs, remain in atlas.json.
+
+- **8 lineages / 9 motif occurrences / 12 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:58:The Joyous->49","reply_zone":4}]
+- **8 lineages / 8 motif occurrences / 14 distinct source items** — [{"channel":"Numogram","heard_path":[9,1,8],"last_gate":null,"query_form":null,"query_region":"Plex","query_zone":0,"reply":"NUM:Djynxx:6::3@3","reply_zone":3},{"channel":"Tarot","heard_path":[7,8,7],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Seven of Cups:U","reply_zone":7},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"8>7","query_form":"7-8","query_region":"Time-Circuit","query_zone":7,"reply":"ICH:4:Youthful Folly->19","reply_zone":4},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:58:The Joyous->49","reply_zone":4}]
+- **8 lineages / 8 motif occurrences / 13 distinct source items** — [{"channel":"Tarot","heard_path":[7,8,7],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Seven of Cups:U","reply_zone":7},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"8>7","query_form":"7-8","query_region":"Time-Circuit","query_zone":7,"reply":"ICH:4:Youthful Folly->19","reply_zone":4},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:58:The Joyous->49","reply_zone":4}]
+- **8 lineages / 8 motif occurrences / 12 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"8>7","query_form":"7-8","query_region":"Time-Circuit","query_zone":7,"reply":"ICH:4:Youthful Folly->19","reply_zone":4},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:58:The Joyous->49","reply_zone":4}]
+- **8 lineages / 8 motif occurrences / 8 distinct source items** — [{"channel":"Numogram","heard_path":[9,1,8],"last_gate":null,"query_form":null,"query_region":"Plex","query_zone":0,"reply":"NUM:Djynxx:6::3@3","reply_zone":3},{"channel":"Tarot","heard_path":[7,8,7],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Seven of Cups:U","reply_zone":7},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"8>7","query_form":"7-8","query_region":"Time-Circuit","query_zone":7,"reply":"ICH:4:Youthful Folly->19","reply_zone":4}]
+- **8 lineages / 8 motif occurrences / 7 distinct source items** — [{"channel":"Tarot","heard_path":[7,8,7],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Seven of Cups:U","reply_zone":7},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"8>7","query_form":"7-8","query_region":"Time-Circuit","query_zone":7,"reply":"ICH:4:Youthful Folly->19","reply_zone":4}]
+- **8 lineages / 8 motif occurrences / 6 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"8>7","query_form":"7-8","query_region":"Time-Circuit","query_zone":7,"reply":"ICH:4:Youthful Folly->19","reply_zone":4}]
+- **8 lineages / 8 motif occurrences / 2 distinct source items** — [{"channel":"Numogram","heard_path":[9,1,8],"last_gate":null,"query_form":null,"query_region":"Plex","query_zone":0,"reply":"NUM:Djynxx:6::3@3","reply_zone":3},{"channel":"Tarot","heard_path":[7,8,7],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Seven of Cups:U","reply_zone":7}]
+- **8 lineages / 8 motif occurrences / 1 distinct source items** — [{"channel":"Numogram","heard_path":[9,1,8],"last_gate":null,"query_form":null,"query_region":"Plex","query_zone":0,"reply":"NUM:Djynxx:6::3@3","reply_zone":3}]
+- **8 lineages / 8 motif occurrences / 1 distinct source items** — [{"channel":"Tarot","heard_path":[7,8,7],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Seven of Cups:U","reply_zone":7}]
+- **6 lineages / 40 motif occurrences / 34 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@5","reply_zone":5}]
+- **6 lineages / 29 motif occurrences / 23 distinct source items** — [{"channel":"Numogram","heard_path":[1,7,8],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@7","reply_zone":7}]
+- **6 lineages / 9 motif occurrences / 6 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"9>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Mur Mur:8::1@8","reply_zone":8}]
+- **5 lineages / 65 motif occurrences / 50 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@4","reply_zone":4}]
+- **5 lineages / 53 motif occurrences / 44 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Mur Mur:8::1@8","reply_zone":8}]
+- **5 lineages / 53 motif occurrences / 43 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Djynxx:6::3@3","reply_zone":3}]
+- **5 lineages / 52 motif occurrences / 44 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@2","reply_zone":2}]
+- **5 lineages / 46 motif occurrences / 41 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Djynxx:6::3@6","reply_zone":6}]
+- **5 lineages / 31 motif occurrences / 27 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Uttunul:9::0@9","reply_zone":9}]
+- **5 lineages / 15 motif occurrences / 12 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Uttunul:9::0@0","reply_zone":0}]
+- **5 lineages / 9 motif occurrences / 14 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@2","reply_zone":2},{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@4","reply_zone":4}]
+- **5 lineages / 9 motif occurrences / 10 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Uttunul:9::0@9","reply_zone":9},{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Mur Mur:8::1@8","reply_zone":8}]
+- **5 lineages / 8 motif occurrences / 8 distinct source items** — [{"channel":"Numogram","heard_path":[9,9,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Uttunul:9::0@9","reply_zone":9}]
+- **5 lineages / 8 motif occurrences / 7 distinct source items** — [{"channel":"Tarot","heard_path":[9,1,8],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Two of Wands:U","reply_zone":2}]
+- **5 lineages / 7 motif occurrences / 7 distinct source items** — [{"channel":"Tarot","heard_path":[9,1,7],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Seven of Wands:U","reply_zone":7}]
+- **5 lineages / 6 motif occurrences / 10 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@5","reply_zone":5},{"channel":"Numogram","heard_path":[1,7,8],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@7","reply_zone":7}]
+- **5 lineages / 6 motif occurrences / 8 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Uttunul:9::0@0","reply_zone":0},{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@5","reply_zone":5}]
+- **5 lineages / 5 motif occurrences / 24 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"8>7","query_form":"7-8","query_region":"Time-Circuit","query_zone":7,"reply":"ICH:4:Youthful Folly->19","reply_zone":4},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:58:The Joyous->49","reply_zone":4},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:3:Difficulty at the Beginning->-","reply_zone":3},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:37:The Family->1","reply_zone":1}]
+- **5 lineages / 5 motif occurrences / 24 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:37:The Family->1","reply_zone":1},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:30:The Clinging->27","reply_zone":3},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:15:Modesty->11","reply_zone":6},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:2:The Receptive->16","reply_zone":2}]
+- **5 lineages / 5 motif occurrences / 24 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:3:Difficulty at the Beginning->-","reply_zone":3},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:37:The Family->1","reply_zone":1},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:30:The Clinging->27","reply_zone":3},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:15:Modesty->11","reply_zone":6}]
+- **5 lineages / 5 motif occurrences / 24 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:58:The Joyous->49","reply_zone":4},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:3:Difficulty at the Beginning->-","reply_zone":3},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:37:The Family->1","reply_zone":1},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:30:The Clinging->27","reply_zone":3}]
+- **5 lineages / 5 motif occurrences / 19 distinct source items** — [{"channel":"Tarot","heard_path":[7,8,7],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Seven of Cups:U","reply_zone":7},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"8>7","query_form":"7-8","query_region":"Time-Circuit","query_zone":7,"reply":"ICH:4:Youthful Folly->19","reply_zone":4},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:58:The Joyous->49","reply_zone":4},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:3:Difficulty at the Beginning->-","reply_zone":3}]
+- **5 lineages / 5 motif occurrences / 18 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"8>7","query_form":"7-8","query_region":"Time-Circuit","query_zone":7,"reply":"ICH:4:Youthful Folly->19","reply_zone":4},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:58:The Joyous->49","reply_zone":4},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:3:Difficulty at the Beginning->-","reply_zone":3}]
+- **5 lineages / 5 motif occurrences / 18 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:30:The Clinging->27","reply_zone":3},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:15:Modesty->11","reply_zone":6},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:2:The Receptive->16","reply_zone":2}]
+- **5 lineages / 5 motif occurrences / 18 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:37:The Family->1","reply_zone":1},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:30:The Clinging->27","reply_zone":3},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:15:Modesty->11","reply_zone":6}]
+- **5 lineages / 5 motif occurrences / 18 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:3:Difficulty at the Beginning->-","reply_zone":3},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:37:The Family->1","reply_zone":1},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:30:The Clinging->27","reply_zone":3}]
+- **5 lineages / 5 motif occurrences / 18 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:58:The Joyous->49","reply_zone":4},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:3:Difficulty at the Beginning->-","reply_zone":3},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:37:The Family->1","reply_zone":1}]
+- **5 lineages / 5 motif occurrences / 12 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:15:Modesty->11","reply_zone":6},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:2:The Receptive->16","reply_zone":2}]
+- **5 lineages / 5 motif occurrences / 12 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:30:The Clinging->27","reply_zone":3},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:15:Modesty->11","reply_zone":6}]
+- **5 lineages / 5 motif occurrences / 12 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:37:The Family->1","reply_zone":1},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:30:The Clinging->27","reply_zone":3}]
+- **5 lineages / 5 motif occurrences / 12 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:3:Difficulty at the Beginning->-","reply_zone":3},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:37:The Family->1","reply_zone":1}]
+- **5 lineages / 5 motif occurrences / 12 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:58:The Joyous->49","reply_zone":4},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:3:Difficulty at the Beginning->-","reply_zone":3}]
+- **5 lineages / 5 motif occurrences / 6 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:15:Modesty->11","reply_zone":6}]
+- **5 lineages / 5 motif occurrences / 6 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:2:The Receptive->16","reply_zone":2}]
+- **5 lineages / 5 motif occurrences / 6 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:30:The Clinging->27","reply_zone":3}]
+- **5 lineages / 5 motif occurrences / 6 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:37:The Family->1","reply_zone":1}]
+- **5 lineages / 5 motif occurrences / 6 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:3:Difficulty at the Beginning->-","reply_zone":3}]
+- **5 lineages / 5 motif occurrences / 5 distinct source items** — [{"channel":"Tarot","heard_path":[9,1,8],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:The Lovers:U","reply_zone":6}]
+- **4 lineages / 132 motif occurrences / 116 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Djynxx:6::3@6","reply_zone":6}]
+- **4 lineages / 130 motif occurrences / 106 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Oddubb:7::2@7","reply_zone":7}]
+- **4 lineages / 122 motif occurrences / 100 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Oddubb:7::2@2","reply_zone":2}]
+- **4 lineages / 121 motif occurrences / 101 distinct source items** — [{"channel":"Numogram","heard_path":[6,3,6],"last_gate":"6>3","query_form":null,"query_region":"Warp","query_zone":3,"reply":"NUM:Djynxx:6::3@6","reply_zone":6}]
+- **4 lineages / 114 motif occurrences / 96 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Mur Mur:8::1@1","reply_zone":1}]
+- **4 lineages / 112 motif occurrences / 96 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Katak:5::4@4","reply_zone":4}]
+- **4 lineages / 107 motif occurrences / 87 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Uttunul:9::0@9","reply_zone":9}]
+- **4 lineages / 105 motif occurrences / 91 distinct source items** — [{"channel":"Numogram","heard_path":[6,3,6],"last_gate":"6>3","query_form":null,"query_region":"Warp","query_zone":3,"reply":"NUM:Katak:5::4@4","reply_zone":4}]
+- **4 lineages / 100 motif occurrences / 88 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Mur Mur:8::1@8","reply_zone":8}]
+- **4 lineages / 98 motif occurrences / 84 distinct source items** — [{"channel":"Numogram","heard_path":[6,3,6],"last_gate":"6>3","query_form":null,"query_region":"Warp","query_zone":3,"reply":"NUM:Oddubb:7::2@7","reply_zone":7}]
+- **4 lineages / 97 motif occurrences / 78 distinct source items** — [{"channel":"Numogram","heard_path":[6,3,6],"last_gate":"6>3","query_form":null,"query_region":"Warp","query_zone":3,"reply":"NUM:Katak:5::4@5","reply_zone":5}]
+- **4 lineages / 96 motif occurrences / 85 distinct source items** — [{"channel":"Numogram","heard_path":[6,3,6],"last_gate":"6>3","query_form":null,"query_region":"Warp","query_zone":3,"reply":"NUM:Mur Mur:8::1@8","reply_zone":8}]
+
+## Reply-to-reply relations
+
+Adjacent exchanges within the same Amelia lineage; repeated world items are tracked separately in atlas.json.
+
+- **8 lineages / 8 relation occurrences / 12 distinct source items** — {"from_reply":"ICH:4:Youthful Folly->19","next_query_form":null,"next_query_zone":1,"to_reply":"ICH:58:The Joyous->49"}
+- **8 lineages / 8 relation occurrences / 12 distinct source items** — {"from_reply":"ICH:58:The Joyous->49","next_query_form":null,"next_query_zone":1,"to_reply":"ICH:3:Difficulty at the Beginning->-"}
+- **8 lineages / 8 relation occurrences / 7 distinct source items** — {"from_reply":"TAR:Seven of Cups:U","next_query_form":"7-8","next_query_zone":7,"to_reply":"ICH:4:Youthful Folly->19"}
+- **8 lineages / 8 relation occurrences / 2 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":8,"to_reply":"TAR:Seven of Cups:U"}
+- **6 lineages / 12 relation occurrences / 16 distinct source items** — {"from_reply":"NUM:Katak:5::4@5","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@7"}
+- **5 lineages / 14 relation occurrences / 14 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@7"}
+- **5 lineages / 10 relation occurrences / 12 distinct source items** — {"from_reply":"NUM:Uttunul:9::0@9","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Mur Mur:8::1@8"}
+- **5 lineages / 9 relation occurrences / 16 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@7"}
+- **5 lineages / 9 relation occurrences / 14 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Katak:5::4@4"}
+- **5 lineages / 6 relation occurrences / 10 distinct source items** — {"from_reply":"NUM:Uttunul:9::0@9","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@7"}
+- **5 lineages / 6 relation occurrences / 10 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Uttunul:9::0@9"}
+- **5 lineages / 6 relation occurrences / 8 distinct source items** — {"from_reply":"NUM:Uttunul:9::0@0","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Katak:5::4@5"}
+- **5 lineages / 5 relation occurrences / 12 distinct source items** — {"from_reply":"ICH:3:Difficulty at the Beginning->-","next_query_form":null,"next_query_zone":1,"to_reply":"ICH:37:The Family->1"}
+- **5 lineages / 5 relation occurrences / 12 distinct source items** — {"from_reply":"ICH:37:The Family->1","next_query_form":null,"next_query_zone":1,"to_reply":"ICH:30:The Clinging->27"}
+- **5 lineages / 5 relation occurrences / 12 distinct source items** — {"from_reply":"ICH:30:The Clinging->27","next_query_form":null,"next_query_zone":1,"to_reply":"ICH:15:Modesty->11"}
+- **5 lineages / 5 relation occurrences / 12 distinct source items** — {"from_reply":"ICH:15:Modesty->11","next_query_form":null,"next_query_zone":1,"to_reply":"ICH:2:The Receptive->16"}
+- **5 lineages / 5 relation occurrences / 12 distinct source items** — {"from_reply":"ICH:2:The Receptive->16","next_query_form":null,"next_query_zone":1,"to_reply":"ICH:34:Great Power->53"}
+- **4 lineages / 33 relation occurrences / 38 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@7"}
+- **4 lineages / 32 relation occurrences / 52 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@2"}
+- **4 lineages / 32 relation occurrences / 52 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@2"}
+- **4 lineages / 31 relation occurrences / 48 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@4"}
+- **4 lineages / 30 relation occurrences / 48 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@6"}
+- **4 lineages / 30 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Mur Mur:8::1@1"}
+- **4 lineages / 28 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@5"}
+- **4 lineages / 26 relation occurrences / 42 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@4"}
+- **4 lineages / 25 relation occurrences / 40 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@1","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@7"}
+- **4 lineages / 24 relation occurrences / 42 distinct source items** — {"from_reply":"NUM:Katak:5::4@5","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@6"}
+- **4 lineages / 23 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Uttunul:9::0@9"}
+- **4 lineages / 23 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@1","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@5"}
+- **4 lineages / 23 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Katak:5::4@4"}
+- **4 lineages / 23 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@7"}
+- **4 lineages / 22 relation occurrences / 40 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@3"}
+- **4 lineages / 22 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@7"}
+- **4 lineages / 22 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Mur Mur:8::1@1"}
+- **4 lineages / 22 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Katak:5::4@5","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@2"}
+- **4 lineages / 22 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@7"}
+- **4 lineages / 22 relation occurrences / 28 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@7"}
+- **4 lineages / 21 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@4"}
+- **4 lineages / 21 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Mur Mur:8::1@1"}
+- **4 lineages / 21 relation occurrences / 34 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@4"}
+- **4 lineages / 21 relation occurrences / 28 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@1","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Uttunul:9::0@9"}
+- **4 lineages / 20 relation occurrences / 34 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Mur Mur:8::1@8"}
+- **4 lineages / 20 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@1","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Uttunul:9::0@9"}
+- **4 lineages / 20 relation occurrences / 30 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@1","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@6"}
+- **4 lineages / 20 relation occurrences / 28 distinct source items** — {"from_reply":"NUM:Uttunul:9::0@9","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@3"}
+- **4 lineages / 20 relation occurrences / 26 distinct source items** — {"from_reply":"NUM:Uttunul:9::0@9","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@7"}
+- **4 lineages / 19 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Mur Mur:8::1@1"}
+- **4 lineages / 19 relation occurrences / 34 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Djynxx:6::3@6"}
+- **4 lineages / 19 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Mur Mur:8::1@8"}
+- **4 lineages / 19 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@7"}
+- **4 lineages / 19 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Mur Mur:8::1@8"}
+- **4 lineages / 19 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Mur Mur:8::1@1"}
+- **4 lineages / 19 relation occurrences / 30 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Katak:5::4@5"}
+- **4 lineages / 19 relation occurrences / 30 distinct source items** — {"from_reply":"NUM:Katak:5::4@5","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Djynxx:6::3@6"}
+- **4 lineages / 19 relation occurrences / 30 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@2"}
+- **4 lineages / 19 relation occurrences / 28 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@6"}
+- **4 lineages / 18 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Djynxx:6::3@6"}
+- **4 lineages / 18 relation occurrences / 34 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Katak:5::4@4"}
+- **4 lineages / 18 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@2"}
+- **4 lineages / 18 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@1","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Katak:5::4@5"}
+
+Interpret each candidate from its supporting transcript lines and raw inputs. A reply label is the Numogram/channel's reading, not by itself an entity identification.
