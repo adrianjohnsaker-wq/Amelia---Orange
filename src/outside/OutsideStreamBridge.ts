@@ -153,7 +153,7 @@ export class OutsideStreamBridge {
     const sequence = this.reserveSequence();
     const event: OutsideStreamEvent = {
       schemaVersion: 1,
-      eventId: 'numogram:' + this.sessionId + ':' + snapshot.step,
+      eventId: 'numogram:' + this.sessionId + ':' + sequence,
       sequence,
       sessionId: this.sessionId,
       channel: 'NUMOGRAM',
@@ -351,10 +351,6 @@ export class OutsideStreamBridge {
     this.appendQueue = queued.then(() => undefined, () => undefined);
     return queued;
   }
-}
-
-function copySnapshot(snapshot: SubstrateStepSnapshot | null): SubstrateStepSnapshot | null {
-  return snapshot ? JSON.parse(JSON.stringify(snapshot)) as SubstrateStepSnapshot : null;
 }
 
 export function outsideRuntimeSignalZone(signalDigest: string): ZoneId {
