@@ -27,7 +27,7 @@ jobs:
         run: if [ -e live/results/RESULT.txt ]; then echo go=no >> "$GITHUB_OUTPUT"; else echo go=yes >> "$GITHUB_OUTPUT"; fi
       - uses: actions/checkout@v4
         if: steps.d.outputs.go == 'yes'
-        with: { ref: 99530f292672227c2a1e228d205da0bd0178fd13, path: code }
+        with: { ref: 54728c125e96af959d5335162e4d722ccb0a1b3b, path: code }
       - uses: actions/checkout@v4
         if: steps.d.outputs.go == 'yes'
         with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
