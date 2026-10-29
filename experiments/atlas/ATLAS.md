@@ -104,7 +104,8 @@ Every entry keeps the structural record (signature, zones, edges, statistics) se
   - Forms through zone 7 and the seventh gate (Bubbamu and its family) recur. They were predicted, confirmed in fresh subjects, and go beyond her short-term habits.
   - Bubbamu depends on the Numogram as a whole.
   - Barrier recovery lives in her rules.
-- **Provisional:** Gt-36 as a pathway into Bubbamu.
+- **Confirmed (29 Oct):** Gt-36 (8 → 9, the Time-Circuit's door into the Plex) is a pathway into Bubbamu. Closing it raises Bubbamu in 69 of 69 fresh old-core travellers, in all 8 worlds; a control gate does nothing (`sg2-hyper-20261029`).
+- **Intervention, hyperstition:** a future form (1-8-7) introduced to her senses did **not** sustain itself. The test was weak, because she leaves the form's zones for the Warp.
 - **Not supported:**
   - replication without the replay channel;
   - return home by new means;
