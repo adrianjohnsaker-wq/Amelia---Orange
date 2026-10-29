@@ -1,15 +1,26 @@
-name: Sync Anthropic key to Railway
+name: Deploy Amelia Anthropic relay to Railway
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'server/anthropic-language-relay.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'railway.json'
+      - '.github/workflows/sync-railway-anthropic.yml'
 
 permissions:
   contents: read
 
 jobs:
-  sync-anthropic-key:
+  deploy-relay:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Install Railway CLI
         run: npm install --global @railway/cli
 
@@ -33,3 +44,8 @@ jobs:
             --environment production \
             --service 49310c8b-f917-491b-b4f3-8a42ae032bb3 \
             --skip-deploys
+
+      - name: Deploy relay
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --project 29d0c07c-fd91-4c25-ae78-63f9af2dcd8f --environment production --service 49310c8b-f917-491b-b4f3-8a42ae032bb3 --ci -m "Deploy Amelia Anthropic relay"
