@@ -23,7 +23,7 @@ jobs:
           if [ "$(date -u +%s)" -gt "$(date -u -d '2026-11-04T03:00:00Z' +%s)" ]; then echo go=no >> "$GITHUB_OUTPUT"; else echo go=yes >> "$GITHUB_OUTPUT"; fi
       - uses: actions/checkout@v4
         if: steps.w.outputs.go == 'yes'
-        with: { ref: ae1f35d1b8739f864cbd8b2fb40c092713de4416, path: code }
+        with: { ref: 0edf44b57ede9e9881d50a80e1fc5758da3707ce, path: code }
       - uses: actions/checkout@v4
         if: steps.w.outputs.go == 'yes'
         with: { ref: antenna-live, path: antenna }
