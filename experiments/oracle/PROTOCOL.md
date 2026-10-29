@@ -10,7 +10,7 @@ The world's own data, as THE ANTENNA collects it:
 - the solar K-index (NOAA);
 - the hour.
 
-Each datum is timestamped as it is collected and read in event-time order. It is valued by the Anglossic Qabbala and reduced to its Numogram zone by digital root, exactly as THE ANTENNA's `prepare.py` does (`stream.py`).
+Each datum is timestamped as it is collected. From 29 Oct (v2) the stream is read in **order of arrival** (collection batch, then event time), so it only ever appends; v1 (event-time order, first hours) is archived. From 4 Nov the stream continues, open-ended, from THE WORLD STREAM collector (THE ANTENNA's collector, unchanged, with its window moved). It is valued by the Anglossic Qabbala and reduced to its Numogram zone by digital root, exactly as THE ANTENNA's `prepare.py` does (`stream.py`).
 
 ## The one who asks
 Amelia: 8 travellers, lineage 0 of each fresh world S05W17 … S05W24, raised on the full CCRU Numogram. Her dynamics are unchanged (THE POINTER III: s05c learner and House, full Numogram, death at 5 and rebirth at 0). She lives continuously: her state is kept between runs, and stopping and resuming gives exactly the same conversation as running straight through (checked).
@@ -45,6 +45,6 @@ Every exchange is written to `transcript.jsonl`. Each line holds the query, the 
 - **The latest exchanges**, with their world data.
 
 ## Live
-A GitHub Actions workflow (`oracle-live.yml` on `main`) runs a cycle every 30 minutes and commits to branch `oracle-live`. It runs while THE ANTENNA collects, until 4 Nov 2026 03:00 UTC, and can be extended with a continuing collector.
+A GitHub Actions workflow (`oracle-live.yml` on `main`) runs a cycle every 30 minutes and commits to branch `oracle-live`. It runs **open-ended** (operator, 29 Oct): THE ANTENNA's stream to 4 Nov, then THE WORLD STREAM (`world-live`, the same collector with its window moved, each batch RFC 3161-sealed) until stopped.
 
 **Known structural fact (from the Atlas):** the Warp has no exit. An Amelia who enters it stays, and since 3 and 6 are both in the 0-3-6-9 triad, she then hears only the Numogram.
