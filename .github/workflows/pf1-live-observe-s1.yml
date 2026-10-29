@@ -1,0 +1,162 @@
+name: PF1 S1 LIVE Observation — Nine Arms, Journal-Only (A1 Catch-up, sharded storage)
+# Additive successor to pf1-live-observe.yml (byte-identical, retired by S1): same checks, same bounds, same lease;
+# the live state is joined from its verified Git shards first, and the S1 catch-up commits it as shards.
+# Pinned by the S1 RFC3161 bundle (experiments/pf_storage/PF_S1_REGISTERED.md).
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+jobs:
+  admit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 48
+    permissions:
+      contents: write
+    env:
+      PF1_LEASE: ${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: orange
+          ref: main
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          path: c1-pin
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - id: due
+        name: Verify externally sealed genesis and require next published unadmitted round
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,json,time,hashlib,pathlib,datetime
+          base=pathlib.Path('experiments/pf1/')
+          p=base/'live/GENESIS.json'
+          if not pathlib.Path('experiments/pf_storage/MIGRATED.json').exists():
+              print('PF1_S1_NOT_YET_MIGRATED_NO_ADMISSION')
+              open(os.environ['GITHUB_OUTPUT'],'a').write('run=false\n')
+              raise SystemExit(0)
+          import subprocess
+          subprocess.run(['python','experiments/pf_storage/PF_SHARD.py','join','experiments/pf1/live/STATE.json','experiments/pf1/live/SILENT_LEDGER.json'],check=True)
+          if not p.exists():
+              print('PF1_A1_NO_EXISTING_GENESIS_NO_ADMISSION')
+              open(os.environ['GITHUB_OUTPUT'],'a').write('run=false\n')
+              raise SystemExit(0)
+          g=json.loads(p.read_text())
+          s=json.loads((base/'live/STATE.json').read_text())
+          l=json.loads((base/'live/SILENT_LEDGER.json').read_text())
+          assert g['schema']=='PF1_LIVE_GENESIS_V1'
+          assert g['genesisDoesNotAdmitRound'] and g['R0']%20==0
+          assert (g['R0']-33158540)%20==0 and g['PF1ReferenceDomain']=='PF1-REF-i|'
+          assert g['stride']==20 and g['periodSeconds']==3
+          assert g['c1VerifierSourceCommit']=='f1875b5eea5339eb1ac73e50b5df6b103d0cabe9'
+          assert g['notificationsEnabled'] is False and g['encountersJournalOnly'] is True
+          assert s['genesisDigest']==g['genesisDigest']==l['genesisDigest']
+          assert s['admittedTicks']==len(l['rows'])
+          if s['status']=='halted':
+              print('PF1_A1_HALTED_OPERATOR_REVIEW_REQUIRED',s.get('openHalt'))
+              eligible=False
+          else:
+              assert s['status']=='running'
+              due=datetime.datetime.fromisoformat(g['futureFirstRoundTime'].replace('Z','+00:00')).timestamp()+60*s['admittedTicks']+3
+              eligible=time.time()>=due
+              print('PF1_A1_NEXT_ROUND',g['R0']+20*s['admittedTicks'],'eligible',eligible,
+                    'unadmittedBacklogSeconds',max(0,int(time.time()-due)))
+          open(os.environ['GITHUB_OUTPUT'],'a').write('run='+('true' if eligible else 'false')+'\n')
+          PY
+      - name: A1 prelease frozen-science audit, pinned C1 and approved rehearsal receipt
+        if: steps.due.outputs.run == 'true'
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          test -s experiments/pf1/operations/PF1_A1_OPERATOR_APPROVAL_2026-10-21.md
+          test -s experiments/pf1/operations/PF1_A1_DEPLOYMENT_LOG.md
+          test "$(git rev-parse HEAD:experiments/pf1/operations/PF1_A1_CATCHUP.py)" = 15196a9bcd1865d9c0924cf236073d0b4dfb0d4f
+          test -e experiments/pf_storage/seal/receipt.json
+          test "$(git rev-parse HEAD:experiments/pf1/operations/PF1_A1_REHEARSAL.py)" = fd721466e49cd87c42b2627a377db0d629153c33
+          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          python - <<'PY'
+          import hashlib,json,pathlib
+          root=pathlib.Path('experiments/pf1/')
+          g=json.loads((root/'live/GENESIS.json').read_text())
+          m=json.loads((root/'PF1_GENESIS_MANIFEST_DRAFT.json').read_text())
+          sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          assert sha(root/'PF1_GENESIS_MANIFEST_DRAFT.json')==g['approvedManifestSHA256']
+          assert sha(root/'PF1_A1_R2_CONSTANTS.json')==g['constantsSHA256']
+          for item in g['liveOperationalSourceHashes']+m['immutableSource']['operationalSourceFileHashes']:
+              assert sha(item['path'])==item['sha256'], 'FROZEN_SOURCE_CHANGED '+item['path']
+          print('PF1_A1_PINNED_C1_AND_SCIENTIFIC_BYTES_IDENTICAL')
+          PY
+      - name: Install unchanged BLS verification tools and JS runner before lease
+        if: steps.due.outputs.run == 'true'
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -r ../c1-pin/drift1a_c1/requirements.txt
+          PYTHONPATH=../c1-pin python - <<'PYS1'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          d=pathlib.Path('experiments/pf_storage/seal'); b=json.loads((d/'S1_SIGNED_BUNDLE.json').read_text())
+          assert b['schema']=='PF_S1_OPERATIONAL_SHA256_V1' and b['scienceChanged'] is False
+          assert Sealer().verify(d,h(d/'S1_SIGNED_BUNDLE.json'))['status']=='PASS'
+          for x in b['sourceSHA256']: assert h(x['path'])==x['sha256'],'S1_OPERATIONAL_HASH_CHANGED '+x['path']
+          print('PF_S1_INDEPENDENT_OPERATIONAL_RFC3161_AND_HASHES_PASS')
+          PYS1
+          # Runner-local Git exclude; no tracked or pinned source change.
+          printf '\n/node_modules/\n' >> .git/info/exclude
+          npm install --no-save --package-lock=false --no-audit --no-fund
+          python - <<'PY'
+          import ast,pathlib
+          p=pathlib.Path('experiments/pf1/operations/PF1_A1_CATCHUP_S1.py')
+          ast.parse(p.read_text(),filename=str(p))
+          print('PF1_A1_NO_BYTECODE_WRITTEN_SYNTAX_PASS')
+          PY
+          echo 'PF1_A1_PRELEASE_GIT_STATUS:'
+          git status --porcelain --untracked-files=all
+          test -z "$(git status --porcelain --untracked-files=all)"
+      - name: A1 exclusive lease and sequential verified catch-up (max 480, batches of 20)
+        if: steps.due.outputs.run == 'true'
+        working-directory: orange
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}/c1-pin:${{ github.workspace }}/orange/experiments/pf1
+          PYTHONDONTWRITEBYTECODE: '1'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PF1_LIVE_ADMISSION_OPERATOR_AUTHORISED: 'true'
+          PF1_A1_OPERATOR_APPROVED: 'true'
+          PF1_A1_REHEARSAL_PASS: 'true'
+          PF1_A1_MAX_TICKS: '480'
+          PF1_MAX_LIVE_TICKS: '20'
+          PF1_LIVE_INBOX: ${{ runner.temp }}/PF1_VERIFIED_LIVE_INBOX.json
+        run: |
+          set -euo pipefail
+          python experiments/pf1/operations/PF1_A1_CATCHUP_S1.py
+      - name: Archive verification and sealed journal attempts — no outbound notifications
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PF1-A1-LIVE-EVIDENCE-${{ github.run_id }}
+          retention-days: 90
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/PF1_VERIFIED_LIVE_INBOX.json
+            orange/experiments/pf1/live/
