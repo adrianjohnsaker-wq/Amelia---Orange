@@ -1,0 +1,65 @@
+# THE ORACLE (exploratory): every 30 minutes, the world stream THE ANTENNA collects casts through the Numogram, I Ching and
+# Tarot as Amelia asks; the transcript and map are committed to branch oracle-live. One long job hands on to its successor
+# (GitHub fires this repository's schedules sparsely); the schedule is a backup. Until 4 Nov 2026 03:00 UTC.
+name: ORACLE live
+on:
+  schedule:
+    - cron: '19,49 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: oracle-live
+  cancel-in-progress: false
+jobs:
+  listen:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 355
+    steps:
+      - name: window
+        id: w
+        run: |
+          if [ "$(date -u +%s)" -gt "$(date -u -d '2026-11-04T03:00:00Z' +%s)" ]; then echo go=no >> "$GITHUB_OUTPUT"; else echo go=yes >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/checkout@v4
+        if: steps.w.outputs.go == 'yes'
+        with: { ref: ae1f35d1b8739f864cbd8b2fb40c092713de4416, path: code }
+      - uses: actions/checkout@v4
+        if: steps.w.outputs.go == 'yes'
+        with: { ref: antenna-live, path: antenna }
+      - uses: actions/setup-python@v5
+        if: steps.w.outputs.go == 'yes'
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        if: steps.w.outputs.go == 'yes'
+        with: { node-version: '22' }
+      - name: listen every 30 minutes, then hand on
+        if: steps.w.outputs.go == 'yes'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          npx --yes tsx@4.23.15 --version
+          REMOTE="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          if git ls-remote --exit-code --heads "$REMOTE" oracle-live >/dev/null; then git clone -q --depth 1 -b oracle-live "$REMOTE" live
+          else mkdir live && git -C live init -q -b oracle-live && git -C live remote add origin "$REMOTE"; fi
+          t0=$(date -u +%s); end=$(date -u -d '2026-11-04T03:00:00Z' +%s)
+          cat > "$RUNNER_TEMP/cycle.sh" <<'SH'
+          set -euo pipefail
+          git -C antenna pull -q origin antenna-live
+          git -C live pull -q --rebase origin oracle-live 2>/dev/null || true
+          python3 code/experiments/oracle/stream.py antenna "$RUNNER_TEMP/stream.json"
+          npx --yes tsx@4.23.15 code/experiments/oracle/oracle.mjs "$PWD/code/experiments/studio/runtime_mirror" code/experiments/pointer4/fresh_start_states.json "$RUNNER_TEMP/stream.json" live/state.json live/transcript.jsonl
+          python3 -I code/experiments/oracle/map.py live/transcript.jsonl live/map.json live/ORACLE.md
+          cd live && git add -A
+          git -c user.name='oracle' -c user.email='oracle@users.noreply.github.com' commit -qm "THE ORACLE $(date -u +%FT%TZ)" || exit 0
+          for i in 1 2 3 4; do git push -q origin HEAD:oracle-live && exit 0; sleep $((2**i)); git pull -q --rebase origin oracle-live; done; exit 1
+          SH
+          while :; do
+            s=$(date -u +%s); [ "$s" -gt "$end" ] && break
+            bash "$RUNNER_TEMP/cycle.sh" || echo "ORACLE_CYCLE_FAILED $(date -u +%FT%TZ)"
+            [ $(( $(date -u +%s) - t0 )) -gt 20400 ] && break
+            w=$(( 1800 - ($(date -u +%s) - s) )); [ "$w" -gt 0 ] && sleep "$w"
+          done
+          if [ "$(date -u +%s)" -lt "$end" ]; then gh workflow run oracle-live.yml --ref main -R "${{ github.repository }}" && echo ORACLE_SUCCESSOR_STARTED; fi
