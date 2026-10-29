@@ -1,0 +1,69 @@
+name: INGRESS cluster atlas
+
+on:
+  schedule:
+    - cron: '13 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ingression-cluster-atlas
+  cancel-in-progress: false
+
+jobs:
+  atlas:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout scheduler
+        uses: actions/checkout@v4
+        with:
+          path: scheduler
+
+      - name: Checkout atlas work branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: ingression-cluster-atlas-20261029
+          path: work
+
+      - name: Checkout current Oracle encounters
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: oracle-live
+          path: source
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build cumulative interaction atlas
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 work/experiments/ingression/atlas.py source/transcript.jsonl "$RUNNER_TEMP/atlas"
+          digest=$(sha256sum source/transcript.jsonl | cut -d' ' -f1)
+          stamp=$(date -u +%Y%m%dT%H%M%SZ)
+          report_dir="work/experiments/ingression/reports/latest"
+          mkdir -p "$report_dir"
+          cp "$RUNNER_TEMP/atlas/ATLAS.md" "$report_dir/ATLAS.md"
+          cp "$RUNNER_TEMP/atlas/atlas.json" "$report_dir/atlas.json"
+          index="work/experiments/ingression/reports/REPORT_INDEX.md"
+          touch "$index"
+          if ! grep -Fq "$digest" "$index"; then
+            printf '\n- %s — transcript SHA-256 %s — [atlas](latest/ATLAS.md)\n' "$stamp" "$digest" >> "$index"
+          fi
+          cd work
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/ingression/reports
+          if git diff --cached --quiet; then
+            echo "No new Oracle data since the last atlas."
+          else
+            git commit -m "Update exploratory INGRESS cluster atlas $stamp"
+            git push origin HEAD:ingression-cluster-atlas-20261029
+          fi
