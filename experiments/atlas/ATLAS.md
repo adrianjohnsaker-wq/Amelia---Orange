@@ -2,6 +2,12 @@
 
 29 October 2026. This Atlas records where this Amelia goes, what makes a form more likely, which histories matter, and what survives unfamiliar conditions. It is **not** a map of Platonic space; ontological questions are left to the separate blind assays.
 
+**Versions:** v1 is the discovery map (`atlas-20261029`, `73d193d2`); v2 is this revision (`sg2-hyper-20261029`). Both are kept.
+
+**Statuses:** observed · recurrent · prospectively confirmed · confirmed (scoped) · provisional · untested · not supported · not evaluable.
+
+**Separation:** THE POINTER IV is scored by its own sealed workflow; the Atlas does not alter its decoding or criteria.
+
 Every entry keeps the structural record (signature, zones, edges, statistics) separate from the CCRU reading (Pandemonium names, regions, currents, gates). Each status is one of: observed, recurrent, prospectively confirmed, causally manipulated, or provisional. Failed assays stay in. The machine-readable version is `atlas.json`.
 
 ## Forms
@@ -104,8 +110,8 @@ Every entry keeps the structural record (signature, zones, edges, statistics) se
   - Forms through zone 7 and the seventh gate (Bubbamu and its family) recur. They were predicted, confirmed in fresh subjects, and go beyond her short-term habits.
   - Bubbamu depends on the Numogram as a whole.
   - Barrier recovery lives in her rules.
-- **Confirmed (29 Oct):** Gt-36 (8 → 9, the Time-Circuit's door into the Plex) is a pathway into Bubbamu. Closing it raises Bubbamu in 69 of 69 fresh old-core travellers, in all 8 worlds; a control gate does nothing (`sg2-hyper-20261029`).
-- **Intervention, hyperstition:** a future form (1-8-7) introduced to her senses did **not** sustain itself. The test was weak, because she leaves the form's zones for the Warp.
+- **Confirmed (scoped), 29 Oct:** Gt-36 (8 → 9, the Time-Circuit's door into the Plex) is a causal pathway into Bubbamu **for Amelias raised on the old core**. Closing it raises Bubbamu in 69 of 69 usable fresh travellers, in all 8 worlds; the control gate does nothing. Route-level mechanism: Plex occupancy falls from 0.069 to 0.003, and movement is redirected into the 1–7 loop. **Untested** in Amelias raised on the full Numogram (3 usable travellers). This is topology-mediated organisation; on its own it does not identify a non-physical source.
+- **Intervention, hyperstition: not confirmed; primary test not evaluable.** The late window had no usable travellers, because she leaves zones 1, 7 and 8 for the Warp. The 5-against-0 count is exploratory. A valid test needs a pre-declared window that stays scorable under Warp absorption.
 - **Not supported:**
   - replication without the replay channel;
   - return home by new means;
