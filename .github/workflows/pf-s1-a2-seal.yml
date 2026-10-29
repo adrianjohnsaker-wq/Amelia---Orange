@@ -1,0 +1,87 @@
+# PF S1 amendment 2: one RFC3161 token over the amendment and the three weekly-audit successors (experiments/pf_storage/PF_S1_AMENDMENT_2.md).
+name: PF S1 amendment 2 ONE RFC3161 seal — read-only audits
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf-s1-a2-seal.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: orange, ref: main, fetch-depth: 0 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: B0 S1 migrated; originals unchanged; successors additive only
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -e experiments/pf_storage/MIGRATED.json && test -e experiments/pf_storage/seal_a1/receipt.json
+          test ! -e experiments/pf_storage/seal_a2/receipt.json
+          python - <<'PY'
+          import difflib,hashlib,json,pathlib
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          b=json.loads(pathlib.Path('experiments/pf2/live/GENESIS_SIGNED_BUNDLE.json').read_text())
+          for x in b['frozenSourceSHA256']+b['originalFourFileSHA256']:
+            if x['path']=='.github/workflows/pf2-live-observe.yml': continue
+            assert h(x['path'])==x['sha256'],x['path']
+          for o in ['pf1-c1-weekly-readonly','pf1-p1-weekly-readonly','pf2-weekly-committed']:
+            A=pathlib.Path('.github/workflows/'+o+'.yml').read_text().splitlines(); B=pathlib.Path('.github/workflows/'+o+'-s1.yml').read_text().splitlines()
+            ops=difflib.SequenceMatcher(a=A,b=B,autojunk=False).get_opcodes()
+            changed=[(t,A[i1:i2],B[j1:j2]) for t,i1,i2,j1,j2 in ops if t!='equal']
+            for t,a,bb in changed:
+              assert t=='insert' or (t=='replace' and len(a)==1 and 'cron:' in a[0]),(o,t,a,bb)
+            print('PF_S1_A2_ADDITIVE_SUCCESSOR',o,len(changed),'hunks')
+          PY
+      - name: B2 S1 amendment 2 bundle and ONE genuine RFC3161 token
+        working-directory: orange
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -q -r ../c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          p=pathlib.Path('/tmp/pfs1a2'); p.mkdir(parents=True,exist_ok=True)
+          sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          files=['experiments/pf_storage/PF_S1_AMENDMENT_2.md','.github/workflows/pf-s1-a2-seal.yml']+['.github/workflows/'+o+s+'.yml' for o in ['pf1-c1-weekly-readonly','pf1-p1-weekly-readonly','pf2-weekly-committed'] for s in ('','-s1')]
+          bundle={'schema':'PF_S1_A2_OPERATIONAL_SHA256_V1','amends':'experiments/pf_storage/seal/S1_SIGNED_BUNDLE.json',
+            'S1BundleSHA256':sha('experiments/pf_storage/seal/S1_SIGNED_BUNDLE.json'),'readOnlyAuditsOnly':True,'scienceChanged':False,'notificationsEnabled':False,
+            'sourceSHA256':[{'path':f,'sha256':sha(f)} for f in files]}
+          (p/'S1_A2_SIGNED_BUNDLE.json').write_text(json.dumps(bundle,sort_keys=True,indent=2)+'\n')
+          imprint=sha(p/'S1_A2_SIGNED_BUNDLE.json')
+          Sealer().seal(p/'seal',imprint)
+          assert Sealer().verify(p/'seal',imprint)['status']=='PASS'
+          print('PF_S1_A2_ONE_RFC3161_PASS',imprint)
+          PY
+      - name: B3 create-only archive of the amendment bundle, token and receipt
+        env: { GH_TOKEN: '${{ github.token }}', REPO: '${{ github.repository }}' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,json,os,pathlib,subprocess
+          p=pathlib.Path('/tmp/pfs1a2')
+          files={'S1_A2_SIGNED_BUNDLE.json':p/'S1_A2_SIGNED_BUNDLE.json'}
+          for n in ['attempt-0000.tsq','attempt-0000.tsr','receipt.json']:
+            assert (p/'seal'/n).exists(),'MISSING '+n; files[n]=p/'seal'/n
+          for name in sorted(files,key=lambda k:k=='receipt.json'):
+            dst='experiments/pf_storage/seal_a2/'+name
+            payload={'message':'PF S1 amendment 2: ONE RFC3161 token, create-only '+name+'; zero admitted','branch':'main','content':base64.b64encode(files[name].read_bytes()).decode()}
+            r=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dst,'--input','-'],input=json.dumps(payload),capture_output=True,text=True)
+            if r.returncode: raise RuntimeError('S1_A2_CREATE_ONLY_FAILED '+dst+' '+r.stderr[-800:])
+            print('PF_S1_A2_ARCHIVED',dst)
+          PY

@@ -1,0 +1,126 @@
+name: PF1 Weekly C1 and PF1 Status — READ ONLY / DATED ARCHIVE
+# S1 successor of pf1-c1-weekly-readonly.yml (experiments/pf_storage/PF_S1_AMENDMENT_2.md): byte-identical except the step that joins
+# the live state from its verified Git shards before the unchanged read-only audit. Pinned by the S1 amendment 2 RFC3161 bundle.
+on:
+  schedule:
+    - cron: '23 08 * * 1'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pf1-c1-weekly-readonly.yml'
+      - 'experiments/pf1/PF1_C1_WEEKLY_READONLY.py'
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    outputs:
+      report_path: ${{ steps.audit.outputs.report_path }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: orange
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: adrianjohnsaker-wq/Amelia-0.4
+          ref: amelia-1.0
+          path: c1-readonly
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install unchanged original C1 requirements (no intake)
+        working-directory: c1-readonly
+        run: python -m pip install -r drift1a_c1/requirements.txt
+      - name: S1 join the live state from its verified Git shards (exact bytes, SHA-256 checked)
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -e experiments/pf_storage/MIGRATED.json
+          PYTHONDONTWRITEBYTECODE=1 python experiments/pf_storage/PF_SHARD.py join experiments/pf1/live/STATE.json experiments/pf1/live/SILENT_LEDGER.json
+      - id: audit
+        name: Audit latest committed C1 head and PF1 authoritative status WITHOUT DISPATCH
+        working-directory: c1-readonly
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          PYTHONPATH: ${{ github.workspace }}/c1-readonly
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PF1_ORANGE_REPOSITORY: ${{ github.workspace }}/orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
+          python ../orange/experiments/pf1/PF1_C1_WEEKLY_READONLY.py
+          test -z "$(git status --porcelain)"
+          echo PF1_WEEKLY_READONLY_AUDIT_COMPLETE
+      - name: Secondary artifact copy (no C1 writes or notifications)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: PF1-C1-STATUS-WEEKLY-${{ github.run_id }}
+          retention-days: 90
+          if-no-files-found: warn
+          path: orange/${{ steps.audit.outputs.report_path }}
+
+  commit-dated-report:
+    needs: inspect
+    if: needs.inspect.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: PF1-C1-STATUS-WEEKLY-${{ github.run_id }}
+          path: weekly-file
+      - name: Strict path-allowlisted create-only GitHub Contents API
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_PATH: ${{ needs.inspect.outputs.report_path }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,json,os,pathlib,re,subprocess,sys
+          relative=os.environ['EXPECTED_PATH']
+          prefix='experiments/pf1/weekly-audit/'
+          name=relative.removeprefix(prefix)
+          assert relative.startswith(prefix)
+          assert re.fullmatch(r'PF1_C1_WEEKLY_\d{4}-\d{2}-\d{2}T\d{6}Z_run\d+\.json',name), 'PATH_NOT_ALLOWED'
+          assert name.endswith('_run'+os.environ['RUN_ID']+'.json'), 'WRONG_RUN'
+          root=pathlib.Path('weekly-file')
+          items=list(root.rglob('*.json'))
+          assert len(items)==1 and items[0].is_file() and items[0].name==name, 'ARTIFACT_PATH_MISMATCH: '+repr([str(x) for x in items])
+          b=items[0].read_bytes()
+          report=json.loads(b)
+          assert report['reportPath']==relative
+          assert report['schema']=='PF1_C1_COMBINED_WEEKLY_READONLY_V2'
+          assert report['auditStatus']=='PASS'
+          assert report['actions']['C1DispatchPerformed'] is False
+          assert report['actions']['C1FilesModified'] is False
+          assert report['actions']['encounterNotificationsSent']==0
+          assert report['actions']['outboundNotificationsSent']==0
+          assert report['actions']['PF1GenesisCreated'] is False
+          assert report['actions']['liveRoundsAdmitted']==0
+          assert report['C1']['frozenFilesUnchanged'] is True
+          payload={'message':'PF1: commit dated read-only C1 continuity and PF1 status, NO dispatch',
+             'branch':'main','content':base64.b64encode(b).decode()}
+          # Create only; no SHA allows overwriting existing files.
+          proc=subprocess.run(['gh','api','-X','PUT',f'repos/{os.environ["REPO"]}/contents/{relative}',
+             '--input','-'],input=json.dumps(payload),text=True,capture_output=True)
+          print('PF1_WEEKLY_COMMIT_PATH',relative)
+          if proc.returncode:
+             print(proc.stderr,file=sys.stderr)
+             sys.exit(proc.returncode)
+          out=json.loads(proc.stdout)
+          assert out.get('content',{}).get('path')==relative
+          print('PF1_WEEKLY_COMMITTED',out.get('commit',{}).get('sha'))
+          PY
