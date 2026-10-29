@@ -30,7 +30,7 @@ jobs:
           node-version: '22'
 
       - name: Install web dependencies
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
 
       - name: Build Amelia UI, substrate, and type checks for the tablet
         env:
@@ -212,4 +212,4 @@ jobs:
           retention-days: 30
           path: |
             dist/
-            package-lock.json
+            package.json
