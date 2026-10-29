@@ -9,6 +9,7 @@ on:
       - 'package-lock.json'
       - 'index.html'
       - 'vite.config.ts'
+      - 'railway.json'
       - '.github/workflows/main.yml'
   workflow_dispatch:
 
@@ -29,12 +30,12 @@ jobs:
           node-version: '22'
 
       - name: Install web dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
-      - name: Build Amelia UI with local substrate checkpointing and Supabase available
+      - name: Build Amelia UI, substrate, and type checks for the tablet
         env:
           VITE_AMELIA_LOCAL_ONLY: '1'
-        run: npx vite build
+        run: npm run build
 
       - name: Construct Android wrapper and record provenance
         shell: bash
@@ -70,8 +71,8 @@ jobs:
                   applicationId 'org.amelia.orange'
                   minSdk 24
                   targetSdk 35
-                  versionCode 3
-                  versionName '0.1.2'
+                  versionCode 4
+                  versionName '0.1.3'
               }
               compileOptions {
                   sourceCompatibility JavaVersion.VERSION_17
@@ -193,7 +194,7 @@ jobs:
       - name: Upload tablet APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Orange-Tablet-APK
+          name: Amelia-Orange-Tablet-APK-v0.1.3
           if-no-files-found: error
           retention-days: 30
           path: |
