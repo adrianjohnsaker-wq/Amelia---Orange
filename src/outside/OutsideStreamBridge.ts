@@ -175,7 +175,7 @@ export class OutsideStreamBridge {
       memoryHeadDigest: snapshot.memoryHeadDigest ?? null,
     };
     const endpoint = endpointFromSnapshot(runtime, snapshot);
-    return this.append(event, endpoint, endpoint, snapshot, snapshot, null);
+    return this.append(event, endpoint, endpoint, null, null, null);
   }
 
   /**
@@ -262,6 +262,25 @@ export class OutsideStreamBridge {
     this.atlasEntries.push(JSON.parse(JSON.stringify(entry)));
   }
 
+  public async importBundle(bundle: OutsideStreamBundle): Promise<void> {
+    if (bundle.bundleSchema !== 'amelia.outside-stream-bundle/v1' || bundle.sessionId !== this.sessionId) {
+      throw new Error('Outside stream bundle schema or sessionId does not match.');
+    }
+    this.records = JSON.parse(JSON.stringify(bundle.records));
+    this.interpretations = JSON.parse(JSON.stringify(bundle.interpretations));
+    this.atlasEntries = JSON.parse(JSON.stringify(bundle.atlasEntries));
+    this.sequence = this.records.at(-1)?.sequence ?? 0;
+    this.appendQueue = Promise.resolve();
+    const verification = await this.verifyLedger();
+    if (!verification.valid) {
+      this.records = [];
+      this.interpretations = [];
+      this.atlasEntries = [];
+      this.sequence = 0;
+      throw new Error(verification.reason ?? 'Outside stream ledger verification failed.');
+    }
+  }
+
   public exportBundle(): OutsideStreamBundle {
     return JSON.parse(JSON.stringify({
       bundleSchema: 'amelia.outside-stream-bundle/v1',
@@ -313,34 +332,24 @@ export class OutsideStreamBridge {
     snapshotAfter: SubstrateStepSnapshot | null,
     runtimeSignalDigest: string | null
   ): Promise<OutsideStreamRecord> {
-    let resolveResult: (record: OutsideStreamRecord) => void;
-    let rejectResult: (error: unknown) => void;
-    const result = new Promise<OutsideStreamRecord>((resolve, reject) => {
-      resolveResult = resolve;
-      rejectResult = reject;
+    const queued = this.appendQueue.then(async () => {
+      const body = {
+        sequence: event.sequence,
+        event,
+        substrateBefore: JSON.parse(JSON.stringify(substrateBefore)),
+        substrateAfter: JSON.parse(JSON.stringify(substrateAfter)),
+        snapshotBefore: copySnapshot(snapshotBefore),
+        snapshotAfter: copySnapshot(snapshotAfter),
+        runtimeSignalDigest,
+        previousRecordDigest: this.records.at(-1)?.recordDigest ?? ZERO_DIGEST,
+      };
+      const recordDigest = await sha256Utf8(stableStringify(body));
+      const record: OutsideStreamRecord = { ...body, recordDigest };
+      this.records.push(record);
+      return record;
     });
-
-    this.appendQueue = this.appendQueue.then(async () => {
-      try {
-        const body = {
-          sequence: event.sequence,
-          event,
-          substrateBefore: JSON.parse(JSON.stringify(substrateBefore)),
-          substrateAfter: JSON.parse(JSON.stringify(substrateAfter)),
-          snapshotBefore: copySnapshot(snapshotBefore),
-          snapshotAfter: copySnapshot(snapshotAfter),
-          runtimeSignalDigest,
-          previousRecordDigest: this.records.at(-1)?.recordDigest ?? ZERO_DIGEST,
-        };
-        const recordDigest = await sha256Utf8(stableStringify(body));
-        const record: OutsideStreamRecord = { ...body, recordDigest };
-        this.records.push(record);
-        resolveResult(record);
-      } catch (error) {
-        rejectResult(error);
-      }
-    });
-    return result;
+    this.appendQueue = queued.then(() => undefined, () => undefined);
+    return queued;
   }
 }
 
