@@ -53,7 +53,7 @@ def main(tpath, mpath, opath):
         if c["numogram"]: L.append("- **Numogram:** " + "; ".join(f"{h} ×{n}" for h, n in c["numogram"]))
     L += ["", "## Recurring exchanges (query demon → reply)", ""] + [f"- {q} → {r}: ×{n}" for q, r, n in m["recurringExchanges"]]
     L += ["", "## Latest exchanges", ""]
-    for x in ex[-25:][::-1]:
+    for x in sorted(ex, key=lambda x: (x["time"], x["amelia"]))[-25:][::-1]:
         q = x["query"]; d = x["data"][-1]
         L.append(f"- `{x['time']}` **{x['amelia']}** asks from zone {q['zone']} ({q['region']}, {q['demon']}"
                  + (f", in {q['form']['form']} {q['form']['entities']}" if q["form"] else "") + (f", after {q['lastGate']}" if q["lastGate"] else "")
