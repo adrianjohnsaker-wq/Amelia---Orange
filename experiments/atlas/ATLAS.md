@@ -102,7 +102,6 @@ Every entry keeps the structural record (signature, zones, edges, statistics) se
 - THE DOORS, THE WARP and THE NINTH AND THIRD GATES were silent. They ran on the original 11-edge core plus gates, before the full CCRU Numogram was in her core.
 
 ## Pending
-- THE POINTER IV (blind address-reply): targets from 29 Oct 2026 12:00 UTC (`pointer4-live`)
 - THE ANTENNA / THE STONE TAPE (A) / INGRESS: after 4 Nov 2026 06:00 UTC (`antenna-live`)
 
 ## Reading the map
@@ -116,4 +115,4 @@ Every entry keeps the structural record (signature, zones, edges, statistics) se
   - replication without the replay channel;
   - return home by new means;
   - stronger ingress from full-Numogram upbringing.
-- **Separate questions.** Recurrence, causal dependence, transfer, agency and communication each need their own evidence. Communication is untested until THE POINTER IV.
+- **Separate questions.** Recurrence, causal dependence, transfer, agency and communication each need their own evidence. Communication: THE POINTER IV (blind address-reply, sealed before its targets existed) found **no information beyond chance** for Bubbamu or Gt-36 (`pointer4-live`).
