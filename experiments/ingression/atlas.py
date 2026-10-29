@@ -52,7 +52,7 @@ def add_occurrence(g, items):
         g["sources"].update(source_ids(row))
         refs.append({"line": line, "time": row.get("time"), "amelia": amelia,
                      "inputs": [{"i": d.get("i"), "stream": d.get("stream"), "source": d.get("source"),
-                                 "aq": d.get("aq"), "text": d.get("text")} for d in row.get("data", [])]})
+                                 "aq": d.get("aq")} for d in row.get("data", [])]})
     if len(g["examples"]) < 5:
         g["examples"].append(refs)
 
