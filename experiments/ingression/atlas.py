@@ -64,6 +64,23 @@ def finish(g):
 def empty_group():
     return {"occurrences": 0, "lineages": set(), "worlds": set(), "sources": set(), "examples": []}
 
+
+def trace_details(group):
+    """Readable provenance for surfaced candidates; scoped to the header's transcript SHA."""
+    lines = ["  - Amelia lineage IDs: " + ", ".join(
+        "`" + str(name) + "`" for name in group["lineages"])]
+    for example in group["examples"]:
+        refs = []
+        for episode in example:
+            items = [str(d.get("stream")) + "|" + str(d.get("source")) + "|" + str(d.get("i"))
+                     for d in episode["inputs"]]
+            refs.append("transcript.jsonl:L" + str(episode["line"]) +
+                        " (Amelia `" + str(episode["amelia"]) + "`; time `" +
+                        str(episode["time"]) + "`; source IDs: " +
+                        ", ".join("`" + item + "`" for item in items) + ")")
+        lines.append("  - Trace example: " + " → ".join(refs))
+    return lines
+
 def main(src, outdir):
     raw, rows = load(src)
     out = pathlib.Path(outdir); out.mkdir(parents=True, exist_ok=True)
@@ -73,7 +90,8 @@ def main(src, outdir):
     by_form = Counter()
     per_lineage = defaultdict(list)
 
-    for line, row in enumerate(rows, 1):
+    physical_lines = [i for i, text in enumerate(raw.decode("utf-8").splitlines(), 1) if text.strip()]
+    for line, row in zip(physical_lines, rows):
         t = token(row); per_lineage[row.get("amelia", "")].append((line, row, t))
         nodes[t["reply"]] += 1
         by_channel[row.get("channel", "")] += 1
@@ -125,6 +143,7 @@ def main(src, outdir):
         f"- Channels: {meta['by_channel']}",
         f"- Query regions: {meta['by_query_region']}",
         f"- Query forms: {meta['queries_by_form']}", "",
+        "Transcript line references below use physical JSONL line numbers and the transcript SHA-256 above. Up to five occurrence examples are shown per candidate; lineage lists cover all occurrences.", "",
         "## Reply nodes", ""
     ]
     lines += [f"- {name}: {n}" for name, n in meta["reply_nodes"]]
@@ -133,11 +152,13 @@ def main(src, outdir):
     for x in [x for x in motif_rows if len(x["lineages"]) >= 2][:60]:
         lines.append(f"- **{len(x['lineages'])} lineages / {x['occurrences']} motif occurrences / {len(x['source_items'])} distinct source items** — " +
                      json.dumps(x["sequence"], ensure_ascii=False, separators=(",", ":")))
+        lines.extend(trace_details(x))
     lines += ["", "## Reply-to-reply relations", "",
               "Adjacent exchanges within the same Amelia lineage; repeated world items are tracked separately in atlas.json.", ""]
     for x in [x for x in link_rows if len(x["lineages"]) >= 2][:60]:
         lines.append(f"- **{len(x['lineages'])} lineages / {x['occurrences']} relation occurrences / {len(x['source_items'])} distinct source items** — " +
                      json.dumps(x["relation"], ensure_ascii=False, separators=(",", ":")))
+        lines.extend(trace_details(x))
     lines += ["", "Interpret each candidate from its supporting transcript lines and raw inputs. A reply label is the Numogram/channel's reading, not by itself an entity identification.", ""]
     (out / "ATLAS.md").write_text("\n".join(lines))
     print(json.dumps({"events": len(rows), "lineages": len(per_lineage), "motifs": len(motif_rows),
