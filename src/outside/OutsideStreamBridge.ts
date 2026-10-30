@@ -1,4 +1,4 @@
-import type { ZoneId, SubstrateStepSnapshot } from '../types/amelia';
+import type { SubstrateEncounterInput, ZoneId, SubstrateStepSnapshot } from '../types/amelia';
 import { canonicalSha256 } from '../lib/sha256';
 import type {
   IChingCastEvent,
@@ -12,6 +12,7 @@ import type {
   TarotSpreadEvent,
 } from './types';
 import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
+import { OutsideAttentionMapper } from './OutsideAttentionMapper';
 
 const ZERO_DIGEST = '0'.repeat(64);
 
@@ -179,8 +180,8 @@ export class OutsideStreamBridge {
   }
 
   /**
-   * Receive a cast as a structural event, then couple it through the runtime's existing
-   * inputSignal path. No hexagram name or divinatory prose is sent into the substrate.
+   * Receive a cast as a structural event, project its attention through Numogram syzygies,
+   * then let the runtime's Governor and open-gate topology govern passage. No hexagram name or divinatory prose is sent into the substrate.
    */
   public async receiveIChing(
     runtime: AmeliaNumogramSubstrateRuntime,
@@ -197,16 +198,18 @@ export class OutsideStreamBridge {
     const before = endpointFromSnapshot(runtime, beforeSnapshot);
     const sequence = this.reserveSequence();
     const event = makeIChingEvent(input, this.sessionId, sequence, input.occurredAt ?? new Date().toISOString());
-    const signal = 'OUTSIDE|ICHING|' + event.primaryBitPattern + '|' + event.relatingBitPattern;
-    const signalDigest = canonicalSha256(signal);
-    const afterSnapshot = runtime.step(signal);
+    const mapped = OutsideAttentionMapper.forIChing(event);
+    const signalDigest = mapped.sourceDigest;
+    const encounter: SubstrateEncounterInput = { eventId: event.eventId, channel: event.channel,
+      sourceDigest: signalDigest, attentionVector: mapped.attentionVector };
+    const afterSnapshot = runtime.step(undefined, encounter);
     const after = endpointFromSnapshot(runtime, afterSnapshot);
     return this.append(event, before, after, beforeSnapshot, afterSnapshot, signalDigest);
   }
 
   /**
-   * Receive a spread as a structural event, then couple it through the runtime's existing
-   * inputSignal path. Card identities and ordering enter; interpretive meanings remain separate.
+   * Receive a spread as a structural event, project its attention through Numogram syzygies,
+   * then let the runtime's Governor and open-gate topology govern passage. Card identities and ordering enter; interpretive meanings remain separate.
    */
   public async receiveTarot(
     runtime: AmeliaNumogramSubstrateRuntime,
@@ -240,11 +243,11 @@ export class OutsideStreamBridge {
       rawReceipt: input.rawReceipt,
     };
     const ordered = [...input.draws].sort((a, b) => a.order - b.order);
-    const signal = 'OUTSIDE|TAROT|' + ordered.map(draw =>
-      draw.order + ':' + draw.positionId + ':' + draw.cardId + ':' + draw.orientation
-    ).join('|');
-    const signalDigest = canonicalSha256(signal);
-    const afterSnapshot = runtime.step(signal);
+    const mapped = OutsideAttentionMapper.forTarot(event);
+    const signalDigest = mapped.sourceDigest;
+    const encounter: SubstrateEncounterInput = { eventId: event.eventId, channel: event.channel,
+      sourceDigest: signalDigest, attentionVector: mapped.attentionVector };
+    const afterSnapshot = runtime.step(undefined, encounter);
     const after = endpointFromSnapshot(runtime, afterSnapshot);
     return this.append(event, before, after, beforeSnapshot, afterSnapshot, signalDigest);
   }
