@@ -12,7 +12,7 @@ import { AmeliaQabbalaInterface } from '../ai/numogram/AmeliaQabbalaInterface';
 import { IntegratedMemorySystem } from './IntegratedMemorySystem';
 import { TraitEvolution } from './TraitEvolution';
 import { CognitiveGovernor } from '../governance/CognitiveGovernor';
-import { GovernorTelemetry, NumogramZone, SubstrateStepSnapshot, ZoneId } from '../types/amelia';
+import { EncounterDecisionTrace, GovernorTelemetry, NumogramZone, SubstrateEncounterInput, SubstrateStepSnapshot, ZoneId } from '../types/amelia';
 import { canonicalSha256 } from '../lib/sha256';
 
 export interface MemoryConsumptionTelemetry {
@@ -38,6 +38,7 @@ export class AmeliaNumogramSubstrateRuntime {
   private memoryConsumptionLog: MemoryConsumptionTelemetry[] = [];
   private currentObjective: string = 'Bounded Zone-9 Phase Coherence & Canalization';
   private suppressRelaySteering: boolean = false;
+  private deferredEncounters: SubstrateEncounterInput[] = [];
 
   constructor() {
     this.qabbala = new AmeliaQabbalaInterface();
@@ -81,7 +82,7 @@ export class AmeliaNumogramSubstrateRuntime {
    * Main runtime step function:
    * Consumes memory bias vector from IntegratedMemorySystem and feeds it into TraitEvolution & Qabbala dynamics.
    */
-  public step(inputSignal?: string): SubstrateStepSnapshot {
+  public step(inputSignal?: string, encounter?: SubstrateEncounterInput): SubstrateStepSnapshot {
     this.stepCount++;
     const govTel = this.governorKernel.getTelemetry();
 
@@ -107,8 +108,37 @@ export class AmeliaNumogramSubstrateRuntime {
       this.suppressRelaySteering
     );
 
-    // 4. Select an actual directed Numogram exit, then append the event to PFM.
-    // The next step consumes the resulting PFM bias: memory is not a passive recorder.
+    // 4. The Governor gates channel attention before open Numogram exits are scored.
+    const encounterDecisions: EncounterDecisionTrace[] = [];
+    let attended: SubstrateEncounterInput | undefined;
+    if (this.deferredEncounters.length > 0) {
+      const pending = this.deferredEncounters[0];
+      const decision = this.governorKernel.decideEncounter(pending);
+      if (decision.disposition === 'ATTEND') {
+        attended = this.deferredEncounters.shift();
+        encounterDecisions.push({ ...pending, disposition: 'ATTEND',
+          reason: 'Previously deferred encounter admitted after Governor recovery.', applied: true });
+      } else {
+        encounterDecisions.push({ ...pending, ...decision, applied: false });
+      }
+    }
+    if (encounter) {
+      let decision = this.governorKernel.decideEncounter(encounter);
+      if (decision.disposition === 'ATTEND' && attended) {
+        decision = { disposition: 'DEFER',
+          reason: 'An earlier deferred encounter was attended on this step; this encounter remains queued.' };
+      }
+      if (decision.disposition === 'ATTEND') attended = encounter;
+      else if (decision.disposition === 'DEFER' && this.deferredEncounters.length < 32) {
+        this.deferredEncounters.push(encounter);
+      } else if (decision.disposition === 'DEFER') {
+        decision = { disposition: 'REFUSE',
+          reason: 'Governor deferral queue is full; encounter retained in PFM but not queued.' };
+      }
+      encounterDecisions.push({ ...encounter, ...decision, applied: decision.disposition === 'ATTEND' });
+    }
+
+    // A signal can bias only an extant outgoing gate. Attention cannot invent a passage.
     const from = this.currentZone;
     const inputDigest = inputSignal?.trim() ? canonicalSha256(inputSignal.trim()) : undefined;
     const inputZone = inputDigest ? (parseInt(inputDigest.slice(0, 2), 16) % 10) as ZoneId : undefined;
@@ -121,7 +151,8 @@ export class AmeliaNumogramSubstrateRuntime {
       const score = gate.flux * (1 - gate.resistance)
         + (memReadout.biasVector[target] || 0) * 0.4
         + z.activation * 0.2 + Math.cos(z.phaseAngle) * 0.1
-        + (inputZone === target ? 0.35 : 0);
+        + (inputZone === target ? 0.35 : 0)
+        + (attended?.attentionVector[target] ?? 0) * 0.9;
       if (score > best) { best = score; to = target; }
     }
     // Zero candidate exits are represented as an explicit dwell, not a fabricated edge.
@@ -132,12 +163,12 @@ export class AmeliaNumogramSubstrateRuntime {
     const phaseCoherence = Number(Math.max(0.05,
       Math.min(1, (1 + Math.cos(targetZone.phaseAngle - sourceZone.phaseAngle)) / 2)).toFixed(6));
     const eventBody = { step: this.stepCount, from, to, fluxDelta, phaseCoherence,
-      inputDigest: inputDigest ?? null, inputZone: inputZone ?? null };
+      inputDigest: inputDigest ?? null, inputZone: inputZone ?? null, encounters: encounterDecisions };
     const eventDigest = canonicalSha256(JSON.stringify(eventBody));
     this.memory.append({ blockIndex: this.stepCount, depth: this.stepCount,
       targetZone: to, fluxDelta, phaseCoherence, strainRelaxation: 0.025,
       eventDigest, timestamp: this.stepCount, kind: 'STEP', fromZone: from,
-      inputDigest, inputZone });
+      inputDigest, inputZone, encounters: encounterDecisions });
     this.currentZone = to;
     this.lastTransition = { from, to, digest: eventDigest };
 
@@ -188,6 +219,7 @@ export class AmeliaNumogramSubstrateRuntime {
       deformationVector: [...this.deformationTensor],
       selectedObjective: this.currentObjective,
       lastTransition: { ...this.lastTransition },
+      encounterDecisions: JSON.parse(JSON.stringify(encounterDecisions)),
       memoryHistoryLength: this.memory.getEvents().length,
       memoryHeadDigest: this.memory.exportHistoryDigest(),
     };
@@ -220,6 +252,7 @@ export class AmeliaNumogramSubstrateRuntime {
       deformationTensor: [...this.deformationTensor],
       currentObjective: this.currentObjective,
       suppressRelaySteering: this.suppressRelaySteering,
+      deferredEncounters: JSON.parse(JSON.stringify(this.deferredEncounters)),
       snapshots: JSON.parse(JSON.stringify(this.snapshots)),
       memoryConsumptionLog: JSON.parse(JSON.stringify(this.memoryConsumptionLog)),
     };
@@ -238,6 +271,7 @@ export class AmeliaNumogramSubstrateRuntime {
     if (Array.isArray(state.deformationTensor)) this.deformationTensor = [...state.deformationTensor];
     if (typeof state.currentObjective === 'string') this.currentObjective = state.currentObjective;
     if (typeof state.suppressRelaySteering === 'boolean') this.suppressRelaySteering = state.suppressRelaySteering;
+    if (Array.isArray(state.deferredEncounters)) this.deferredEncounters = JSON.parse(JSON.stringify(state.deferredEncounters));
     if (Array.isArray(state.snapshots)) this.snapshots = JSON.parse(JSON.stringify(state.snapshots));
     if (Array.isArray(state.memoryConsumptionLog)) this.memoryConsumptionLog = JSON.parse(JSON.stringify(state.memoryConsumptionLog));
   }
