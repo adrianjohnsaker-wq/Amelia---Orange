@@ -1,0 +1,149 @@
+# PF S1 amendment 3 (experiments/pf_storage/PF_S1_AMENDMENT_3.md): one RFC3161 token, then the audited completion of PF-2's orphan
+# lease 40966845131-1 in a second job. One-shot.
+name: PF S1 amendment 3 — seal, then close PF-2 orphan lease 40966845131-1
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf-s1-a3.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: orange, ref: main, fetch-depth: 0 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: B0 facts at sealing
+        working-directory: orange
+        env: { GH_TOKEN: '${{ github.token }}' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e experiments/pf_storage/seal_a3/receipt.json
+          gh api repos/${{ github.repository }}/actions/runs/40966845131 --jq '.status+" "+.conclusion' | grep -Fx 'completed failure'
+          PYTHONDONTWRITEBYTECODE=1 python experiments/pf_storage/PF_SHARD.py join experiments/pf2/live/STATE.json
+          python - <<'PY'
+          import json,pathlib
+          root=pathlib.Path('drift1a_c1/runner_state')
+          un=sorted(p.name for p in (root/'leases').glob('*.json') if not (root/'completions'/p.name).exists())
+          assert un==['40966845131-1.json'],un
+          s=json.loads(pathlib.Path('experiments/pf2/live/STATE.json').read_text())
+          assert s['status']=='running' and s['openHalt'] is None and s['admittedTicks']==s['engine']['tick']==7170
+          assert s['headDigest']=='d133fe3742805e04825387424a2cb2160fef9a1cd56fa7897c89cc2f0e47ed29' and s['lastAdmittedRound']==33442120
+          print('PF_S1_A3_FACTS_PASS')
+          PY
+      - name: B2 amendment 3 bundle and ONE genuine RFC3161 token
+        working-directory: orange
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -q -r ../c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          p=pathlib.Path('/tmp/pfs1a3'); p.mkdir(parents=True,exist_ok=True)
+          sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          files=['experiments/pf_storage/PF_S1_AMENDMENT_3.md','.github/workflows/pf-s1-a3.yml']
+          bundle={'schema':'PF_S1_A3_OPERATIONAL_SHA256_V1','amends':'experiments/pf_storage/seal/S1_SIGNED_BUNDLE.json',
+            'orphanLease':'40966845131-1','failedRun':'40966845131','PF2':{'admittedTicks':7170,'head':'d133fe3742805e04825387424a2cb2160fef9a1cd56fa7897c89cc2f0e47ed29'},
+            'cause':'operator-session push to main (5ece86c8) during the active PF-2 lease','scienceChanged':False,'notificationsEnabled':False,
+            'sourceSHA256':[{'path':f,'sha256':sha(f)} for f in files]}
+          (p/'S1_A3_SIGNED_BUNDLE.json').write_text(json.dumps(bundle,sort_keys=True,indent=2)+'\n')
+          imprint=sha(p/'S1_A3_SIGNED_BUNDLE.json')
+          Sealer().seal(p/'seal',imprint)
+          assert Sealer().verify(p/'seal',imprint)['status']=='PASS'
+          print('PF_S1_A3_ONE_RFC3161_PASS',imprint)
+          PY
+      - name: B3 create-only archive of the amendment bundle, token and receipt
+        env: { GH_TOKEN: '${{ github.token }}', REPO: '${{ github.repository }}' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,json,os,pathlib,subprocess
+          p=pathlib.Path('/tmp/pfs1a3')
+          files={'S1_A3_SIGNED_BUNDLE.json':p/'S1_A3_SIGNED_BUNDLE.json'}
+          for n in ['attempt-0000.tsq','attempt-0000.tsr','receipt.json']:
+            assert (p/'seal'/n).exists(),'MISSING '+n; files[n]=p/'seal'/n
+          for name in sorted(files,key=lambda k:k=='receipt.json'):
+            dst='experiments/pf_storage/seal_a3/'+name
+            payload={'message':'PF S1 amendment 3: ONE RFC3161 token, create-only '+name+'; zero admitted','branch':'main','content':base64.b64encode(files[name].read_bytes()).decode()}
+            r=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dst,'--input','-'],input=json.dumps(payload),capture_output=True,text=True)
+            if r.returncode: raise RuntimeError('S1_A3_CREATE_ONLY_FAILED '+dst+' '+r.stderr[-800:])
+            print('PF_S1_A3_ARCHIVED',dst)
+          PY
+  reconcile:
+    needs: seal
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: write
+      actions: read
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: orange, ref: main, fetch-depth: 0 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: R0 amendment 3 seal verified; full audit; exactly one C1-native completion for 40966845131-1
+        working-directory: orange
+        env: { GH_TOKEN: '${{ github.token }}', PYTHONPATH: '${{ github.workspace }}/c1-pin', DRIFT_C1_ENABLE_LIVE: 'false' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          python -m pip install -q -r ../c1-pin/drift1a_c1/requirements.txt
+          gh api repos/${{ github.repository }}/actions/runs/40966845131 --jq '.status+" "+.conclusion' | grep -Fx 'completed failure'
+          test -f drift1a_c1/runner_state/leases/40966845131-1.json
+          test ! -e drift1a_c1/runner_state/completions/40966845131-1.json
+          python experiments/pf_storage/PF_SHARD.py join experiments/pf2/live/STATE.json
+          python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          d=pathlib.Path('experiments/pf_storage/seal_a3'); b=json.loads((d/'S1_A3_SIGNED_BUNDLE.json').read_text())
+          assert Sealer().verify(d,h(d/'S1_A3_SIGNED_BUNDLE.json'))['status']=='PASS'
+          for x in b['sourceSHA256']: assert h(x['path'])==x['sha256'],x['path']
+          root=pathlib.Path('drift1a_c1/runner_state')
+          un=sorted(p.name for p in (root/'leases').glob('*.json') if not (root/'completions'/p.name).exists())
+          assert un==['40966845131-1.json'],un
+          s=json.loads(pathlib.Path('experiments/pf2/live/STATE.json').read_text())
+          assert s['status']=='running' and s['admittedTicks']==7170 and s['headDigest']==b['PF2']['head']
+          print('PF_S1_A3_AUDIT_PASS')
+          PY
+          python experiments/pf2/PF2_LIVE_CHECK.py
+          git config user.name 'PF S1 authorised lease reconciliation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          test "$(git rev-parse HEAD)" = "$(git ls-remote origin refs/heads/main | cut -f1)"
+          python -m drift1a_c1.runner complete 40966845131-1
+          python - <<'PY'
+          import hashlib,json,pathlib
+          base=pathlib.Path('drift1a_c1/runner_state')
+          lease=json.loads((base/'leases/40966845131-1.json').read_text()); done=json.loads((base/'completions/40966845131-1.json').read_text())
+          assert done['workflow_run']=='40966845131-1'
+          assert done['lease_digest']==hashlib.sha256(json.dumps(lease,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+          assert not [p.name for p in (base/'leases').glob('*.json') if not (base/'completions'/p.name).exists()]
+          print('PF_S1_A3_LEASE_COMPLETION_VALIDATED',done['lease_digest'])
+          PY
+          git add -- drift1a_c1/runner_state/completions/40966845131-1.json
+          test "$(git diff --cached --name-only)" = drift1a_c1/runner_state/completions/40966845131-1.json
+          git commit -qm 'PF S1 amendment 3: PF-2 orphan lease 40966845131-1 completed after full 7170-tick prefix audit; uncommitted batch 2 excluded; no scientific writes'
+          git push -q origin HEAD:main
+          git fetch -q origin main && test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)"
+          echo PF_S1_A3_RECONCILED
