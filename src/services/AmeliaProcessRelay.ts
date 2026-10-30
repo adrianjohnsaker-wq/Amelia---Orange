@@ -77,6 +77,11 @@ export class AmeliaProcessRelay {
       (zone.delta >= 0 ? '+' : '') + zone.delta.toFixed(4) +
       ' to ' + (zone.activation * 100).toFixed(1) + '%'
     ).join('; ') || 'No leading zone activation changed above the recorded resolution.';
+    const attentionZones = encounter
+      ? encounter.attentionVector.map((weight, zone) => ({ zone, weight }))
+          .sort((a, b) => b.weight - a.weight).slice(0, 3)
+          .map(item => item.zone + ' (' + (item.weight * 100).toFixed(1) + '%)').join(', ')
+      : 'none recorded';
     const governorLine = encounter
       ? 'Governor ' + encounter.disposition + ' · ' + encounter.reason
       : 'No channel decision was recorded for this step.';
@@ -86,8 +91,9 @@ export class AmeliaProcessRelay {
       'Largest field changes: ' + field,
       'PFM: ' + trace.memoryLength + ' events · dominant zone ' + trace.dominantZone +
         ' · hysteresis ' + trace.hysteresis.toFixed(4) + ' · head ' + trace.memoryHead.slice(0, 12),
+      'Attention field: ' + attentionZones + '.',
       governorLine,
-    ].join('\\n');
+    ].join('\n');
     return { text, traceDigest: canonicalSha256(JSON.stringify(trace)) };
   }
 

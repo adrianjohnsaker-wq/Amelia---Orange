@@ -242,7 +242,6 @@ export class OutsideStreamBridge {
       draws: JSON.parse(JSON.stringify(input.draws)),
       rawReceipt: input.rawReceipt,
     };
-    const ordered = [...input.draws].sort((a, b) => a.order - b.order);
     const mapped = OutsideAttentionMapper.forTarot(event);
     const signalDigest = mapped.sourceDigest;
     const encounter: SubstrateEncounterInput = { eventId: event.eventId, channel: event.channel,
