@@ -10,7 +10,7 @@
  * - Multi-zone syzygetic balance regulation
  */
 
-import { GovernorTelemetry, NumogramZone, ZoneId } from '../types/amelia';
+import { EncounterDisposition, GovernorTelemetry, NumogramZone, SubstrateEncounterInput, ZoneId } from '../types/amelia';
 
 export interface GovernorAuditReport {
   telemetry: GovernorTelemetry;
@@ -103,6 +103,23 @@ export class CognitiveGovernor {
     if (typeof state.auditCount === 'number') this.auditCount = state.auditCount;
     if (typeof state.invariantsAudited === 'number') this.auditCount = state.invariantsAudited;
     if (typeof state.isAntiLockActive === 'boolean') this.isAntiLockActive = state.isAntiLockActive;
+  }
+
+  /** Gate channel attention before it can bias passage through the Numogram. */
+  public decideEncounter(input: SubstrateEncounterInput): { disposition: EncounterDisposition; reason: string } {
+    const vector = input.attentionVector;
+    const total = Array.isArray(vector) ? vector.reduce((sum, value) => sum + value, 0) : 0;
+    const valid = Array.isArray(vector) && vector.length === 10
+      && vector.every(value => Number.isFinite(value) && value >= 0 && value <= 1)
+      && total > 0.99 && total < 1.01;
+    if (!input.eventId || !/^[a-f0-9]{64}$/i.test(input.sourceDigest) || !valid)
+      return { disposition: 'REFUSE', reason: 'Encounter failed structural validation; no attention was applied.' };
+    const telemetry = this.getTelemetry();
+    if (telemetry.governorStatus === 'LOCKED_RECOVERY' || telemetry.antiLockIntegrity < 85)
+      return { disposition: 'DEFER', reason: 'Governor is in locked recovery; encounter retained pending recovery.' };
+    if (telemetry.deformationFieldTension >= 0.72)
+      return { disposition: 'DEFER', reason: 'Field tension exceeds the Governor attention threshold; encounter retained for later review.' };
+    return { disposition: 'ATTEND', reason: 'Encounter admitted to Numogram-weighted passage.' };
   }
 
   public auditSubstrateStep(
