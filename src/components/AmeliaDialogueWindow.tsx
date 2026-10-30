@@ -87,6 +87,16 @@ const readRelaySetting = (key: string): string => {
   }
 };
 
+const saveRelaySetting = (key: string, value: string): boolean => {
+  try {
+    if (value) localStorage.setItem(key, value);
+    else localStorage.removeItem(key);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export function AmeliaDialogueWindow({
   currentSnapshot,
   runtime,
@@ -121,18 +131,6 @@ export function AmeliaDialogueWindow({
   const [relayEndpoint, setRelayEndpoint] = useState(() => readRelaySetting('amelia_anthropic_relay_endpoint'));
   const [relayToken, setRelayToken] = useState(() => readRelaySetting('amelia_anthropic_relay_token'));
   const [relayError, setRelayError] = useState('');
-
-  // Keep relay configuration across screen changes and app restarts on this device.
-  useEffect(() => {
-    try {
-      if (relayEndpoint.trim()) localStorage.setItem('amelia_anthropic_relay_endpoint', relayEndpoint.trim());
-      else localStorage.removeItem('amelia_anthropic_relay_endpoint');
-      if (relayToken) localStorage.setItem('amelia_anthropic_relay_token', relayToken);
-      else localStorage.removeItem('amelia_anthropic_relay_token');
-    } catch (e) {
-      console.warn('Could not persist Anthropic relay settings in browser storage:', e);
-    }
-  }, [relayEndpoint, relayToken]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -457,7 +455,13 @@ export function AmeliaDialogueWindow({
             <input
               type="url"
               value={relayEndpoint}
-              onChange={e => setRelayEndpoint(e.target.value)}
+              onChange={e => {
+                const value = e.target.value;
+                setRelayEndpoint(value);
+                setRelayError(saveRelaySetting('amelia_anthropic_relay_endpoint', value)
+                  ? ''
+                  : 'Could not save relay settings in this app’s storage.');
+              }}
               placeholder="https://your-private-relay.example/api/amelia-language"
               className="mt-1 w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100"
             />
@@ -467,14 +471,20 @@ export function AmeliaDialogueWindow({
             <input
               type="password"
               value={relayToken}
-              onChange={e => setRelayToken(e.target.value)}
+              onChange={e => {
+                const value = e.target.value;
+                setRelayToken(value);
+                setRelayError(saveRelaySetting('amelia_anthropic_relay_token', value)
+                  ? ''
+                  : 'Could not save relay settings in this app’s storage.');
+              }}
               autoComplete="off"
               placeholder="Issued by your private relay host"
               className="mt-1 w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2 text-xs text-stone-100"
             />
           </label>
           <p className="text-[10px] text-stone-500">
-            The Anthropic API key stays on the relay host. This session sends your prompt and Amelia’s current substrate readout to Anthropic for language rendering only; substrate state and actions remain local. The relay endpoint and access token are saved in this device’s browser storage and are removed if app data is cleared.
+            Relay endpoint and token save to this device immediately as you type. The Anthropic API key stays on the relay host; Amelia’s substrate state and actions remain local. Clearing app data removes these settings.
           </p>
           {relayError && <p className="text-[10px] text-rose-300">{relayError}</p>}
         </div>
