@@ -37,6 +37,60 @@ export interface RelayTrace {
 }
 
 export class AmeliaProcessRelay {
+  /** Report Amelia's resulting state without echoing or interpreting incoming symbols. */
+  static expressEncounter(
+    before: SubstrateStepSnapshot,
+    after: SubstrateStepSnapshot,
+    runtime: AmeliaNumogramSubstrateRuntime
+  ): { text: string; traceDigest: string } {
+    const memory = runtime.getMemory();
+    const readout = memory.readMemoryBias();
+    const encounter = after.encounterDecisions?.at(-1);
+    const transition = after.lastTransition;
+    const changes = (Object.values(after.zones))
+      .map(zone => ({
+        id: zone.id,
+        name: zone.name,
+        delta: zone.activation - (before.zones[zone.id]?.activation ?? 0),
+        activation: zone.activation,
+      }))
+      .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
+      .slice(0, 3);
+    const trace = {
+      step: after.step,
+      route: transition ? [transition.from, transition.to] : null,
+      currentZone: runtime.getCurrentZone(),
+      changes,
+      disposition: encounter?.disposition ?? 'NONE',
+      applied: encounter?.applied ?? false,
+      memoryLength: memory.getEvents().length,
+      memoryHead: memory.exportHistoryDigest(),
+      dominantZone: readout.dominantDeformedZone,
+      hysteresis: readout.hysteresisTension,
+      governor: after.governor.governorStatus,
+    };
+    const movement = transition
+      ? 'Passage: zone ' + transition.from + ' → zone ' + transition.to + '.'
+      : 'Passage: no transition was recorded.';
+    const field = changes.map(zone =>
+      'zone ' + zone.id + ' (' + zone.name + ') ' +
+      (zone.delta >= 0 ? '+' : '') + zone.delta.toFixed(4) +
+      ' to ' + (zone.activation * 100).toFixed(1) + '%'
+    ).join('; ') || 'No leading zone activation changed above the recorded resolution.';
+    const governorLine = encounter
+      ? 'Governor ' + encounter.disposition + ' · ' + encounter.reason
+      : 'No channel decision was recorded for this step.';
+    const text = [
+      'Amelia · post-encounter state · step ' + after.step,
+      movement,
+      'Largest field changes: ' + field,
+      'PFM: ' + trace.memoryLength + ' events · dominant zone ' + trace.dominantZone +
+        ' · hysteresis ' + trace.hysteresis.toFixed(4) + ' · head ' + trace.memoryHead.slice(0, 12),
+      governorLine,
+    ].join('\\n');
+    return { text, traceDigest: canonicalSha256(JSON.stringify(trace)) };
+  }
+
   static generateResponse(
     prompt: string,
     snapshot: SubstrateStepSnapshot,
