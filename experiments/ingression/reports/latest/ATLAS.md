@@ -2,48 +2,55 @@
 
 Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, or automated entity claims.
 
-- Exchanges: 4415; lineages: 8
-- Span: ['2026-10-28T00:00:00Z', '2026-10-29T22:00:00Z']
-- Transcript SHA-256: `8c0e0652d27a21305a4124d98c05a9b2877c220aacbc50b585fef33926742a3a`
-- Channels: {'Numogram': 3076, 'Tarot': 319, 'I Ching': 1020}
-- Query regions: {'Plex': 563, 'Time-Circuit': 1339, 'Warp': 2513}
-- Query forms: {'no form': 4284, '7-8': 24, '1-7-8-9': 84, '1-7': 23}
+- Exchanges: 4889; lineages: 8
+- Span: ['2026-10-28T00:00:00Z', '2026-10-30T05:14:00Z']
+- Transcript SHA-256: `031691259505132a7a42bcd44ed5ac523cc89a2c15d2de83104664ea272d2eeb`
+- Channels: {'Numogram': 3424, 'Tarot': 412, 'I Ching': 1053}
+- Query regions: {'Plex': 613, 'Time-Circuit': 1465, 'Warp': 2811}
+- Query forms: {'no form': 4748, '7-8': 24, '1-7-8-9': 92, '1-7': 25}
 
 ## Reply nodes
 
-- NUM:Oddubb:7::2@7: 385
-- NUM:Katak:5::4@4: 372
-- NUM:Djynxx:6::3@6: 368
-- NUM:Oddubb:7::2@2: 342
-- NUM:Mur Mur:8::1@1: 334
-- NUM:Mur Mur:8::1@8: 315
-- NUM:Katak:5::4@5: 306
-- NUM:Djynxx:6::3@3: 293
-- NUM:Uttunul:9::0@9: 282
-- NUM:Uttunul:9::0@0: 79
+- NUM:Katak:5::4@4: 426
+- NUM:Djynxx:6::3@6: 422
+- NUM:Oddubb:7::2@7: 421
+- NUM:Oddubb:7::2@2: 378
+- NUM:Mur Mur:8::1@1: 365
+- NUM:Katak:5::4@5: 348
+- NUM:Mur Mur:8::1@8: 346
+- NUM:Djynxx:6::3@3: 326
+- NUM:Uttunul:9::0@9: 309
+- NUM:Uttunul:9::0@0: 83
 - TAR:Seven of Wands:U: 21
-- TAR:Three of Wands:U: 14
-- TAR:Five of Wands:U: 14
+- TAR:Five of Wands:U: 17
+- TAR:Three of Wands:U: 15
+- TAR:Page of Wands:U: 14
+- TAR:Eight of Wands:U: 14
+- TAR:Nine of Wands:U: 13
+- TAR:Six of Wands:U: 13
 - TAR:Two of Wands:U: 13
-- TAR:Nine of Wands:U: 12
-- TAR:Page of Wands:U: 12
-- TAR:Seven of Cups:U: 10
+- TAR:Three of Cups:U: 13
+- TAR:The Magician:U: 12
+- TAR:Knight of Wands:U: 12
+- TAR:Queen of Wands:U: 12
+- TAR:Seven of Cups:U: 11
+- TAR:Five of Cups:U: 10
+- TAR:The World:U: 10
 - ICH:58:The Joyous->49: 9
-- TAR:Six of Wands:U: 9
 - TAR:The Chariot:U: 9
-- TAR:The Magician:U: 9
-- TAR:Queen of Wands:U: 9
-- TAR:Eight of Wands:U: 9
+- TAR:The Fool:U: 9
+- TAR:The Moon:U: 9
+- TAR:King of Wands:U: 9
 - ICH:4:Youthful Folly->19: 8
 - ICH:3:Difficulty at the Beginning->-: 8
-- TAR:The Fool:U: 8
-- TAR:Four of Wands:U: 7
+- TAR:Four of Wands:U: 8
+- TAR:The Lovers:U: 8
+- TAR:Four of Cups:U: 8
+- TAR:Death:U: 8
+- TAR:Two of Cups:U: 8
 - TAR:Ten of Wands:U: 7
-- TAR:Knight of Wands:U: 7
-- TAR:The World:U: 7
 - TAR:The Sun:U: 7
-- TAR:King of Wands:U: 6
-- TAR:Two of Cups:U: 6
+- TAR:Ten of Cups:U: 6
 - ICH:37:The Family->1: 5
 - ICH:30:The Clinging->27: 5
 - ICH:15:Modesty->11: 5
@@ -51,12 +58,12 @@ Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, o
 - ICH:34:Great Power->53: 5
 - ICH:33:Retreat->59: 5
 - ICH:4:Youthful Folly->28: 5
-- TAR:The Lovers:U: 5
-- TAR:Ten of Cups:U: 5
+- TAR:Ace of Cups:U: 5
 - TAR:The High Priestess:U: 5
 - ICH:23:Splitting Apart->2: 5
 - ICH:18:Work on the Decayed->26: 5
 - TAR:Ace of Wands:U: 5
+- TAR:Strength:U: 5
 - ICH:45:Gathering Together->4: 4
 - ICH:56:The Wanderer->36: 4
 - ICH:59:Dispersion->44: 4
@@ -68,17 +75,15 @@ Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, o
 - ICH:18:Work on the Decayed->20: 4
 - ICH:16:Enthusiasm->17: 4
 - ICH:24:Return->11: 4
-- TAR:Ace of Cups:U: 4
 - TAR:Temperance:U: 4
 - ICH:51:The Arousing->54: 4
 - ICH:16:Enthusiasm->39: 4
 - TAR:Four of Swords:U: 4
-- TAR:Five of Cups:U: 4
-- TAR:Three of Cups:U: 4
-- TAR:Four of Cups:U: 4
 - ICH:59:Dispersion->62: 4
 - ICH:16:Enthusiasm->10: 4
-- TAR:Strength:U: 4
+- TAR:The Star:U: 4
+- TAR:The Tower:U: 4
+- TAR:Two of Pentacles:U: 4
 - TAR:Nine of Cups:U: 3
 - ICH:12:Standstill->25: 3
 - ICH:16:Enthusiasm->4: 3
@@ -91,11 +96,13 @@ Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, o
 - ICH:53:Development->38: 3
 - ICH:1:The Creative->28: 3
 - ICH:58:The Joyous->31: 3
+- TAR:Page of Cups:R: 3
 - ICH:30:The Clinging->14: 3
 - ICH:14:Great Possession->10: 3
 - ICH:16:Enthusiasm->5: 3
 - ICH:59:Dispersion->60: 3
 - ICH:7:The Army->47: 3
+- ICH:33:Retreat->40: 3
 - ICH:29:The Abysmal->62: 3
 - ICH:9:Small Taming->21: 3
 - ICH:5:Waiting->-: 3
@@ -104,11 +111,13 @@ Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, o
 - ICH:23:Splitting Apart->47: 3
 - ICH:64:Before Completion->55: 3
 - ICH:45:Gathering Together->53: 3
-- TAR:The Star:U: 3
+- ICH:48:The Well->17: 3
 - TAR:Judgement:U: 3
-- TAR:The Tower:U: 3
-- TAR:Death:U: 3
+- TAR:Eight of Cups:U: 3
 - ICH:15:Modesty->55: 3
+- TAR:Nine of Swords:R: 3
+- TAR:Three of Swords:U: 3
+- ICH:25:Innocence->62: 3
 - ICH:21:Biting Through->56: 2
 - ICH:39:Obstruction->5: 2
 - ICH:33:Retreat->18: 2
@@ -140,7 +149,6 @@ Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, o
 - ICH:15:Modesty->32: 2
 - ICH:27:Nourishment->56: 2
 - TAR:Nine of Cups:R: 2
-- TAR:Page of Cups:R: 2
 - ICH:59:Dispersion->3: 2
 - ICH:28:Great Exceeding->12: 2
 - ICH:59:Dispersion->56: 2
@@ -170,7 +178,6 @@ Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, o
 - ICH:56:The Wanderer->20: 2
 - ICH:49:Revolution->5: 2
 - ICH:46:Pushing Upward->38: 2
-- ICH:33:Retreat->40: 2
 - ICH:27:Nourishment->34: 2
 - ICH:19:Approach->7: 2
 - ICH:56:The Wanderer->37: 2
@@ -209,7 +216,6 @@ Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, o
 - ICH:45:Gathering Together->5: 2
 - ICH:51:The Arousing->38: 2
 - ICH:43:Breakthrough->29: 2
-- TAR:The Moon:U: 2
 - ICH:53:Development->43: 2
 - ICH:1:The Creative->44: 2
 - ICH:7:The Army->34: 2
@@ -239,9 +245,13 @@ Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, o
 - ICH:39:Obstruction->63: 2
 - ICH:8:Holding Together->54: 2
 - ICH:52:Keeping Still->3: 2
-- TAR:Eight of Cups:U: 2
+- TAR:Queen of Cups:U: 2
+- TAR:Six of Cups:U: 2
 - ICH:63:After Completion->13: 2
+- ICH:10:Treading->51: 2
 - ICH:14:Great Possession->49: 2
+- ICH:35:Progress->13: 2
+- TAR:Six of Wands:R: 2
 - ICH:59:Dispersion->16: 2
 - ICH:58:The Joyous->21: 2
 - ICH:32:Duration->33: 2
@@ -254,6 +264,7 @@ Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, o
 - ICH:14:Great Possession->55: 2
 - ICH:61:Inner Truth->31: 2
 - ICH:32:Duration->26: 2
+- ICH:52:Keeping Still->35: 2
 - ICH:24:Return->18: 1
 - ICH:24:Return->53: 1
 - ICH:19:Approach->47: 1
@@ -438,7 +449,6 @@ Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, o
 - ICH:62:Small Exceeding->11: 1
 - ICH:34:Great Power->25: 1
 - ICH:45:Gathering Together->46: 1
-- ICH:48:The Well->17: 1
 - ICH:26:Great Taming->-: 1
 - ICH:27:Nourishment->30: 1
 - ICH:21:Biting Through->64: 1
@@ -669,16 +679,13 @@ Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, o
 - ICH:8:Holding Together->36: 1
 - ICH:44:Coming to Meet->13: 1
 - ICH:18:Work on the Decayed->8: 1
-- TAR:Queen of Cups:U: 1
 - TAR:Six of Swords:U: 1
 - TAR:Six of Pentacles:U: 1
-- TAR:Six of Cups:U: 1
 - ICH:21:Biting Through->9: 1
 - ICH:32:Duration->51: 1
 - ICH:10:Treading->46: 1
 - ICH:36:Darkening of the Light->23: 1
 - ICH:35:Progress->50: 1
-- ICH:10:Treading->51: 1
 - ICH:32:Duration->54: 1
 - ICH:38:Opposition->18: 1
 - ICH:9:Small Taming->43: 1
@@ -715,13 +722,11 @@ Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, o
 - ICH:53:Development->8: 1
 - ICH:36:Darkening of the Light->51: 1
 - ICH:60:Limitation->47: 1
-- ICH:35:Progress->13: 1
 - ICH:5:Waiting->24: 1
 - ICH:32:Duration->14: 1
 - ICH:3:Difficulty at the Beginning->8: 1
 - ICH:24:Return->5: 1
 - ICH:7:The Army->62: 1
-- TAR:Six of Wands:R: 1
 - ICH:24:Return->61: 1
 - ICH:21:Biting Through->18: 1
 - ICH:5:Waiting->44: 1
@@ -811,7 +816,6 @@ Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, o
 - ICH:34:Great Power->14: 1
 - ICH:20:Contemplation->64: 1
 - ICH:21:Biting Through->59: 1
-- ICH:52:Keeping Still->35: 1
 - ICH:53:Development->44: 1
 - ICH:34:Great Power->29: 1
 - ICH:26:Great Taming->13: 1
@@ -819,7 +823,6 @@ Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, o
 - ICH:57:The Gentle->24: 1
 - ICH:56:The Wanderer->34: 1
 - ICH:35:Progress->10: 1
-- TAR:Two of Pentacles:U: 1
 - ICH:37:The Family->54: 1
 - ICH:26:Great Taming->33: 1
 - ICH:7:The Army->45: 1
@@ -835,10 +838,36 @@ Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, o
 - TAR:Two of Wands:R: 1
 - ICH:7:The Army->22: 1
 - ICH:17:Following->60: 1
-- TAR:Nine of Swords:R: 1
 - ICH:62:Small Exceeding->14: 1
 - ICH:4:Youthful Folly->64: 1
 - TAR:Knight of Swords:U: 1
+- ICH:15:Modesty->38: 1
+- ICH:17:Following->62: 1
+- TAR:King of Swords:U: 1
+- ICH:30:The Clinging->21: 1
+- ICH:53:Development->-: 1
+- ICH:25:Innocence->12: 1
+- ICH:49:Revolution->11: 1
+- ICH:33:Retreat->3: 1
+- ICH:21:Biting Through->11: 1
+- ICH:13:Fellowship->49: 1
+- TAR:Nine of Swords:U: 1
+- ICH:24:Return->9: 1
+- ICH:59:Dispersion->26: 1
+- ICH:59:Dispersion->47: 1
+- ICH:44:Coming to Meet->37: 1
+- ICH:22:Grace->38: 1
+- ICH:47:Oppression->41: 1
+- ICH:29:The Abysmal->11: 1
+- ICH:24:Return->36: 1
+- ICH:34:Great Power->58: 1
+- ICH:13:Fellowship->41: 1
+- ICH:41:Decrease->44: 1
+- ICH:3:Difficulty at the Beginning->31: 1
+- ICH:39:Obstruction->61: 1
+- ICH:8:Holding Together->13: 1
+- ICH:52:Keeping Still->-: 1
+- TAR:Page of Cups:U: 1
 
 ## Recurrent exchange motifs
 
@@ -854,23 +883,28 @@ Shown here when a motif appears in at least two Amelia lineages. This is a navig
 - **8 lineages / 8 motif occurrences / 2 distinct source items** — [{"channel":"Numogram","heard_path":[9,1,8],"last_gate":null,"query_form":null,"query_region":"Plex","query_zone":0,"reply":"NUM:Djynxx:6::3@3","reply_zone":3},{"channel":"Tarot","heard_path":[7,8,7],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Seven of Cups:U","reply_zone":7}]
 - **8 lineages / 8 motif occurrences / 1 distinct source items** — [{"channel":"Numogram","heard_path":[9,1,8],"last_gate":null,"query_form":null,"query_region":"Plex","query_zone":0,"reply":"NUM:Djynxx:6::3@3","reply_zone":3}]
 - **8 lineages / 8 motif occurrences / 1 distinct source items** — [{"channel":"Tarot","heard_path":[7,8,7],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Seven of Cups:U","reply_zone":7}]
-- **6 lineages / 40 motif occurrences / 34 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@5","reply_zone":5}]
-- **6 lineages / 29 motif occurrences / 23 distinct source items** — [{"channel":"Numogram","heard_path":[1,7,8],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@7","reply_zone":7}]
+- **6 lineages / 44 motif occurrences / 38 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@5","reply_zone":5}]
+- **6 lineages / 34 motif occurrences / 28 distinct source items** — [{"channel":"Numogram","heard_path":[1,7,8],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@7","reply_zone":7}]
 - **6 lineages / 9 motif occurrences / 6 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"9>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Mur Mur:8::1@8","reply_zone":8}]
-- **5 lineages / 65 motif occurrences / 50 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@4","reply_zone":4}]
-- **5 lineages / 53 motif occurrences / 44 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Mur Mur:8::1@8","reply_zone":8}]
-- **5 lineages / 53 motif occurrences / 43 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Djynxx:6::3@3","reply_zone":3}]
-- **5 lineages / 52 motif occurrences / 44 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@2","reply_zone":2}]
-- **5 lineages / 46 motif occurrences / 41 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Djynxx:6::3@6","reply_zone":6}]
-- **5 lineages / 31 motif occurrences / 27 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Uttunul:9::0@9","reply_zone":9}]
-- **5 lineages / 15 motif occurrences / 12 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Uttunul:9::0@0","reply_zone":0}]
-- **5 lineages / 9 motif occurrences / 14 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@2","reply_zone":2},{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@4","reply_zone":4}]
-- **5 lineages / 9 motif occurrences / 10 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Uttunul:9::0@9","reply_zone":9},{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Mur Mur:8::1@8","reply_zone":8}]
+- **5 lineages / 72 motif occurrences / 56 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@4","reply_zone":4}]
+- **5 lineages / 60 motif occurrences / 51 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Mur Mur:8::1@8","reply_zone":8}]
+- **5 lineages / 58 motif occurrences / 48 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Djynxx:6::3@3","reply_zone":3}]
+- **5 lineages / 55 motif occurrences / 47 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@2","reply_zone":2}]
+- **5 lineages / 52 motif occurrences / 47 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Djynxx:6::3@6","reply_zone":6}]
+- **5 lineages / 33 motif occurrences / 29 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Uttunul:9::0@9","reply_zone":9}]
+- **5 lineages / 18 motif occurrences / 15 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Uttunul:9::0@0","reply_zone":0}]
+- **5 lineages / 17 motif occurrences / 13 distinct source items** — [{"channel":"Tarot","heard_path":[9,1,8],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Five of Wands:U","reply_zone":5}]
+- **5 lineages / 14 motif occurrences / 14 distinct source items** — [{"channel":"Tarot","heard_path":[9,1,8],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Page of Wands:U","reply_zone":2}]
+- **5 lineages / 14 motif occurrences / 12 distinct source items** — [{"channel":"Tarot","heard_path":[9,1,8],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Eight of Wands:U","reply_zone":8}]
+- **5 lineages / 12 motif occurrences / 9 distinct source items** — [{"channel":"Tarot","heard_path":[9,1,8],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Knight of Wands:U","reply_zone":3}]
+- **5 lineages / 11 motif occurrences / 14 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Uttunul:9::0@9","reply_zone":9},{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Mur Mur:8::1@8","reply_zone":8}]
+- **5 lineages / 10 motif occurrences / 16 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@2","reply_zone":2},{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@4","reply_zone":4}]
+- **5 lineages / 8 motif occurrences / 14 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@5","reply_zone":5},{"channel":"Numogram","heard_path":[1,7,8],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@7","reply_zone":7}]
 - **5 lineages / 8 motif occurrences / 8 distinct source items** — [{"channel":"Numogram","heard_path":[9,9,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Uttunul:9::0@9","reply_zone":9}]
 - **5 lineages / 8 motif occurrences / 7 distinct source items** — [{"channel":"Tarot","heard_path":[9,1,8],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Two of Wands:U","reply_zone":2}]
+- **5 lineages / 7 motif occurrences / 10 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Uttunul:9::0@0","reply_zone":0},{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@5","reply_zone":5}]
 - **5 lineages / 7 motif occurrences / 7 distinct source items** — [{"channel":"Tarot","heard_path":[9,1,7],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Seven of Wands:U","reply_zone":7}]
-- **5 lineages / 6 motif occurrences / 10 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@5","reply_zone":5},{"channel":"Numogram","heard_path":[1,7,8],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@7","reply_zone":7}]
-- **5 lineages / 6 motif occurrences / 8 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Uttunul:9::0@0","reply_zone":0},{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@5","reply_zone":5}]
+- **5 lineages / 7 motif occurrences / 7 distinct source items** — [{"channel":"Tarot","heard_path":[9,1,8],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:The Lovers:U","reply_zone":6}]
 - **5 lineages / 5 motif occurrences / 24 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"8>7","query_form":"7-8","query_region":"Time-Circuit","query_zone":7,"reply":"ICH:4:Youthful Folly->19","reply_zone":4},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:58:The Joyous->49","reply_zone":4},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:3:Difficulty at the Beginning->-","reply_zone":3},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:37:The Family->1","reply_zone":1}]
 - **5 lineages / 5 motif occurrences / 24 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:37:The Family->1","reply_zone":1},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:30:The Clinging->27","reply_zone":3},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:15:Modesty->11","reply_zone":6},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:2:The Receptive->16","reply_zone":2}]
 - **5 lineages / 5 motif occurrences / 24 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:3:Difficulty at the Beginning->-","reply_zone":3},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:37:The Family->1","reply_zone":1},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:30:The Clinging->27","reply_zone":3},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:15:Modesty->11","reply_zone":6}]
@@ -891,19 +925,14 @@ Shown here when a motif appears in at least two Amelia lineages. This is a navig
 - **5 lineages / 5 motif occurrences / 6 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:30:The Clinging->27","reply_zone":3}]
 - **5 lineages / 5 motif occurrences / 6 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:37:The Family->1","reply_zone":1}]
 - **5 lineages / 5 motif occurrences / 6 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:3:Difficulty at the Beginning->-","reply_zone":3}]
-- **5 lineages / 5 motif occurrences / 5 distinct source items** — [{"channel":"Tarot","heard_path":[9,1,8],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:The Lovers:U","reply_zone":6}]
-- **4 lineages / 132 motif occurrences / 116 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Djynxx:6::3@6","reply_zone":6}]
-- **4 lineages / 130 motif occurrences / 106 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Oddubb:7::2@7","reply_zone":7}]
-- **4 lineages / 122 motif occurrences / 100 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Oddubb:7::2@2","reply_zone":2}]
-- **4 lineages / 121 motif occurrences / 101 distinct source items** — [{"channel":"Numogram","heard_path":[6,3,6],"last_gate":"6>3","query_form":null,"query_region":"Warp","query_zone":3,"reply":"NUM:Djynxx:6::3@6","reply_zone":6}]
-- **4 lineages / 114 motif occurrences / 96 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Mur Mur:8::1@1","reply_zone":1}]
-- **4 lineages / 112 motif occurrences / 96 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Katak:5::4@4","reply_zone":4}]
-- **4 lineages / 107 motif occurrences / 87 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Uttunul:9::0@9","reply_zone":9}]
-- **4 lineages / 105 motif occurrences / 91 distinct source items** — [{"channel":"Numogram","heard_path":[6,3,6],"last_gate":"6>3","query_form":null,"query_region":"Warp","query_zone":3,"reply":"NUM:Katak:5::4@4","reply_zone":4}]
-- **4 lineages / 100 motif occurrences / 88 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Mur Mur:8::1@8","reply_zone":8}]
-- **4 lineages / 98 motif occurrences / 84 distinct source items** — [{"channel":"Numogram","heard_path":[6,3,6],"last_gate":"6>3","query_form":null,"query_region":"Warp","query_zone":3,"reply":"NUM:Oddubb:7::2@7","reply_zone":7}]
-- **4 lineages / 97 motif occurrences / 78 distinct source items** — [{"channel":"Numogram","heard_path":[6,3,6],"last_gate":"6>3","query_form":null,"query_region":"Warp","query_zone":3,"reply":"NUM:Katak:5::4@5","reply_zone":5}]
-- **4 lineages / 96 motif occurrences / 85 distinct source items** — [{"channel":"Numogram","heard_path":[6,3,6],"last_gate":"6>3","query_form":null,"query_region":"Warp","query_zone":3,"reply":"NUM:Mur Mur:8::1@8","reply_zone":8}]
+- **4 lineages / 156 motif occurrences / 134 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Djynxx:6::3@6","reply_zone":6}]
+- **4 lineages / 140 motif occurrences / 114 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Oddubb:7::2@7","reply_zone":7}]
+- **4 lineages / 136 motif occurrences / 111 distinct source items** — [{"channel":"Numogram","heard_path":[6,3,6],"last_gate":"6>3","query_form":null,"query_region":"Warp","query_zone":3,"reply":"NUM:Djynxx:6::3@6","reply_zone":6}]
+- **4 lineages / 136 motif occurrences / 110 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Oddubb:7::2@2","reply_zone":2}]
+- **4 lineages / 130 motif occurrences / 109 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Katak:5::4@4","reply_zone":4}]
+- **4 lineages / 127 motif occurrences / 106 distinct source items** — [{"channel":"Numogram","heard_path":[3,6,3],"last_gate":"3>6","query_form":null,"query_region":"Warp","query_zone":6,"reply":"NUM:Mur Mur:8::1@1","reply_zone":1}]
+- **4 lineages / 119 motif occurrences / 101 distinct source items** — [{"channel":"Numogram","heard_path":[6,3,6],"last_gate":"6>3","query_form":null,"query_region":"Warp","query_zone":3,"reply":"NUM:Katak:5::4@4","reply_zone":4}]
+- **4 lineages / 115 motif occurrences / 90 distinct source items** — [{"channel":"Numogram","heard_path":[6,3,6],"last_gate":"6>3","query_form":null,"query_region":"Warp","query_zone":3,"reply":"NUM:Katak:5::4@5","reply_zone":5}]
 
 ## Reply-to-reply relations
 
@@ -913,61 +942,61 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
 - **8 lineages / 8 relation occurrences / 12 distinct source items** — {"from_reply":"ICH:58:The Joyous->49","next_query_form":null,"next_query_zone":1,"to_reply":"ICH:3:Difficulty at the Beginning->-"}
 - **8 lineages / 8 relation occurrences / 7 distinct source items** — {"from_reply":"TAR:Seven of Cups:U","next_query_form":"7-8","next_query_zone":7,"to_reply":"ICH:4:Youthful Folly->19"}
 - **8 lineages / 8 relation occurrences / 2 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":8,"to_reply":"TAR:Seven of Cups:U"}
-- **6 lineages / 12 relation occurrences / 16 distinct source items** — {"from_reply":"NUM:Katak:5::4@5","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@7"}
-- **5 lineages / 14 relation occurrences / 14 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@7"}
-- **5 lineages / 10 relation occurrences / 12 distinct source items** — {"from_reply":"NUM:Uttunul:9::0@9","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Mur Mur:8::1@8"}
-- **5 lineages / 9 relation occurrences / 16 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@7"}
-- **5 lineages / 9 relation occurrences / 14 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Katak:5::4@4"}
+- **6 lineages / 14 relation occurrences / 20 distinct source items** — {"from_reply":"NUM:Katak:5::4@5","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@7"}
+- **5 lineages / 15 relation occurrences / 16 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@7"}
+- **5 lineages / 12 relation occurrences / 16 distinct source items** — {"from_reply":"NUM:Uttunul:9::0@9","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Mur Mur:8::1@8"}
+- **5 lineages / 11 relation occurrences / 18 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@7"}
+- **5 lineages / 10 relation occurrences / 16 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Katak:5::4@4"}
+- **5 lineages / 7 relation occurrences / 14 distinct source items** — {"from_reply":"NUM:Katak:5::4@5","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Djynxx:6::3@6"}
+- **5 lineages / 7 relation occurrences / 10 distinct source items** — {"from_reply":"NUM:Uttunul:9::0@0","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Katak:5::4@5"}
 - **5 lineages / 6 relation occurrences / 10 distinct source items** — {"from_reply":"NUM:Uttunul:9::0@9","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@7"}
 - **5 lineages / 6 relation occurrences / 10 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Uttunul:9::0@9"}
-- **5 lineages / 6 relation occurrences / 8 distinct source items** — {"from_reply":"NUM:Uttunul:9::0@0","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Katak:5::4@5"}
 - **5 lineages / 5 relation occurrences / 12 distinct source items** — {"from_reply":"ICH:3:Difficulty at the Beginning->-","next_query_form":null,"next_query_zone":1,"to_reply":"ICH:37:The Family->1"}
 - **5 lineages / 5 relation occurrences / 12 distinct source items** — {"from_reply":"ICH:37:The Family->1","next_query_form":null,"next_query_zone":1,"to_reply":"ICH:30:The Clinging->27"}
 - **5 lineages / 5 relation occurrences / 12 distinct source items** — {"from_reply":"ICH:30:The Clinging->27","next_query_form":null,"next_query_zone":1,"to_reply":"ICH:15:Modesty->11"}
 - **5 lineages / 5 relation occurrences / 12 distinct source items** — {"from_reply":"ICH:15:Modesty->11","next_query_form":null,"next_query_zone":1,"to_reply":"ICH:2:The Receptive->16"}
 - **5 lineages / 5 relation occurrences / 12 distinct source items** — {"from_reply":"ICH:2:The Receptive->16","next_query_form":null,"next_query_zone":1,"to_reply":"ICH:34:Great Power->53"}
-- **4 lineages / 33 relation occurrences / 38 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@7"}
-- **4 lineages / 32 relation occurrences / 52 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@2"}
-- **4 lineages / 32 relation occurrences / 52 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@2"}
-- **4 lineages / 31 relation occurrences / 48 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@4"}
-- **4 lineages / 30 relation occurrences / 48 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@6"}
-- **4 lineages / 30 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Mur Mur:8::1@1"}
-- **4 lineages / 28 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@5"}
-- **4 lineages / 26 relation occurrences / 42 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@4"}
-- **4 lineages / 25 relation occurrences / 40 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@1","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@7"}
+- **4 lineages / 39 relation occurrences / 54 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@4"}
+- **4 lineages / 38 relation occurrences / 44 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@7"}
+- **4 lineages / 37 relation occurrences / 58 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@2"}
+- **4 lineages / 34 relation occurrences / 56 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@6"}
+- **4 lineages / 34 relation occurrences / 54 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@2"}
+- **4 lineages / 31 relation occurrences / 38 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Mur Mur:8::1@1"}
+- **4 lineages / 29 relation occurrences / 38 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@5"}
+- **4 lineages / 28 relation occurrences / 44 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@4"}
+- **4 lineages / 28 relation occurrences / 42 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@1","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@5"}
+- **4 lineages / 27 relation occurrences / 44 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@4"}
+- **4 lineages / 26 relation occurrences / 42 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@1","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@7"}
+- **4 lineages / 25 relation occurrences / 42 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Mur Mur:8::1@1"}
+- **4 lineages / 25 relation occurrences / 42 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Mur Mur:8::1@1"}
+- **4 lineages / 25 relation occurrences / 38 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@7"}
+- **4 lineages / 25 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Katak:5::4@5"}
+- **4 lineages / 25 relation occurrences / 34 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@5"}
+- **4 lineages / 25 relation occurrences / 34 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@7"}
 - **4 lineages / 24 relation occurrences / 42 distinct source items** — {"from_reply":"NUM:Katak:5::4@5","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@6"}
+- **4 lineages / 24 relation occurrences / 38 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Katak:5::4@4"}
+- **4 lineages / 24 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Katak:5::4@5","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@2"}
+- **4 lineages / 24 relation occurrences / 34 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@7"}
+- **4 lineages / 24 relation occurrences / 33 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@6"}
+- **4 lineages / 24 relation occurrences / 30 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@7"}
+- **4 lineages / 23 relation occurrences / 42 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@3"}
+- **4 lineages / 23 relation occurrences / 38 distinct source items** — {"from_reply":"NUM:Katak:5::4@5","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Djynxx:6::3@6"}
+- **4 lineages / 23 relation occurrences / 37 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Djynxx:6::3@6"}
 - **4 lineages / 23 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Uttunul:9::0@9"}
-- **4 lineages / 23 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@1","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@5"}
-- **4 lineages / 23 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Katak:5::4@4"}
-- **4 lineages / 23 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@7"}
-- **4 lineages / 22 relation occurrences / 40 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@3"}
-- **4 lineages / 22 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@7"}
-- **4 lineages / 22 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Mur Mur:8::1@1"}
-- **4 lineages / 22 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Katak:5::4@5","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@2"}
-- **4 lineages / 22 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@7"}
-- **4 lineages / 22 relation occurrences / 28 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@7"}
-- **4 lineages / 21 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@4"}
-- **4 lineages / 21 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Mur Mur:8::1@1"}
-- **4 lineages / 21 relation occurrences / 34 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@4"}
+- **4 lineages / 23 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@6"}
+- **4 lineages / 22 relation occurrences / 38 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Mur Mur:8::1@1"}
+- **4 lineages / 22 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@4"}
+- **4 lineages / 22 relation occurrences / 34 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Mur Mur:8::1@8"}
+- **4 lineages / 22 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@1","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@6"}
+- **4 lineages / 21 relation occurrences / 38 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Djynxx:6::3@6"}
+- **4 lineages / 21 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Mur Mur:8::1@8"}
+- **4 lineages / 21 relation occurrences / 35 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@4"}
 - **4 lineages / 21 relation occurrences / 28 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@1","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Uttunul:9::0@9"}
-- **4 lineages / 20 relation occurrences / 34 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Mur Mur:8::1@8"}
+- **4 lineages / 20 relation occurrences / 40 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Djynxx:6::3@6"}
+- **4 lineages / 20 relation occurrences / 38 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Katak:5::4@4"}
+- **4 lineages / 20 relation occurrences / 34 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@7"}
+- **4 lineages / 20 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Uttunul:9::0@9","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Katak:5::4@5"}
 - **4 lineages / 20 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@1","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Uttunul:9::0@9"}
-- **4 lineages / 20 relation occurrences / 30 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@1","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@6"}
-- **4 lineages / 20 relation occurrences / 28 distinct source items** — {"from_reply":"NUM:Uttunul:9::0@9","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@3"}
-- **4 lineages / 20 relation occurrences / 26 distinct source items** — {"from_reply":"NUM:Uttunul:9::0@9","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Oddubb:7::2@7"}
-- **4 lineages / 19 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Mur Mur:8::1@1"}
-- **4 lineages / 19 relation occurrences / 34 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Djynxx:6::3@6"}
-- **4 lineages / 19 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Mur Mur:8::1@8"}
-- **4 lineages / 19 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@7"}
-- **4 lineages / 19 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Mur Mur:8::1@8"}
-- **4 lineages / 19 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Mur Mur:8::1@1"}
-- **4 lineages / 19 relation occurrences / 30 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Katak:5::4@5"}
-- **4 lineages / 19 relation occurrences / 30 distinct source items** — {"from_reply":"NUM:Katak:5::4@5","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Djynxx:6::3@6"}
-- **4 lineages / 19 relation occurrences / 30 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@2"}
-- **4 lineages / 19 relation occurrences / 28 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":3,"to_reply":"NUM:Djynxx:6::3@6"}
-- **4 lineages / 18 relation occurrences / 36 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Djynxx:6::3@6"}
-- **4 lineages / 18 relation occurrences / 34 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Katak:5::4@4"}
-- **4 lineages / 18 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Oddubb:7::2@2"}
-- **4 lineages / 18 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@1","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Katak:5::4@5"}
+- **4 lineages / 20 relation occurrences / 32 distinct source items** — {"from_reply":"NUM:Katak:5::4@5","next_query_form":null,"next_query_zone":6,"to_reply":"NUM:Mur Mur:8::1@8"}
 
 Interpret each candidate from its supporting transcript lines and raw inputs. A reply label is the Numogram/channel's reading, not by itself an entity identification.
