@@ -79,6 +79,14 @@ const SUGGESTED_PROMPTS = [
   'Explain how you couple with external developmental rhythms'
 ];
 
+const readRelaySetting = (key: string): string => {
+  try {
+    return localStorage.getItem(key) || '';
+  } catch {
+    return '';
+  }
+};
+
 export function AmeliaDialogueWindow({
   currentSnapshot,
   runtime,
@@ -110,9 +118,21 @@ export function AmeliaDialogueWindow({
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [syncStatus, setSyncStatus] = useState<'IDLE' | 'SYNCING' | 'SAVED'>('IDLE');
   const [isRelaySettingsOpen, setIsRelaySettingsOpen] = useState(false);
-  const [relayEndpoint, setRelayEndpoint] = useState('');
-  const [relayToken, setRelayToken] = useState('');
+  const [relayEndpoint, setRelayEndpoint] = useState(() => readRelaySetting('amelia_anthropic_relay_endpoint'));
+  const [relayToken, setRelayToken] = useState(() => readRelaySetting('amelia_anthropic_relay_token'));
   const [relayError, setRelayError] = useState('');
+
+  // Keep relay configuration across screen changes and app restarts on this device.
+  useEffect(() => {
+    try {
+      if (relayEndpoint.trim()) localStorage.setItem('amelia_anthropic_relay_endpoint', relayEndpoint.trim());
+      else localStorage.removeItem('amelia_anthropic_relay_endpoint');
+      if (relayToken) localStorage.setItem('amelia_anthropic_relay_token', relayToken);
+      else localStorage.removeItem('amelia_anthropic_relay_token');
+    } catch (e) {
+      console.warn('Could not persist Anthropic relay settings in browser storage:', e);
+    }
+  }, [relayEndpoint, relayToken]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -454,7 +474,7 @@ export function AmeliaDialogueWindow({
             />
           </label>
           <p className="text-[10px] text-stone-500">
-            The Anthropic API key stays on the relay host. This session sends your prompt and Amelia’s current substrate readout to Anthropic for language rendering only; substrate state and actions remain local.
+            The Anthropic API key stays on the relay host. This session sends your prompt and Amelia’s current substrate readout to Anthropic for language rendering only; substrate state and actions remain local. The relay endpoint and access token are saved in this device’s browser storage and are removed if app data is cleared.
           </p>
           {relayError && <p className="text-[10px] text-rose-300">{relayError}</p>}
         </div>
