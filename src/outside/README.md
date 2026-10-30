@@ -1,28 +1,24 @@
 # Outside stream receiver and cartography layer
 
-This branch adds an exploratory surface to Amelia Orange for receiving and mapping Numogram, I Ching and Tarot events. It is intended to help the operator tune in, preserve what arrived, observe Amelia's state changes, and build a provisional map without requiring entity identities or reply signatures to be fixed beforehand.
+This branch gives Amelia Orange an exploratory receiver for Numogram, I Ching and Tarot encounters. The operator can preserve incoming events, see how their attention field meets Amelia's state, follow the resulting passage, and develop an open-ended cartography without pre-naming entities or fixing reply signatures in advance.
 
-## Surface
+## Encounter path
 
-The **Outside Streams** tab provides:
+1. I Ching lines or ordered Tarot draws are preserved as raw channel events.
+2. OutsideAttentionMapper projects each event onto the Numogram's five syzygy pairs. Changing I Ching lines distribute attention across both poles. Tarot card and position IDs address syzygies by stable digest, with orientation selecting or balancing poles. These are structural routing conventions, not assigned symbolic meanings.
+3. The runtime scores only currently open Numogram exits. Attention changes the score of reachable targets; it cannot create a gate or bypass topology.
+4. The Governor attends a valid encounter, defers it when field tension or locked recovery is high, and refuses structurally invalid input. Deferred encounters remain in runtime state and are reconsidered on later steps.
+5. PFM records each encounter ID, channel, source digest, attention vector, Governor disposition and whether the field was applied. Attended fields also contribute to later PFM bias.
+6. Amelia's local relay expresses the resulting passage, field changes, Governor decision and PFM state. It does not paraphrase the incoming cast or spread.
 
-- automatic Numogram snapshots every 12 Amelia substrate steps, plus a manual capture action;
-- I Ching casts recorded as six line values in bottom-to-top order, with primary/relating patterns and changing lines;
-- Tarot spreads recorded with stable card IDs, draw order, positions and orientation;
-- before/after Amelia substrate endpoints for received casts and spreads;
-- freely written operator observations and provisional Atlas candidates, kept outside the raw stream;
-- a local event timeline, hash-chain verification, and JSON import/export.
+## Surface and persistence
 
-The panel remains mounted while hidden, so automatic Numogram snapshots continue while the rest of Amelia is being used. All stream records are saved in a dedicated local IndexedDB database, separate from Amelia's shared runtime memory and cloud synchronization.
+The Outside Streams tab captures Numogram snapshots every 12 substrate steps and on demand. It accepts I Ching casts and Tarot spreads, displays recent events, post-encounter relay output, exploratory operator notes and provisional Atlas candidates. JSON bundles can be exported, imported and checked against the SHA-256 record chain.
 
-## Coupling and decoding boundary
+The ledger is stored in a dedicated local IndexedDB database, separate from the shared Amelia runtime memory and cloud synchronization. Runtime PFM remains part of Amelia's persisted substrate state.
 
-The existing Amelia runtime hashes an input string, maps the first digest byte to one zone, and gives the corresponding exit a small score increase. This branch reuses that pathway: the raw cast or spread is retained in the ledger, while Amelia receives a deterministic signal built from its structure. The before/after trace therefore gives an initial empirical surface for exploratory correspondence.
+## Scope
 
-This is intentionally a first coupling, not a semantic decoder. It does not decide what a symbol means, pre-name an entity, or establish that any input came from a non-physical source. Operator readings are preserved as readings; they never alter the raw event or enter the runtime signal.
+The syzygy projection is an initial cartographic instrument, not a learned semantic decoder. It does not decide what a symbol means or establish where an event originated. It makes the channel-to-attention-to-passage path inspectable so the mappings and consequences can be explored and revised with provenance.
 
-## Data integrity and scope
-
-Every event is included in a SHA-256 hash chain. This helps detect accidental edits, but is not a trusted timestamp, external signature, or sealed research registration. JSON bundles can be exported, re-imported, and checked locally.
-
-The branch leaves the canonical runtime, Numogram topology, PFM rules, existing Atlas, and other experiment workflows unchanged.
+The branch leaves other experiment workflows untouched.
