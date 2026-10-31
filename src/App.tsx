@@ -24,6 +24,7 @@ import {
   Orbit,
   MessageSquare,
   Binary,
+  Eye,
   X
 } from 'lucide-react';
 import { AmeliaNumogramSubstrateRuntime } from './substrate/ameliaNumogramSubstrateRuntime';
@@ -49,6 +50,7 @@ import { ExternalRhythmHarmonizer } from './ai/morphogenetic/ExternalRhythmHarmo
 import { NumogramZoneMap } from './components/NumogramZoneMap';
 import { ConstitutiveDeformationVisualizer } from './components/ConstitutiveDeformationVisualizer';
 import { DevelopmentalAtlasView } from './components/DevelopmentalAtlasView';
+import { WatchtowerEncounterAtlas } from './components/WatchtowerEncounterAtlas';
 import { GovernorInvariantsDashboard } from './components/GovernorInvariantsDashboard';
 import { CanalizationAssaySuite } from './components/CanalizationAssaySuite';
 import { Paper6ReplicationCanary } from './components/Paper6ReplicationCanary';
@@ -93,7 +95,7 @@ export function App() {
   const [selectedZone, setSelectedZone] = useState<ZoneId>(9);
   const [isFloatingChatOpen, setIsFloatingChatOpen] = useState<boolean>(false);
   
-  type TabType = 'morphogenetic' | 'dialogue' | 'thread3' | 'numogram' | 'atlas' | 'deformation' | 'canalization' | 'paper6' | 'midplex' | 'd288probe' | 'hyperstition' | 'benchmarks' | 'governor' | 'rhythms' | 'firebase' | 'audit';
+  type TabType = 'morphogenetic' | 'dialogue' | 'thread3' | 'numogram' | 'atlas' | 'watchtower' | 'deformation' | 'canalization' | 'paper6' | 'midplex' | 'd288probe' | 'hyperstition' | 'benchmarks' | 'governor' | 'rhythms' | 'firebase' | 'audit';
   const [activeTab, setActiveTab] = useState<TabType>('dialogue');
   const tabletLocalMode = import.meta.env.VITE_AMELIA_LOCAL_ONLY === '1';
   
@@ -626,6 +628,19 @@ export function App() {
           </button>
 
           <button
+            id="tab-watchtower"
+            onClick={() => setActiveTab('watchtower')}
+            className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-2.5 transition-all ${
+              activeTab === 'watchtower'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
+                : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/60'
+            }`}
+          >
+            <Eye className="w-4 h-4 text-amber-400" />
+            Watchtower Encounter Atlas
+          </button>
+
+          <button
             id="tab-deformation"
             onClick={() => setActiveTab('deformation')}
             className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-2.5 transition-all ${
@@ -866,6 +881,8 @@ export function App() {
           {activeTab === 'atlas' && (
             <DevelopmentalAtlasView snapshot={snapshot} />
           )}
+
+          {activeTab === 'watchtower' && <WatchtowerEncounterAtlas />}
 
           {/* TAB 3: CONSTITUTIVE DEFORMATION FIELD */}
           {activeTab === 'deformation' && (

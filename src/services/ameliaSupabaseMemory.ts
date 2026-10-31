@@ -4,7 +4,7 @@ const SUPABASE_URL = 'https://rcgmtdponfljpribggsq.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3v_kyheXh9ODr0qQl1cXdg_5kPbHQIm';
 const SESSION_KEY = 'amelia_supabase_session_v1';
 const OWNER_KEY = 'amelia_supabase_memory_owner_v1';
-const STORES: AmeliaMemoryStore[] = ['runtime', 'dialogue', 'processMemory', 'canalizationRuns', 'paper6Assays', 'snapshots'];
+const STORES: AmeliaMemoryStore[] = ['runtime', 'dialogue', 'processMemory', 'canalizationRuns', 'paper6Assays', 'snapshots', 'watchtowerEncounters'];
 
 export interface AmeliaCloudSession {
   access_token: string;

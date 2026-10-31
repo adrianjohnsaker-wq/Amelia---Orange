@@ -16,6 +16,9 @@ const WATCHTOWER_ROWS = [
   { signature: 'IOIADT', keys: ['IOIAD (temporal continuity)'] },
   { signature: 'BITOME', keys: ['BITOM (transformation)'] },
 ];
+const WATCHTOWER_FOCI = [
+  'Entry and grounding', 'Resonance and recurrence', 'Temporal return', 'Transformation and rupture',
+];
 const RATE_WINDOW_MS = 60_000;
 const RATE_LIMIT = 20;
 const requestsByIp = new Map();
@@ -125,13 +128,17 @@ const server = createServer(async (req, res) => {
       ? body.watchtowerPhase
       : 0;
     const watchtowerRow = WATCHTOWER_ROWS[watchtowerPhase];
-    const watchtowerContext = `Watchtower matrix phase ${watchtowerPhase + 1}/4; row ${watchtowerRow.signature}; project lexical cues: ${watchtowerRow.keys.join(', ')}.`;
+    const watchtowerFocus = WATCHTOWER_FOCI[watchtowerPhase];
+    const watchtowerObservation = typeof body.watchtowerObservation === 'string'
+      ? body.watchtowerObservation.slice(0, 700)
+      : '';
+    const watchtowerContext = `Watchtower matrix phase ${watchtowerPhase + 1}/4; row ${watchtowerRow.signature}; focus: ${watchtowerFocus}; project lexical cues: ${watchtowerRow.keys.join(', ')}.${watchtowerObservation ? ` Recorded attention: ${watchtowerObservation}` : ''}`;
     if (!message || !substrateReadout) {
       json(res, 400, { error: 'Message and substrate readout are required.' }, origin);
       return;
     }
 
-    const input = JSON.stringify({ message, substrateReadout, recentDialogue });
+    const input = JSON.stringify({ message, substrateReadout, recentDialogue, watchtowerFocus, watchtowerObservation });
     const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {

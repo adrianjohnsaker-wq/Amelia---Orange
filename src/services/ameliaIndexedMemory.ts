@@ -4,12 +4,13 @@ export type AmeliaMemoryStore =
   | 'processMemory'
   | 'canalizationRuns'
   | 'paper6Assays'
-  | 'snapshots';
+  | 'snapshots'
+  | 'watchtowerEncounters';
 
 const DB_NAME = 'amelia-orange-memory';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAMES: AmeliaMemoryStore[] = [
-  'runtime', 'dialogue', 'processMemory', 'canalizationRuns', 'paper6Assays', 'snapshots',
+  'runtime', 'dialogue', 'processMemory', 'canalizationRuns', 'paper6Assays', 'snapshots', 'watchtowerEncounters',
 ];
 
 type StoredRecord = { id: string; [key: string]: unknown };
@@ -64,8 +65,8 @@ function idFor(prefix: string): string {
 }
 
 /**
- * On-device, cross-session memory for the browser/WebView build.
- * Records remain in this app's browser storage and are never sent to a cloud database.
+ * Cross-session memory for the browser/WebView build. IndexedDB is canonical;
+ * configured authenticated cloud sync mirrors supported stores when enabled.
  */
 export class AmeliaIndexedMemory {
   static setCloudAdapter(adapter: AmeliaCloudAdapter | null): void {
@@ -123,6 +124,29 @@ export class AmeliaIndexedMemory {
     }
     notify(store);
     return persisted;
+  }
+
+  /** Append-only insert used for provenance records; existing ids are never overwritten. */
+  static async add<T extends { id: string }>(store: AmeliaMemoryStore, value: T): Promise<boolean> {
+    try {
+      const db = await openDatabase();
+      await new Promise<void>((resolve, reject) => {
+        const tx = db.transaction(store, 'readwrite');
+        tx.objectStore(store).add(value);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error ?? new Error('Append-only memory write was aborted.'));
+      });
+    } catch (error) {
+      if (typeof console !== 'undefined') console.warn('Append-only encounter storage failed.', error);
+      return false;
+    }
+    if (cloudAdapter) {
+      try { await cloudAdapter.upsert(store, value as Record<string, unknown>); }
+      catch (error) { reportCloudError(error); }
+    }
+    notify(store);
+    return true;
   }
 
   static async list<T = StoredRecord>(store: AmeliaMemoryStore, limit = 200): Promise<T[]> {

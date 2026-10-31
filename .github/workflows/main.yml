@@ -72,8 +72,8 @@ jobs:
                   applicationId 'org.amelia.orange'
                   minSdk 24
                   targetSdk 35
-                  versionCode 7
-                  versionName '0.1.6'
+                  versionCode 8
+                  versionName '0.1.7'
               }
               compileOptions {
                   sourceCompatibility JavaVersion.VERSION_17
@@ -195,7 +195,7 @@ jobs:
       - name: Upload tablet APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Orange-Tablet-APK-v0.1.6
+          name: Amelia-Orange-Tablet-APK-v0.1.7
           if-no-files-found: error
           retention-days: 30
           path: |

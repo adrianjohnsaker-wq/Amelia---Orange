@@ -3,6 +3,8 @@ export interface AmeliaLanguageRelayRequest {
   substrateReadout: string;
   recentDialogue: Array<{ role: 'user' | 'amelia'; text: string }>;
   watchtowerPhase?: number;
+  watchtowerFocus?: string;
+  watchtowerObservation?: string;
 }
 
 export interface AmeliaLanguageRelayReply {

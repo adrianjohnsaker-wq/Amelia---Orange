@@ -8,6 +8,7 @@
 import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
 import { AmeliaDialogueAction, AmeliaDialogueMessage, SubstrateStepSnapshot, ZoneId } from '../types/amelia';
 import { canonicalSha256 } from '../lib/sha256';
+import { WatchtowerContext } from './enochianWatchtower';
 
 export type RelayModule = 'NUMOGRAM' | 'PFM' | 'GOVERNOR' | 'FIELD' | 'METHOD' | 'REFLECTION';
 const MODULES: RelayModule[] = ['NUMOGRAM', 'PFM', 'GOVERNOR', 'FIELD', 'METHOD', 'REFLECTION'];
@@ -33,7 +34,15 @@ export interface RelayTrace {
   inputDigest: string;
   inputZone: number | null;
   historyContextCount: number;
+  watchtowerFocus?: { id: string; label: string; observed: string; selectedModules: RelayModule[] };
   traceDigest: string;
+}
+
+export interface WatchtowerAttentionReading {
+  context: WatchtowerContext;
+  observed: string;
+  priorRouteOccurrences: number;
+  previousEncounterIds: string[];
 }
 
 export class AmeliaProcessRelay {
@@ -41,7 +50,8 @@ export class AmeliaProcessRelay {
     prompt: string,
     snapshot: SubstrateStepSnapshot,
     recentMessages: AmeliaDialogueMessage[],
-    runtime: AmeliaNumogramSubstrateRuntime
+    runtime: AmeliaNumogramSubstrateRuntime,
+    attention?: WatchtowerAttentionReading
   ): { text: string; actions: AmeliaDialogueAction[]; trace: RelayTrace } {
     const memory = runtime.getMemory();
     const readout = memory.readMemoryBias();
@@ -57,7 +67,8 @@ export class AmeliaProcessRelay {
       const zoneEnergy = (snapshot.zones[zone]?.activation ?? 0) * 0.5;
       const remembered = (readout.biasVector[zone] ?? 0) * 5;
       const recency = ledger.slice(-6).filter(e => e.targetZone === zone).length * 0.025;
-      moduleScores[module] = Number((lexical + prior + zoneEnergy + remembered + recency).toFixed(5));
+      const apertureWeight = attention?.context.moduleWeights[module] ?? 0;
+      moduleScores[module] = Number((lexical + prior + zoneEnergy + remembered + recency + apertureWeight).toFixed(5));
     }
     const selectedModules = [...MODULES]
       .sort((a,b) => moduleScores[b] - moduleScores[a] || MODULES.indexOf(a) - MODULES.indexOf(b))
@@ -75,6 +86,12 @@ export class AmeliaProcessRelay {
       inputDigest,
       inputZone,
       historyContextCount: previousUserTurns.length,
+      watchtowerFocus: attention ? {
+        id: attention.context.focusId,
+        label: attention.context.focusLabel,
+        observed: attention.observed,
+        selectedModules,
+      } : undefined,
     };
     const trace: RelayTrace = { ...rawTrace,
       traceDigest: canonicalSha256(JSON.stringify(rawTrace)) };
@@ -106,6 +123,10 @@ export class AmeliaProcessRelay {
       ? 'Conversation context: ' + previousUserTurns.length +
         ' earlier user turns are available to the module selector; this is local dialogue context, not a substitute for PFM.'
       : 'This is the first user turn in the current local context.';
+    const attentionLine = attention
+      ? 'Watchtower aperture · ' + attention.context.focusLabel + ': ' + attention.observed +
+        (attention.priorRouteOccurrences ? ' Earlier matching passages: ' + attention.priorRouteOccurrences + '.' : ' No earlier matching passage is recorded.')
+      : '';
     const codeMatch = prompt.match(/\b\d{2,8}\b/);
     const codeLine = codeMatch
       ? ' Numeric input ' + codeMatch[0] +
@@ -120,6 +141,8 @@ export class AmeliaProcessRelay {
       '',
       statements[secondaryModule],
       '',
+      attentionLine,
+      '',
       continuation + codeLine,
       '',
       'Relay trace: modules ' + selectedModules.join(' + ') +
@@ -130,7 +153,8 @@ export class AmeliaProcessRelay {
     ].join('\n');
     const actions: AmeliaDialogueAction[] = [
       { id: 'live-step', label: 'Advance one Numogram transition', actionType: 'step' },
-      { id: 'open-numogram', label: 'Inspect Numogram Map', actionType: 'openTab', payload: 'numogram' }
+      { id: 'open-numogram', label: 'Inspect Numogram Map', actionType: 'openTab', payload: 'numogram' },
+      { id: 'open-watchtower-atlas', label: 'Open Encounter Atlas', actionType: 'openTab', payload: 'watchtower' }
     ];
     if (selectedModules.includes('PFM')) {
       actions.push({ id: 'consolidate', label: 'Consolidate PFM', actionType: 'consolidate' });

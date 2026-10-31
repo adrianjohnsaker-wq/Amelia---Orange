@@ -115,5 +115,10 @@ export function canonicalSha256(data: string | object): string {
   if (nodeCrypto && typeof nodeCrypto.createHash === 'function') {
     return nodeCrypto.createHash('sha256').update(serialized).digest('hex');
   }
-  return sha256Sync(serialized);
+  // The pure TypeScript implementation consumes a byte string. Encode the
+  // canonical JSON as UTF-8 so browser digests remain valid for non-ASCII text.
+  const utf8Binary = encodeURIComponent(serialized).replace(/%([0-9A-F]{2})/g, (_match, hex: string) =>
+    String.fromCharCode(parseInt(hex, 16))
+  );
+  return sha256Sync(utf8Binary);
 }

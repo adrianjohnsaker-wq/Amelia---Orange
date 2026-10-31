@@ -1,8 +1,8 @@
 /**
- * A small, deterministic lexical lens for the Anthropic language relay.
- * The four matrix rows are read in turn from the current substrate step.
- * They affect wording only; they do not alter Numogram transitions, memory,
- * Governor decisions, or the relay's generation parameters.
+ * A deterministic attentional aperture for dialogue exploration.
+ * The four matrix rows select an observation focus and modestly reweight local
+ * relay modules; they never alter Numogram transitions, PFM state, Governor
+ * decisions, or the relay's generation parameters. Glosses are project cues.
  */
 
 export const WATCHTOWER_MATRIX = [
@@ -31,12 +31,44 @@ export interface WatchtowerContext {
   rowSignature: string;
   keys: ReadonlyArray<{ token: string; gloss: string }>;
   characterEntropy: number;
+  focusId: 'entry' | 'resonance' | 'temporal' | 'transformation';
+  focusLabel: string;
+  focusDescription: string;
+  moduleWeights: Readonly<Record<string, number>>;
 }
+
+const ATTENTION_LENSES = [
+  {
+    id: 'entry' as const,
+    label: 'Entry and grounding',
+    description: 'Attend to the incoming signal, its mapped input zone, and the Numogram passage it enters.',
+    moduleWeights: { NUMOGRAM: 0.34, METHOD: 0.12 },
+  },
+  {
+    id: 'resonance' as const,
+    label: 'Resonance and recurrence',
+    description: 'Attend to earlier encounters with the same observed passage and their lineage references.',
+    moduleWeights: { PFM: 0.34, REFLECTION: 0.16 },
+  },
+  {
+    id: 'temporal' as const,
+    label: 'Temporal return',
+    description: 'Attend to step distance, sequence order, re-entry, and interruption across the trace.',
+    moduleWeights: { PFM: 0.24, NUMOGRAM: 0.18 },
+  },
+  {
+    id: 'transformation' as const,
+    label: 'Transformation and rupture',
+    description: 'Attend to changes in deformation, zone activation, memory, and Governor telemetry.',
+    moduleWeights: { FIELD: 0.28, GOVERNOR: 0.16 },
+  },
+] as const;
 
 /** Read a deterministic four-phase cycle from the current Numogram step. */
 export function getWatchtowerContext(step: number): WatchtowerContext {
   const phase = ((Math.floor(step) - 1) % WATCHTOWER_MATRIX.length + WATCHTOWER_MATRIX.length) % WATCHTOWER_MATRIX.length;
   const row = WATCHTOWER_MATRIX[phase];
+  const lens = ATTENTION_LENSES[phase];
   const rowSignature = row.join('').toUpperCase();
   const counts = new Map<string, number>();
   for (const character of row) counts.set(character, (counts.get(character) ?? 0) + 1);
@@ -53,6 +85,10 @@ export function getWatchtowerContext(step: number): WatchtowerContext {
       .filter(([token]) => rowSignature.includes(token))
       .map(([token, gloss]) => ({ token, gloss })),
     characterEntropy: Number(characterEntropy.toFixed(3)),
+    focusId: lens.id,
+    focusLabel: lens.label,
+    focusDescription: lens.description,
+    moduleWeights: lens.moduleWeights,
   };
 }
 

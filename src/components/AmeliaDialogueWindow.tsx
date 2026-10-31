@@ -36,6 +36,7 @@ import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubst
 import { AmeliaLocalMemoryService } from '../services/ameliaLocalMemory';
 import { requestAnthropicLanguage } from '../services/ameliaAnthropicLanguageRelay';
 import { getWatchtowerContext, measureTextShape } from '../services/enochianWatchtower';
+import { WatchtowerEncounterService } from '../services/WatchtowerEncounterService';
 
 interface AmeliaDialogueWindowProps {
   currentSnapshot: SubstrateStepSnapshot;
@@ -218,6 +219,8 @@ export function AmeliaDialogueWindow({
     if (!textToSend || isTyping) return;
 
     setInputPrompt('');
+    const beforeSnapshot = runtime.getSnapshots().at(-1) ?? currentSnapshot;
+    const pfmEventsBefore = runtime.getMemory().getEvents().length;
     // The Numogram substrate processes input and chooses the next state before language rendering.
     const inputSnapshot = onDialogueInput?.(textToSend) ?? currentSnapshot;
     const userMessage: AmeliaDialogueMessage = {
@@ -239,9 +242,17 @@ export function AmeliaDialogueWindow({
 
     setTimeout(async () => {
       // The local substrate relay alone selects the readout and action controls.
-      const response = AmeliaProcessRelay.generateResponse(textToSend, inputSnapshot, messages, runtime);
-      const watchtower = getWatchtowerContext(inputSnapshot.step);
+      const currentEvents = runtime.getMemory().getEvents();
+      const pfmEvents = currentEvents.slice(pfmEventsBefore).map(event => ({ ...event }));
+      const lastEvent = currentEvents.at(-1);
+      const route = pfmEvents.filter(event => event.kind !== 'CONSOLIDATE')
+        .map(event => `${event.fromZone ?? '?'}>${event.targetZone}`).join(' / ') ||
+        (inputSnapshot.lastTransition ? `${inputSnapshot.lastTransition.from}>${inputSnapshot.lastTransition.to}` : 'no-passage');
+      const priorRecords = await WatchtowerEncounterService.list(10000);
+      const attention = await WatchtowerEncounterService.observe(inputSnapshot.step, lastEvent?.inputZone ?? null, route, priorRecords);
+      const response = AmeliaProcessRelay.generateResponse(textToSend, inputSnapshot, messages, runtime, attention);
       let outputText = response.text;
+      let replySource: 'local' | 'anthropic-relay' = 'local';
       setRelayError('');
 
       if (relayEndpoint.trim() && relayToken.trim()) {
@@ -253,9 +264,12 @@ export function AmeliaDialogueWindow({
               .filter(m => m.sender === 'user' || m.sender === 'amelia')
               .slice(-8)
               .map(m => ({ role: m.sender === 'user' ? 'user' as const : 'amelia' as const, text: m.text })),
-            watchtowerPhase: watchtower.phase,
+            watchtowerPhase: attention.context.phase,
+            watchtowerFocus: attention.context.focusLabel,
+            watchtowerObservation: attention.observed,
           });
           outputText = language.text;
+          replySource = 'anthropic-relay';
         } catch (err) {
           const reason = err instanceof Error ? err.message : 'Anthropic relay unavailable.';
           setRelayError(reason);
@@ -277,6 +291,18 @@ export function AmeliaDialogueWindow({
         identityContinuityScore: inputSnapshot.governor.identityContinuityScore,
         suggestedActions: response.actions
       };
+
+      try {
+        const encounter = await WatchtowerEncounterService.append({
+          userMessage, replyMessage: ameliaMessage, before: beforeSnapshot, after: inputSnapshot,
+          pfmEvents, priorRecords, replySource,
+        });
+        ameliaMessage.watchtowerEncounter = { id: encounter.id, sequence: encounter.sequence, recordDigest: encounter.recordDigest };
+      } catch (error) {
+        const reason = error instanceof Error ? error.message : 'Encounter archive unavailable.';
+        setRelayError(reason);
+        ameliaMessage.text += '\n\n[Watchtower encounter trace was not archived: ' + reason + ']';
+      }
 
       setMessages(prev => [...prev, ameliaMessage]);
       setIsTyping(false);
@@ -578,6 +604,11 @@ export function AmeliaDialogueWindow({
                 </div>
 
                 {/* Substrate Telemetry Badges for Amelia */}
+                {!isUser && (msg.relayTrace as { watchtowerFocus?: { label?: string; observed?: string } } | undefined)?.watchtowerFocus && (
+                  <button onClick={() => onSelectTab?.('watchtower')} className="mt-3 block w-full rounded-lg border border-amber-900/60 bg-amber-950/20 p-2 text-left text-[10px] font-mono text-amber-200/90 hover:bg-amber-950/40">
+                    WATCHTOWER APERTURE · {(msg.relayTrace as { watchtowerFocus: { label?: string } }).watchtowerFocus.label} · Open trace
+                  </button>
+                )}
                 {!isUser && msg.deformationTension !== undefined && (
                   <div className="mt-3 pt-2.5 border-t border-stone-800/80 flex flex-wrap items-center gap-2 text-[10px] font-mono text-stone-400">
                     <span className="flex items-center gap-1 text-rose-300/90">

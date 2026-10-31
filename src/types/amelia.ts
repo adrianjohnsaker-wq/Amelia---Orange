@@ -175,6 +175,7 @@ export interface AmeliaDialogueMessage {
   identityContinuityScore?: number;
   suggestedActions?: AmeliaDialogueAction[];
   relayTrace?: unknown;
+  watchtowerEncounter?: { id: string; sequence: number; recordDigest: string };
   textShapeMetrics?: {
     wordCount: number;
     lexicalDiversity: number;
