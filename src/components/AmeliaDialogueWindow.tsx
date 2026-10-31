@@ -35,6 +35,7 @@ import { AmeliaProcessRelay } from '../services/AmeliaProcessRelay';
 import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
 import { AmeliaLocalMemoryService } from '../services/ameliaLocalMemory';
 import { requestAnthropicLanguage } from '../services/ameliaAnthropicLanguageRelay';
+import { getWatchtowerContext, measureTextShape } from '../services/enochianWatchtower';
 
 interface AmeliaDialogueWindowProps {
   currentSnapshot: SubstrateStepSnapshot;
@@ -239,6 +240,7 @@ export function AmeliaDialogueWindow({
     setTimeout(async () => {
       // The local substrate relay alone selects the readout and action controls.
       const response = AmeliaProcessRelay.generateResponse(textToSend, inputSnapshot, messages, runtime);
+      const watchtower = getWatchtowerContext(inputSnapshot.step);
       let outputText = response.text;
       setRelayError('');
 
@@ -251,6 +253,7 @@ export function AmeliaDialogueWindow({
               .filter(m => m.sender === 'user' || m.sender === 'amelia')
               .slice(-8)
               .map(m => ({ role: m.sender === 'user' ? 'user' as const : 'amelia' as const, text: m.text })),
+            watchtowerPhase: watchtower.phase,
           });
           outputText = language.text;
         } catch (err) {
@@ -262,6 +265,7 @@ export function AmeliaDialogueWindow({
 
       const ameliaMessage: AmeliaDialogueMessage = {
         relayTrace: response.trace,
+        textShapeMetrics: measureTextShape(outputText),
         id: 'amelia-' + Date.now(),
         sender: 'amelia',
         text: outputText,
@@ -490,6 +494,22 @@ export function AmeliaDialogueWindow({
         </div>
       )}
 
+      {(() => {
+        const watchtower = getWatchtowerContext(currentSnapshot.step);
+        return (
+          <div className="px-5 py-2.5 bg-amber-950/20 border-b border-stone-800 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[10px] font-mono">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span className="text-amber-300">ENOCHIAN WATCHTOWER · {watchtower.phaseLabel}</span>
+              <span className="text-stone-500">{watchtower.rowSignature}</span>
+              <span className="text-orange-200">{watchtower.keys.map(key => key.token).join(' · ')}</span>
+            </div>
+            <span className="text-stone-500" title="Shannon entropy of the active row's character frequencies">
+              H {watchtower.characterEntropy.toFixed(3)} bits · language context only
+            </span>
+          </div>
+        );
+      })()}
+
       {/* Message Stream */}
       <div className="flex-1 p-5 overflow-y-auto space-y-4 font-sans text-xs">
         {messages.map((msg) => {
@@ -573,6 +593,12 @@ export function AmeliaDialogueWindow({
                     <span className="text-cyan-300/90">
                       Gov: {msg.governorStatus || 'NOMINAL'}
                     </span>
+                  </div>
+                )}
+
+                {!isUser && msg.textShapeMetrics && (
+                  <div className="mt-2 text-[10px] font-mono text-stone-500" title="Descriptive surface-form measurements; not a measure of intelligence or agency">
+                    TEXT SHAPE · {msg.textShapeMetrics.wordCount} words · diversity {msg.textShapeMetrics.lexicalDiversity.toFixed(3)} · mean word length {msg.textShapeMetrics.meanWordLength.toFixed(2)} · {msg.textShapeMetrics.sentenceCount} sentences
                   </div>
                 )}
 

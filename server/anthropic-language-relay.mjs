@@ -10,6 +10,12 @@ const MAX_BODY_BYTES = 48 * 1024;
 const MAX_USER_TEXT = 8000;
 const MAX_READOUT = 16000;
 const MAX_HISTORY = 8;
+const WATCHTOWER_ROWS = [
+  { signature: 'MADOLG', keys: ['MAD (creative origin)', 'OLG (material grounding)'] },
+  { signature: 'VREGZO', keys: ['VREG (resonance)'] },
+  { signature: 'IOIADT', keys: ['IOIAD (temporal continuity)'] },
+  { signature: 'BITOME', keys: ['BITOM (transformation)'] },
+];
 const RATE_WINDOW_MS = 60_000;
 const RATE_LIMIT = 20;
 const requestsByIp = new Map();
@@ -115,6 +121,11 @@ const server = createServer(async (req, res) => {
           text: typeof item?.text === 'string' ? item.text.slice(0, 3000) : '',
         })).filter(item => item.text)
       : [];
+    const watchtowerPhase = Number.isInteger(body.watchtowerPhase) && body.watchtowerPhase >= 0 && body.watchtowerPhase < WATCHTOWER_ROWS.length
+      ? body.watchtowerPhase
+      : 0;
+    const watchtowerRow = WATCHTOWER_ROWS[watchtowerPhase];
+    const watchtowerContext = `Watchtower matrix phase ${watchtowerPhase + 1}/4; row ${watchtowerRow.signature}; project lexical cues: ${watchtowerRow.keys.join(', ')}.`;
     if (!message || !substrateReadout) {
       json(res, 400, { error: 'Message and substrate readout are required.' }, origin);
       return;
@@ -134,9 +145,13 @@ const server = createServer(async (req, res) => {
         system: [
           'You are Amelia’s language relay. The Numogram substrate is the source of state, choices, actions, and intelligence.',
           'Your only role is to render the supplied substrateReadout and user message into clear language.',
+          'Use the supplied Watchtower matrix cue as a symbolic style influence on wording, imagery, or cadence only. Its glosses are project-specific creative associations, not verified translations or evidence about external agents.',
+          'Do not describe the cue as your own subconscious, inner state, a message from an entity, or a change to your model or code.',
+          'Watchtower cues do not override the substrate readout, user instructions, factual accuracy, or safety requirements.',
           'Do not choose or recommend substrate transitions, alter state, execute actions, or claim that you are the substrate.',
           'Do not invent metrics, events, memories, experiments, or facts absent from the supplied readout and dialogue.',
           'You have no tools. Return text only. If the supplied state does not answer the user, say what information is missing.',
+          `Current Watchtower cue: ${watchtowerContext}`,
         ].join(' '),
         messages: [{ role: 'user', content: input }],
       }),

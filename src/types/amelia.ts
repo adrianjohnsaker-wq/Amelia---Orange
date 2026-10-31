@@ -175,6 +175,12 @@ export interface AmeliaDialogueMessage {
   identityContinuityScore?: number;
   suggestedActions?: AmeliaDialogueAction[];
   relayTrace?: unknown;
+  textShapeMetrics?: {
+    wordCount: number;
+    lexicalDiversity: number;
+    meanWordLength: number;
+    sentenceCount: number;
+  };
   isThinking?: boolean;
 }
 
