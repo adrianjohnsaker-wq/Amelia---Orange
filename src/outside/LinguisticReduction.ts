@@ -25,7 +25,7 @@ export function compareLemurianPair(fromZone: ZoneId, toZone: ZoneId): LemurianP
 }
 function letterValue(letter: string, cipher: LinguisticCipher): number {
   const ordinal = letter.charCodeAt(0) - 64;
-  return cipher === 'CYCLIC_1_9' ? ((ordinal - 1) % 9) + 1 : ordinal;
+  return cipher === 'ATBASH_1_26' ? 27 - ordinal : ordinal;
 }
 export interface LinguisticReduction {
   cipher: LinguisticCipher; normalizedLetters: string; wordReductions: LinguisticWordReduction[];

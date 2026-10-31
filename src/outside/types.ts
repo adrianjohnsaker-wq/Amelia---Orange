@@ -59,7 +59,7 @@ export interface TarotSpreadEvent extends OutsideEventBase {
 }
 
 
-export type LinguisticCipher = 'A1Z26' | 'CYCLIC_1_9';
+export type LinguisticCipher = 'A1Z26' | 'ATBASH_1_26';
 export interface LemurianPairReference { key: string; zones: [number, number]; netSpan: string; mesh: string; serial: number; name: string; pitch: string; classification: string; }
 export interface LinguisticWordReduction { token: string; number: number; zone: ZoneId; factorization: Array<{ prime: number; exponent: number }>; }
 export interface LinguisticLoreComparison { fromZone: ZoneId; toZone: ZoneId; pairKey: string; match: LemurianPairReference | null; }

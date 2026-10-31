@@ -6,7 +6,7 @@ This branch adds a continuous language-to-Numogram path to the existing Outside 
 
 1. Preserve the submitted text, source label, optional reference, cipher choice and timestamp as one raw event.
 2. Normalize Latin letters with Unicode decomposition, remove diacritics, uppercase, and split into alphabetic tokens. Punctuation and non-Latin characters do not contribute to the numerical sum; the original text remains in the event.
-3. Apply the selected explicit value table per letter: **A1Z26** (A=1…Z=26) or **Cyclic 1–9** (A=1…I=9, J restarts at 1). Sum each token, factor each integer into primes, and digitally reduce each token sum to a zone. Sum the token values for the aggregate number and reduce it to a result zone.
+3. Apply the selected explicit value table per letter: **A1Z26** (A=1…Z=26) or **Atbash 1–26** (Z=1…A=26). Sum each token, factor each integer into primes, and digitally reduce each token sum to a zone. Sum the token values for the aggregate number and reduce it to a result zone.
 4. Form a transparent route from the word zones followed by the aggregate result zone. Compare every adjacent zone pair against the 45-entry Lemurian Pandemonium Matrix. Record each catalogue match alongside the exact numeric route.
 5. Project the word-zone counts and aggregate result zone into an attention vector. The runtime applies its existing Governor, open-gate topology and substrate state to the encounter. Record the actual before/after substrate passage separately and compare that realized pair with the same catalogue.
 6. Append the full input, reduction, pre-runtime lore comparisons, realized passage, snapshots, runtime signal digest and linked record digest to the local Outside ledger.
@@ -15,7 +15,7 @@ The existing I Ching, Tarot and Numogram observation channels remain available. 
 
 ## Numerical scope and limits
 
-A1Z26 is the default cipher convention for this receiver. Cyclic 1–9 is an explicit alternate for side-by-side exploration. Both are project-configurable conventions, not a claim that one recovers a uniquely canonical Land cipher. Prime factorization is recorded as a base-independent description of the resulting integers; it is not presented as a verified implementation of Land's Plexenomy.
+A1Z26 is the default cipher convention for this receiver. Atbash 1–26 is an explicit alternate for side-by-side exploration. Both are project-configurable conventions, not a claim that one recovers a uniquely canonical Land cipher. Prime factorization is recorded as a base-independent description of the resulting integers; it is not presented as a verified implementation of Land's Plexenomy.
 
 The event also records the Numogram's stated net-span total of **360** and whether the aggregate text sum equals it. This is a cross-reference only; the value is not injected into the reduction or treated as evidence of an outside intelligence. Likewise, the word-zone route is a numerical comparison path over the pair catalogue, not the Book of Paths' textual Rite routes. A structured, provenance-checked Book of Paths source would be needed to claim those matches.
 
