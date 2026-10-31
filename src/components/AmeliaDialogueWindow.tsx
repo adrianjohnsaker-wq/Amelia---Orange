@@ -529,8 +529,8 @@ export function AmeliaDialogueWindow({
               <span className="text-stone-500">{watchtower.rowSignature}</span>
               <span className="text-orange-200">{watchtower.keys.map(key => key.token).join(' · ')}</span>
             </div>
-            <span className="text-stone-500" title="Shannon entropy of the active row's character frequencies">
-              H {watchtower.characterEntropy.toFixed(3)} bits · language context only
+            <span className="text-stone-500" title={watchtower.focusDescription}>
+              H {watchtower.characterEntropy.toFixed(3)} bits · aperture: {watchtower.focusLabel}
             </span>
           </div>
         );
