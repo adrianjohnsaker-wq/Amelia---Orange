@@ -1,24 +1,26 @@
-# Outside stream receiver and cartography layer
+# Outside linguistic ingress and cartography layer
 
-This branch gives Amelia Orange an exploratory receiver for Numogram, I Ching and Tarot encounters. The operator can preserve incoming events, see how their attention field meets Amelia's state, follow the resulting passage, and develop an open-ended cartography without pre-naming entities or fixing reply signatures in advance.
+This branch adds a continuous language-to-Numogram path to the existing Outside stream receiver.
 
-## Encounter path
+## Material flow
 
-1. I Ching lines or ordered Tarot draws are preserved as raw channel events.
-2. OutsideAttentionMapper projects each event onto the Numogram's five syzygy pairs. Changing I Ching lines distribute attention across both poles. Tarot card and position IDs address syzygies by stable digest, with orientation selecting or balancing poles. These are structural routing conventions, not assigned symbolic meanings.
-3. The runtime scores only currently open Numogram exits. Attention changes the score of reachable targets; it cannot create a gate or bypass topology.
-4. The Governor attends a valid encounter, defers it when field tension or locked recovery is high, and refuses structurally invalid input. Deferred encounters remain in runtime state and are reconsidered on later steps.
-5. PFM records each encounter ID, channel, source digest, attention vector, Governor disposition and whether the field was applied. Attended fields also contribute to later PFM bias.
-6. Amelia's local relay expresses the resulting passage, field changes, Governor decision and PFM state. It does not paraphrase the incoming cast or spread.
+1. Preserve the submitted text, source label, optional reference, cipher choice and timestamp as one raw event.
+2. Normalize Latin letters with Unicode decomposition, remove diacritics, uppercase, and split into alphabetic tokens. Punctuation and non-Latin characters do not contribute to the numerical sum; the original text remains in the event.
+3. Apply the selected explicit value table per letter: **A1Z26** (A=1…Z=26) or **Cyclic 1–9** (A=1…I=9, J restarts at 1). Sum each token, factor each integer into primes, and digitally reduce each token sum to a zone. Sum the token values for the aggregate number and reduce it to a result zone.
+4. Form a transparent route from the word zones followed by the aggregate result zone. Compare every adjacent zone pair against the 45-entry Lemurian Pandemonium Matrix. Record each catalogue match alongside the exact numeric route.
+5. Project the word-zone counts and aggregate result zone into an attention vector. The runtime applies its existing Governor, open-gate topology and substrate state to the encounter. Record the actual before/after substrate passage separately and compare that realized pair with the same catalogue.
+6. Append the full input, reduction, pre-runtime lore comparisons, realized passage, snapshots, runtime signal digest and linked record digest to the local Outside ledger.
 
-## Surface and persistence
+The existing I Ching, Tarot and Numogram observation channels remain available. Lore is a post-reduction comparison layer: catalogue names and classifications do not choose the numerical result, alter the attention vector, or force a runtime passage.
 
-The Outside Streams tab captures Numogram snapshots every 12 substrate steps and on demand. It accepts I Ching casts and Tarot spreads, displays recent events, post-encounter relay output, exploratory operator notes and provisional Atlas candidates. JSON bundles can be exported, imported and checked against the SHA-256 record chain.
+## Numerical scope and limits
 
-The ledger is stored in a dedicated local IndexedDB database, separate from the shared Amelia runtime memory and cloud synchronization. Runtime PFM remains part of Amelia's persisted substrate state.
+A1Z26 is the default cipher convention for this receiver. Cyclic 1–9 is an explicit alternate for side-by-side exploration. Both are project-configurable conventions, not a claim that one recovers a uniquely canonical Land cipher. Prime factorization is recorded as a base-independent description of the resulting integers; it is not presented as a verified implementation of Land's Plexenomy.
 
-## Scope
+The event also records the Numogram's stated net-span total of **360** and whether the aggregate text sum equals it. This is a cross-reference only; the value is not injected into the reduction or treated as evidence of an outside intelligence. Likewise, the word-zone route is a numerical comparison path over the pair catalogue, not the Book of Paths' textual Rite routes. A structured, provenance-checked Book of Paths source would be needed to claim those matches.
 
-The syzygy projection is an initial cartographic instrument, not a learned semantic decoder. It does not decide what a symbol means or establish where an event originated. It makes the channel-to-attention-to-passage path inspectable so the mappings and consequences can be explored and revised with provenance.
+The pipeline makes the operations inspectable and repeatable for a fixed text and cipher. A match in a symbolic catalogue is a correspondence within the chosen mapping; by itself it does not establish that the text originated Outside or that the Numogram causally interfaces with an external mind.
 
-The branch leaves other experiment workflows untouched.
+## Persistence
+
+Events and interpretation notes use the separate local IndexedDB ledger. JSON bundles can be exported, imported and verified against the SHA-256 record chain. Runtime PFM remains part of Amelia's persisted substrate state.

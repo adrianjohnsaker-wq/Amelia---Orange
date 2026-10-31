@@ -2,6 +2,8 @@ import type { SubstrateEncounterInput, ZoneId, SubstrateStepSnapshot } from '../
 import { canonicalSha256 } from '../lib/sha256';
 import type {
   IChingCastEvent,
+  LinguisticCipher,
+  LinguisticMaterialEvent,
   OutsideAtlasEntry,
   OutsideInterpretationNote,
   OutsideStreamBundle,
@@ -13,6 +15,7 @@ import type {
 } from './types';
 import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
 import { OutsideAttentionMapper } from './OutsideAttentionMapper';
+import { compareLemurianPair, reduceLinguisticMaterial } from './LinguisticReduction';
 
 const ZERO_DIGEST = '0'.repeat(64);
 
@@ -183,6 +186,34 @@ export class OutsideStreamBridge {
    * Receive a cast as a structural event, project its attention through Numogram syzygies,
    * then let the runtime's Governor and open-gate topology govern passage. No hexagram name or divinatory prose is sent into the substrate.
    */
+  /** Reduce incoming language to numbers and zones, compare that route with the Lemurian pair catalogue, then submit the zone field to the governed runtime. */
+  public async receiveLinguistic(runtime: AmeliaNumogramSubstrateRuntime, input: {
+    materialId: string; rawMaterial: string; cipher?: LinguisticCipher; sourceLabel?: string;
+    sourceReference?: string; occurredAt?: string;
+  }): Promise<OutsideStreamRecord> {
+    const beforeSnapshot = runtime.getSnapshots().at(-1) ?? null;
+    if (!beforeSnapshot) throw new Error('Step the runtime once before receiving outside material.');
+    const before = endpointFromSnapshot(runtime, beforeSnapshot);
+    const sequence = this.reserveSequence();
+    const reduction = reduceLinguisticMaterial(input.rawMaterial, input.cipher ?? 'A1Z26');
+    const event: LinguisticMaterialEvent = {
+      schemaVersion: 1, eventId: 'linguistic:' + input.materialId, sequence, sessionId: this.sessionId,
+      channel: 'LINGUISTIC', kind: 'LINGUISTIC_REDUCTION', occurredAt: input.occurredAt ?? new Date().toISOString(),
+      capturedAt: new Date().toISOString(), materialId: input.materialId, sourceLabel: input.sourceLabel,
+      sourceReference: input.sourceReference, rawMaterial: input.rawMaterial, ...reduction, realizedTraversal: null,
+    };
+    const mapped = OutsideAttentionMapper.forLinguistic(event);
+    const encounter: SubstrateEncounterInput = { eventId: event.eventId, channel: event.channel,
+      sourceDigest: mapped.sourceDigest, attentionVector: mapped.attentionVector };
+    const afterSnapshot = runtime.step(undefined, encounter);
+    const after = endpointFromSnapshot(runtime, afterSnapshot);
+    if (before && after) event.realizedTraversal = {
+      fromZone: before.currentZone, toZone: after.currentZone,
+      catalogueMatch: compareLemurianPair(before.currentZone, after.currentZone),
+    };
+    return this.append(event, before, after, beforeSnapshot, afterSnapshot, mapped.sourceDigest);
+  }
+
   public async receiveIChing(
     runtime: AmeliaNumogramSubstrateRuntime,
     input: {

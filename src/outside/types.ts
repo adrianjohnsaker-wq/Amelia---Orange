@@ -5,7 +5,7 @@ export interface OutsideEventBase {
   eventId: string;
   sequence: number;
   sessionId: string;
-  channel: 'NUMOGRAM' | 'ICHING' | 'TAROT';
+  channel: 'NUMOGRAM' | 'ICHING' | 'TAROT' | 'LINGUISTIC';
   occurredAt: string;
   capturedAt: string;
 }
@@ -58,10 +58,26 @@ export interface TarotSpreadEvent extends OutsideEventBase {
   rawReceipt?: string;
 }
 
+
+export type LinguisticCipher = 'A1Z26' | 'CYCLIC_1_9';
+export interface LemurianPairReference { key: string; zones: [number, number]; netSpan: string; mesh: string; serial: number; name: string; pitch: string; classification: string; }
+export interface LinguisticWordReduction { token: string; number: number; zone: ZoneId; factorization: Array<{ prime: number; exponent: number }>; }
+export interface LinguisticLoreComparison { fromZone: ZoneId; toZone: ZoneId; pairKey: string; match: LemurianPairReference | null; }
+export interface LinguisticMaterialEvent extends OutsideEventBase {
+  channel: 'LINGUISTIC'; kind: 'LINGUISTIC_REDUCTION'; materialId: string;
+  sourceLabel?: string; sourceReference?: string; rawMaterial: string; cipher: LinguisticCipher;
+  normalizedLetters: string; wordReductions: LinguisticWordReduction[]; aggregateNumber: number;
+  aggregateFactorization: Array<{ prime: number; exponent: number }>; resultZone: ZoneId;
+  routeZones: ZoneId[]; loreComparisons: LinguisticLoreComparison[];
+  netSpanTotalReference: 360; aggregateEqualsNetSpanTotal: boolean;
+  realizedTraversal: { fromZone: ZoneId; toZone: ZoneId; catalogueMatch: LemurianPairReference | null } | null;
+}
+
 export type OutsideStreamEvent =
   | NumogramObservationEvent
   | IChingCastEvent
-  | TarotSpreadEvent;
+  | TarotSpreadEvent
+  | LinguisticMaterialEvent;
 
 export interface SubstrateEndpoint {
   step: number;
@@ -102,7 +118,7 @@ export interface OutsideAtlasEntry {
   linkedNoteIds: string[];
   signature: string;
   status: 'EXPLORATORY_CANDIDATE' | 'RECURRING_IN_EXPLORATION' | 'AWAITING_DISCRIMINATION';
-  channelScope: Array<'NUMOGRAM' | 'ICHING' | 'TAROT'>;
+  channelScope: Array<'NUMOGRAM' | 'ICHING' | 'TAROT' | 'LINGUISTIC'>;
   comments: string[];
 }
 
