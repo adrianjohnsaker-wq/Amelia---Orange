@@ -12,7 +12,8 @@ const starter=JSON.stringify([{cardId:'major_00_fool',order:1,positionId:'positi
 export function OutsideStreamLab({runtime,snapshot,runtimeEpoch,isVisible,onBeforeSharedStep,onSharedStep}:Props){
  const[bridge,setBridge]=useState<OutsideStreamBridge|null>(null),[rows,setRows]=useState<OutsideStreamRecord[]>([]),[notes,setNotes]=useState<OutsideInterpretationNote[]>([]),[atlas,setAtlas]=useState<OutsideAtlasEntry[]>([]),[traceLinks,setTraceLinks]=useState<OutsideTraceLink[]>([]),[status,setStatus]=useState('Opening local ledger…'),[error,setError]=useState('');
  const[lines,setLines]=useState('7,8,9,7,8,6'),[method,setMethod]=useState('three-coin'),[receipt,setReceipt]=useState(''),[tarot,setTarot]=useState(starter),[note,setNote]=useState(''),[candidate,setCandidate]=useState(''),[expression,setExpression]=useState(''),[material,setMaterial]=useState('Outside information enters language, reduces to number, then maps to a Numogram zone.'),[sourceLabel,setSourceLabel]=useState(''),[sourceReference,setSourceReference]=useState(''),[linguisticCipher,setLinguisticCipher]=useState<'A1Z26'|'ATBASH_1_26'>('A1Z26');
- const[linkCardEventId,setLinkCardEventId]=useState(''),[linkIngressEventId,setLinkIngressEventId]=useState('');\n const lastObserved=useRef<number|null>(null),locked=useRef(false);
+ const[linkCardEventId,setLinkCardEventId]=useState(''),[linkIngressEventId,setLinkIngressEventId]=useState('');
+ const lastObserved=useRef<number|null>(null),locked=useRef(false);
  const latestLinguistic=rows.find(r=>r.event.channel==='LINGUISTIC');
  const latestSubdecadence=rows.find((r):r is OutsideStreamRecord&{event:SubdecadenceGameEvent}=>r.event.channel==='SUBDECADENCE');
  const cardRecords=rows.filter((r):r is OutsideStreamRecord&{event:SubdecadenceGameEvent}=>r.event.channel==='SUBDECADENCE');
