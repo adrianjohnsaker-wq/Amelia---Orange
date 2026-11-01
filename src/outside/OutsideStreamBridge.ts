@@ -402,7 +402,7 @@ export class OutsideStreamBridge {
       .filter(cardPair => uniqueEdges.some(edge => edge.fromZone === cardPair.toZone && edge.toZone === cardPair.fromZone))
       .map(pair => ({ fromZone: pair.fromZone, toZone: pair.toZone }));
     const terminalMeshZones = cardEvent.terminalEntity?.zones ?? [];
-    const terminalMeshZonesSeen = ingressRouteZones.filter(zone => terminalMeshZones.includes(zone));
+    const terminalMeshZonesSeenInIngressRoute = ingressRouteZones.filter(zone => terminalMeshZones.includes(zone));
     const decision = ingress.snapshotAfter?.encounterDecisions?.find(item => item.eventId === ingressEvent.eventId);
     const ameliaTransition = ingress.substrateBefore && ingress.substrateAfter ? {
       fromZone: ingress.substrateBefore.currentZone,
@@ -411,6 +411,9 @@ export class OutsideStreamBridge {
       memoryHeadDigest: ingress.substrateAfter.memoryHeadDigest,
       governorDisposition: decision?.disposition ?? null,
     } : null;
+    const terminalMeshZonesSeenInAmeliaTransition = ameliaTransition
+      ? [ameliaTransition.fromZone, ameliaTransition.toZone].filter(zone => terminalMeshZones.includes(zone))
+      : [];
     const body = {
       linkId,
       sessionId: this.sessionId,
@@ -430,7 +433,7 @@ export class OutsideStreamBridge {
       ingressRouteZones,
       ingressRouteEdges: uniqueEdges,
       ameliaTransition,
-      comparison: { directRouteMatches, reverseRouteMatches, terminalMeshZonesSeen },
+      comparison: { directRouteMatches, reverseRouteMatches, terminalMeshZonesSeenInIngressRoute, terminalMeshZonesSeenInAmeliaTransition },
       previousLinkDigest: this.traceLinks.at(-1)?.linkDigest ?? ZERO_DIGEST,
     };
     const linkDigest = await sha256Utf8(stableStringify(body));
