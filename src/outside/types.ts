@@ -164,6 +164,41 @@ export interface OutsideAtlasEntry {
   comments: string[];
 }
 
+export interface OutsideTraceLink {
+  linkId: string;
+  sessionId: string;
+  createdAt: string;
+  cardEventId: string;
+  cardRecordDigest: string;
+  cardOccurredAt: string;
+  cardCapturedAt: string;
+  candidateMesh: LemurianPairReference | null;
+  cardRoute: Array<{ aeonIndex: number; fromZone: ZoneId; toZone: ZoneId; pylon: SubdecadencePylon; score: number }>;
+  ingressEventId: string;
+  ingressRecordDigest: string;
+  ingressChannel: Exclude<OutsideEventBase['channel'], 'NUMOGRAM' | 'SUBDECADENCE'>;
+  ingressSequence: number;
+  ingressOccurredAt: string;
+  ingressCapturedAt: string;
+  ingressRouteZones: ZoneId[];
+  ingressRouteEdges: Array<{ fromZone: ZoneId; toZone: ZoneId; source: 'LINGUISTIC_ROUTE' | 'LORE_PAIR' }>;
+  ameliaTransition: {
+    fromZone: ZoneId;
+    toZone: ZoneId;
+    transitionDigest: string | null;
+    memoryHeadDigest: string | null;
+    governorDisposition: string | null;
+  } | null;
+  comparison: {
+    directRouteMatches: Array<{ fromZone: ZoneId; toZone: ZoneId }>;
+    reverseRouteMatches: Array<{ fromZone: ZoneId; toZone: ZoneId }>;
+    terminalMeshZonesSeenInIngressRoute: ZoneId[];
+    terminalMeshZonesSeenInAmeliaTransition: ZoneId[];
+  };
+  previousLinkDigest: string;
+  linkDigest: string;
+}
+
 export interface OutsideStreamBundle {
   bundleSchema: 'amelia.outside-stream-bundle/v1';
   sessionId: string;
@@ -171,4 +206,5 @@ export interface OutsideStreamBundle {
   records: OutsideStreamRecord[];
   interpretations: OutsideInterpretationNote[];
   atlasEntries: OutsideAtlasEntry[];
+  traceLinks?: OutsideTraceLink[];
 }

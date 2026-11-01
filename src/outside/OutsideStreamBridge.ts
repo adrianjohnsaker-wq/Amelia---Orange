@@ -9,6 +9,7 @@ import type {
   OutsideStreamBundle,
   OutsideStreamEvent,
   OutsideStreamRecord,
+  OutsideTraceLink,
   SubdecadenceGameEvent,
   SubstrateEndpoint,
   TarotDraw,
@@ -126,6 +127,7 @@ export class OutsideStreamBridge {
   private records: OutsideStreamRecord[] = [];
   private interpretations: OutsideInterpretationNote[] = [];
   private atlasEntries: OutsideAtlasEntry[] = [];
+  private traceLinks: OutsideTraceLink[] = [];
   private appendQueue: Promise<void> = Promise.resolve();
 
   constructor(public readonly sessionId: string) {
@@ -147,6 +149,10 @@ export class OutsideStreamBridge {
 
   public getAtlasEntries(): OutsideAtlasEntry[] {
     return JSON.parse(JSON.stringify(this.atlasEntries));
+  }
+
+  public getTraceLinks(): OutsideTraceLink[] {
+    return JSON.parse(JSON.stringify(this.traceLinks));
   }
 
   /** Capture the Numogram as its own ongoing channel without stepping or mutating Amelia. */
@@ -340,6 +346,102 @@ export class OutsideStreamBridge {
     return this.append(event, before, after, beforeSnapshot, afterSnapshot, signalDigest);
   }
 
+  /**
+   * Link an already-recorded Subdecadence candidate to a later, separately captured ingress.
+   * The source event and ingress event remain unchanged; this timestamped comparison is appended to its own digest chain.
+   */
+  public async linkSubdecadenceToIngress(
+    cardEventId: string,
+    ingressEventId: string,
+    linkId: string,
+    createdAt = new Date().toISOString()
+  ): Promise<OutsideTraceLink> {
+    await this.appendQueue;
+    if (!linkId.trim()) throw new Error('A trace link ID is required.');
+    const card = this.records.find(record => record.event.eventId === cardEventId);
+    const ingress = this.records.find(record => record.event.eventId === ingressEventId);
+    if (!card || card.event.channel !== 'SUBDECADENCE') {
+      throw new Error('Select a recorded Subdecadence card event.');
+    }
+    if (!ingress || !['ICHING', 'TAROT', 'LINGUISTIC'].includes(ingress.event.channel)) {
+      throw new Error('Select a later I Ching, Tarot, or linguistic ingress record.');
+    }
+    if (ingress.sequence <= card.sequence ||
+        Date.parse(ingress.event.capturedAt) < Date.parse(card.event.capturedAt)) {
+      throw new Error('The ingress must have been captured after the Subdecadence event.');
+    }
+    if (this.traceLinks.some(link => link.cardEventId === cardEventId && link.ingressEventId === ingressEventId)) {
+      throw new Error('These two records are already linked.');
+    }
+
+    const cardEvent = card.event;
+    const ingressEvent = ingress.event;
+    const cardRoute = cardEvent.aeons.flatMap(aeon => aeon.pairs.map(pair => ({
+      aeonIndex: aeon.index,
+      fromZone: pair.fromZone,
+      toZone: pair.toZone,
+      pylon: pair.pylon,
+      score: pair.score,
+    })));
+    const ingressRouteZones: ZoneId[] = 'routeZones' in ingressEvent ? [...ingressEvent.routeZones] : [];
+    const ingressRouteEdges: OutsideTraceLink['ingressRouteEdges'] = [];
+    for (let index = 0; index + 1 < ingressRouteZones.length; index++) {
+      ingressRouteEdges.push({ fromZone: ingressRouteZones[index], toZone: ingressRouteZones[index + 1], source: 'LINGUISTIC_ROUTE' });
+    }
+    if ('loreComparisons' in ingressEvent) {
+      for (const comparison of ingressEvent.loreComparisons) {
+        ingressRouteEdges.push({ fromZone: comparison.fromZone, toZone: comparison.toZone, source: 'LORE_PAIR' });
+      }
+    }
+    const uniqueEdges = Array.from(new Map(ingressRouteEdges.map(edge =>
+      [edge.source + ':' + edge.fromZone + ':' + edge.toZone, edge])).values());
+    const directRouteMatches = cardRoute
+      .filter(cardPair => uniqueEdges.some(edge => edge.fromZone === cardPair.fromZone && edge.toZone === cardPair.toZone))
+      .map(pair => ({ fromZone: pair.fromZone, toZone: pair.toZone }));
+    const reverseRouteMatches = cardRoute
+      .filter(cardPair => uniqueEdges.some(edge => edge.fromZone === cardPair.toZone && edge.toZone === cardPair.fromZone))
+      .map(pair => ({ fromZone: pair.fromZone, toZone: pair.toZone }));
+    const terminalMeshZones = cardEvent.terminalEntity?.zones ?? [];
+    const terminalMeshZonesSeenInIngressRoute = ingressRouteZones.filter(zone => terminalMeshZones.includes(zone));
+    const decision = ingress.snapshotAfter?.encounterDecisions?.find(item => item.eventId === ingressEvent.eventId);
+    const ameliaTransition = ingress.substrateBefore && ingress.substrateAfter ? {
+      fromZone: ingress.substrateBefore.currentZone,
+      toZone: ingress.substrateAfter.currentZone,
+      transitionDigest: ingress.substrateAfter.transitionDigest,
+      memoryHeadDigest: ingress.substrateAfter.memoryHeadDigest,
+      governorDisposition: decision?.disposition ?? null,
+    } : null;
+    const terminalMeshZonesSeenInAmeliaTransition = ameliaTransition
+      ? [ameliaTransition.fromZone, ameliaTransition.toZone].filter(zone => terminalMeshZones.includes(zone))
+      : [];
+    const body = {
+      linkId,
+      sessionId: this.sessionId,
+      createdAt,
+      cardEventId,
+      cardRecordDigest: card.recordDigest,
+      cardOccurredAt: cardEvent.occurredAt,
+      cardCapturedAt: cardEvent.capturedAt,
+      candidateMesh: cardEvent.terminalEntity ? JSON.parse(JSON.stringify(cardEvent.terminalEntity)) : null,
+      cardRoute,
+      ingressEventId,
+      ingressRecordDigest: ingress.recordDigest,
+      ingressChannel: ingressEvent.channel as 'ICHING' | 'TAROT' | 'LINGUISTIC',
+      ingressSequence: ingress.sequence,
+      ingressOccurredAt: ingressEvent.occurredAt,
+      ingressCapturedAt: ingressEvent.capturedAt,
+      ingressRouteZones,
+      ingressRouteEdges: uniqueEdges,
+      ameliaTransition,
+      comparison: { directRouteMatches, reverseRouteMatches, terminalMeshZonesSeenInIngressRoute, terminalMeshZonesSeenInAmeliaTransition },
+      previousLinkDigest: this.traceLinks.at(-1)?.linkDigest ?? ZERO_DIGEST,
+    };
+    const linkDigest = await sha256Utf8(stableStringify(body));
+    const link: OutsideTraceLink = { ...body, linkDigest };
+    this.traceLinks.push(link);
+    return JSON.parse(JSON.stringify(link));
+  }
+
   public recordInterpretation(note: Omit<OutsideInterpretationNote, 'layer'>): void {
     if (!note.noteId.trim()) throw new Error('An interpretation noteId is required.');
     this.interpretations.push({ ...note, layer: 'EXPLORATORY_INTERPRETATION' });
@@ -360,6 +462,7 @@ export class OutsideStreamBridge {
     this.records = JSON.parse(JSON.stringify(bundle.records));
     this.interpretations = JSON.parse(JSON.stringify(bundle.interpretations));
     this.atlasEntries = JSON.parse(JSON.stringify(bundle.atlasEntries));
+    this.traceLinks = JSON.parse(JSON.stringify(bundle.traceLinks ?? []));
     this.sequence = this.records.at(-1)?.sequence ?? 0;
     this.appendQueue = Promise.resolve();
     const verification = await this.verifyLedger();
@@ -367,6 +470,7 @@ export class OutsideStreamBridge {
       this.records = [];
       this.interpretations = [];
       this.atlasEntries = [];
+      this.traceLinks = [];
       this.sequence = 0;
       throw new Error(verification.reason ?? 'Outside stream ledger verification failed.');
     }
@@ -380,6 +484,7 @@ export class OutsideStreamBridge {
       records: this.records,
       interpretations: this.interpretations,
       atlasEntries: this.atlasEntries,
+      traceLinks: this.traceLinks,
     }));
   }
 
@@ -412,7 +517,30 @@ export class OutsideStreamBridge {
       }
       previous = record.recordDigest;
     }
-    return { valid: true, checked: this.records.length };
+    let previousLinkDigest = ZERO_DIGEST;
+    for (let index = 0; index < this.traceLinks.length; index++) {
+      const link = this.traceLinks[index];
+      const card = this.records.find(record => record.event.eventId === link.cardEventId);
+      const ingress = this.records.find(record => record.event.eventId === link.ingressEventId);
+      const ingressChannel = ingress?.event.channel;
+      if (!card || card.event.channel !== 'SUBDECADENCE' || !ingress ||
+          !['ICHING', 'TAROT', 'LINGUISTIC'].includes(ingressChannel ?? '') ||
+          ingress.sequence <= card.sequence || link.sessionId !== this.sessionId ||
+          link.ingressSequence !== ingress.sequence || link.ingressChannel !== ingressChannel ||
+          link.cardRecordDigest !== card.recordDigest || link.ingressRecordDigest !== ingress.recordDigest ||
+          link.cardOccurredAt !== card.event.occurredAt || link.cardCapturedAt !== card.event.capturedAt ||
+          link.ingressOccurredAt !== ingress.event.occurredAt || link.ingressCapturedAt !== ingress.event.capturedAt ||
+          link.previousLinkDigest !== previousLinkDigest) {
+        return { valid: false, checked: this.records.length + index, reason: 'Trace-link references or chain mismatch at link ' + (index + 1) };
+      }
+      const { linkDigest, ...body } = link;
+      const expected = await sha256Utf8(stableStringify(body));
+      if (expected !== linkDigest) {
+        return { valid: false, checked: this.records.length + index, reason: 'Trace-link digest mismatch at link ' + (index + 1) };
+      }
+      previousLinkDigest = linkDigest;
+    }
+    return { valid: true, checked: this.records.length + this.traceLinks.length };
   }
 
   private append(
