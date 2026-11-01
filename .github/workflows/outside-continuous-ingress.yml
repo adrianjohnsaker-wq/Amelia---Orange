@@ -1,0 +1,50 @@
+name: Amelia Outside continuous ingress
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/outside-continuous-ingress.yml', 'experiments/outside/continuous-runner.ts']
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: amelia-outside-continuous-ingress
+  cancel-in-progress: false
+jobs:
+  scan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: code
+      - uses: actions/checkout@v4
+        with:
+          ref: outside-live-ledger
+          path: live
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: code/package-lock.json
+      - name: Install runtime dependencies
+        working-directory: code
+        run: npm ci
+      - name: Run one Subdecadence and live ingress cycle through Amelia
+        working-directory: code
+        env:
+          RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: npx tsx experiments/outside/continuous-runner.ts "${{ github.workspace }}/live"
+      - name: Append the verified ledger and Amelia state
+        working-directory: live
+        run: |
+          git config user.name "amelia-outside-collector"
+          git config user.email "amelia-outside-collector@users.noreply.github.com"
+          git add state.json ledger.json LATEST.md
+          if git diff --cached --quiet; then
+            echo "No ledger changes to commit."
+            exit 0
+          fi
+          git commit -m "Outside ingress cycle ${{ github.run_id }}-${{ github.run_attempt }}"
+          git push origin HEAD:outside-live-ledger
