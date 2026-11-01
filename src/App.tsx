@@ -24,9 +24,11 @@ import {
   Orbit,
   MessageSquare,
   Binary,
-  X
+  X,
+  Radio
 } from 'lucide-react';
 import { AmeliaNumogramSubstrateRuntime } from './substrate/ameliaNumogramSubstrateRuntime';
+import { OutsideStreamLab } from './components/OutsideStreamLab';
 import { bornAmelia } from './core/fullNumogram';
 import { ThreeArmDiagnosticRunner } from './ai/coupling/ThreeArmDiagnosticRunner';
 import { Paper6H1ResistanceAssay } from './bridge/phases/paper6H1ResistanceAssay';
@@ -93,7 +95,7 @@ export function App() {
   const [selectedZone, setSelectedZone] = useState<ZoneId>(9);
   const [isFloatingChatOpen, setIsFloatingChatOpen] = useState<boolean>(false);
   
-  type TabType = 'morphogenetic' | 'dialogue' | 'thread3' | 'numogram' | 'atlas' | 'deformation' | 'canalization' | 'paper6' | 'midplex' | 'd288probe' | 'hyperstition' | 'benchmarks' | 'governor' | 'rhythms' | 'firebase' | 'audit';
+  type TabType = 'outside' | 'morphogenetic' | 'dialogue' | 'thread3' | 'numogram' | 'atlas' | 'deformation' | 'canalization' | 'paper6' | 'midplex' | 'd288probe' | 'hyperstition' | 'benchmarks' | 'governor' | 'rhythms' | 'firebase' | 'audit';
   const [activeTab, setActiveTab] = useState<TabType>('dialogue');
   const tabletLocalMode = import.meta.env.VITE_AMELIA_LOCAL_ONLY === '1';
   
@@ -587,6 +589,16 @@ export function App() {
           </button>
 
           <button
+            id="tab-outside"
+            onClick={() => setActiveTab('outside')}
+            className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-2.5 transition-all ${
+              activeTab === 'outside' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/60'
+            }`}
+          >
+            <Radio className="w-4 h-4 text-cyan-400" />Outside Streams
+          </button>
+
+          <button
             id="tab-thread3"
             onClick={() => setActiveTab('thread3')}
             className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-2.5 transition-all ${
@@ -771,6 +783,11 @@ export function App() {
 
         {/* Dynamic Content Viewport */}
         <main className="flex-1 min-w-0 p-3 sm:p-6 overflow-y-auto max-w-7xl mx-auto w-full space-y-6">
+                    <div className={activeTab === 'outside' ? 'space-y-6' : 'hidden'}>
+            <OutsideStreamLab runtime={runtimeRef.current} snapshot={snapshot} runtimeEpoch={runtimeEpoch}
+              isVisible={activeTab === 'outside'} onBeforeSharedStep={prepareRuntimeStep} onSharedStep={publishSnapshot} />
+          </div>
+
           {/* TAB 0: LIVE MORPHOGENETIC LAB */}
           {activeTab === 'morphogenetic' && (
             <LiveMorphogeneticLab
