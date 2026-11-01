@@ -1,5 +1,8 @@
 name: Amelia Outside continuous ingress
 on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/outside-continuous-ingress.yml', 'experiments/outside/continuous-runner.ts']
   schedule:
     - cron: '*/15 * * * *'
   workflow_dispatch:
