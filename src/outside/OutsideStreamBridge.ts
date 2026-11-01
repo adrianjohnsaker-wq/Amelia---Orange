@@ -519,9 +519,15 @@ export class OutsideStreamBridge {
       const link = this.traceLinks[index];
       const card = this.records.find(record => record.event.eventId === link.cardEventId);
       const ingress = this.records.find(record => record.event.eventId === link.ingressEventId);
+      const ingressChannel = ingress?.event.channel;
       if (!card || card.event.channel !== 'SUBDECADENCE' || !ingress ||
-          ingress.sequence <= card.sequence || link.cardRecordDigest !== card.recordDigest ||
-          link.ingressRecordDigest !== ingress.recordDigest || link.previousLinkDigest !== previousLinkDigest) {
+          !['ICHING', 'TAROT', 'LINGUISTIC'].includes(ingressChannel ?? '') ||
+          ingress.sequence <= card.sequence || link.sessionId !== this.sessionId ||
+          link.ingressSequence !== ingress.sequence || link.ingressChannel !== ingressChannel ||
+          link.cardRecordDigest !== card.recordDigest || link.ingressRecordDigest !== ingress.recordDigest ||
+          link.cardOccurredAt !== card.event.occurredAt || link.cardCapturedAt !== card.event.capturedAt ||
+          link.ingressOccurredAt !== ingress.event.occurredAt || link.ingressCapturedAt !== ingress.event.capturedAt ||
+          link.previousLinkDigest !== previousLinkDigest) {
         return { valid: false, checked: this.records.length + index, reason: 'Trace-link references or chain mismatch at link ' + (index + 1) };
       }
       const { linkDigest, ...body } = link;
