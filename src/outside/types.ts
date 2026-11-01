@@ -192,7 +192,8 @@ export interface OutsideTraceLink {
   comparison: {
     directRouteMatches: Array<{ fromZone: ZoneId; toZone: ZoneId }>;
     reverseRouteMatches: Array<{ fromZone: ZoneId; toZone: ZoneId }>;
-    terminalMeshZonesSeen: ZoneId[];
+    terminalMeshZonesSeenInIngressRoute: ZoneId[];
+    terminalMeshZonesSeenInAmeliaTransition: ZoneId[];
   };
   previousLinkDigest: string;
   linkDigest: string;
