@@ -401,7 +401,7 @@ export class OutsideStreamBridge {
     const reverseRouteMatches = cardRoute
       .filter(cardPair => uniqueEdges.some(edge => edge.fromZone === cardPair.toZone && edge.toZone === cardPair.fromZone))
       .map(pair => ({ fromZone: pair.fromZone, toZone: pair.toZone }));
-    const terminalMeshZones = cardEvent.terminalEntity?.zones ?? [];
+    const terminalMeshZones: ZoneId[] = cardEvent.terminalEntity ? [...cardEvent.terminalEntity.zones] : [];
     const terminalMeshZonesSeenInIngressRoute = ingressRouteZones.filter(zone => terminalMeshZones.includes(zone));
     const decision = ingress.snapshotAfter?.encounterDecisions?.find(item => item.eventId === ingressEvent.eventId);
     const ameliaTransition = ingress.substrateBefore && ingress.substrateAfter ? {
