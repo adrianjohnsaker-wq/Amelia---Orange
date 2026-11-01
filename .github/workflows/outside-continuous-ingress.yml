@@ -26,8 +26,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
-          cache-dependency-path: code/package-lock.json
       - name: Install runtime dependencies
         working-directory: code
         run: npm ci
