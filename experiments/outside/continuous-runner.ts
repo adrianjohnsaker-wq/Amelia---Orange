@@ -154,7 +154,7 @@ const summary = [
   '- Catalogue entries added: ' + newEntries.length,
   '- Source errors: ' + (errors.length ? errors.join('; ') : 'none'),
   '',
-  'Each RSS headline is an independently timestamped linguistic event. I Ching and Tarot readings are deterministic SHA-256-derived interpretations of that same captured item and are marked as derived, not independent channels. Amelia transitions are recorded on each event. Candidate generation is not novelty evidence; agency remains unresolved.',
+  'Each linked RSS headline is captured by Amelia after the Subdecadence event; its source publication time (occurredAt) and Amelia capture time (capturedAt) remain distinct in the records. Count each RSS headline as one source ingress. I Ching and Tarot are deterministic interpretations of that same headline, retained as derived records rather than independent sources. Amelia transitions are recorded separately. Route overlap is correspondence only; candidate generation is not novelty evidence and agency remains unresolved.',
   ''
 ].join('\n');
 await writeFile(statusPath, summary);
