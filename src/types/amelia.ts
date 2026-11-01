@@ -141,7 +141,7 @@ export interface ControlledBenchmark {
   lastRunTimestamp: string;
 }
 
-export type OutsideChannel = 'NUMOGRAM' | 'ICHING' | 'TAROT' | 'LINGUISTIC';
+export type OutsideChannel = 'NUMOGRAM' | 'ICHING' | 'TAROT' | 'LINGUISTIC' | 'SUBDECADENCE';
 export type EncounterDisposition = 'ATTEND' | 'DEFER' | 'REFUSE';
 export interface SubstrateEncounterInput { eventId: string; channel: OutsideChannel; sourceDigest: string; attentionVector: number[]; }
 export interface EncounterDecisionTrace extends SubstrateEncounterInput { disposition: EncounterDisposition; reason: string; applied: boolean; }
