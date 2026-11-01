@@ -5,7 +5,7 @@ export interface OutsideEventBase {
   eventId: string;
   sequence: number;
   sessionId: string;
-  channel: 'NUMOGRAM' | 'ICHING' | 'TAROT' | 'LINGUISTIC';
+  channel: 'NUMOGRAM' | 'ICHING' | 'TAROT' | 'LINGUISTIC' | 'SUBDECADENCE';
   occurredAt: string;
   capturedAt: string;
 }
@@ -61,6 +61,47 @@ export interface TarotSpreadEvent extends OutsideEventBase {
 
 export type LinguisticCipher = 'A1Z26' | 'ATBASH_1_26';
 export interface LemurianPairReference { key: string; zones: [number, number]; netSpan: string; mesh: string; serial: number; name: string; pitch: string; classification: string; }
+
+export type SubdecadencePylon = 'FAR_FUTURE' | 'DESTRUCTIVE_INFLUENCES' | 'CREATIVE_POWER' | 'MEMORIES_AND_DREAMS' | 'DEEP_PAST';
+export type SubdecadenceSuit = 'clubs' | 'diamonds' | 'hearts' | 'spades';
+export type SubdecadenceRank = 'Q' | 'A' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+export interface SubdecadenceCard { cardId: string; suit: SubdecadenceSuit; rank: SubdecadenceRank; value: ZoneId; }
+export interface SubdecadencePositionedCard extends SubdecadenceCard { pylon: SubdecadencePylon; }
+export interface SubdecadencePair {
+  set1CardId: string;
+  set2CardId: string;
+  pylon: SubdecadencePylon;
+  fromZone: ZoneId;
+  toZone: ZoneId;
+  score: number;
+}
+export interface SubdecadenceAeon {
+  index: number;
+  set1: SubdecadencePositionedCard[];
+  set2: SubdecadenceCard[];
+  pairs: SubdecadencePair[];
+  unmatchedSet1: SubdecadencePositionedCard[];
+  unmatchedSet2: SubdecadenceCard[];
+  pairScoreTotal: number;
+  unpairedSet1PenaltyTotal: number;
+  score: number;
+  cumulativeScore: number;
+}
+export interface SubdecadenceGameEvent extends OutsideEventBase {
+  channel: 'SUBDECADENCE';
+  kind: 'GAME';
+  gameId: string;
+  deckId: 'CCRU_SUBDECADENCE_40';
+  ruleset: 'NINE_SUM_CUMULATIVE_UNTIL_NONPOSITIVE';
+  method: string;
+  shuffleReceipt: string;
+  aeons: SubdecadenceAeon[];
+  terminalScore: number;
+  terminalMeshSerial: number | null;
+  terminalEntity: LemurianPairReference | null;
+  resultState: 'MESH_TERMINAL' | 'DECK_EXHAUSTED_POSITIVE';
+  realizedTraversal: { fromZone: ZoneId; toZone: ZoneId; catalogueMatch: LemurianPairReference | null } | null;
+}
 export interface LinguisticWordReduction { token: string; number: number; zone: ZoneId; factorization: Array<{ prime: number; exponent: number }>; }
 export interface LinguisticLoreComparison { fromZone: ZoneId; toZone: ZoneId; pairKey: string; match: LemurianPairReference | null; }
 export interface LinguisticMaterialEvent extends OutsideEventBase {
@@ -77,7 +118,8 @@ export type OutsideStreamEvent =
   | NumogramObservationEvent
   | IChingCastEvent
   | TarotSpreadEvent
-  | LinguisticMaterialEvent;
+  | LinguisticMaterialEvent
+  | SubdecadenceGameEvent;
 
 export interface SubstrateEndpoint {
   step: number;
@@ -118,7 +160,7 @@ export interface OutsideAtlasEntry {
   linkedNoteIds: string[];
   signature: string;
   status: 'EXPLORATORY_CANDIDATE' | 'RECURRING_IN_EXPLORATION' | 'AWAITING_DISCRIMINATION';
-  channelScope: Array<'NUMOGRAM' | 'ICHING' | 'TAROT' | 'LINGUISTIC'>;
+  channelScope: Array<'NUMOGRAM' | 'ICHING' | 'TAROT' | 'LINGUISTIC' | 'SUBDECADENCE'>;
   comments: string[];
 }
 
