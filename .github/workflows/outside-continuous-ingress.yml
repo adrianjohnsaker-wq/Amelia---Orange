@@ -51,7 +51,7 @@ jobs:
             local repo_dir="$1"
             local branch_name="$2"
             local commit_message="$3"
-            git -C "$repo_dir" add state.json ledger.json LATEST.md
+            git -C "$repo_dir" add state.json ledger.json LATEST.md || return 1
             if [ "$repo_dir" = "${{ github.workspace }}/watchtower-live" ]; then
               git -C "$repo_dir" add atlas.json
             fi
@@ -59,7 +59,9 @@ jobs:
               echo "No changes for $branch_name."
               return 0
             fi
-            git -C "$repo_dir" -c user.name='amelia-outside-collector' -c user.email='amelia-outside-collector@users.noreply.github.com' commit -qm "$commit_message"
+            local actor='amelia-outside-collector'
+            if [ "$branch_name" = "watchtower-live-ledger" ]; then actor='amelia-watchtower-collector'; fi
+            git -C "$repo_dir" -c user.name="$actor" -c user.email="$actor@users.noreply.github.com" commit -qm "$commit_message" || return 1
             for attempt in 1 2 3 4; do
               if git -C "$repo_dir" push -q origin "HEAD:$branch_name"; then return 0; fi
               sleep $((2 ** attempt))
@@ -80,14 +82,14 @@ jobs:
             cycle_index=$((cycle_index + 1))
             cycle_id="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${cycle_index}"
             echo "OUTSIDE_CYCLE_START $cycle_id $(date -u +%FT%TZ)"
-            git -C "${{ github.workspace }}/live" pull -q --rebase origin outside-live-ledger
-            git -C "${{ github.workspace }}/watchtower-live" pull -q --rebase origin watchtower-live-ledger
+            git -C "${{ github.workspace }}/live" pull -q --rebase origin outside-live-ledger || return 1
+            git -C "${{ github.workspace }}/watchtower-live" pull -q --rebase origin watchtower-live-ledger || return 1
 
-            (cd "${{ github.workspace }}/code" && RUN_ID="$cycle_id" npx --yes tsx@4.23.15 experiments/outside/continuous-runner.ts "${{ github.workspace }}/live")
-            commit_and_push "${{ github.workspace }}/live" outside-live-ledger "Outside ingress cycle $cycle_id"
+            (cd "${{ github.workspace }}/code" && RUN_ID="$cycle_id" npx --yes tsx@4.23.15 experiments/outside/continuous-runner.ts "${{ github.workspace }}/live") || return 1
+            commit_and_push "${{ github.workspace }}/live" outside-live-ledger "Outside ingress cycle $cycle_id" || return 1
 
-            (cd "${{ github.workspace }}/watchtower-code" && RUN_ID="$cycle_id" npx --yes tsx@4.23.15 experiments/watchtower/continuous-runner.ts "${{ github.workspace }}/live/ledger.json" "${{ github.workspace }}/watchtower-live")
-            commit_and_push "${{ github.workspace }}/watchtower-live" watchtower-live-ledger "Enochian Watchtower cycle $cycle_id"
+            (cd "${{ github.workspace }}/watchtower-code" && RUN_ID="$cycle_id" npx --yes tsx@4.23.15 experiments/watchtower/continuous-runner.ts "${{ github.workspace }}/live/ledger.json" "${{ github.workspace }}/watchtower-live") || return 1
+            commit_and_push "${{ github.workspace }}/watchtower-live" watchtower-live-ledger "Enochian Watchtower cycle $cycle_id" || return 1
             echo "OUTSIDE_CYCLE_COMPLETE $cycle_id $(date -u +%FT%TZ)"
           }
 
