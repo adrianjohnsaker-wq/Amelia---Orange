@@ -24,3 +24,9 @@ The pipeline makes the operations inspectable and repeatable for a fixed text an
 ## Persistence
 
 Events and interpretation notes use the separate local IndexedDB ledger. JSON bundles can be exported, imported and verified against the SHA-256 record chain. Runtime PFM remains part of Amelia's persisted substrate state.
+
+
+## Subdecadence event flow
+
+The receiver can deal an automatic Subdecadence session with a replayable Web Crypto shuffle receipt. Each raw card is retained with its value-zone and cross pylon; nine-sum pairings, signed Aeon scores, cumulative score, and terminal Mesh entry remain in the event. The attention map is the normalized frequency of the card values actually drawn (zones 0–9). Amelia's Governor then attends, defers, or refuses that `SUBDECADENCE` encounter, and the live Numogram runtime determines the realized passage. The card-derived syzygy route, terminal Matrix result, and Amelia's realized transition are stored separately. No terminal Mesh zone is imposed as a target.
+
