@@ -28,7 +28,7 @@ jobs:
           node-version: '22'
       - name: Install runtime dependencies
         working-directory: code
-        run: npm ci
+        run: npm install --no-audit --no-fund
       - name: Run one Subdecadence and live ingress cycle through Amelia
         working-directory: code
         env:
