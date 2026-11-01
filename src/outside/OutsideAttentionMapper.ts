@@ -1,5 +1,5 @@
 import { canonicalSha256 } from '../lib/sha256';
-import type { IChingCastEvent, LinguisticMaterialEvent, TarotSpreadEvent } from './types';
+import type { IChingCastEvent, LinguisticMaterialEvent, SubdecadenceGameEvent, TarotSpreadEvent } from './types';
 import type { OutsideChannel, ZoneId } from '../types/amelia';
 export interface OutsideAttentionMap { channel: OutsideChannel; sourceDigest: string; attentionVector: number[]; }
 const SYZYGIES: Array<[ZoneId,ZoneId]>=[[0,9],[1,8],[2,7],[3,6],[4,5]];
@@ -11,4 +11,12 @@ export class OutsideAttentionMapper{
  static forIChing(e:IChingCastEvent):OutsideAttentionMap{const v=zero();e.lineValues.forEach((line,i)=>{const side=line===7||line===9?'SECOND':'FIRST';deposit(v,i%5,side,1);if(line===6||line===9)deposit(v,i%5,side==='FIRST'?'SECOND':'FIRST',.65);});return{channel:'ICHING',sourceDigest:canonicalSha256(JSON.stringify(e)),attentionVector:normalize(v)};}
  static forTarot(e:TarotSpreadEvent):OutsideAttentionMap{const v=zero();for(const d of [...e.draws].sort((a,b)=>a.order-b.order)){const side=d.orientation==='UPRIGHT'?'FIRST':d.orientation==='REVERSED'?'SECOND':'BOTH';deposit(v,byte(d.cardId)%5,side,1);deposit(v,byte(d.positionId)%5,'BOTH',.35);}return{channel:'TAROT',sourceDigest:canonicalSha256(JSON.stringify(e)),attentionVector:normalize(v)};}
  static forLinguistic(e:LinguisticMaterialEvent):OutsideAttentionMap{const v=zero();e.wordReductions.forEach(w=>{v[w.zone]+=1;});v[e.resultZone]+=2;return{channel:'LINGUISTIC',sourceDigest:canonicalSha256(JSON.stringify(e)),attentionVector:normalize(v)};}
+ static forSubdecadence(e:SubdecadenceGameEvent):OutsideAttentionMap{
+  const v=zero();
+  for(const aeon of e.aeons){
+   for(const card of aeon.set1)v[card.value]+=1;
+   for(const card of aeon.set2)v[card.value]+=1;
+  }
+  return{channel:'SUBDECADENCE',sourceDigest:canonicalSha256(JSON.stringify(e)),attentionVector:normalize(v)};
+ }
 }
