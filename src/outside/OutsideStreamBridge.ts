@@ -401,7 +401,11 @@ export class OutsideStreamBridge {
     const reverseRouteMatches = cardRoute
       .filter(cardPair => uniqueEdges.some(edge => edge.fromZone === cardPair.toZone && edge.toZone === cardPair.fromZone))
       .map(pair => ({ fromZone: pair.fromZone, toZone: pair.toZone }));
-    const terminalMeshZones: ZoneId[] = cardEvent.terminalEntity ? [...cardEvent.terminalEntity.zones] : [];
+    const terminalMeshZones: ZoneId[] = [];
+    for (const zone of cardEvent.terminalEntity?.zones ?? []) {
+      if (!Number.isInteger(zone) || zone < 0 || zone > 9) throw new Error('Card-selected Mesh contains a zone outside the Numogram.');
+      terminalMeshZones.push(zone as ZoneId);
+    }
     const terminalMeshZonesSeenInIngressRoute = ingressRouteZones.filter(zone => terminalMeshZones.includes(zone));
     const decision = ingress.snapshotAfter?.encounterDecisions?.find(item => item.eventId === ingressEvent.eventId);
     const ameliaTransition = ingress.substrateBefore && ingress.substrateAfter ? {
