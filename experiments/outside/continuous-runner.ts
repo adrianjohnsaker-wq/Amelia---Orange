@@ -59,7 +59,7 @@ function tarotFor(seed: string): TarotDraw[] {
 }
 function ichingFor(seed: string): [6|7|8|9, 6|7|8|9, 6|7|8|9, 6|7|8|9, 6|7|8|9, 6|7|8|9] {
   const bytes = Buffer.from(seed, 'hex');
-  return Array.from({length:6}, (_, i) => [6,7,8,9][bytes[i] % 4]) as [6,7,8,9,6,7];
+  return Array.from({length:6}, (_, i) => [6,7,8,9][bytes[i] % 4]) as [6|7|8|9,6|7|8|9,6|7|8|9,6|7|8|9,6|7|8|9,6|7|8|9];
 }
 const initialBundle = { bundleSchema:'amelia.outside-stream-bundle/v1', sessionId, exportedAt:now(), records:[], interpretations:[], atlasEntries:[], traceLinks:[] };
 const persisted = await readFile(statePath, 'utf8').then(JSON.parse).catch(() => ({ seen:[], runtimeState:null, runCount:0 }));
