@@ -18,6 +18,10 @@ export function factorize(value: number): Array<{ prime: number; exponent: numbe
   if (remaining > 1) factors.push({ prime: remaining, exponent: 1 });
   return factors;
 }
+export function lemurianEntryBySerial(serial: number): LemurianPairReference | null {
+  if (!Number.isInteger(serial) || serial < 0 || serial > 44) return null;
+  return [...catalogue.values()].find(entry => entry.serial === serial) ?? null;
+}
 export function compareLemurianPair(fromZone: ZoneId, toZone: ZoneId): LemurianPairReference | null {
   if (fromZone === toZone) return null;
   const key = [fromZone, toZone].sort((a, b) => a - b).join('-');
