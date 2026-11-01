@@ -26,14 +26,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install runtime dependencies
-        working-directory: code
-        run: npm install --no-audit --no-fund
       - name: Run one Subdecadence and live ingress cycle through Amelia
         working-directory: code
         env:
           RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
-        run: npx tsx experiments/outside/continuous-runner.ts "${{ github.workspace }}/live"
+        run: npx --yes tsx@4.23.15 experiments/outside/continuous-runner.ts "${{ github.workspace }}/live"
       - name: Append the verified ledger and Amelia state
         working-directory: live
         run: |
