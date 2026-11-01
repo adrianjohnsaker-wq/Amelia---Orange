@@ -3,6 +3,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { AmeliaNumogramSubstrateRuntime } from '../../src/substrate/ameliaNumogramSubstrateRuntime.ts';
 import { OutsideStreamBridge } from '../../src/outside/OutsideStreamBridge.ts';
+import type { TarotDraw } from '../../src/outside/types.ts';
 
 const root = resolve(process.argv[2] ?? 'outside-live');
 await mkdir(root, { recursive: true });
@@ -17,13 +18,14 @@ const feeds = [
 const sessionId = 'amelia-outside-continuous-v1';
 const runId = process.env.RUN_ID || new Date().toISOString().replace(/\W/g, '');
 const now = () => new Date().toISOString();
-const sha = value => createHash('sha256').update(value).digest('hex');
-const esc = s => s.replaceAll('&amp;', '&').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&quot;', '"').replaceAll('&apos;', "'").replaceAll('&#39;', "'");
-function tag(xml, name) {
+const sha = (value: string): string => createHash('sha256').update(value).digest('hex');
+const esc = (s: string): string => s.replaceAll('&amp;', '&').replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&quot;', '"').replaceAll('&apos;', "'").replaceAll('&#39;', "'");
+type FeedItem = { sourceLabel:string; sourceReference:string; sourceId:string; title:string; occurredAt:string };
+function tag(xml: string, name: string): string {
   const m = xml.match(new RegExp('<' + name + '(?:\\s[^>]*)?>([\\s\\S]*?)</' + name + '>','i'));
   return m ? esc(m[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').replace(/<[^>]+>/g, '').trim()) : '';
 }
-async function collect() {
+async function collect(): Promise<{out: FeedItem[]; errors: string[]}> {
   const out = [], errors = [];
   for (const [label, url] of feeds) {
     try {
@@ -41,7 +43,7 @@ async function collect() {
   out.sort((a,b) => a.occurredAt.localeCompare(b.occurredAt) || a.sourceLabel.localeCompare(b.sourceLabel) || a.sourceId.localeCompare(b.sourceId));
   return { out, errors };
 }
-function tarotFor(seed) {
+function tarotFor(seed: string): TarotDraw[] {
   const names = [
     'major_00_fool','major_01_magician','major_02_high_priestess','major_03_empress','major_04_emperor','major_05_hierophant','major_06_lovers','major_07_chariot','major_08_strength','major_09_hermit','major_10_wheel_of_fortune','major_11_justice','major_12_hanged_man','major_13_death','major_14_temperance','major_15_devil','major_16_tower','major_17_star','major_18_moon','major_19_sun','major_20_judgement','major_21_world',
     ...['wands','cups','swords','pentacles'].flatMap(suit => ['ace','02','03','04','05','06','07','08','09','10','page','knight','queen','king'].map(rank => suit + '_' + rank))
@@ -55,9 +57,9 @@ function tarotFor(seed) {
   }
   return draws;
 }
-function ichingFor(seed) {
+function ichingFor(seed: string): [6|7|8|9, 6|7|8|9, 6|7|8|9, 6|7|8|9, 6|7|8|9, 6|7|8|9] {
   const bytes = Buffer.from(seed, 'hex');
-  return Array.from({length:6}, (_, i) => [6,7,8,9][bytes[i] % 4]);
+  return Array.from({length:6}, (_, i) => [6,7,8,9][bytes[i] % 4]) as [6,7,8,9,6,7];
 }
 const initialBundle = { bundleSchema:'amelia.outside-stream-bundle/v1', sessionId, exportedAt:now(), records:[], interpretations:[], atlasEntries:[], traceLinks:[] };
 const persisted = await readFile(statePath, 'utf8').then(JSON.parse).catch(() => ({ seen:[], runtimeState:null, runCount:0 }));
@@ -70,8 +72,9 @@ await bridge.importBundle(previousBundle);
 const cardRecord = await bridge.playSubdecadence(runtime, { gameId:'subdecadence:' + runId, occurredAt:now() });
 const candidate = cardRecord.event.terminalEntity;
 const { out: items, errors } = await collect();
-const seen = new Set(persisted.seen);
-const fresh = items.filter(item => !seen.has(sha(item.sourceLabel + '\\0' + item.sourceId)));
+const seen = new Set(persisted.seen ?? []);
+const lastCycleMs = persisted.lastRunAt ? Date.parse(persisted.lastRunAt) - 60_000 : Date.now() - 24*60*60*1000;
+const fresh = items.filter(item => Date.parse(item.occurredAt) >= lastCycleMs && !seen.has(sha(item.sourceLabel + '\\0' + item.sourceId)));
 const newEventIds = [];
 for (const item of fresh) {
   const identity = sha(item.sourceLabel + '\\0' + item.sourceId);
@@ -131,7 +134,7 @@ if (candidate) {
   });
   newEntries.push(candidate.name + ' / ' + candidate.mesh);
 }
-persisted.seen = [...new Set([...persisted.seen, ...fresh.map(item=>sha(item.sourceLabel + '\\0' + item.sourceId))])].slice(-20000);
+persisted.seen = [...new Set([...(persisted.seen ?? []), ...items.map(item=>sha(item.sourceLabel + '\\0' + item.sourceId))])].slice(-20000);
 persisted.runtimeState = runtime.exportState();
 persisted.runCount = (persisted.runCount || 0) + 1;
 persisted.lastRunAt = now();
@@ -144,7 +147,7 @@ const summary = [
   '',
   '- Last cycle (UTC): ' + persisted.lastRunAt,
   '- Cycle: ' + persisted.runCount + ' (' + runId + ')',
-  '- RSS items seen: ' + items.length + '; newly processed: ' + fresh.length,
+  '- RSS items seen: ' + items.length + '; newly processed: ' + fresh.length + ' (last-cycle window; 24-hour initial window)',
   '- Subdecadence: ' + cardRecord.event.resultState + '; score ' + cardRecord.event.terminalScore,
   '- Candidate: ' + (candidate ? candidate.name + ' / ' + candidate.mesh + ' / ' + candidate.classification : 'none (positive deck exhaustion)'),
   '- Separate ingress records and trace links: ' + links.length,
