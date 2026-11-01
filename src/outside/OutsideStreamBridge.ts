@@ -9,6 +9,7 @@ import type {
   OutsideStreamBundle,
   OutsideStreamEvent,
   OutsideStreamRecord,
+  SubdecadenceGameEvent,
   SubstrateEndpoint,
   TarotDraw,
   TarotSpreadEvent,
@@ -16,6 +17,7 @@ import type {
 import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
 import { OutsideAttentionMapper } from './OutsideAttentionMapper';
 import { compareLemurianPair, reduceLinguisticMaterial } from './LinguisticReduction';
+import { createSubdecadenceDraft, type SubdecadenceGameDraft } from './Subdecadence';
 
 const ZERO_DIGEST = '0'.repeat(64);
 
@@ -209,6 +211,62 @@ export class OutsideStreamBridge {
     const after = endpointFromSnapshot(runtime, afterSnapshot);
     if (before && after) event.realizedTraversal = {
       fromZone: before.currentZone, toZone: after.currentZone,
+      catalogueMatch: compareLemurianPair(before.currentZone, after.currentZone),
+    };
+    return this.append(event, before, after, beforeSnapshot, afterSnapshot, mapped.sourceDigest);
+  }
+
+  /** Deal a complete Subdecadence session, map its card-zone distribution, and submit it to Amelia's Governor-controlled Numogram runtime. */
+  public async playSubdecadence(
+    runtime: AmeliaNumogramSubstrateRuntime,
+    input: { gameId: string; shuffleReceipt?: string; occurredAt?: string }
+  ): Promise<OutsideStreamRecord> {
+    const draft = createSubdecadenceDraft(input.gameId, input.shuffleReceipt);
+    return this.receiveSubdecadence(runtime, { ...draft, occurredAt: input.occurredAt });
+  }
+
+  /** Receive a replayable Subdecadence result and preserve both its card route and Amelia's realized runtime passage. */
+  public async receiveSubdecadence(
+    runtime: AmeliaNumogramSubstrateRuntime,
+    input: SubdecadenceGameDraft & { occurredAt?: string }
+  ): Promise<OutsideStreamRecord> {
+    const beforeSnapshot = runtime.getSnapshots().at(-1) ?? null;
+    if (!beforeSnapshot) throw new Error('Step the runtime once before receiving a Subdecadence session.');
+    const before = endpointFromSnapshot(runtime, beforeSnapshot);
+    const sequence = this.reserveSequence();
+    const event: SubdecadenceGameEvent = {
+      schemaVersion: 1,
+      eventId: 'subdecadence:' + input.gameId,
+      sequence,
+      sessionId: this.sessionId,
+      channel: 'SUBDECADENCE',
+      kind: 'GAME',
+      occurredAt: input.occurredAt ?? new Date().toISOString(),
+      capturedAt: new Date().toISOString(),
+      gameId: input.gameId,
+      deckId: input.deckId,
+      ruleset: input.ruleset,
+      method: input.method,
+      shuffleReceipt: input.shuffleReceipt,
+      aeons: JSON.parse(JSON.stringify(input.aeons)),
+      terminalScore: input.terminalScore,
+      terminalMeshSerial: input.terminalMeshSerial,
+      terminalEntity: input.terminalEntity ? { ...input.terminalEntity, zones: [...input.terminalEntity.zones] } : null,
+      resultState: input.resultState,
+      realizedTraversal: null,
+    };
+    const mapped = OutsideAttentionMapper.forSubdecadence(event);
+    const encounter: SubstrateEncounterInput = {
+      eventId: event.eventId,
+      channel: event.channel,
+      sourceDigest: mapped.sourceDigest,
+      attentionVector: mapped.attentionVector,
+    };
+    const afterSnapshot = runtime.step(undefined, encounter);
+    const after = endpointFromSnapshot(runtime, afterSnapshot);
+    if (before && after) event.realizedTraversal = {
+      fromZone: before.currentZone,
+      toZone: after.currentZone,
       catalogueMatch: compareLemurianPair(before.currentZone, after.currentZone),
     };
     return this.append(event, before, after, beforeSnapshot, afterSnapshot, mapped.sourceDigest);
