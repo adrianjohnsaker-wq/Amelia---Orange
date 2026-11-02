@@ -241,8 +241,7 @@ async function main() {
     for (const ev of evs) {
       const body = { step: ev.blockIndex, from: ev.fromZone, to: ev.targetZone,
         fluxDelta: ev.fluxDelta, phaseCoherence: ev.phaseCoherence,
-        inputDigest: ev.inputDigest ?? null, inputZone: ev.inputZone ?? null,
-        encounters: ev.encounters ?? [] };
+        inputDigest: ev.inputDigest ?? null, inputZone: ev.inputZone ?? null };
       assert.equal(ev.eventDigest, canonicalSha256(JSON.stringify(body)));
     }
     return { verifiedEvents: evs.length, head: runtime.getMemory().exportHistoryDigest() };
