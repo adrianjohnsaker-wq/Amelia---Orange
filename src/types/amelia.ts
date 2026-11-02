@@ -141,11 +141,6 @@ export interface ControlledBenchmark {
   lastRunTimestamp: string;
 }
 
-export type OutsideChannel = 'NUMOGRAM' | 'ICHING' | 'TAROT' | 'LINGUISTIC' | 'SUBDECADENCE';
-export type EncounterDisposition = 'ATTEND' | 'DEFER' | 'REFUSE';
-export interface SubstrateEncounterInput { eventId: string; channel: OutsideChannel; sourceDigest: string; attentionVector: number[]; }
-export interface EncounterDecisionTrace extends SubstrateEncounterInput { disposition: EncounterDisposition; reason: string; applied: boolean; }
-
 export interface SubstrateStepSnapshot {
   step: number;
   timestamp: number;
@@ -155,7 +150,6 @@ export interface SubstrateStepSnapshot {
   deformationVector: number[];
   selectedObjective: string;
   lastTransition?: { from: ZoneId; to: ZoneId; digest: string } | null;
-  encounterDecisions?: EncounterDecisionTrace[];
   memoryHistoryLength?: number;
   memoryHeadDigest?: string;
   extrapolations?: OneStepExtrapolation[];

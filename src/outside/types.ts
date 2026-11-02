@@ -1,4 +1,5 @@
-import type { SubstrateStepSnapshot, ZoneId } from '../types/amelia';
+import type { ZoneId } from '../types/amelia';
+import type { OutsideStepSnapshot } from './encounterTypes';
 
 export interface OutsideEventBase {
   schemaVersion: 1;
@@ -134,8 +135,8 @@ export interface OutsideStreamRecord {
   event: OutsideStreamEvent;
   substrateBefore: SubstrateEndpoint | null;
   substrateAfter: SubstrateEndpoint | null;
-  snapshotBefore: SubstrateStepSnapshot | null;
-  snapshotAfter: SubstrateStepSnapshot | null;
+  snapshotBefore: OutsideStepSnapshot | null;
+  snapshotAfter: OutsideStepSnapshot | null;
   runtimeSignalDigest: string | null;
   previousRecordDigest: string | null;
   recordDigest: string;

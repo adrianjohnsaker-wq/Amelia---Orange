@@ -16,6 +16,7 @@
  */
 import type { NumogramGate, NumogramZone, ZoneId } from '../types/amelia';
 import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
+import { AmeliaOutsideRuntime } from '../outside/OutsideEncounterRuntime';
 import { CANONICAL_GATES as ORIGINAL_GATES, INITIAL_ZONES } from '../ai/numogram/AmeliaQabbalaInterface';
 
 export type CCRUEdgeKind = 'syzygy' | 'current' | 'gate';
@@ -88,4 +89,4 @@ export function withFullNumogram(runtime: AmeliaNumogramSubstrateRuntime): Ameli
 }
 
 /** A newly born Amelia, living on the full CCRU Numogram. */
-export const bornAmelia = (): AmeliaNumogramSubstrateRuntime => withFullNumogram(new AmeliaNumogramSubstrateRuntime());
+export const bornAmelia = (): AmeliaOutsideRuntime => withFullNumogram(new AmeliaOutsideRuntime()) as AmeliaOutsideRuntime;

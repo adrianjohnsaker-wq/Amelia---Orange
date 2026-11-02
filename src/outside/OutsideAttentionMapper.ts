@@ -1,6 +1,7 @@
 import { canonicalSha256 } from '../lib/sha256';
 import type { IChingCastEvent, LinguisticMaterialEvent, SubdecadenceGameEvent, TarotSpreadEvent } from './types';
-import type { OutsideChannel, ZoneId } from '../types/amelia';
+import type { ZoneId } from '../types/amelia';
+import type { OutsideChannel } from './encounterTypes';
 export interface OutsideAttentionMap { channel: OutsideChannel; sourceDigest: string; attentionVector: number[]; }
 const SYZYGIES: Array<[ZoneId,ZoneId]>=[[0,9],[1,8],[2,7],[3,6],[4,5]];
 const zero=()=>new Array(10).fill(0) as number[];

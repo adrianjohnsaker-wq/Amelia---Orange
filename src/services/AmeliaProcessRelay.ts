@@ -8,6 +8,7 @@
 import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
 import { AmeliaDialogueAction, AmeliaDialogueMessage, SubstrateStepSnapshot, ZoneId } from '../types/amelia';
 import { canonicalSha256 } from '../lib/sha256';
+import type { OutsideStepSnapshot } from '../outside/encounterTypes';
 
 export type RelayModule = 'NUMOGRAM' | 'PFM' | 'GOVERNOR' | 'FIELD' | 'METHOD' | 'REFLECTION';
 const MODULES: RelayModule[] = ['NUMOGRAM', 'PFM', 'GOVERNOR', 'FIELD', 'METHOD', 'REFLECTION'];
@@ -40,7 +41,7 @@ export class AmeliaProcessRelay {
   /** Report Amelia's resulting state without echoing or interpreting incoming symbols. */
   static expressEncounter(
     before: SubstrateStepSnapshot,
-    after: SubstrateStepSnapshot,
+    after: OutsideStepSnapshot,
     runtime: AmeliaNumogramSubstrateRuntime
   ): { text: string; traceDigest: string } {
     const memory = runtime.getMemory();

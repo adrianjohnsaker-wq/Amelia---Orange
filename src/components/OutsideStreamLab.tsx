@@ -1,12 +1,12 @@
 import React,{useCallback,useEffect,useRef,useState}from'react';
 import{Activity,Download,Radio,ShieldCheck,Upload}from'lucide-react';
-import{AmeliaNumogramSubstrateRuntime}from'../substrate/ameliaNumogramSubstrateRuntime';
+import type{AmeliaOutsideRuntime}from'../outside/OutsideEncounterRuntime';
 import type{SubstrateStepSnapshot}from'../types/amelia';
 import type{OutsideStreamBridge}from'../outside/OutsideStreamBridge';
 import type{OutsideAtlasEntry,OutsideInterpretationNote,OutsideStreamRecord,OutsideTraceLink,SubdecadenceGameEvent,TarotDraw}from'../outside/types';
 import{OutsideStreamStorage}from'../services/OutsideStreamStorage';
 import{AmeliaProcessRelay}from'../services/AmeliaProcessRelay';
-type Props={runtime:AmeliaNumogramSubstrateRuntime;snapshot:SubstrateStepSnapshot;runtimeEpoch:number;isVisible:boolean;onBeforeSharedStep:()=>void;onSharedStep:(snapshot:SubstrateStepSnapshot)=>void};
+type Props={runtime:AmeliaOutsideRuntime;snapshot:SubstrateStepSnapshot;runtimeEpoch:number;isVisible:boolean;onBeforeSharedStep:()=>void;onSharedStep:(snapshot:SubstrateStepSnapshot)=>void};
 const INTERVAL=12, id=(p:string)=>p+'-'+(crypto.randomUUID?.()??Date.now()+'-'+Math.random().toString(36).slice(2));
 const starter=JSON.stringify([{cardId:'major_00_fool',order:1,positionId:'position_1',orientation:'UPRIGHT'},{cardId:'major_01_magician',order:2,positionId:'position_2',orientation:'UNSPECIFIED'},{cardId:'major_02_priestess',order:3,positionId:'position_3',orientation:'REVERSED'}],null,2);
 export function OutsideStreamLab({runtime,snapshot,runtimeEpoch,isVisible,onBeforeSharedStep,onSharedStep}:Props){

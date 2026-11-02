@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { AmeliaNumogramSubstrateRuntime } from '../../src/substrate/ameliaNumogramSubstrateRuntime.ts';
+import { AmeliaOutsideRuntime } from '../../src/outside/OutsideEncounterRuntime.ts';
 import { OutsideStreamBridge } from '../../src/outside/OutsideStreamBridge.ts';
 import type { TarotDraw } from '../../src/outside/types.ts';
 
@@ -63,7 +63,7 @@ function ichingFor(seed: string): [6|7|8|9, 6|7|8|9, 6|7|8|9, 6|7|8|9, 6|7|8|9, 
 }
 const initialBundle = { bundleSchema:'amelia.outside-stream-bundle/v1', sessionId, exportedAt:now(), records:[], interpretations:[], atlasEntries:[], traceLinks:[] };
 const persisted = await readFile(statePath, 'utf8').then(JSON.parse).catch(() => ({ seen:[], runtimeState:null, runCount:0 }));
-const runtime = new AmeliaNumogramSubstrateRuntime();
+const runtime = new AmeliaOutsideRuntime();
 if (persisted.runtimeState) runtime.importState(persisted.runtimeState);
 else runtime.step();
 const bridge = new OutsideStreamBridge(sessionId);

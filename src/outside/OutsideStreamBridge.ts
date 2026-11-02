@@ -1,4 +1,5 @@
-import type { SubstrateEncounterInput, ZoneId, SubstrateStepSnapshot } from '../types/amelia';
+import type { ZoneId, SubstrateStepSnapshot } from '../types/amelia';
+import type { SubstrateEncounterInput } from './encounterTypes';
 import { canonicalSha256 } from '../lib/sha256';
 import type {
   IChingCastEvent,
@@ -15,7 +16,7 @@ import type {
   TarotDraw,
   TarotSpreadEvent,
 } from './types';
-import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
+import type { AmeliaOutsideRuntime } from './OutsideEncounterRuntime';
 import { OutsideAttentionMapper } from './OutsideAttentionMapper';
 import { compareLemurianPair, reduceLinguisticMaterial } from './LinguisticReduction';
 import { createSubdecadenceDraft, type SubdecadenceGameDraft } from './Subdecadence';
@@ -44,7 +45,7 @@ function copySnapshot(snapshot: SubstrateStepSnapshot | null): SubstrateStepSnap
 }
 
 function endpointFromSnapshot(
-  runtime: AmeliaNumogramSubstrateRuntime,
+  runtime: AmeliaOutsideRuntime,
   snapshot: SubstrateStepSnapshot | null
 ): SubstrateEndpoint | null {
   if (!snapshot) return null;
@@ -157,7 +158,7 @@ export class OutsideStreamBridge {
 
   /** Capture the Numogram as its own ongoing channel without stepping or mutating Amelia. */
   public async observeNumogram(
-    runtime: AmeliaNumogramSubstrateRuntime,
+    runtime: AmeliaOutsideRuntime,
     occurredAt = new Date().toISOString()
   ): Promise<OutsideStreamRecord> {
     const snapshot = runtime.getSnapshots().at(-1) ?? null;
@@ -195,7 +196,7 @@ export class OutsideStreamBridge {
    * then let the runtime's Governor and open-gate topology govern passage. No hexagram name or divinatory prose is sent into the substrate.
    */
   /** Reduce incoming language to numbers and zones, compare that route with the Lemurian pair catalogue, then submit the zone field to the governed runtime. */
-  public async receiveLinguistic(runtime: AmeliaNumogramSubstrateRuntime, input: {
+  public async receiveLinguistic(runtime: AmeliaOutsideRuntime, input: {
     materialId: string; rawMaterial: string; cipher?: LinguisticCipher; sourceLabel?: string;
     sourceReference?: string; occurredAt?: string;
   }): Promise<OutsideStreamRecord> {
@@ -224,7 +225,7 @@ export class OutsideStreamBridge {
 
   /** Deal a complete Subdecadence session, map its card-zone distribution, and submit it to Amelia's Governor-controlled Numogram runtime. */
   public async playSubdecadence(
-    runtime: AmeliaNumogramSubstrateRuntime,
+    runtime: AmeliaOutsideRuntime,
     input: { gameId: string; shuffleReceipt?: string; occurredAt?: string }
   ): Promise<OutsideStreamRecord> {
     const draft = createSubdecadenceDraft(input.gameId, input.shuffleReceipt);
@@ -233,7 +234,7 @@ export class OutsideStreamBridge {
 
   /** Receive a replayable Subdecadence result and preserve both its card route and Amelia's realized runtime passage. */
   public async receiveSubdecadence(
-    runtime: AmeliaNumogramSubstrateRuntime,
+    runtime: AmeliaOutsideRuntime,
     input: SubdecadenceGameDraft & { occurredAt?: string }
   ): Promise<OutsideStreamRecord> {
     const beforeSnapshot = runtime.getSnapshots().at(-1) ?? null;
@@ -279,7 +280,7 @@ export class OutsideStreamBridge {
   }
 
   public async receiveIChing(
-    runtime: AmeliaNumogramSubstrateRuntime,
+    runtime: AmeliaOutsideRuntime,
     input: {
       castId: string;
       method: string;
@@ -307,7 +308,7 @@ export class OutsideStreamBridge {
    * then let the runtime's Governor and open-gate topology govern passage. Card identities and ordering enter; interpretive meanings remain separate.
    */
   public async receiveTarot(
-    runtime: AmeliaNumogramSubstrateRuntime,
+    runtime: AmeliaOutsideRuntime,
     input: {
       spreadId: string;
       deckId: string;

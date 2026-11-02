@@ -1,0 +1,151 @@
+# PF S1 amendment 4 (experiments/pf_storage/PF_S1_AMENDMENT_4.md): ONE RFC3161 token (once), then the audited reopening of
+# a PF-2 halt whose only cause is an RFC3161 seal failure, at exactly its sealed prefix. First use: tick 8750.
+name: PF S1 amendment 4 — seal, then reopen PF-2 after an RFC3161 seal halt
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf-s1-a4.yml']
+  workflow_dispatch:
+    inputs:
+      expect_tick:
+        description: 'PF-2 halted tick the operator expects to reopen'
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: orange, ref: main, fetch-depth: 1 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: B1 amendment 4 bundle and ONE genuine RFC3161 token (only if not yet archived)
+        id: seal
+        working-directory: orange
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -q -r ../c1-pin/drift1a_c1/requirements.txt
+          if [ -e experiments/pf_storage/seal_a4/receipt.json ]; then echo 'PF_S1_A4_SEAL_ALREADY_ARCHIVED'; echo 'archive=false' >> "$GITHUB_OUTPUT"; exit 0; fi
+          python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          p=pathlib.Path('/tmp/pfs1a4'); p.mkdir(parents=True,exist_ok=True)
+          sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          files=['experiments/pf_storage/PF_S1_AMENDMENT_4.md','experiments/pf2/PF2_S1_RECOVER_A4.py','.github/workflows/pf-s1-a4.yml']
+          bundle={'schema':'PF_S1_A4_OPERATIONAL_SHA256_V1','amends':'experiments/pf_storage/seal/S1_SIGNED_BUNDLE.json',
+            'firstUse':{'PF2':{'haltedTick':8750,'head':'9c4da8505a030a8682e8526fa7faf426fa58c4c4ddf4c158925377a9039bc3e2','haltCommit':'d804aeb8','lease':'41119460619-1'}},
+            'cause':'RFC3161 timestamp request did not return PASS during PF2_LIVE_SEAL','scienceChanged':False,'notificationsEnabled':False,
+            'sourceSHA256':[{'path':f,'sha256':sha(f)} for f in files]}
+          (p/'S1_A4_SIGNED_BUNDLE.json').write_text(json.dumps(bundle,sort_keys=True,indent=2)+'\n')
+          imprint=sha(p/'S1_A4_SIGNED_BUNDLE.json')
+          Sealer().seal(p/'seal',imprint)
+          assert Sealer().verify(p/'seal',imprint)['status']=='PASS'
+          print('PF_S1_A4_ONE_RFC3161_PASS',imprint)
+          PY
+          echo 'archive=true' >> "$GITHUB_OUTPUT"
+      - name: B2 create-only archive of the amendment bundle, token and receipt
+        if: steps.seal.outputs.archive == 'true'
+        env: { GH_TOKEN: '${{ github.token }}', REPO: '${{ github.repository }}' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,json,os,pathlib,subprocess
+          p=pathlib.Path('/tmp/pfs1a4')
+          files={'S1_A4_SIGNED_BUNDLE.json':p/'S1_A4_SIGNED_BUNDLE.json'}
+          for n in sorted(x.name for x in (p/'seal').iterdir()):
+            files[n]=p/'seal'/n
+          assert 'receipt.json' in files,'MISSING receipt.json'
+          for name in sorted(files,key=lambda k:k=='receipt.json'):
+            dst='experiments/pf_storage/seal_a4/'+name
+            payload={'message':'PF S1 amendment 4: ONE RFC3161 token, create-only '+name+'; zero admitted','branch':'main','content':base64.b64encode(files[name].read_bytes()).decode()}
+            r=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dst,'--input','-'],input=json.dumps(payload),capture_output=True,text=True)
+            if r.returncode: raise RuntimeError('S1_A4_CREATE_ONLY_FAILED '+dst+' '+r.stderr[-800:])
+            print('PF_S1_A4_ARCHIVED',dst)
+          PY
+  reopen:
+    needs: seal
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      actions: read
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: orange, ref: main, fetch-depth: 1 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: R0 seal verified; no open lease; no live PF run; pinned check on the halted state
+        working-directory: orange
+        env: { GH_TOKEN: '${{ github.token }}', PYTHONPATH: '${{ github.workspace }}/c1-pin', DRIFT_C1_ENABLE_LIVE: 'false' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          python -m pip install -q -r ../c1-pin/drift1a_c1/requirements.txt
+          for wf in pf1-live-observe-s1.yml pf2-live-observe-s1.yml; do
+            for st in in_progress queued; do
+              n=$(gh api "repos/${{ github.repository }}/actions/workflows/$wf/runs?status=$st" --jq '.total_count')
+              test "$n" = 0 || { echo "PF_S1_A4_LIVE_RUN_ACTIVE $wf $st $n"; exit 1; }
+            done
+          done
+          python experiments/pf_storage/PF_SHARD.py join experiments/pf2/live/STATE.json
+          python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          d=pathlib.Path('experiments/pf_storage/seal_a4'); b=json.loads((d/'S1_A4_SIGNED_BUNDLE.json').read_text())
+          assert Sealer().verify(d,h(d/'S1_A4_SIGNED_BUNDLE.json'))['status']=='PASS'
+          for x in b['sourceSHA256']: assert h(x['path'])==x['sha256'],x['path']
+          root=pathlib.Path('drift1a_c1/runner_state')
+          assert not [p.name for p in (root/'leases').glob('*.json') if not (root/'completions'/p.name).exists()],'OPEN_LEASE'
+          print('PF_S1_A4_AUDIT_PASS')
+          PY
+          python experiments/pf2/PF2_LIVE_CHECK.py
+      - name: R1 reopen PF-2 at its sealed prefix; re-split; exact-byte join; commit receipt and shards only
+        working-directory: orange
+        env:
+          PYTHONPATH: '${{ github.workspace }}/c1-pin'
+          DRIFT_C1_ENABLE_LIVE: 'false'
+          PF2_S1_A4_OPERATOR_CONTINUE: 'true'
+          PF2_S1_A4_SEAL_VERIFIED: 'true'
+          PF2_S1_A4_EXPECT_TICK: "${{ github.event_name == 'workflow_dispatch' && inputs.expect_tick || '8750' }}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          F=experiments/pf2/live/STATE.json
+          python experiments/pf2/PF2_S1_RECOVER_A4.py | tee /tmp/a4.out
+          RECEIPT=$(grep -o '"receipt": "[^"]*"' /tmp/a4.out | cut -d'"' -f4)
+          test -f "$RECEIPT"
+          python experiments/pf2/PF2_LIVE_CHECK.py
+          WANT=$(sha256sum "$F" | cut -d' ' -f1)
+          python experiments/pf_storage/PF_SHARD.py split "$F"
+          cp "$F" /tmp/state.reopened && rm -f -- "$F"
+          python experiments/pf_storage/PF_SHARD.py join "$F"
+          test "$(sha256sum "$F" | cut -d' ' -f1)" = "$WANT"
+          git config user.name 'PF S1 authorised amendment 4 reopening'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "$F.shards" "$RECEIPT"
+          git diff --cached --name-only | grep -v -e "^$F.shards/" -e "^$RECEIPT\$" && { echo 'PF_S1_A4_UNEXPECTED_PATH'; exit 1; } || true
+          git diff --cached --quiet && { echo 'PF_S1_A4_NOTHING_STAGED'; exit 1; } || true
+          test "$(git rev-parse HEAD)" = "$(git ls-remote origin refs/heads/main | cut -f1)"
+          git commit -qm "PF S1 amendment 4: PF-2 reopened at its sealed prefix (tick $(python -c "import json;print(json.load(open('$RECEIPT'))['newTicks'])")) after an RFC3161 seal halt; no scientific writes"
+          git push -q origin HEAD:main
+          git fetch -q origin main && test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)"
+          echo PF_S1_A4_REOPENED

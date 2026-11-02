@@ -8,7 +8,7 @@
  * - Ensures auditability and zero-data loss across sessions
  */
 
-import { EncounterDecisionTrace, ZoneId } from '../types/amelia';
+import { ZoneId } from '../types/amelia';
 import { canonicalSha256 } from '../lib/sha256';
 
 export interface PFMEventRecord {
@@ -25,7 +25,6 @@ export interface PFMEventRecord {
   fromZone?: ZoneId | number;
   inputDigest?: string;
   inputZone?: ZoneId;
-  encounters?: EncounterDecisionTrace[];
 }
 
 export interface MemoryReadout {
@@ -73,11 +72,6 @@ export class IntegratedMemorySystem {
     const recentEvents = this.events.slice(-48);
     for (const ev of recentEvents) {
       biasVector[ev.targetZone] += ev.fluxDelta * ev.phaseCoherence * 0.12;
-      for (const encounter of ev.encounters ?? []) {
-        if (encounter.disposition === 'ATTEND' && encounter.applied) {
-          encounter.attentionVector.forEach((weight, zone) => { biasVector[zone] += weight * 0.045; });
-        }
-      }
       totalCoherence += ev.phaseCoherence;
     }
 

@@ -30,6 +30,7 @@ import {
 import { AmeliaNumogramSubstrateRuntime } from './substrate/ameliaNumogramSubstrateRuntime';
 import { OutsideStreamLab } from './components/OutsideStreamLab';
 import { bornAmelia } from './core/fullNumogram';
+import type { AmeliaOutsideRuntime } from './outside/OutsideEncounterRuntime';
 import { ThreeArmDiagnosticRunner } from './ai/coupling/ThreeArmDiagnosticRunner';
 import { Paper6H1ResistanceAssay } from './bridge/phases/paper6H1ResistanceAssay';
 import { Zone9ContactRetentionProtocol } from './ai/coupling/Zone9ContactRetentionProtocol';
@@ -70,7 +71,7 @@ import { AmeliaSupabaseMemory, AmeliaCloudSession } from './services/ameliaSupab
 const LOCAL_CHECKPOINT_KEY = 'amelia_pfm_shared_runtime_v2';
 
 export function App() {
-  const runtimeRef = useRef<AmeliaNumogramSubstrateRuntime>(bornAmelia());
+  const runtimeRef = useRef<AmeliaOutsideRuntime>(bornAmelia());
   const rhythmHarmonizerRef = useRef<ExternalRhythmHarmonizer>(new ExternalRhythmHarmonizer());
   
   const [snapshot, setSnapshot] = useState<SubstrateStepSnapshot>(() => {
