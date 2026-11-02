@@ -1,0 +1,139 @@
+# PF S1 amendment 5 (experiments/pf_storage/PF_S1_AMENDMENT_5.md): ONE RFC3161 token (once), then the audited completion of a
+# PF-1/PF-2 lease orphaned by a refused batch push. First use: PF-1 lease 41472901972-1 at 15623 ticks.
+name: PF S1 amendment 5 — seal, then close a PF lease orphaned by a refused push
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf-s1-a5.yml']
+  workflow_dispatch:
+    inputs:
+      lease: { description: 'Orphaned lease id, e.g. 41472901972-1', required: true }
+      pf: { description: 'pf1 or pf2', required: true }
+      expect_ticks: { description: 'Committed admitted ticks of that experiment', required: true }
+permissions:
+  contents: read
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+env:
+  LEASE: "${{ github.event_name == 'workflow_dispatch' && inputs.lease || '41472901972-1' }}"
+  PF: "${{ github.event_name == 'workflow_dispatch' && inputs.pf || 'pf1' }}"
+  EXPECT_TICKS: "${{ github.event_name == 'workflow_dispatch' && inputs.expect_ticks || '15623' }}"
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: orange, ref: main, fetch-depth: 1 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: B1 amendment 5 bundle and ONE genuine RFC3161 token (only if not yet archived)
+        id: seal
+        working-directory: orange
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -q -r ../c1-pin/drift1a_c1/requirements.txt
+          if [ -e experiments/pf_storage/seal_a5/receipt.json ]; then echo 'PF_S1_A5_SEAL_ALREADY_ARCHIVED'; echo 'archive=false' >> "$GITHUB_OUTPUT"; exit 0; fi
+          python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          p=pathlib.Path('/tmp/pfs1a5'); p.mkdir(parents=True,exist_ok=True)
+          sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          files=['experiments/pf_storage/PF_S1_AMENDMENT_5.md','experiments/pf_storage/PF_S1_LEASE_RECONCILE.py','.github/workflows/pf-s1-a5.yml']
+          bundle={'schema':'PF_S1_A5_OPERATIONAL_SHA256_V1','amends':'experiments/pf_storage/seal/S1_SIGNED_BUNDLE.json',
+            'firstUse':{'lease':'41472901972-1','pf':'pf1','admittedTicks':15623,'head':'78fa16bb3aaf366cb3c58290316543f396eabc66d661188dcb4fc177c798330e',
+                        'refusedBy':'116caacf push to main at 16:05:05 UTC, 2 Nov 2026'},
+            'scienceChanged':False,'notificationsEnabled':False,
+            'sourceSHA256':[{'path':f,'sha256':sha(f)} for f in files]}
+          (p/'S1_A5_SIGNED_BUNDLE.json').write_text(json.dumps(bundle,sort_keys=True,indent=2)+'\n')
+          imprint=sha(p/'S1_A5_SIGNED_BUNDLE.json')
+          Sealer().seal(p/'seal',imprint)
+          assert Sealer().verify(p/'seal',imprint)['status']=='PASS'
+          print('PF_S1_A5_ONE_RFC3161_PASS',imprint)
+          PY
+          echo 'archive=true' >> "$GITHUB_OUTPUT"
+      - name: B2 create-only archive of the amendment bundle, token and receipt
+        if: steps.seal.outputs.archive == 'true'
+        env: { GH_TOKEN: '${{ github.token }}', REPO: '${{ github.repository }}' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,json,os,pathlib,subprocess
+          p=pathlib.Path('/tmp/pfs1a5')
+          files={'S1_A5_SIGNED_BUNDLE.json':p/'S1_A5_SIGNED_BUNDLE.json'}
+          for n in sorted(x.name for x in (p/'seal').iterdir()): files[n]=p/'seal'/n
+          assert 'receipt.json' in files,'MISSING receipt.json'
+          for name in sorted(files,key=lambda k:k=='receipt.json'):
+            dst='experiments/pf_storage/seal_a5/'+name
+            payload={'message':'PF S1 amendment 5: ONE RFC3161 token, create-only '+name+'; zero admitted','branch':'main','content':base64.b64encode(files[name].read_bytes()).decode()}
+            r=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dst,'--input','-'],input=json.dumps(payload),capture_output=True,text=True)
+            if r.returncode: raise RuntimeError('S1_A5_CREATE_ONLY_FAILED '+dst+' '+r.stderr[-800:])
+            print('PF_S1_A5_ARCHIVED',dst)
+          PY
+  reconcile:
+    needs: seal
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      actions: read
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: orange, ref: main, fetch-depth: 1 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: R0 seal verified; failed run; full prefix audit; pinned check; exactly one C1-native completion
+        working-directory: orange
+        env: { GH_TOKEN: '${{ github.token }}', PYTHONPATH: '${{ github.workspace }}/c1-pin', DRIFT_C1_ENABLE_LIVE: 'false', PF1_REMOTE_LEASE_ACKNOWLEDGED: 'true' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          [[ "$LEASE" =~ ^[0-9]+-[0-9]+$ ]] && [[ "$PF" =~ ^pf[12]$ ]] && [[ "$EXPECT_TICKS" =~ ^[0-9]+$ ]]
+          python -m pip install -q -r ../c1-pin/drift1a_c1/requirements.txt
+          gh api "repos/${{ github.repository }}/actions/runs/${LEASE%-*}" --jq '.status+" "+.conclusion' | grep -Fx 'completed failure'
+          python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+          d=pathlib.Path('experiments/pf_storage/seal_a5'); b=json.loads((d/'S1_A5_SIGNED_BUNDLE.json').read_text())
+          assert Sealer().verify(d,h(d/'S1_A5_SIGNED_BUNDLE.json'))['status']=='PASS'
+          for x in b['sourceSHA256']: assert h(x['path'])==x['sha256'],x['path']
+          print('PF_S1_A5_SEAL_AND_SOURCES_PASS')
+          PY
+          if [ "$PF" = pf1 ]; then J="experiments/pf1/live/STATE.json experiments/pf1/live/SILENT_LEDGER.json"; else J=experiments/pf2/live/STATE.json; fi
+          python experiments/pf_storage/PF_SHARD.py join $J
+          python experiments/pf_storage/PF_S1_LEASE_RECONCILE.py "$LEASE" "$PF" "$EXPECT_TICKS"
+          if [ "$PF" = pf1 ]; then python experiments/pf1/PF1_LIVE_CHECK.py; else python experiments/pf2/PF2_LIVE_CHECK.py; fi
+          git config user.name 'PF S1 authorised lease reconciliation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          test "$(git rev-parse HEAD)" = "$(git ls-remote origin refs/heads/main | cut -f1)"
+          python -m drift1a_c1.runner complete "$LEASE"
+          python - <<'PY'
+          import hashlib,json,os,pathlib
+          L=os.environ['LEASE']; base=pathlib.Path('drift1a_c1/runner_state')
+          lease=json.loads((base/f'leases/{L}.json').read_text()); done=json.loads((base/f'completions/{L}.json').read_text())
+          assert done['workflow_run']==L
+          assert done['lease_digest']==hashlib.sha256(json.dumps(lease,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+          assert not [p.name for p in (base/'leases').glob('*.json') if not (base/'completions'/p.name).exists()]
+          print('PF_S1_A5_LEASE_COMPLETION_VALIDATED',done['lease_digest'])
+          PY
+          git add -- "drift1a_c1/runner_state/completions/$LEASE.json"
+          test "$(git diff --cached --name-only)" = "drift1a_c1/runner_state/completions/$LEASE.json"
+          git commit -qm "PF S1 amendment 5: $PF orphan lease $LEASE completed after full $EXPECT_TICKS-tick prefix audit; uncommitted batch excluded; no scientific writes"
+          git push -q origin HEAD:main
+          git fetch -q origin main && test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)"
+          echo PF_S1_A5_RECONCILED
