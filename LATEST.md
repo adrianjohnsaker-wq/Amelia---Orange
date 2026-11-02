@@ -1,10 +1,10 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-01T23:49:06.661Z
-- Cycle: 29 (41335742063-1-23)
+- Last cycle (UTC): 2026-11-02T00:02:17.446Z
+- Cycle: 30 (41364726667-1-1)
 - RSS items seen: 65; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -24
-- Candidate: Pabbakis / Mesh-24 / Amphidemon
+- Subdecadence: MESH_TERMINAL; score -13
+- Candidate: Tikkitix / Mesh-13 / Amphidemon
 - Separate ingress records and trace links: 0
 - Catalogue entries added: 1
 - Source errors: none
