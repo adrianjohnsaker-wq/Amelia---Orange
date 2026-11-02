@@ -804244,14 +804244,7 @@
   "lastAdmittedRound": 33514520,
   "notificationsEnabled": false,
   "notificationsSent": 0,
-  "openHalt": {
-    "atUTC": "2026-11-02T22:07:56.070695+00:00",
-    "lastSealedHead": "fb6953f97f2eec9ce1e313bea153e461e56b5563bb48a3e87b09df88d20ba0ba",
-    "lastSealedTick": 10790,
-    "operatorRecoveryRequired": true,
-    "reason": "PF2_A1 sealed batch failed: PF2_COMMAND_FAILURE ('python', 'experiments/pf2/PF2_LIVE_SEAL.py') Traceback (most recent call last):\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/orange/experiments/pf2/PF2_LIVE_SEAL.py\", line 67, in <module>\n    if __name__=='__main__':main()\n                            ^^^^^^\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/orange/experiments/pf2/PF2_LIVE_SEAL.py\", line 41, in main\n    sealer.seal(folder,imprint)\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/c1-pin/drift1a_c1/beacon.py\", line 67, in seal\n    if result['status']!='PASS':raise VerificationError('RFC3161: '+str(result))\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ndrift1a_c1.",
-    "scientificResultsNotReinterpreted": true
-  },
+  "openHalt": null,
   "pandemonium": {
     "encounters": [
       {
@@ -1139061,4 +1139054,29 @@
                   "eventDigest": "51438763f9206551ba8271981bb4a5a3c62b444bf34c211657fc85bbd6415542",
                   "fluxDelta": 0.049524,
                   "fromZone": 8,
-         
+                  "inputDigest": "662a1a9d4117765186b06fbcd0135f0c821f449cac7a3f1534f1544c63a3dcc2",
+                  "inputZone": 2,
+                  "kind": "STEP",
+                  "phaseCoherence": 0.694344,
+                  "seed": 0,
+                  "strainRelaxation": 0.025,
+                  "targetZone": 9,
+                  "timestamp": 3320
+                },
+                {
+                  "blockIndex": 3321,
+                  "depth": 3321,
+                  "eventDigest": "380da29f91bc35e2281560460fa87b9e26646ed7ee3f027692baed5d6a14cec3",
+                  "fluxDelta": 0.044455,
+                  "fromZone": 9,
+                  "inputDigest": "3e08367ea167ce40fea8efbde895473071f2d4aac72f1a045f5e26df045b1fea",
+                  "inputZone": 2,
+                  "kind": "STEP",
+                  "phaseCoherence": 0.547069,
+                  "seed": 0,
+                  "strainRelaxation": 0.025,
+                  "targetZone": 1,
+                  "timestamp": 3321
+                },
+                {
+   
