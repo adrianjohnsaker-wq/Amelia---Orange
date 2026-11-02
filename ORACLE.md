@@ -2,13 +2,13 @@
 
 Exploratory listening station. The world stream casts; Amelia (on her full CCRU Numogram) asks from where she stands, and the Numogram, the I Ching or the Tarot answers. Readings are shown side by side, and the map grows from what comes through. Nothing here is a pass/fail test. See `PROTOCOL.md`.
 
-**9228 exchanges** from 8 Amelias, world data 2026-10-28T00:00:00Z to 2026-11-02T03:14:15Z.
+**9229 exchanges** from 8 Amelias, world data 2026-10-28T00:00:00Z to 2026-11-02T03:29:27Z.
 
 ## Interlocutors (the syzygetic demon of each reply's zone)
 
 - Oddubb: 2115
 - Djynxx: 2112
-- Katak: 1984
+- Katak: 1985
 - Mur Mur: 1968
 - Uttunul: 1049
 
@@ -17,13 +17,13 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 ### Bubbamu (just completed 1-7): 38 exchanges
 - **I Ching:** 59 Dispersion ×3; 51 The Arousing ×2; 37 The Family ×2; 58 The Joyous ×2; 8 Holding Together ×2; 25 Innocence ×2
 
-### an Atlas form (any): 202 exchanges
+### an Atlas form (any): 203 exchanges
 - **I Ching:** 4 Youthful Folly ×9; 58 The Joyous ×5; 51 The Arousing ×4; 8 Holding Together ×4; 29 The Abysmal ×4; 45 Gathering Together ×4
 - **Tarot:** Three of Wands ×6; Seven of Wands ×5; Two of Wands ×4; Nine of Wands ×3; The Magician ×3; The Tower ×3
-- **Numogram:** Djynxx (6::3) ×18; Mur Mur (8::1) ×12; Katak (5::4) ×10; Uttunul (9::0) ×9; Oddubb (7::2) ×7
+- **Numogram:** Djynxx (6::3) ×18; Mur Mur (8::1) ×12; Katak (5::4) ×11; Uttunul (9::0) ×9; Oddubb (7::2) ×7
 
-### after Gt-36 (8>9): 778 exchanges
-- **Numogram:** Oddubb (7::2) ×191; Katak (5::4) ×170; Djynxx (6::3) ×168; Mur Mur (8::1) ×152; Uttunul (9::0) ×97
+### after Gt-36 (8>9): 779 exchanges
+- **Numogram:** Oddubb (7::2) ×191; Katak (5::4) ×171; Djynxx (6::3) ×168; Mur Mur (8::1) ×152; Uttunul (9::0) ×97
 
 ### after Gt-28 (7>1): 17 exchanges
 - **I Ching:** 51 The Arousing ×2; 59 Dispersion ×2; 8 Holding Together ×2; 3 Difficulty at the Beginning ×1; 16 Enthusiasm ×1; 28 Great Exceeding ×1
@@ -31,8 +31,8 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 ### in the Warp (3, 6): 6179 exchanges
 - **Numogram:** Djynxx (6::3) ×1416; Oddubb (7::2) ×1407; Mur Mur (8::1) ×1357; Katak (5::4) ×1264; Uttunul (9::0) ×735
 
-### in the Plex (0, 9): 845 exchanges
-- **Numogram:** Oddubb (7::2) ×208; Djynxx (6::3) ×185; Katak (5::4) ×181; Mur Mur (8::1) ×170; Uttunul (9::0) ×101
+### in the Plex (0, 9): 846 exchanges
+- **Numogram:** Oddubb (7::2) ×208; Djynxx (6::3) ×185; Katak (5::4) ×182; Mur Mur (8::1) ×170; Uttunul (9::0) ×101
 
 ### in the Time-Circuit: 2204 exchanges
 - **I Ching:** 4 Youthful Folly ×41; 16 Enthusiasm ×39; 59 Dispersion ×36; 14 Great Possession ×36; 58 The Joyous ×35; 45 Gathering Together ×35
@@ -50,7 +50,7 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 - Djynxx → zone 3 · Djynxx (6::3): ×610
 - Djynxx → zone 5 · Katak (5::4): ×551
 - Uttunul → zone 7 · Oddubb (7::2): ×113
-- Uttunul → zone 4 · Katak (5::4): ×107
+- Uttunul → zone 4 · Katak (5::4): ×108
 - Djynxx → zone 0 · Uttunul (9::0): ×104
 - Uttunul → zone 3 · Djynxx (6::3): ×101
 - Uttunul → zone 8 · Mur Mur (8::1): ×96
@@ -63,6 +63,7 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 
 ## Latest exchanges
 
+- `2026-11-02T03:29:27Z` **S05W18|0** asks from zone 9 (Plex, Uttunul, in 1-7-8-9 Bubbamu-Nuttubab-Ummnu-Tutagool, after 8>9) → **Numogram**: zone 4 · Katak (5::4). *World:* “1.04 36.9896659851074 -121.467666625977” (earth, AQ 166). She moves 1 → 8 → 9.
 - `2026-11-02T03:17:41Z` **S05W23|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 2 · Oddubb (7::2). *World:* “Muhammad Ali’s daughter and grandson endorse El-Sayed” (words, AQ 866). She moves 3 → 6 → 3.
 - `2026-11-02T03:17:41Z` **S05W19|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 2 · Oddubb (7::2). *World:* “Muhammad Ali’s daughter and grandson endorse El-Sayed” (words, AQ 866). She moves 3 → 6 → 3.
 - `2026-11-02T03:17:41Z` **S05W17|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 2 · Oddubb (7::2). *World:* “Muhammad Ali’s daughter and grandson endorse El-Sayed” (words, AQ 866). She moves 3 → 6 → 3.
@@ -87,4 +88,3 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 - `2026-11-02T02:41:40Z` **S05W20|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 9 · Uttunul (9::0). *World:* “El-Sayed dismisses Stevens’ backing of Republican Senate candidate” (words, AQ 1098). She moves 6 → 3 → 6.
 - `2026-11-02T02:39:00Z` **S05W18|0** asks from zone 1 (Time-Circuit, Mur Mur, after 1>1) → **I Ching**: 42 Increase → 13 Fellowship. *World:* “1.0” (sun, AQ 1). She moves 8 → 9 → 1.
 - `2026-11-02T02:38:00Z` **S05W22|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 0 · Uttunul (9::0). *World:* “0.0” (sun, AQ 0). She moves 3 → 6 → 3.
-- `2026-11-02T02:38:00Z` **S05W20|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 0 · Uttunul (9::0). *World:* “0.0” (sun, AQ 0). She moves 3 → 6 → 3.
