@@ -11,6 +11,12 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+# PF S1 amendment 6: this workflow writes dated reports to main, so it joins the PF exclusive group and never runs
+# (or pushes) while a PF-1/PF-2 live run holds its lease.
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+
 jobs:
   read-only-report:
     runs-on: ubuntu-24.04

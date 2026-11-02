@@ -11,6 +11,12 @@ on:
       - '.github/workflows/pf1-c1-weekly-readonly.yml'
       - 'experiments/pf1/PF1_C1_WEEKLY_READONLY.py'
 
+# PF S1 amendment 6: this workflow writes dated reports to main, so it joins the PF exclusive group and never runs
+# (or pushes) while a PF-1/PF-2 live run holds its lease.
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+
 jobs:
   inspect:
     runs-on: ubuntu-24.04
