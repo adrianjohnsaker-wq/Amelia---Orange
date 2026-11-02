@@ -1,11 +1,11 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-02T17:27:48.894Z
-- Cycle: 100 (41488296276-1-2)
-- RSS items seen: 65; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: DECK_EXHAUSTED_POSITIVE; score 27
+- Last cycle (UTC): 2026-11-02T17:42:49.570Z
+- Cycle: 101 (41488296276-1-3)
+- RSS items seen: 66; newly processed: 3 (last-cycle window; 24-hour initial window)
+- Subdecadence: DECK_EXHAUSTED_POSITIVE; score 10
 - Candidate: none (positive deck exhaustion)
-- Separate ingress records and trace links: 0
+- Separate ingress records and trace links: 9
 - Catalogue entries added: 0
 - Source errors: none
 
