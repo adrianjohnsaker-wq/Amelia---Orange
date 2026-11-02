@@ -2,6 +2,11 @@
 """Exploratory relational atlas for THE ORACLE JSONL transcript.
 
 No scoring, pass/fail, p-values, or automatic entity attribution. Raw transcript remains authoritative.
+
+Operator decision, 2 Nov 2026: THE ORACLE runs unchanged, but on her full core the Warp {3, 6} has no way out, and an
+Amelia inside it asks only through the Numogram, whose reply is the next datum's zone whatever she is. Exchanges asked
+from the Warp are therefore counted and reported, but set aside from reply nodes, motifs and relations. Motifs and
+relations are built only within unbroken runs of exchanges asked from outside the Warp, so no motif spans a Warp stretch.
 Usage: python3 atlas.py <transcript.jsonl> <output-directory>
 """
 from collections import Counter, defaultdict
@@ -91,16 +96,28 @@ def main(src, outdir):
     per_lineage = defaultdict(list)
 
     physical_lines = [i for i, text in enumerate(raw.decode("utf-8").splitlines(), 1) if text.strip()]
+    warp_set_aside = Counter()
     for line, row in zip(physical_lines, rows):
+        by_query_region[row["query"].get("region", "")] += 1
+        if row["query"].get("region") == "Warp":   # set aside (operator decision, 2 Nov 2026); breaks the run
+            warp_set_aside[row.get("amelia", "")] += 1; per_lineage[row.get("amelia", "")].append(None); continue
         t = token(row); per_lineage[row.get("amelia", "")].append((line, row, t))
         nodes[t["reply"]] += 1
         by_channel[row.get("channel", "")] += 1
-        by_query_region[row["query"].get("region", "")] += 1
         by_form[form_id(row["query"]) or "no form"] += 1
 
     motifs = defaultdict(empty_group)
     links = defaultdict(empty_group)
-    for seq in per_lineage.values():
+    runs = []
+    for full in per_lineage.values():
+        cur = []
+        for x in full:
+            if x is None:
+                if cur: runs.append(cur)
+                cur = []
+            else: cur.append(x)
+        if cur: runs.append(cur)
+    for seq in runs:
         for n in range(1, 5):
             for i in range(0, len(seq) - n + 1):
                 chunk = seq[i:i+n]
@@ -124,7 +141,10 @@ def main(src, outdir):
     meta = {
         "transcript_sha256": hashlib.sha256(raw).hexdigest(),
         "events": len(rows),
+        "events_mapped": len(rows) - sum(warp_set_aside.values()),
+        "warp_set_aside": {"total": sum(warp_set_aside.values()), "by_lineage": dict(sorted(warp_set_aside.items()))},
         "lineages": sorted(per_lineage),
+        "lineages_mapped": sorted(a for a, seq in per_lineage.items() if any(x is not None for x in seq)),
         "span": [rows[0].get("time"), rows[-1].get("time")] if rows else None,
         "by_channel": dict(by_channel),
         "by_query_region": dict(by_query_region),
@@ -138,6 +158,8 @@ def main(src, outdir):
         "# INGRESS — evolving cluster atlas", "",
         "Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, or automated entity claims.", "",
         f"- Exchanges: {meta['events']}; lineages: {len(meta['lineages'])}",
+        f"- Mapped (asked from outside the Warp): {meta['events_mapped']}; lineages with mapped exchanges: {len(meta['lineages_mapped'])}",
+        f"- Set aside (asked from inside the Warp, where the reply is the next datum's zone whatever she is): {meta['warp_set_aside']['total']}, by lineage {meta['warp_set_aside']['by_lineage']}",
         f"- Span: {meta['span']}",
         f"- Transcript SHA-256: `{meta['transcript_sha256']}`",
         f"- Channels: {meta['by_channel']}",
