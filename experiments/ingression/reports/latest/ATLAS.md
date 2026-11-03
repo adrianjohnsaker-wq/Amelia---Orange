@@ -2,28 +2,28 @@
 
 Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, or automated entity claims.
 
-- Exchanges: 12955; lineages: 8
-- Mapped (asked from outside the Warp): 3373; lineages with mapped exchanges: 8
-- Set aside (asked from inside the Warp, where the reply is the next datum's zone whatever she is): 9582, by lineage {'S05W17|0': 637, 'S05W19|0': 1838, 'S05W20|0': 1842, 'S05W21|0': 965, 'S05W22|0': 1808, 'S05W23|0': 786, 'S05W24|0': 1706}
-- Span: ['2026-10-28T00:00:00Z', '2026-11-03T13:47:13Z']
-- Transcript SHA-256: `9d1a6c0167aff4d4b34908ddce45b9b36419c45b0205f3c21ddf4b2456b35873`
-- Channels: {'Numogram': 905, 'Tarot': 647, 'I Ching': 1821}
-- Query regions: {'Plex': 905, 'Time-Circuit': 2468, 'Warp': 9582}
-- Query forms: {'no form': 3154, '7-8': 30, '1-7-8-9': 147, '1-7': 42}
+- Exchanges: 14250; lineages: 8
+- Mapped (asked from outside the Warp): 3385; lineages with mapped exchanges: 8
+- Set aside (asked from inside the Warp, where the reply is the next datum's zone whatever she is): 10865, by lineage {'S05W17|0': 800, 'S05W18|0': 141, 'S05W19|0': 2000, 'S05W20|0': 2004, 'S05W21|0': 1128, 'S05W22|0': 1971, 'S05W23|0': 949, 'S05W24|0': 1872}
+- Span: ['2026-10-28T00:00:00Z', '2026-11-03T22:30:00Z']
+- Transcript SHA-256: `50f1b7b4cc20261a1c460ff14c90c56bfda8fa930e7697eec481cdea36e438d9`
+- Channels: {'Numogram': 914, 'Tarot': 648, 'I Ching': 1823}
+- Query regions: {'Plex': 914, 'Time-Circuit': 2471, 'Warp': 10865}
+- Query forms: {'no form': 3165, '7-8': 30, '1-7-8-9': 147, '1-7': 43}
 
 Transcript line references below use physical JSONL line numbers and the transcript SHA-256 above. Up to five occurrence examples are shown per candidate; lineage lists cover all occurrences.
 
 ## Reply nodes
 
-- NUM:Oddubb:7::2@7: 121
+- NUM:Oddubb:7::2@7: 122
 - NUM:Katak:5::4@4: 112
-- NUM:Djynxx:6::3@3: 107
-- NUM:Mur Mur:8::1@8: 105
-- NUM:Oddubb:7::2@2: 101
-- NUM:Djynxx:6::3@6: 91
+- NUM:Djynxx:6::3@3: 109
+- NUM:Mur Mur:8::1@8: 106
+- NUM:Oddubb:7::2@2: 102
+- NUM:Djynxx:6::3@6: 92
 - NUM:Mur Mur:8::1@1: 85
-- NUM:Katak:5::4@5: 79
-- NUM:Uttunul:9::0@9: 77
+- NUM:Katak:5::4@5: 80
+- NUM:Uttunul:9::0@9: 79
 - TAR:Seven of Wands:U: 30
 - NUM:Uttunul:9::0@0: 27
 - TAR:Page of Wands:U: 21
@@ -31,7 +31,7 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - TAR:Eight of Wands:U: 21
 - TAR:Five of Wands:U: 21
 - TAR:Six of Wands:U: 19
-- TAR:Knight of Wands:U: 18
+- TAR:Knight of Wands:U: 19
 - TAR:Two of Wands:U: 17
 - TAR:Nine of Wands:U: 16
 - TAR:Four of Wands:U: 16
@@ -280,6 +280,7 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:22:Grace->18: 2
 - ICH:10:Treading->40: 2
 - ICH:55:Abundance->31: 2
+- ICH:2:The Receptive->64: 2
 - ICH:27:Nourishment->30: 2
 - ICH:32:Duration->48: 2
 - ICH:2:The Receptive->17: 2
@@ -606,7 +607,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:24:Return->22: 1
 - ICH:6:Conflict->18: 1
 - ICH:63:After Completion->56: 1
-- ICH:2:The Receptive->64: 1
 - ICH:41:Decrease->45: 1
 - ICH:15:Modesty->13: 1
 - ICH:23:Splitting Apart->1: 1
@@ -1445,6 +1445,7 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:51:The Arousing->35: 1
 - ICH:54:The Marrying Maiden->61: 1
 - ICH:7:The Army->52: 1
+- ICH:52:Keeping Still->54: 1
 
 ## Recurrent exchange motifs
 
@@ -1520,7 +1521,7 @@ Shown here when a motif appears in at least two Amelia lineages. This is a navig
   - Trace example: transcript.jsonl:L782 (Amelia `S05W19|0`; time `2026-10-28T00:07:00Z`; source IDs: `markets|^N225|9`)
   - Trace example: transcript.jsonl:L1384 (Amelia `S05W20|0`; time `2026-10-28T00:07:00Z`; source IDs: `markets|^N225|9`)
   - Trace example: transcript.jsonl:L1987 (Amelia `S05W21|0`; time `2026-10-28T00:07:00Z`; source IDs: `markets|^N225|9`)
-- **6 lineages / 73 motif occurrences / 65 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@5","reply_zone":5}]
+- **6 lineages / 74 motif occurrences / 66 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Katak:5::4@5","reply_zone":5}]
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W22|0`, `S05W23|0`, `S05W24|0`
   - Trace example: transcript.jsonl:L116 (Amelia `S05W17|0`; time `2026-10-28T12:29:00Z`; source IDs: `markets|^FTSE|906`)
   - Trace example: transcript.jsonl:L173 (Amelia `S05W17|0`; time `2026-10-28T16:03:00Z`; source IDs: `markets|^GSPC|1374`)
@@ -1562,35 +1563,35 @@ Shown here when a motif appears in at least two Amelia lineages. This is a navig
   - Trace example: transcript.jsonl:L167 (Amelia `S05W17|0`; time `2026-10-28T15:45:00Z`; source IDs: `markets|^GSPC|1314`)
   - Trace example: transcript.jsonl:L172 (Amelia `S05W17|0`; time `2026-10-28T15:57:00Z`; source IDs: `markets|^FTSE|1364`)
   - Trace example: transcript.jsonl:L184 (Amelia `S05W17|0`; time `2026-10-28T11:18:31Z`; source IDs: `earth|usgs|1484`)
-- **5 lineages / 91 motif occurrences / 81 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@2","reply_zone":2}]
+- **5 lineages / 92 motif occurrences / 82 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@2","reply_zone":2}]
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`, `S05W24|0`
   - Trace example: transcript.jsonl:L127 (Amelia `S05W17|0`; time `2026-10-28T13:31:00Z`; source IDs: `markets|^GSPC|998`)
   - Trace example: transcript.jsonl:L129 (Amelia `S05W17|0`; time `2026-10-28T13:33:00Z`; source IDs: `markets|^FTSE|1018`)
   - Trace example: transcript.jsonl:L130 (Amelia `S05W17|0`; time `2026-10-28T13:43:00Z`; source IDs: `markets|^FTSE|1028`)
   - Trace example: transcript.jsonl:L182 (Amelia `S05W17|0`; time `2026-10-28T16:45:16Z`; source IDs: `words|bbc|1464`)
   - Trace example: transcript.jsonl:L270 (Amelia `S05W17|0`; time `2026-10-29T04:43:00Z`; source IDs: `sun|noaa|2209`)
-- **5 lineages / 89 motif occurrences / 79 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Mur Mur:8::1@8","reply_zone":8}]
+- **5 lineages / 90 motif occurrences / 80 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Mur Mur:8::1@8","reply_zone":8}]
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`, `S05W24|0`
   - Trace example: transcript.jsonl:L90 (Amelia `S05W17|0`; time `2026-10-28T10:06:00Z`; source IDs: `markets|^FTSE|691`)
   - Trace example: transcript.jsonl:L168 (Amelia `S05W17|0`; time `2026-10-28T15:40:00Z`; source IDs: `markets|^FTSE|1324`)
   - Trace example: transcript.jsonl:L183 (Amelia `S05W17|0`; time `2026-10-28T16:55:00Z`; source IDs: `markets|^GSPC|1474`)
   - Trace example: transcript.jsonl:L211 (Amelia `S05W17|0`; time `2026-10-28T19:24:00Z`; source IDs: `markets|^GSPC|1715`)
   - Trace example: transcript.jsonl:L251 (Amelia `S05W17|0`; time `2026-10-29T02:07:00Z`; source IDs: `markets|^N225|2055`)
-- **5 lineages / 84 motif occurrences / 72 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Djynxx:6::3@3","reply_zone":3}]
+- **5 lineages / 86 motif occurrences / 74 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Djynxx:6::3@3","reply_zone":3}]
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`, `S05W24|0`
   - Trace example: transcript.jsonl:L88 (Amelia `S05W17|0`; time `2026-10-28T09:55:00Z`; source IDs: `markets|^FTSE|671`)
   - Trace example: transcript.jsonl:L89 (Amelia `S05W17|0`; time `2026-10-28T10:01:48Z`; source IDs: `earth|usgs|681`)
   - Trace example: transcript.jsonl:L128 (Amelia `S05W17|0`; time `2026-10-28T13:40:00Z`; source IDs: `markets|^GSPC|1008`)
   - Trace example: transcript.jsonl:L131 (Amelia `S05W17|0`; time `2026-10-28T13:48:09Z`; source IDs: `words|aljazeera|1038`)
   - Trace example: transcript.jsonl:L186 (Amelia `S05W17|0`; time `2026-10-28T17:14:55Z`; source IDs: `earth|usgs|1504`)
-- **5 lineages / 76 motif occurrences / 70 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Djynxx:6::3@6","reply_zone":6}]
+- **5 lineages / 77 motif occurrences / 71 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Djynxx:6::3@6","reply_zone":6}]
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`, `S05W24|0`
   - Trace example: transcript.jsonl:L46 (Amelia `S05W17|0`; time `2026-10-28T04:59:00Z`; source IDs: `markets|^N225|347`)
   - Trace example: transcript.jsonl:L179 (Amelia `S05W17|0`; time `2026-10-28T16:26:00Z`; source IDs: `markets|^FTSE|1434`)
   - Trace example: transcript.jsonl:L180 (Amelia `S05W17|0`; time `2026-10-28T16:35:16Z`; source IDs: `earth|usgs|1444`)
   - Trace example: transcript.jsonl:L181 (Amelia `S05W17|0`; time `2026-10-28T16:43:00Z`; source IDs: `markets|^GSPC|1454`)
   - Trace example: transcript.jsonl:L187 (Amelia `S05W17|0`; time `2026-10-28T16:59:47Z`; source IDs: `words|bbc|1514`)
-- **5 lineages / 53 motif occurrences / 49 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Uttunul:9::0@9","reply_zone":9}]
+- **5 lineages / 54 motif occurrences / 50 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Uttunul:9::0@9","reply_zone":9}]
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`, `S05W24|0`
   - Trace example: transcript.jsonl:L47 (Amelia `S05W17|0`; time `2026-10-28T05:05:00Z`; source IDs: `markets|^N225|357`)
   - Trace example: transcript.jsonl:L86 (Amelia `S05W17|0`; time `2026-10-28T09:42:00Z`; source IDs: `markets|^FTSE|651`)
@@ -1835,7 +1836,7 @@ Shown here when a motif appears in at least two Amelia lineages. This is a navig
   - Trace example: transcript.jsonl:L253 (Amelia `S05W17|0`; time `2026-10-29T02:18:21Z`; source IDs: `earth|usgs|2075`)
   - Trace example: transcript.jsonl:L369 (Amelia `S05W17|0`; time `2026-10-29T14:59:00Z`; source IDs: `markets|^GSPC|3072`)
   - Trace example: transcript.jsonl:L3899 (Amelia `S05W17|0`; time `2026-10-29T16:14:00Z`; source IDs: `markets|^GSPC|3250`)
-- **4 lineages / 32 motif occurrences / 29 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@7","reply_zone":7}]
+- **4 lineages / 33 motif occurrences / 30 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@7","reply_zone":7}]
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
   - Trace example: transcript.jsonl:L91 (Amelia `S05W17|0`; time `2026-10-28T10:15:00Z`; source IDs: `markets|^FTSE|701`)
   - Trace example: transcript.jsonl:L92 (Amelia `S05W17|0`; time `2026-10-28T10:21:00Z`; source IDs: `markets|^FTSE|711`)
@@ -1910,7 +1911,7 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
   - Trace example: transcript.jsonl:L311 (Amelia `S05W17|0`; time `2026-10-29T09:55:00Z`; source IDs: `markets|^FTSE|2559`) → transcript.jsonl:L312 (Amelia `S05W17|0`; time `2026-10-29T10:05:54Z`; source IDs: `earth|usgs|2569`)
   - Trace example: transcript.jsonl:L351 (Amelia `S05W17|0`; time `2026-10-29T13:45:00Z`; source IDs: `markets|^GSPC|2892`) → transcript.jsonl:L352 (Amelia `S05W17|0`; time `2026-10-29T13:41:00Z`; source IDs: `markets|^FTSE|2902`)
   - Trace example: transcript.jsonl:L4464 (Amelia `S05W17|0`; time `2026-10-30T00:06:00Z`; source IDs: `markets|^N225|3687`) → transcript.jsonl:L4465 (Amelia `S05W17|0`; time `2026-10-30T00:14:00Z`; source IDs: `markets|^N225|3697`)
-- **5 lineages / 19 relation occurrences / 24 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@7"}
+- **5 lineages / 20 relation occurrences / 26 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@7"}
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`, `S05W24|0`
   - Trace example: transcript.jsonl:L90 (Amelia `S05W17|0`; time `2026-10-28T10:06:00Z`; source IDs: `markets|^FTSE|691`) → transcript.jsonl:L91 (Amelia `S05W17|0`; time `2026-10-28T10:15:00Z`; source IDs: `markets|^FTSE|701`)
   - Trace example: transcript.jsonl:L211 (Amelia `S05W17|0`; time `2026-10-28T19:24:00Z`; source IDs: `markets|^GSPC|1715`) → transcript.jsonl:L212 (Amelia `S05W17|0`; time `2026-10-28T19:28:46Z`; source IDs: `earth|usgs|1725`)
@@ -2022,6 +2023,13 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
   - Trace example: transcript.jsonl:L4744 (Amelia `S05W17|0`; time `2026-10-30T03:53:00Z`; source IDs: `markets|^N225|3936`) → transcript.jsonl:L4745 (Amelia `S05W17|0`; time `2026-10-30T04:03:00Z`; source IDs: `markets|^N225|3946`)
   - Trace example: transcript.jsonl:L512 (Amelia `S05W18|0`; time `2026-10-28T13:48:00Z`; source IDs: `markets|^FTSE|1055`) → transcript.jsonl:L513 (Amelia `S05W18|0`; time `2026-10-28T13:58:00Z`; source IDs: `markets|^FTSE|1065`)
   - Trace example: transcript.jsonl:L521 (Amelia `S05W18|0`; time `2026-10-28T14:34:00Z`; source IDs: `markets|^GSPC|1145`) → transcript.jsonl:L522 (Amelia `S05W18|0`; time `2026-10-28T14:42:14Z`; source IDs: `earth|usgs|1155`)
+- **4 lineages / 15 relation occurrences / 26 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Djynxx:6::3@6"}
+  - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
+  - Trace example: transcript.jsonl:L186 (Amelia `S05W17|0`; time `2026-10-28T17:14:55Z`; source IDs: `earth|usgs|1504`) → transcript.jsonl:L187 (Amelia `S05W17|0`; time `2026-10-28T16:59:47Z`; source IDs: `words|bbc|1514`)
+  - Trace example: transcript.jsonl:L208 (Amelia `S05W17|0`; time `2026-10-28T19:06:57Z`; source IDs: `earth|usgs|1685`) → transcript.jsonl:L209 (Amelia `S05W17|0`; time `2026-10-28T19:15:00Z`; source IDs: `markets|^GSPC|1695`)
+  - Trace example: transcript.jsonl:L4431 (Amelia `S05W17|0`; time `2026-10-29T22:50:27Z`; source IDs: `words|npr|3657`) → transcript.jsonl:L4439 (Amelia `S05W17|0`; time `2026-10-29T23:44:00Z`; source IDs: `sun|noaa|3667`)
+  - Trace example: transcript.jsonl:L513 (Amelia `S05W18|0`; time `2026-10-28T13:58:00Z`; source IDs: `markets|^FTSE|1065`) → transcript.jsonl:L514 (Amelia `S05W18|0`; time `2026-10-28T14:05:00Z`; source IDs: `markets|^GSPC|1075`)
+  - Trace example: transcript.jsonl:L593 (Amelia `S05W18|0`; time `2026-10-28T19:06:57Z`; source IDs: `earth|usgs|1685`) → transcript.jsonl:L594 (Amelia `S05W18|0`; time `2026-10-28T19:15:00Z`; source IDs: `markets|^GSPC|1695`)
 - **4 lineages / 15 relation occurrences / 22 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Katak:5::4@4"}
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
   - Trace example: transcript.jsonl:L131 (Amelia `S05W17|0`; time `2026-10-28T13:48:09Z`; source IDs: `words|aljazeera|1038`) → transcript.jsonl:L132 (Amelia `S05W17|0`; time `2026-10-28T13:57:00Z`; source IDs: `markets|^GSPC|1048`)
@@ -2036,13 +2044,6 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
   - Trace example: transcript.jsonl:L384 (Amelia `S05W17|0`; time `2026-10-29T15:53:46Z`; source IDs: `words|npr|3210`) → transcript.jsonl:L385 (Amelia `S05W17|0`; time `2026-10-29T16:01:00Z`; source IDs: `markets|^GSPC|3220`)
   - Trace example: transcript.jsonl:L440 (Amelia `S05W18|0`; time `2026-10-28T06:25:00Z`; source IDs: `markets|^N225|461`) → transcript.jsonl:L441 (Amelia `S05W18|0`; time `2026-10-28T06:55:00Z`; source IDs: `sun|noaa|471`)
   - Trace example: transcript.jsonl:L511 (Amelia `S05W18|0`; time `2026-10-28T13:55:00Z`; source IDs: `markets|^GSPC|1045`) → transcript.jsonl:L512 (Amelia `S05W18|0`; time `2026-10-28T13:48:00Z`; source IDs: `markets|^FTSE|1055`)
-- **4 lineages / 14 relation occurrences / 24 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Djynxx:6::3@6"}
-  - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
-  - Trace example: transcript.jsonl:L186 (Amelia `S05W17|0`; time `2026-10-28T17:14:55Z`; source IDs: `earth|usgs|1504`) → transcript.jsonl:L187 (Amelia `S05W17|0`; time `2026-10-28T16:59:47Z`; source IDs: `words|bbc|1514`)
-  - Trace example: transcript.jsonl:L208 (Amelia `S05W17|0`; time `2026-10-28T19:06:57Z`; source IDs: `earth|usgs|1685`) → transcript.jsonl:L209 (Amelia `S05W17|0`; time `2026-10-28T19:15:00Z`; source IDs: `markets|^GSPC|1695`)
-  - Trace example: transcript.jsonl:L4431 (Amelia `S05W17|0`; time `2026-10-29T22:50:27Z`; source IDs: `words|npr|3657`) → transcript.jsonl:L4439 (Amelia `S05W17|0`; time `2026-10-29T23:44:00Z`; source IDs: `sun|noaa|3667`)
-  - Trace example: transcript.jsonl:L513 (Amelia `S05W18|0`; time `2026-10-28T13:58:00Z`; source IDs: `markets|^FTSE|1065`) → transcript.jsonl:L514 (Amelia `S05W18|0`; time `2026-10-28T14:05:00Z`; source IDs: `markets|^GSPC|1075`)
-  - Trace example: transcript.jsonl:L593 (Amelia `S05W18|0`; time `2026-10-28T19:06:57Z`; source IDs: `earth|usgs|1685`) → transcript.jsonl:L594 (Amelia `S05W18|0`; time `2026-10-28T19:15:00Z`; source IDs: `markets|^GSPC|1695`)
 - **4 lineages / 14 relation occurrences / 24 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@2"}
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
   - Trace example: transcript.jsonl:L325 (Amelia `S05W17|0`; time `2026-10-29T11:21:00Z`; source IDs: `markets|^FTSE|2683`) → transcript.jsonl:L326 (Amelia `S05W17|0`; time `2026-10-29T11:27:22Z`; source IDs: `words|aljazeera|2693`)
@@ -2148,6 +2149,13 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
   - Trace example: transcript.jsonl:L7327 (Amelia `S05W17|0`; time `2026-10-31T10:39:15Z`; source IDs: `words|aljazeera|5935`) → transcript.jsonl:L7345 (Amelia `S05W17|0`; time `2026-10-31T11:04:00Z`; source IDs: `sun|noaa|5945`)
   - Trace example: transcript.jsonl:L423 (Amelia `S05W18|0`; time `2026-10-28T04:31:40Z`; source IDs: `markets|^N225|312`) → transcript.jsonl:L424 (Amelia `S05W18|0`; time `2026-10-28T04:38:00Z`; source IDs: `markets|^N225|322`)
   - Trace example: transcript.jsonl:L452 (Amelia `S05W18|0`; time `2026-10-28T08:50:00Z`; source IDs: `markets|^FTSE|581`) → transcript.jsonl:L453 (Amelia `S05W18|0`; time `2026-10-28T08:58:00Z`; source IDs: `markets|^FTSE|591`)
+- **4 lineages / 10 relation occurrences / 18 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Mur Mur:8::1@8"}
+  - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
+  - Trace example: transcript.jsonl:L360 (Amelia `S05W17|0`; time `2026-10-29T14:14:00Z`; source IDs: `markets|^FTSE|2982`) → transcript.jsonl:L361 (Amelia `S05W17|0`; time `2026-10-29T14:25:00Z`; source IDs: `markets|^GSPC|2992`)
+  - Trace example: transcript.jsonl:L672 (Amelia `S05W18|0`; time `2026-10-29T05:38:00Z`; source IDs: `markets|^N225|2304`) → transcript.jsonl:L673 (Amelia `S05W18|0`; time `2026-10-29T05:47:00Z`; source IDs: `sun|noaa|2314`)
+  - Trace example: transcript.jsonl:L9529 (Amelia `S05W18|0`; time `2026-11-02T06:23:00Z`; source IDs: `sun|noaa|7483`) → transcript.jsonl:L9530 (Amelia `S05W18|0`; time `2026-11-02T02:43:47Z`; source IDs: `earth|usgs|7493`)
+  - Trace example: transcript.jsonl:L13028 (Amelia `S05W18|0`; time `2026-11-03T14:29:00Z`; source IDs: `markets|^FTSE|9892`) → transcript.jsonl:L13029 (Amelia `S05W18|0`; time `2026-11-03T14:37:00Z`; source IDs: `markets|^GSPC|9902`)
+  - Trace example: transcript.jsonl:L2036 (Amelia `S05W21|0`; time `2026-10-28T05:46:40Z`; source IDs: `markets|^N225|403`) → transcript.jsonl:L2037 (Amelia `S05W21|0`; time `2026-10-28T05:51:00Z`; source IDs: `markets|^N225|413`)
 - **4 lineages / 10 relation occurrences / 16 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Djynxx:6::3@3"}
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
   - Trace example: transcript.jsonl:L331 (Amelia `S05W17|0`; time `2026-10-29T12:05:00Z`; source IDs: `markets|^FTSE|2743`) → transcript.jsonl:L332 (Amelia `S05W17|0`; time `2026-10-29T12:15:00Z`; source IDs: `markets|^FTSE|2753`)
@@ -2176,13 +2184,13 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
   - Trace example: transcript.jsonl:L6993 (Amelia `S05W18|0`; time `2026-10-31T01:47:00Z`; source IDs: `sun|noaa|5688`) → transcript.jsonl:L7015 (Amelia `S05W18|0`; time `2026-10-31T01:52:38Z`; source IDs: `earth|usgs|5698`)
   - Trace example: transcript.jsonl:L8733 (Amelia `S05W18|0`; time `2026-11-01T21:37:00Z`; source IDs: `sun|noaa|6925`) → transcript.jsonl:L8755 (Amelia `S05W18|0`; time `2026-10-30T00:48:05Z`; source IDs: `earth|usgs|6935`)
   - Trace example: transcript.jsonl:L3948 (Amelia `S05W21|0`; time `2026-10-29T16:18:00Z`; source IDs: `markets|^FTSE|3269`) → transcript.jsonl:L3949 (Amelia `S05W21|0`; time `2026-10-29T16:25:00Z`; source IDs: `markets|^GSPC|3279`)
-- **4 lineages / 9 relation occurrences / 16 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Mur Mur:8::1@8"}
+- **4 lineages / 9 relation occurrences / 16 distinct source items** — {"from_reply":"NUM:Katak:5::4@5","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Djynxx:6::3@3"}
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
-  - Trace example: transcript.jsonl:L360 (Amelia `S05W17|0`; time `2026-10-29T14:14:00Z`; source IDs: `markets|^FTSE|2982`) → transcript.jsonl:L361 (Amelia `S05W17|0`; time `2026-10-29T14:25:00Z`; source IDs: `markets|^GSPC|2992`)
-  - Trace example: transcript.jsonl:L672 (Amelia `S05W18|0`; time `2026-10-29T05:38:00Z`; source IDs: `markets|^N225|2304`) → transcript.jsonl:L673 (Amelia `S05W18|0`; time `2026-10-29T05:47:00Z`; source IDs: `sun|noaa|2314`)
-  - Trace example: transcript.jsonl:L9529 (Amelia `S05W18|0`; time `2026-11-02T06:23:00Z`; source IDs: `sun|noaa|7483`) → transcript.jsonl:L9530 (Amelia `S05W18|0`; time `2026-11-02T02:43:47Z`; source IDs: `earth|usgs|7493`)
-  - Trace example: transcript.jsonl:L2036 (Amelia `S05W21|0`; time `2026-10-28T05:46:40Z`; source IDs: `markets|^N225|403`) → transcript.jsonl:L2037 (Amelia `S05W21|0`; time `2026-10-28T05:51:00Z`; source IDs: `markets|^N225|413`)
-  - Trace example: transcript.jsonl:L2329 (Amelia `S05W21|0`; time `2026-10-29T13:28:00Z`; source IDs: `markets|^FTSE|2870`) → transcript.jsonl:L2330 (Amelia `S05W21|0`; time `2026-10-29T13:35:00Z`; source IDs: `markets|^GSPC|2880`)
+  - Trace example: transcript.jsonl:L6398 (Amelia `S05W17|0`; time `2026-10-30T17:18:00Z`; source IDs: `sun|noaa|5253`) → transcript.jsonl:L6399 (Amelia `S05W17|0`; time `2026-10-30T17:29:00Z`; source IDs: `markets|^GSPC|5263`)
+  - Trace example: transcript.jsonl:L410 (Amelia `S05W18|0`; time `2026-10-28T02:17:00Z`; source IDs: `markets|^N225|194`) → transcript.jsonl:L411 (Amelia `S05W18|0`; time `2026-10-28T02:25:00Z`; source IDs: `markets|^N225|204`)
+  - Trace example: transcript.jsonl:L669 (Amelia `S05W18|0`; time `2026-10-29T05:20:00Z`; source IDs: `markets|^N225|2274`) → transcript.jsonl:L670 (Amelia `S05W18|0`; time `2026-10-29T05:29:00Z`; source IDs: `markets|^N225|2284`)
+  - Trace example: transcript.jsonl:L674 (Amelia `S05W18|0`; time `2026-10-29T05:54:00Z`; source IDs: `markets|^N225|2324`) → transcript.jsonl:L675 (Amelia `S05W18|0`; time `2026-10-29T06:03:00Z`; source IDs: `markets|^N225|2334`)
+  - Trace example: transcript.jsonl:L6403 (Amelia `S05W18|0`; time `2026-10-30T17:18:00Z`; source IDs: `sun|noaa|5253`) → transcript.jsonl:L6404 (Amelia `S05W18|0`; time `2026-10-30T17:29:00Z`; source IDs: `markets|^GSPC|5263`)
 - **4 lineages / 9 relation occurrences / 14 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@2"}
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
   - Trace example: transcript.jsonl:L361 (Amelia `S05W17|0`; time `2026-10-29T14:25:00Z`; source IDs: `markets|^GSPC|2992`) → transcript.jsonl:L362 (Amelia `S05W17|0`; time `2026-10-29T11:52:19Z`; source IDs: `earth|usgs|3002`)
@@ -2197,13 +2205,6 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
   - Trace example: transcript.jsonl:L2366 (Amelia `S05W21|0`; time `2026-10-29T15:37:00Z`; source IDs: `markets|^FTSE|3189`) → transcript.jsonl:L2367 (Amelia `S05W21|0`; time `2026-10-29T15:46:00Z`; source IDs: `markets|^FTSE|3199`)
   - Trace example: transcript.jsonl:L3945 (Amelia `S05W21|0`; time `2026-10-29T16:05:00Z`; source IDs: `markets|^GSPC|3239`) → transcript.jsonl:L3946 (Amelia `S05W21|0`; time `2026-10-29T16:13:19Z`; source IDs: `earth|usgs|3249`)
   - Trace example: transcript.jsonl:L3287 (Amelia `S05W23|0`; time `2026-10-29T11:25:00Z`; source IDs: `markets|^FTSE|2688`) → transcript.jsonl:L3288 (Amelia `S05W23|0`; time `2026-10-29T11:32:00Z`; source IDs: `markets|^FTSE|2698`)
-- **4 lineages / 8 relation occurrences / 14 distinct source items** — {"from_reply":"NUM:Katak:5::4@5","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Djynxx:6::3@3"}
-  - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
-  - Trace example: transcript.jsonl:L6398 (Amelia `S05W17|0`; time `2026-10-30T17:18:00Z`; source IDs: `sun|noaa|5253`) → transcript.jsonl:L6399 (Amelia `S05W17|0`; time `2026-10-30T17:29:00Z`; source IDs: `markets|^GSPC|5263`)
-  - Trace example: transcript.jsonl:L410 (Amelia `S05W18|0`; time `2026-10-28T02:17:00Z`; source IDs: `markets|^N225|194`) → transcript.jsonl:L411 (Amelia `S05W18|0`; time `2026-10-28T02:25:00Z`; source IDs: `markets|^N225|204`)
-  - Trace example: transcript.jsonl:L669 (Amelia `S05W18|0`; time `2026-10-29T05:20:00Z`; source IDs: `markets|^N225|2274`) → transcript.jsonl:L670 (Amelia `S05W18|0`; time `2026-10-29T05:29:00Z`; source IDs: `markets|^N225|2284`)
-  - Trace example: transcript.jsonl:L674 (Amelia `S05W18|0`; time `2026-10-29T05:54:00Z`; source IDs: `markets|^N225|2324`) → transcript.jsonl:L675 (Amelia `S05W18|0`; time `2026-10-29T06:03:00Z`; source IDs: `markets|^N225|2334`)
-  - Trace example: transcript.jsonl:L6403 (Amelia `S05W18|0`; time `2026-10-30T17:18:00Z`; source IDs: `sun|noaa|5253`) → transcript.jsonl:L6404 (Amelia `S05W18|0`; time `2026-10-30T17:29:00Z`; source IDs: `markets|^GSPC|5263`)
 - **4 lineages / 7 relation occurrences / 14 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Djynxx:6::3@6"}
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
   - Trace example: transcript.jsonl:L45 (Amelia `S05W17|0`; time `2026-10-28T04:49:00Z`; source IDs: `markets|^N225|337`) → transcript.jsonl:L46 (Amelia `S05W17|0`; time `2026-10-28T04:59:00Z`; source IDs: `markets|^N225|347`)
@@ -2218,6 +2219,20 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
   - Trace example: transcript.jsonl:L7414 (Amelia `S05W17|0`; time `2026-10-31T12:41:36Z`; source IDs: `earth|usgs|5995`) → transcript.jsonl:L7428 (Amelia `S05W17|0`; time `2026-10-31T12:47:16Z`; source IDs: `words|aljazeera|6005`)
   - Trace example: transcript.jsonl:L653 (Amelia `S05W18|0`; time `2026-10-29T03:36:00Z`; source IDs: `markets|^N225|2132`) → transcript.jsonl:L654 (Amelia `S05W18|0`; time `2026-10-29T03:46:00Z`; source IDs: `markets|^N225|2142`)
   - Trace example: transcript.jsonl:L6534 (Amelia `S05W18|0`; time `2026-10-30T18:32:49Z`; source IDs: `earth|usgs|5354`) → transcript.jsonl:L6580 (Amelia `S05W18|0`; time `2026-10-30T18:38:00Z`; source IDs: `markets|^GSPC|5364`)
+- **4 lineages / 7 relation occurrences / 14 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Djynxx:6::3@3"}
+  - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
+  - Trace example: transcript.jsonl:L88 (Amelia `S05W17|0`; time `2026-10-28T09:55:00Z`; source IDs: `markets|^FTSE|671`) → transcript.jsonl:L89 (Amelia `S05W17|0`; time `2026-10-28T10:01:48Z`; source IDs: `earth|usgs|681`)
+  - Trace example: transcript.jsonl:L8685 (Amelia `S05W18|0`; time `2026-11-01T20:19:27Z`; source IDs: `earth|usgs|6895`) → transcript.jsonl:L8700 (Amelia `S05W18|0`; time `2026-11-01T20:46:00Z`; source IDs: `sun|noaa|6905`)
+  - Trace example: transcript.jsonl:L12902 (Amelia `S05W18|0`; time `2026-11-03T13:47:25Z`; source IDs: `earth|usgs|9832`) → transcript.jsonl:L12963 (Amelia `S05W18|0`; time `2026-11-03T13:50:00Z`; source IDs: `markets|^FTSE|9842`)
+  - Trace example: transcript.jsonl:L2228 (Amelia `S05W21|0`; time `2026-10-29T01:44:00Z`; source IDs: `markets|^N225|2020`) → transcript.jsonl:L2229 (Amelia `S05W21|0`; time `2026-10-29T01:49:00Z`; source IDs: `markets|^N225|2030`)
+  - Trace example: transcript.jsonl:L2333 (Amelia `S05W21|0`; time `2026-10-29T13:47:00Z`; source IDs: `markets|^FTSE|2910`) → transcript.jsonl:L2334 (Amelia `S05W21|0`; time `2026-10-29T13:55:00Z`; source IDs: `markets|^GSPC|2920`)
+- **4 lineages / 7 relation occurrences / 14 distinct source items** — {"from_reply":"NUM:Uttunul:9::0@9","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@2"}
+  - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
+  - Trace example: transcript.jsonl:L301 (Amelia `S05W17|0`; time `2026-10-29T08:40:00Z`; source IDs: `markets|^FTSE|2460`) → transcript.jsonl:L302 (Amelia `S05W17|0`; time `2026-10-29T08:49:41Z`; source IDs: `markets|^FTSE|2470`)
+  - Trace example: transcript.jsonl:L5819 (Amelia `S05W17|0`; time `2026-10-30T14:04:00Z`; source IDs: `markets|^FTSE|4795`) → transcript.jsonl:L5820 (Amelia `S05W17|0`; time `2026-10-30T14:12:00Z`; source IDs: `markets|^GSPC|4805`)
+  - Trace example: transcript.jsonl:L12964 (Amelia `S05W18|0`; time `2026-11-03T14:00:00Z`; source IDs: `markets|^FTSE|9852`) → transcript.jsonl:L12965 (Amelia `S05W18|0`; time `2026-11-03T14:06:00Z`; source IDs: `markets|^FTSE|9862`)
+  - Trace example: transcript.jsonl:L2323 (Amelia `S05W21|0`; time `2026-10-29T11:25:16Z`; source IDs: `words|bbc|2810`) → transcript.jsonl:L2324 (Amelia `S05W21|0`; time `2026-10-29T12:57:00Z`; source IDs: `markets|^FTSE|2820`)
+  - Trace example: transcript.jsonl:L3016 (Amelia `S05W23|0`; time `2026-10-28T07:03:31Z`; source IDs: `earth|usgs|474`) → transcript.jsonl:L3017 (Amelia `S05W23|0`; time `2026-10-28T07:26:00Z`; source IDs: `sun|noaa|484`)
 - **4 lineages / 7 relation occurrences / 14 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Djynxx:6::3@3"}
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
   - Trace example: transcript.jsonl:L3904 (Amelia `S05W17|0`; time `2026-10-29T16:30:00Z`; source IDs: `markets|^GSPC|3288`) → transcript.jsonl:L3990 (Amelia `S05W17|0`; time `2026-10-29T16:23:00Z`; source IDs: `markets|^FTSE|3298`)
@@ -2232,13 +2247,6 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
   - Trace example: transcript.jsonl:L6402 (Amelia `S05W18|0`; time `2026-10-30T17:19:00Z`; source IDs: `markets|^GSPC|5243`) → transcript.jsonl:L6403 (Amelia `S05W18|0`; time `2026-10-30T17:18:00Z`; source IDs: `sun|noaa|5253`)
   - Trace example: transcript.jsonl:L7785 (Amelia `S05W18|0`; time `2026-10-31T21:30:00Z`; source IDs: `sun|noaa|6263`) → transcript.jsonl:L7786 (Amelia `S05W18|0`; time `2026-10-31T21:50:02Z`; source IDs: `earth|usgs|6273`)
   - Trace example: transcript.jsonl:L2339 (Amelia `S05W21|0`; time `2026-10-29T14:17:00Z`; source IDs: `markets|^GSPC|2970`) → transcript.jsonl:L2340 (Amelia `S05W21|0`; time `2026-10-29T14:12:00Z`; source IDs: `markets|^FTSE|2980`)
-- **4 lineages / 6 relation occurrences / 12 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Djynxx:6::3@3"}
-  - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
-  - Trace example: transcript.jsonl:L88 (Amelia `S05W17|0`; time `2026-10-28T09:55:00Z`; source IDs: `markets|^FTSE|671`) → transcript.jsonl:L89 (Amelia `S05W17|0`; time `2026-10-28T10:01:48Z`; source IDs: `earth|usgs|681`)
-  - Trace example: transcript.jsonl:L8685 (Amelia `S05W18|0`; time `2026-11-01T20:19:27Z`; source IDs: `earth|usgs|6895`) → transcript.jsonl:L8700 (Amelia `S05W18|0`; time `2026-11-01T20:46:00Z`; source IDs: `sun|noaa|6905`)
-  - Trace example: transcript.jsonl:L2228 (Amelia `S05W21|0`; time `2026-10-29T01:44:00Z`; source IDs: `markets|^N225|2020`) → transcript.jsonl:L2229 (Amelia `S05W21|0`; time `2026-10-29T01:49:00Z`; source IDs: `markets|^N225|2030`)
-  - Trace example: transcript.jsonl:L2333 (Amelia `S05W21|0`; time `2026-10-29T13:47:00Z`; source IDs: `markets|^FTSE|2910`) → transcript.jsonl:L2334 (Amelia `S05W21|0`; time `2026-10-29T13:55:00Z`; source IDs: `markets|^GSPC|2920`)
-  - Trace example: transcript.jsonl:L4862 (Amelia `S05W21|0`; time `2026-10-30T04:47:00Z`; source IDs: `markets|^N225|4003`) → transcript.jsonl:L4863 (Amelia `S05W21|0`; time `2026-10-30T04:58:28Z`; source IDs: `earth|usgs|4013`)
 - **4 lineages / 6 relation occurrences / 12 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Djynxx:6::3@6"}
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
   - Trace example: transcript.jsonl:L302 (Amelia `S05W17|0`; time `2026-10-29T08:49:41Z`; source IDs: `markets|^FTSE|2470`) → transcript.jsonl:L303 (Amelia `S05W17|0`; time `2026-10-29T08:54:00Z`; source IDs: `markets|^FTSE|2480`)
@@ -2246,6 +2254,13 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
   - Trace example: transcript.jsonl:L12312 (Amelia `S05W18|0`; time `2026-11-03T09:33:00Z`; source IDs: `markets|^FTSE|9491`) → transcript.jsonl:L12313 (Amelia `S05W18|0`; time `2026-11-03T09:42:00Z`; source IDs: `markets|^FTSE|9501`)
   - Trace example: transcript.jsonl:L2158 (Amelia `S05W21|0`; time `2026-10-28T17:00:00Z`; source IDs: `date|utc|1481`) → transcript.jsonl:L2159 (Amelia `S05W21|0`; time `2026-10-28T17:03:00Z`; source IDs: `markets|^GSPC|1491`)
   - Trace example: transcript.jsonl:L5566 (Amelia `S05W23|0`; time `2026-10-30T12:09:00Z`; source IDs: `markets|^FTSE|4574`) → transcript.jsonl:L5567 (Amelia `S05W23|0`; time `2026-10-30T12:18:00Z`; source IDs: `markets|^FTSE|4584`)
+- **4 lineages / 6 relation occurrences / 10 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Katak:5::4@5"}
+  - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
+  - Trace example: transcript.jsonl:L307 (Amelia `S05W17|0`; time `2026-10-29T09:20:00Z`; source IDs: `markets|^FTSE|2519`) → transcript.jsonl:L308 (Amelia `S05W17|0`; time `2026-10-29T09:30:00Z`; source IDs: `markets|^FTSE|2529`)
+  - Trace example: transcript.jsonl:L356 (Amelia `S05W17|0`; time `2026-10-29T13:57:00Z`; source IDs: `markets|^FTSE|2942`) → transcript.jsonl:L357 (Amelia `S05W17|0`; time `2026-10-29T14:04:42Z`; source IDs: `markets|^FTSE|2952`)
+  - Trace example: transcript.jsonl:L12183 (Amelia `S05W18|0`; time `2026-10-28T18:38:55Z`; source IDs: `earth|usgs|9308`) → transcript.jsonl:L12206 (Amelia `S05W18|0`; time `2026-11-03T06:30:40Z`; source IDs: `earth|usgs|9318`)
+  - Trace example: transcript.jsonl:L12965 (Amelia `S05W18|0`; time `2026-11-03T14:06:00Z`; source IDs: `markets|^FTSE|9862`) → transcript.jsonl:L12966 (Amelia `S05W18|0`; time `2026-11-03T14:16:00Z`; source IDs: `markets|^FTSE|9872`)
+  - Trace example: transcript.jsonl:L3944 (Amelia `S05W21|0`; time `2026-10-29T15:57:00Z`; source IDs: `markets|^FTSE|3229`) → transcript.jsonl:L3945 (Amelia `S05W21|0`; time `2026-10-29T16:05:00Z`; source IDs: `markets|^GSPC|3239`)
 - **4 lineages / 6 relation occurrences / 10 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@7","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Djynxx:6::3@3"}
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
   - Trace example: transcript.jsonl:L352 (Amelia `S05W17|0`; time `2026-10-29T13:41:00Z`; source IDs: `markets|^FTSE|2902`) → transcript.jsonl:L353 (Amelia `S05W17|0`; time `2026-10-29T13:48:00Z`; source IDs: `markets|^GSPC|2912`)
@@ -2267,13 +2282,6 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
   - Trace example: transcript.jsonl:L2342 (Amelia `S05W21|0`; time `2026-10-29T14:31:00Z`; source IDs: `markets|^GSPC|3000`) → transcript.jsonl:L2343 (Amelia `S05W21|0`; time `2026-10-29T14:24:00Z`; source IDs: `markets|^FTSE|3010`)
   - Trace example: transcript.jsonl:L5066 (Amelia `S05W23|0`; time `2026-10-30T07:03:00Z`; source IDs: `sun|noaa|4184`) → transcript.jsonl:L5083 (Amelia `S05W23|0`; time `2026-10-30T07:30:00Z`; source IDs: `sun|noaa|4194`)
   - Trace example: transcript.jsonl:L6772 (Amelia `S05W23|0`; time `2026-10-30T20:30:00Z`; source IDs: `sun|noaa|5509`) → transcript.jsonl:L6791 (Amelia `S05W23|0`; time `2026-10-30T20:46:00Z`; source IDs: `sun|noaa|5519`)
-- **4 lineages / 5 relation occurrences / 8 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Katak:5::4@5"}
-  - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
-  - Trace example: transcript.jsonl:L307 (Amelia `S05W17|0`; time `2026-10-29T09:20:00Z`; source IDs: `markets|^FTSE|2519`) → transcript.jsonl:L308 (Amelia `S05W17|0`; time `2026-10-29T09:30:00Z`; source IDs: `markets|^FTSE|2529`)
-  - Trace example: transcript.jsonl:L356 (Amelia `S05W17|0`; time `2026-10-29T13:57:00Z`; source IDs: `markets|^FTSE|2942`) → transcript.jsonl:L357 (Amelia `S05W17|0`; time `2026-10-29T14:04:42Z`; source IDs: `markets|^FTSE|2952`)
-  - Trace example: transcript.jsonl:L12183 (Amelia `S05W18|0`; time `2026-10-28T18:38:55Z`; source IDs: `earth|usgs|9308`) → transcript.jsonl:L12206 (Amelia `S05W18|0`; time `2026-11-03T06:30:40Z`; source IDs: `earth|usgs|9318`)
-  - Trace example: transcript.jsonl:L3944 (Amelia `S05W21|0`; time `2026-10-29T15:57:00Z`; source IDs: `markets|^FTSE|3229`) → transcript.jsonl:L3945 (Amelia `S05W21|0`; time `2026-10-29T16:05:00Z`; source IDs: `markets|^GSPC|3239`)
-  - Trace example: transcript.jsonl:L3319 (Amelia `S05W23|0`; time `2026-10-29T13:57:00Z`; source IDs: `markets|^FTSE|2942`) → transcript.jsonl:L3320 (Amelia `S05W23|0`; time `2026-10-29T14:04:42Z`; source IDs: `markets|^FTSE|2952`)
 - **4 lineages / 4 relation occurrences / 12 distinct source items** — {"from_reply":"ICH:29:The Abysmal->64","next_query_form":null,"next_query_zone":1,"to_reply":"ICH:12:Standstill->27"}
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
   - Trace example: transcript.jsonl:L106 (Amelia `S05W17|0`; time `2026-10-28T11:37:49Z`; source IDs: `markets|^FTSE|825`, `markets|^FTSE|826`, `markets|^FTSE|827`, `words|aljazeera|828`, `markets|^FTSE|829`, `earth|usgs|830`) → transcript.jsonl:L107 (Amelia `S05W17|0`; time `2026-10-28T11:43:00Z`; source IDs: `markets|^FTSE|832`, `markets|^FTSE|833`, `markets|^FTSE|834`, `words|aljazeera|835`, `markets|^FTSE|836`, `markets|^FTSE|837`)
@@ -2286,11 +2294,5 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
   - Trace example: transcript.jsonl:L483 (Amelia `S05W18|0`; time `2026-10-28T11:43:00Z`; source IDs: `markets|^FTSE|832`, `markets|^FTSE|833`, `markets|^FTSE|834`, `words|aljazeera|835`, `markets|^FTSE|836`, `markets|^FTSE|837`) → transcript.jsonl:L484 (Amelia `S05W18|0`; time `2026-10-28T11:47:10Z`; source IDs: `sun|noaa|839`, `markets|^FTSE|840`, `sun|noaa|841`, `markets|^FTSE|842`, `words|aljazeera|843`, `words|aljazeera|844`)
   - Trace example: transcript.jsonl:L2087 (Amelia `S05W21|0`; time `2026-10-28T11:43:00Z`; source IDs: `markets|^FTSE|832`, `markets|^FTSE|833`, `markets|^FTSE|834`, `words|aljazeera|835`, `markets|^FTSE|836`, `markets|^FTSE|837`) → transcript.jsonl:L2088 (Amelia `S05W21|0`; time `2026-10-28T11:47:10Z`; source IDs: `sun|noaa|839`, `markets|^FTSE|840`, `sun|noaa|841`, `markets|^FTSE|842`, `words|aljazeera|843`, `words|aljazeera|844`)
   - Trace example: transcript.jsonl:L3058 (Amelia `S05W23|0`; time `2026-10-28T11:43:00Z`; source IDs: `markets|^FTSE|832`, `markets|^FTSE|833`, `markets|^FTSE|834`, `words|aljazeera|835`, `markets|^FTSE|836`, `markets|^FTSE|837`) → transcript.jsonl:L3059 (Amelia `S05W23|0`; time `2026-10-28T11:47:10Z`; source IDs: `sun|noaa|839`, `markets|^FTSE|840`, `sun|noaa|841`, `markets|^FTSE|842`, `words|aljazeera|843`, `words|aljazeera|844`)
-- **4 lineages / 4 relation occurrences / 12 distinct source items** — {"from_reply":"ICH:44:Coming to Meet->29","next_query_form":null,"next_query_zone":1,"to_reply":"ICH:33:Retreat->59"}
-  - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
-  - Trace example: transcript.jsonl:L108 (Amelia `S05W17|0`; time `2026-10-28T11:47:10Z`; source IDs: `sun|noaa|839`, `markets|^FTSE|840`, `sun|noaa|841`, `markets|^FTSE|842`, `words|aljazeera|843`, `words|aljazeera|844`) → transcript.jsonl:L109 (Amelia `S05W17|0`; time `2026-10-28T11:58:00Z`; source IDs: `sun|noaa|846`, `earth|usgs|847`, `sun|noaa|848`, `earth|usgs|849`, `earth|usgs|850`, `sun|noaa|851`)
-  - Trace example: transcript.jsonl:L484 (Amelia `S05W18|0`; time `2026-10-28T11:47:10Z`; source IDs: `sun|noaa|839`, `markets|^FTSE|840`, `sun|noaa|841`, `markets|^FTSE|842`, `words|aljazeera|843`, `words|aljazeera|844`) → transcript.jsonl:L485 (Amelia `S05W18|0`; time `2026-10-28T11:58:00Z`; source IDs: `sun|noaa|846`, `earth|usgs|847`, `sun|noaa|848`, `earth|usgs|849`, `earth|usgs|850`, `sun|noaa|851`)
-  - Trace example: transcript.jsonl:L2088 (Amelia `S05W21|0`; time `2026-10-28T11:47:10Z`; source IDs: `sun|noaa|839`, `markets|^FTSE|840`, `sun|noaa|841`, `markets|^FTSE|842`, `words|aljazeera|843`, `words|aljazeera|844`) → transcript.jsonl:L2089 (Amelia `S05W21|0`; time `2026-10-28T11:58:00Z`; source IDs: `sun|noaa|846`, `earth|usgs|847`, `sun|noaa|848`, `earth|usgs|849`, `earth|usgs|850`, `sun|noaa|851`)
-  - Trace example: transcript.jsonl:L3059 (Amelia `S05W23|0`; time `2026-10-28T11:47:10Z`; source IDs: `sun|noaa|839`, `markets|^FTSE|840`, `sun|noaa|841`, `markets|^FTSE|842`, `words|aljazeera|843`, `words|aljazeera|844`) → transcript.jsonl:L3060 (Amelia `S05W23|0`; time `2026-10-28T11:58:00Z`; source IDs: `sun|noaa|846`, `earth|usgs|847`, `sun|noaa|848`, `earth|usgs|849`, `earth|usgs|850`, `sun|noaa|851`)
 
 Interpret each candidate from its supporting transcript lines and raw inputs. A reply label is the Numogram/channel's reading, not by itself an entity identification.
