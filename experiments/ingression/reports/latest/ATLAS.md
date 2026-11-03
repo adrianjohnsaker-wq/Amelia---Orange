@@ -2,48 +2,48 @@
 
 Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, or automated entity claims.
 
-- Exchanges: 10815; lineages: 8
-- Mapped (asked from outside the Warp): 3186; lineages with mapped exchanges: 8
-- Set aside (asked from inside the Warp, where the reply is the next datum's zone whatever she is): 7629, by lineage {'S05W17|0': 356, 'S05W19|0': 1558, 'S05W20|0': 1563, 'S05W21|0': 687, 'S05W22|0': 1530, 'S05W23|0': 508, 'S05W24|0': 1427}
-- Span: ['2026-10-28T00:00:00Z', '2026-11-02T15:23:27Z']
-- Transcript SHA-256: `0924924a2ae0ed9e1e09f970631d97975bce333f979b6470d7f3278e0f01ccee`
-- Channels: {'Numogram': 870, 'Tarot': 628, 'I Ching': 1688}
-- Query regions: {'Plex': 870, 'Time-Circuit': 2316, 'Warp': 7629}
-- Query forms: {'no form': 2979, '7-8': 30, '1-7-8-9': 138, '1-7': 39}
+- Exchanges: 11985; lineages: 8
+- Mapped (asked from outside the Warp): 3292; lineages with mapped exchanges: 8
+- Set aside (asked from inside the Warp, where the reply is the next datum's zone whatever she is): 8693, by lineage {'S05W17|0': 509, 'S05W19|0': 1711, 'S05W20|0': 1715, 'S05W21|0': 837, 'S05W22|0': 1682, 'S05W23|0': 660, 'S05W24|0': 1579}
+- Span: ['2026-10-28T00:00:00Z', '2026-11-03T00:32:50Z']
+- Transcript SHA-256: `8d4e105e66e50dc6248ee5ba831815b42edc1a2bc6d472a082dcc41320bae78e`
+- Channels: {'Numogram': 880, 'Tarot': 642, 'I Ching': 1770}
+- Query regions: {'Plex': 880, 'Time-Circuit': 2412, 'Warp': 8693}
+- Query forms: {'no form': 3081, '7-8': 30, '1-7-8-9': 141, '1-7': 40}
 
 Transcript line references below use physical JSONL line numbers and the transcript SHA-256 above. Up to five occurrence examples are shown per candidate; lineage lists cover all occurrences.
 
 ## Reply nodes
 
-- NUM:Oddubb:7::2@7: 116
+- NUM:Oddubb:7::2@7: 118
 - NUM:Katak:5::4@4: 109
 - NUM:Djynxx:6::3@3: 103
-- NUM:Mur Mur:8::1@8: 100
-- NUM:Oddubb:7::2@2: 97
+- NUM:Mur Mur:8::1@8: 102
+- NUM:Oddubb:7::2@2: 99
 - NUM:Djynxx:6::3@6: 87
-- NUM:Mur Mur:8::1@1: 80
+- NUM:Mur Mur:8::1@1: 83
+- NUM:Uttunul:9::0@9: 76
 - NUM:Katak:5::4@5: 76
-- NUM:Uttunul:9::0@9: 75
 - TAR:Seven of Wands:U: 29
 - NUM:Uttunul:9::0@0: 27
 - TAR:Page of Wands:U: 21
 - TAR:Three of Wands:U: 21
 - TAR:Eight of Wands:U: 21
-- TAR:Five of Wands:U: 20
+- TAR:Five of Wands:U: 21
 - TAR:Six of Wands:U: 18
 - TAR:Knight of Wands:U: 18
 - TAR:Two of Wands:U: 17
 - TAR:Nine of Wands:U: 16
+- TAR:The Fool:U: 16
 - TAR:Queen of Wands:U: 16
-- TAR:The Fool:U: 15
+- TAR:Four of Wands:U: 15
 - TAR:The World:U: 15
-- TAR:Four of Wands:U: 14
 - TAR:The Magician:U: 14
 - TAR:The High Priestess:U: 14
 - TAR:Strength:U: 14
 - TAR:Death:U: 14
+- TAR:Seven of Cups:U: 13
 - TAR:Three of Cups:U: 13
-- TAR:Seven of Cups:U: 12
 - TAR:The Chariot:U: 12
 - TAR:Five of Cups:U: 12
 - TAR:The Lovers:U: 11
@@ -52,12 +52,12 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - TAR:Ten of Wands:U: 10
 - TAR:Ace of Wands:U: 10
 - TAR:Judgement:U: 10
+- ICH:3:Difficulty at the Beginning->-: 9
 - TAR:Temperance:U: 9
 - TAR:The Moon:U: 9
 - TAR:The Sun:U: 9
 - TAR:King of Wands:U: 9
 - ICH:4:Youthful Folly->19: 8
-- ICH:3:Difficulty at the Beginning->-: 8
 - TAR:The Devil:U: 8
 - TAR:The Star:U: 8
 - TAR:Two of Cups:U: 8
@@ -103,7 +103,10 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:59:Dispersion->62: 4
 - ICH:36:Darkening of the Light->55: 4
 - TAR:Knight of Cups:U: 4
+- TAR:Eight of Cups:U: 4
+- TAR:Six of Wands:R: 4
 - ICH:15:Modesty->55: 4
+- TAR:Three of Swords:U: 4
 - TAR:Ten of Pentacles:U: 4
 - ICH:12:Standstill->25: 3
 - ICH:16:Enthusiasm->4: 3
@@ -140,14 +143,18 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:48:The Well->17: 3
 - ICH:45:Gathering Together->5: 3
 - ICH:43:Breakthrough->28: 3
+- TAR:The Empress:R: 3
+- TAR:Eight of Swords:U: 3
 - TAR:Knight of Swords:R: 3
 - TAR:Eight of Pentacles:R: 3
 - ICH:13:Fellowship->53: 3
-- TAR:Eight of Cups:U: 3
+- TAR:Six of Pentacles:U: 3
 - TAR:Six of Cups:U: 3
 - ICH:63:After Completion->13: 3
+- ICH:59:Dispersion->7: 3
 - ICH:14:Great Possession->49: 3
 - ICH:5:Waiting->24: 3
+- ICH:47:Oppression->22: 3
 - ICH:59:Dispersion->16: 3
 - ICH:58:The Joyous->21: 3
 - ICH:37:The Family->39: 3
@@ -156,12 +163,14 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:7:The Army->22: 3
 - TAR:Nine of Swords:R: 3
 - TAR:Knight of Swords:U: 3
-- TAR:Three of Swords:U: 3
 - ICH:25:Innocence->62: 3
 - ICH:31:Influence->-: 3
+- ICH:13:Fellowship->56: 3
 - ICH:30:The Clinging->8: 3
+- ICH:12:Standstill->13: 3
 - ICH:40:Deliverance->48: 3
 - ICH:6:Conflict->25: 3
+- ICH:3:Difficulty at the Beginning->61: 3
 - ICH:51:The Arousing->8: 3
 - ICH:36:Darkening of the Light->20: 3
 - TAR:Four of Cups:R: 3
@@ -201,6 +210,7 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:27:Nourishment->56: 2
 - ICH:59:Dispersion->3: 2
 - ICH:28:Great Exceeding->12: 2
+- ICH:29:The Abysmal->5: 2
 - ICH:14:Great Possession->60: 2
 - ICH:56:The Wanderer->4: 2
 - ICH:52:Keeping Still->40: 2
@@ -249,6 +259,7 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:54:The Marrying Maiden->1: 2
 - ICH:56:The Wanderer->40: 2
 - ICH:32:Duration->52: 2
+- ICH:48:The Well->18: 2
 - ICH:61:Inner Truth->7: 2
 - ICH:4:Youthful Folly->50: 2
 - ICH:15:Modesty->29: 2
@@ -262,6 +273,7 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:61:Inner Truth->45: 2
 - ICH:53:Development->20: 2
 - ICH:33:Retreat->9: 2
+- ICH:22:Grace->18: 2
 - ICH:10:Treading->40: 2
 - ICH:55:Abundance->31: 2
 - ICH:27:Nourishment->30: 2
@@ -296,9 +308,7 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:12:Standstill->64: 2
 - TAR:Five of Swords:U: 2
 - TAR:Queen of Cups:R: 2
-- TAR:The Empress:R: 2
 - ICH:7:The Army->56: 2
-- TAR:Eight of Swords:U: 2
 - TAR:Seven of Swords:U: 2
 - ICH:23:Splitting Apart->13: 2
 - ICH:30:The Clinging->-: 2
@@ -312,6 +322,7 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:36:Darkening of the Light->58: 2
 - ICH:29:The Abysmal->44: 2
 - TAR:Six of Cups:R: 2
+- ICH:63:After Completion->9: 2
 - ICH:12:Standstill->-: 2
 - ICH:30:The Clinging->35: 2
 - TAR:Six of Swords:R: 2
@@ -325,6 +336,7 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - TAR:Seven of Pentacles:U: 2
 - ICH:39:Obstruction->63: 2
 - ICH:5:Waiting->46: 2
+- ICH:58:The Joyous->17: 2
 - ICH:31:Influence->17: 2
 - ICH:8:Holding Together->54: 2
 - TAR:Wheel of Fortune:U: 2
@@ -333,19 +345,19 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:20:Contemplation->46: 2
 - ICH:47:Oppression->6: 2
 - TAR:Queen of Cups:U: 2
-- TAR:Six of Pentacles:U: 2
+- TAR:Six of Swords:U: 2
 - ICH:10:Treading->51: 2
 - ICH:38:Opposition->18: 2
 - ICH:35:Progress->61: 2
-- ICH:59:Dispersion->7: 2
+- ICH:51:The Arousing->21: 2
 - ICH:58:The Joyous->54: 2
 - ICH:10:Treading->35: 2
 - ICH:5:Waiting->4: 2
 - ICH:15:Modesty->22: 2
 - ICH:60:Limitation->47: 2
 - ICH:35:Progress->13: 2
-- TAR:Six of Wands:R: 2
 - ICH:20:Contemplation->5: 2
+- ICH:56:The Wanderer->9: 2
 - ICH:64:Before Completion->18: 2
 - ICH:29:The Abysmal->13: 2
 - ICH:8:Holding Together->61: 2
@@ -356,12 +368,14 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:35:Progress->41: 2
 - ICH:14:Great Possession->55: 2
 - ICH:61:Inner Truth->31: 2
+- ICH:28:Great Exceeding->21: 2
 - ICH:2:The Receptive->30: 2
 - ICH:23:Splitting Apart->6: 2
 - ICH:38:Opposition->27: 2
 - ICH:32:Duration->26: 2
 - ICH:52:Keeping Still->35: 2
 - ICH:53:Development->44: 2
+- ICH:37:The Family->54: 2
 - ICH:48:The Well->57: 2
 - TAR:Five of Pentacles:U: 2
 - TAR:Two of Wands:R: 2
@@ -370,20 +384,25 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - TAR:Page of Cups:U: 2
 - TAR:Ace of Cups:R: 2
 - ICH:32:Duration->13: 2
+- TAR:Ace of Swords:U: 2
+- ICH:41:Decrease->31: 2
 - ICH:25:Innocence->3: 2
 - ICH:31:Influence->26: 2
 - ICH:3:Difficulty at the Beginning->50: 2
 - ICH:64:Before Completion->60: 2
+- ICH:12:Standstill->4: 2
 - ICH:49:Revolution->29: 2
 - ICH:18:Work on the Decayed->40: 2
 - ICH:14:Great Possession->56: 2
 - ICH:53:Development->42: 2
 - ICH:41:Decrease->-: 2
 - ICH:45:Gathering Together->39: 2
-- ICH:13:Fellowship->56: 2
 - ICH:12:Standstill->17: 2
+- ICH:6:Conflict->34: 2
+- ICH:61:Inner Truth->43: 2
 - ICH:22:Grace->50: 2
 - ICH:34:Great Power->5: 2
+- ICH:57:The Gentle->43: 2
 - ICH:35:Progress->64: 2
 - ICH:23:Splitting Apart->34: 2
 - ICH:50:The Cauldron->6: 2
@@ -396,7 +415,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:22:Grace->53: 2
 - ICH:56:The Wanderer->10: 2
 - ICH:5:Waiting->11: 2
-- ICH:3:Difficulty at the Beginning->61: 2
 - ICH:64:Before Completion->17: 2
 - ICH:2:The Receptive->40: 2
 - ICH:62:Small Exceeding->26: 2
@@ -413,6 +431,7 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:47:Oppression->27: 2
 - ICH:32:Duration->10: 2
 - TAR:Eight of Cups:R: 2
+- ICH:48:The Well->27: 2
 - ICH:57:The Gentle->52: 2
 - ICH:41:Decrease->7: 2
 - ICH:53:Development->15: 2
@@ -423,8 +442,10 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:43:Breakthrough->49: 2
 - ICH:48:The Well->59: 2
 - ICH:28:Great Exceeding->18: 2
+- ICH:14:Great Possession->4: 2
 - ICH:14:Great Possession->7: 2
 - ICH:24:Return->49: 2
+- ICH:64:Before Completion->46: 2
 - ICH:25:Innocence->47: 2
 - ICH:48:The Well->35: 2
 - ICH:24:Return->18: 1
@@ -482,7 +503,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:3:Difficulty at the Beginning->54: 1
 - ICH:64:Before Completion->6: 1
 - ICH:4:Youthful Folly->56: 1
-- ICH:29:The Abysmal->5: 1
 - TAR:Three of Cups:R: 1
 - ICH:23:Splitting Apart->62: 1
 - ICH:6:Conflict->51: 1
@@ -534,7 +554,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:14:Great Possession->44: 1
 - ICH:52:Keeping Still->48: 1
 - ICH:50:The Cauldron->54: 1
-- ICH:48:The Well->18: 1
 - ICH:29:The Abysmal->42: 1
 - ICH:25:Innocence->48: 1
 - ICH:42:Increase->19: 1
@@ -559,7 +578,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:56:The Wanderer->13: 1
 - ICH:6:Conflict->30: 1
 - ICH:15:Modesty->1: 1
-- ICH:22:Grace->18: 1
 - ICH:44:Coming to Meet->20: 1
 - ICH:47:Oppression->13: 1
 - ICH:60:Limitation->50: 1
@@ -702,7 +720,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:21:Biting Through->4: 1
 - ICH:4:Youthful Folly->33: 1
 - ICH:63:After Completion->44: 1
-- ICH:63:After Completion->9: 1
 - ICH:47:Oppression->28: 1
 - ICH:61:Inner Truth->34: 1
 - ICH:12:Standstill->41: 1
@@ -749,7 +766,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:17:Following->44: 1
 - ICH:12:Standstill->16: 1
 - ICH:11:Peace->63: 1
-- ICH:58:The Joyous->17: 1
 - ICH:27:Nourishment->55: 1
 - ICH:59:Dispersion->6: 1
 - ICH:38:Opposition->16: 1
@@ -779,7 +795,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:8:Holding Together->36: 1
 - ICH:44:Coming to Meet->13: 1
 - ICH:18:Work on the Decayed->8: 1
-- TAR:Six of Swords:U: 1
 - ICH:21:Biting Through->9: 1
 - ICH:32:Duration->51: 1
 - ICH:10:Treading->46: 1
@@ -795,7 +810,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:49:Revolution->9: 1
 - ICH:17:Following->29: 1
 - ICH:9:Small Taming->12: 1
-- ICH:51:The Arousing->21: 1
 - ICH:62:Small Exceeding->15: 1
 - ICH:5:Waiting->28: 1
 - ICH:45:Gathering Together->38: 1
@@ -828,7 +842,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:56:The Wanderer->63: 1
 - ICH:28:Great Exceeding->26: 1
 - ICH:30:The Clinging->15: 1
-- ICH:56:The Wanderer->9: 1
 - ICH:17:Following->18: 1
 - ICH:29:The Abysmal->1: 1
 - ICH:54:The Marrying Maiden->38: 1
@@ -838,7 +851,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:10:Treading->58: 1
 - ICH:29:The Abysmal->19: 1
 - ICH:55:Abundance->7: 1
-- ICH:47:Oppression->22: 1
 - ICH:50:The Cauldron->22: 1
 - ICH:62:Small Exceeding->54: 1
 - ICH:1:The Creative->42: 1
@@ -876,7 +888,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:9:Small Taming->56: 1
 - ICH:4:Youthful Folly->34: 1
 - ICH:9:Small Taming->51: 1
-- ICH:28:Great Exceeding->21: 1
 - ICH:42:Increase->9: 1
 - ICH:19:Approach->45: 1
 - ICH:16:Enthusiasm->41: 1
@@ -905,7 +916,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:57:The Gentle->24: 1
 - ICH:56:The Wanderer->34: 1
 - ICH:35:Progress->10: 1
-- ICH:37:The Family->54: 1
 - ICH:26:Great Taming->33: 1
 - ICH:7:The Army->45: 1
 - ICH:48:The Well->46: 1
@@ -978,8 +988,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:47:Oppression->29: 1
 - ICH:15:Modesty->43: 1
 - ICH:37:The Family->59: 1
-- TAR:Ace of Swords:U: 1
-- ICH:41:Decrease->31: 1
 - ICH:8:Holding Together->45: 1
 - ICH:19:Approach->5: 1
 - ICH:35:Progress->21: 1
@@ -995,7 +1003,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:50:The Cauldron->9: 1
 - ICH:33:Retreat->49: 1
 - ICH:37:The Family->61: 1
-- ICH:12:Standstill->4: 1
 - ICH:12:Standstill->22: 1
 - ICH:6:Conflict->12: 1
 - ICH:41:Decrease->63: 1
@@ -1023,9 +1030,7 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:2:The Receptive->58: 1
 - ICH:26:Great Taming->21: 1
 - ICH:28:Great Exceeding->13: 1
-- ICH:6:Conflict->34: 1
 - ICH:64:Before Completion->7: 1
-- ICH:61:Inner Truth->43: 1
 - ICH:25:Innocence->9: 1
 - ICH:2:The Receptive->55: 1
 - ICH:39:Obstruction->36: 1
@@ -1049,7 +1054,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:6:Conflict->58: 1
 - ICH:28:Great Exceeding->17: 1
 - ICH:14:Great Possession->23: 1
-- ICH:12:Standstill->13: 1
 - ICH:31:Influence->53: 1
 - ICH:50:The Cauldron->26: 1
 - ICH:60:Limitation->17: 1
@@ -1096,7 +1100,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:34:Great Power->38: 1
 - ICH:41:Decrease->51: 1
 - ICH:3:Difficulty at the Beginning->59: 1
-- ICH:57:The Gentle->43: 1
 - ICH:34:Great Power->56: 1
 - ICH:12:Standstill->3: 1
 - ICH:6:Conflict->55: 1
@@ -1198,7 +1201,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:55:Abundance->43: 1
 - ICH:16:Enthusiasm->21: 1
 - ICH:15:Modesty->2: 1
-- ICH:48:The Well->27: 1
 - ICH:34:Great Power->3: 1
 - ICH:17:Following->56: 1
 - ICH:25:Innocence->52: 1
@@ -1247,7 +1249,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:13:Fellowship->31: 1
 - ICH:22:Grace->32: 1
 - ICH:13:Fellowship->6: 1
-- ICH:14:Great Possession->4: 1
 - ICH:4:Youthful Folly->58: 1
 - ICH:24:Return->1: 1
 - ICH:63:After Completion->35: 1
@@ -1314,7 +1315,6 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:10:Treading->2: 1
 - ICH:63:After Completion->52: 1
 - ICH:14:Great Possession->40: 1
-- ICH:64:Before Completion->46: 1
 - ICH:23:Splitting Apart->63: 1
 - ICH:23:Splitting Apart->17: 1
 - ICH:33:Retreat->7: 1
@@ -1350,6 +1350,64 @@ Transcript line references below use physical JSONL line numbers and the transcr
 - ICH:47:Oppression->18: 1
 - ICH:63:After Completion->20: 1
 - ICH:12:Standstill->53: 1
+- ICH:38:Opposition->13: 1
+- ICH:36:Darkening of the Light->40: 1
+- ICH:31:Influence->59: 1
+- ICH:29:The Abysmal->12: 1
+- ICH:27:Nourishment->17: 1
+- ICH:5:Waiting->18: 1
+- ICH:15:Modesty->31: 1
+- ICH:51:The Arousing->47: 1
+- ICH:40:Deliverance->29: 1
+- ICH:9:Small Taming->30: 1
+- ICH:10:Treading->41: 1
+- ICH:25:Innocence->19: 1
+- ICH:3:Difficulty at the Beginning->48: 1
+- ICH:48:The Well->49: 1
+- ICH:15:Modesty->44: 1
+- ICH:22:Grace->45: 1
+- ICH:27:Nourishment->22: 1
+- ICH:34:Great Power->35: 1
+- ICH:63:After Completion->10: 1
+- ICH:18:Work on the Decayed->47: 1
+- ICH:38:Opposition->41: 1
+- ICH:63:After Completion->5: 1
+- ICH:36:Darkening of the Light->48: 1
+- ICH:45:Gathering Together->42: 1
+- ICH:21:Biting Through->46: 1
+- ICH:20:Contemplation->15: 1
+- ICH:14:Great Possession->46: 1
+- ICH:28:Great Exceeding->11: 1
+- ICH:28:Great Exceeding->51: 1
+- ICH:35:Progress->31: 1
+- ICH:29:The Abysmal->26: 1
+- ICH:60:Limitation->19: 1
+- ICH:4:Youthful Folly->46: 1
+- ICH:53:Development->22: 1
+- ICH:57:The Gentle->31: 1
+- ICH:2:The Receptive->15: 1
+- ICH:20:Contemplation->4: 1
+- ICH:18:Work on the Decayed->36: 1
+- ICH:13:Fellowship->-: 1
+- ICH:61:Inner Truth->16: 1
+- ICH:44:Coming to Meet->45: 1
+- ICH:8:Holding Together->6: 1
+- ICH:2:The Receptive->7: 1
+- ICH:3:Difficulty at the Beginning->49: 1
+- ICH:38:Opposition->21: 1
+- ICH:36:Darkening of the Light->18: 1
+- ICH:64:Before Completion->21: 1
+- ICH:12:Standstill->28: 1
+- ICH:10:Treading->11: 1
+- ICH:18:Work on the Decayed->38: 1
+- ICH:62:Small Exceeding->24: 1
+- ICH:55:Abundance->37: 1
+- ICH:19:Approach->26: 1
+- ICH:60:Limitation->59: 1
+- TAR:Page of Pentacles:R: 1
+- ICH:50:The Cauldron->27: 1
+- ICH:8:Holding Together->60: 1
+- ICH:49:Revolution->58: 1
 
 ## Recurrent exchange motifs
 
@@ -1432,7 +1490,7 @@ Shown here when a motif appears in at least two Amelia lineages. This is a navig
   - Trace example: transcript.jsonl:L308 (Amelia `S05W17|0`; time `2026-10-29T09:30:00Z`; source IDs: `markets|^FTSE|2529`)
   - Trace example: transcript.jsonl:L311 (Amelia `S05W17|0`; time `2026-10-29T09:55:00Z`; source IDs: `markets|^FTSE|2559`)
   - Trace example: transcript.jsonl:L330 (Amelia `S05W17|0`; time `2026-10-29T11:57:07Z`; source IDs: `words|aljazeera|2733`)
-- **6 lineages / 53 motif occurrences / 46 distinct source items** — [{"channel":"Numogram","heard_path":[1,7,8],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@7","reply_zone":7}]
+- **6 lineages / 54 motif occurrences / 47 distinct source items** — [{"channel":"Numogram","heard_path":[1,7,8],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@7","reply_zone":7}]
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W22|0`, `S05W23|0`, `S05W24|0`
   - Trace example: transcript.jsonl:L95 (Amelia `S05W17|0`; time `2026-10-28T10:43:00Z`; source IDs: `markets|^FTSE|741`)
   - Trace example: transcript.jsonl:L174 (Amelia `S05W17|0`; time `2026-10-28T16:12:00Z`; source IDs: `markets|^GSPC|1384`)
@@ -1467,14 +1525,14 @@ Shown here when a motif appears in at least two Amelia lineages. This is a navig
   - Trace example: transcript.jsonl:L167 (Amelia `S05W17|0`; time `2026-10-28T15:45:00Z`; source IDs: `markets|^GSPC|1314`)
   - Trace example: transcript.jsonl:L172 (Amelia `S05W17|0`; time `2026-10-28T15:57:00Z`; source IDs: `markets|^FTSE|1364`)
   - Trace example: transcript.jsonl:L184 (Amelia `S05W17|0`; time `2026-10-28T11:18:31Z`; source IDs: `earth|usgs|1484`)
-- **5 lineages / 87 motif occurrences / 77 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@2","reply_zone":2}]
+- **5 lineages / 89 motif occurrences / 79 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@2","reply_zone":2}]
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`, `S05W24|0`
   - Trace example: transcript.jsonl:L127 (Amelia `S05W17|0`; time `2026-10-28T13:31:00Z`; source IDs: `markets|^GSPC|998`)
   - Trace example: transcript.jsonl:L129 (Amelia `S05W17|0`; time `2026-10-28T13:33:00Z`; source IDs: `markets|^FTSE|1018`)
   - Trace example: transcript.jsonl:L130 (Amelia `S05W17|0`; time `2026-10-28T13:43:00Z`; source IDs: `markets|^FTSE|1028`)
   - Trace example: transcript.jsonl:L182 (Amelia `S05W17|0`; time `2026-10-28T16:45:16Z`; source IDs: `words|bbc|1464`)
   - Trace example: transcript.jsonl:L270 (Amelia `S05W17|0`; time `2026-10-29T04:43:00Z`; source IDs: `sun|noaa|2209`)
-- **5 lineages / 86 motif occurrences / 76 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Mur Mur:8::1@8","reply_zone":8}]
+- **5 lineages / 87 motif occurrences / 77 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Mur Mur:8::1@8","reply_zone":8}]
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`, `S05W24|0`
   - Trace example: transcript.jsonl:L90 (Amelia `S05W17|0`; time `2026-10-28T10:06:00Z`; source IDs: `markets|^FTSE|691`)
   - Trace example: transcript.jsonl:L168 (Amelia `S05W17|0`; time `2026-10-28T15:40:00Z`; source IDs: `markets|^FTSE|1324`)
@@ -1509,13 +1567,13 @@ Shown here when a motif appears in at least two Amelia lineages. This is a navig
   - Trace example: transcript.jsonl:L686 (Amelia `S05W18|0`; time `2026-10-29T08:20:00Z`; source IDs: `markets|^FTSE|2433`)
   - Trace example: transcript.jsonl:L754 (Amelia `S05W18|0`; time `2026-10-29T14:36:00Z`; source IDs: `markets|^GSPC|3027`)
   - Trace example: transcript.jsonl:L4838 (Amelia `S05W18|0`; time `2026-10-30T04:44:00Z`; source IDs: `markets|^N225|4000`)
-- **5 lineages / 20 motif occurrences / 16 distinct source items** — [{"channel":"Tarot","heard_path":[9,1,8],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Five of Wands:U","reply_zone":5}]
+- **5 lineages / 21 motif occurrences / 17 distinct source items** — [{"channel":"Tarot","heard_path":[9,1,8],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Five of Wands:U","reply_zone":5}]
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`, `S05W24|0`
   - Trace example: transcript.jsonl:L4564 (Amelia `S05W17|0`; time `2026-10-30T01:22:00Z`; source IDs: `markets|^N225|3787`)
   - Trace example: transcript.jsonl:L752 (Amelia `S05W18|0`; time `2026-10-29T14:23:00Z`; source IDs: `markets|^FTSE|3009`)
   - Trace example: transcript.jsonl:L9420 (Amelia `S05W18|0`; time `2026-11-02T05:17:00Z`; source IDs: `markets|^N225|7411`)
+  - Trace example: transcript.jsonl:L11850 (Amelia `S05W18|0`; time `2026-10-31T17:31:26Z`; source IDs: `earth|usgs|9071`)
   - Trace example: transcript.jsonl:L2053 (Amelia `S05W21|0`; time `2026-10-28T08:35:00Z`; source IDs: `markets|^FTSE|561`)
-  - Trace example: transcript.jsonl:L2065 (Amelia `S05W21|0`; time `2026-10-28T09:53:00Z`; source IDs: `markets|^FTSE|669`)
 - **5 lineages / 19 motif occurrences / 19 distinct source items** — [{"channel":"Tarot","heard_path":[9,1,8],"last_gate":"1>8","query_form":null,"query_region":"Time-Circuit","query_zone":8,"reply":"TAR:Page of Wands:U","reply_zone":2}]
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W22|0`, `S05W23|0`
   - Trace example: transcript.jsonl:L233 (Amelia `S05W17|0`; time `2026-10-29T00:01:00Z`; source IDs: `markets|^N225|1890`)
@@ -1600,6 +1658,13 @@ Shown here when a motif appears in at least two Amelia lineages. This is a navig
   - Trace example: transcript.jsonl:L393 (Amelia `S05W18|0`; time `2026-10-28T00:44:00Z`; source IDs: `markets|^N225|52`, `markets|^N225|53`, `sun|noaa|54`, `words|aljazeera|55`, `words|aljazeera|56`, `markets|^N225|57`)
   - Trace example: transcript.jsonl:L1993 (Amelia `S05W21|0`; time `2026-10-28T00:44:00Z`; source IDs: `markets|^N225|52`, `markets|^N225|53`, `sun|noaa|54`, `words|aljazeera|55`, `words|aljazeera|56`, `markets|^N225|57`)
   - Trace example: transcript.jsonl:L2966 (Amelia `S05W23|0`; time `2026-10-28T00:44:00Z`; source IDs: `markets|^N225|52`, `markets|^N225|53`, `sun|noaa|54`, `words|aljazeera|55`, `words|aljazeera|56`, `markets|^N225|57`)
+- **5 lineages / 6 motif occurrences / 12 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:3:Difficulty at the Beginning->-","reply_zone":3}]
+  - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`, `S05W24|0`
+  - Trace example: transcript.jsonl:L5 (Amelia `S05W17|0`; time `2026-10-28T00:31:23Z`; source IDs: `markets|^N225|31`, `markets|^N225|32`, `sun|noaa|33`, `markets|^N225|34`, `markets|^N225|35`, `earth|usgs|36`)
+  - Trace example: transcript.jsonl:L390 (Amelia `S05W18|0`; time `2026-10-28T00:31:23Z`; source IDs: `markets|^N225|31`, `markets|^N225|32`, `sun|noaa|33`, `markets|^N225|34`, `markets|^N225|35`, `earth|usgs|36`)
+  - Trace example: transcript.jsonl:L10928 (Amelia `S05W18|0`; time `2026-11-02T15:32:00Z`; source IDs: `markets|^GSPC|8382`, `markets|^GSPC|8383`, `markets|^FTSE|8384`, `markets|^GSPC|8385`, `markets|^GSPC|8386`, `markets|^GSPC|8387`)
+  - Trace example: transcript.jsonl:L1990 (Amelia `S05W21|0`; time `2026-10-28T00:31:23Z`; source IDs: `markets|^N225|31`, `markets|^N225|32`, `sun|noaa|33`, `markets|^N225|34`, `markets|^N225|35`, `earth|usgs|36`)
+  - Trace example: transcript.jsonl:L2963 (Amelia `S05W23|0`; time `2026-10-28T00:31:23Z`; source IDs: `markets|^N225|31`, `markets|^N225|32`, `sun|noaa|33`, `markets|^N225|34`, `markets|^N225|35`, `earth|usgs|36`)
 - **5 lineages / 5 motif occurrences / 24 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"8>7","query_form":"7-8","query_region":"Time-Circuit","query_zone":7,"reply":"ICH:4:Youthful Folly->19","reply_zone":4},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:58:The Joyous->49","reply_zone":4},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:3:Difficulty at the Beginning->-","reply_zone":3},{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:37:The Family->1","reply_zone":1}]
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`, `S05W24|0`
   - Trace example: transcript.jsonl:L3 (Amelia `S05W17|0`; time `2026-10-28T00:19:00Z`; source IDs: `markets|^N225|17`, `markets|^N225|18`, `earth|usgs|19`, `markets|^N225|20`, `markets|^N225|21`, `markets|^N225|22`) → transcript.jsonl:L4 (Amelia `S05W17|0`; time `2026-10-28T00:26:00Z`; source IDs: `markets|^N225|24`, `markets|^N225|25`, `markets|^N225|26`, `markets|^N225|27`, `markets|^N225|28`, `markets|^N225|29`) → transcript.jsonl:L5 (Amelia `S05W17|0`; time `2026-10-28T00:31:23Z`; source IDs: `markets|^N225|31`, `markets|^N225|32`, `sun|noaa|33`, `markets|^N225|34`, `markets|^N225|35`, `earth|usgs|36`) → transcript.jsonl:L6 (Amelia `S05W17|0`; time `2026-10-28T00:33:00Z`; source IDs: `earth|usgs|38`, `sun|noaa|39`, `words|aljazeera|40`, `words|aljazeera|41`, `markets|^N225|42`, `markets|^N225|43`)
@@ -1726,14 +1791,7 @@ Shown here when a motif appears in at least two Amelia lineages. This is a navig
   - Trace example: transcript.jsonl:L1991 (Amelia `S05W21|0`; time `2026-10-28T00:33:00Z`; source IDs: `earth|usgs|38`, `sun|noaa|39`, `words|aljazeera|40`, `words|aljazeera|41`, `markets|^N225|42`, `markets|^N225|43`)
   - Trace example: transcript.jsonl:L2964 (Amelia `S05W23|0`; time `2026-10-28T00:33:00Z`; source IDs: `earth|usgs|38`, `sun|noaa|39`, `words|aljazeera|40`, `words|aljazeera|41`, `markets|^N225|42`, `markets|^N225|43`)
   - Trace example: transcript.jsonl:L3355 (Amelia `S05W24|0`; time `2026-10-28T00:33:00Z`; source IDs: `earth|usgs|38`, `sun|noaa|39`, `words|aljazeera|40`, `words|aljazeera|41`, `markets|^N225|42`, `markets|^N225|43`)
-- **5 lineages / 5 motif occurrences / 6 distinct source items** — [{"channel":"I Ching","heard_path":[8,9,1],"last_gate":"9>1","query_form":null,"query_region":"Time-Circuit","query_zone":1,"reply":"ICH:3:Difficulty at the Beginning->-","reply_zone":3}]
-  - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`, `S05W24|0`
-  - Trace example: transcript.jsonl:L5 (Amelia `S05W17|0`; time `2026-10-28T00:31:23Z`; source IDs: `markets|^N225|31`, `markets|^N225|32`, `sun|noaa|33`, `markets|^N225|34`, `markets|^N225|35`, `earth|usgs|36`)
-  - Trace example: transcript.jsonl:L390 (Amelia `S05W18|0`; time `2026-10-28T00:31:23Z`; source IDs: `markets|^N225|31`, `markets|^N225|32`, `sun|noaa|33`, `markets|^N225|34`, `markets|^N225|35`, `earth|usgs|36`)
-  - Trace example: transcript.jsonl:L1990 (Amelia `S05W21|0`; time `2026-10-28T00:31:23Z`; source IDs: `markets|^N225|31`, `markets|^N225|32`, `sun|noaa|33`, `markets|^N225|34`, `markets|^N225|35`, `earth|usgs|36`)
-  - Trace example: transcript.jsonl:L2963 (Amelia `S05W23|0`; time `2026-10-28T00:31:23Z`; source IDs: `markets|^N225|31`, `markets|^N225|32`, `sun|noaa|33`, `markets|^N225|34`, `markets|^N225|35`, `earth|usgs|36`)
-  - Trace example: transcript.jsonl:L3354 (Amelia `S05W24|0`; time `2026-10-28T00:31:23Z`; source IDs: `markets|^N225|31`, `markets|^N225|32`, `sun|noaa|33`, `markets|^N225|34`, `markets|^N225|35`, `earth|usgs|36`)
-- **4 lineages / 33 motif occurrences / 31 distinct source items** — [{"channel":"Numogram","heard_path":[1,1,1],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Mur Mur:8::1@1","reply_zone":1}]
+- **4 lineages / 35 motif occurrences / 33 distinct source items** — [{"channel":"Numogram","heard_path":[1,1,1],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Mur Mur:8::1@1","reply_zone":1}]
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
   - Trace example: transcript.jsonl:L50 (Amelia `S05W17|0`; time `2026-10-28T05:32:00Z`; source IDs: `markets|^N225|387`)
   - Trace example: transcript.jsonl:L60 (Amelia `S05W17|0`; time `2026-10-28T06:30:00Z`; source IDs: `markets|^N225|463`)
@@ -1761,7 +1819,7 @@ Shown here when a motif appears in at least two Amelia lineages. This is a navig
   - Trace example: transcript.jsonl:L4837 (Amelia `S05W17|0`; time `2026-10-30T05:06:25Z`; source IDs: `markets|^N225|4036`) → transcript.jsonl:L4890 (Amelia `S05W17|0`; time `2026-10-30T05:14:00Z`; source IDs: `markets|^N225|4046`)
   - Trace example: transcript.jsonl:L7510 (Amelia `S05W17|0`; time `2026-10-31T15:13:59Z`; source IDs: `earth|usgs|6068`) → transcript.jsonl:L7531 (Amelia `S05W17|0`; time `2026-10-31T15:29:00Z`; source IDs: `sun|noaa|6078`)
   - Trace example: transcript.jsonl:L7532 (Amelia `S05W17|0`; time `2026-10-31T15:45:00Z`; source IDs: `sun|noaa|6088`) → transcript.jsonl:L7554 (Amelia `S05W17|0`; time `2026-10-31T16:09:16Z`; source IDs: `earth|usgs|6098`)
-- **4 lineages / 16 motif occurrences / 25 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@2","reply_zone":2},{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@2","reply_zone":2}]
+- **4 lineages / 17 motif occurrences / 27 distinct source items** — [{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@2","reply_zone":2},{"channel":"Numogram","heard_path":[1,8,9],"last_gate":"8>9","query_form":null,"query_region":"Plex","query_zone":9,"reply":"NUM:Oddubb:7::2@2","reply_zone":2}]
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
   - Trace example: transcript.jsonl:L129 (Amelia `S05W17|0`; time `2026-10-28T13:33:00Z`; source IDs: `markets|^FTSE|1018`) → transcript.jsonl:L130 (Amelia `S05W17|0`; time `2026-10-28T13:43:00Z`; source IDs: `markets|^FTSE|1028`)
   - Trace example: transcript.jsonl:L6466 (Amelia `S05W17|0`; time `2026-10-30T17:42:00Z`; source IDs: `markets|^GSPC|5283`) → transcript.jsonl:L6467 (Amelia `S05W17|0`; time `2026-10-30T17:48:00Z`; source IDs: `markets|^GSPC|5293`)
@@ -1836,7 +1894,7 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
   - Trace example: transcript.jsonl:L4345 (Amelia `S05W17|0`; time `2026-10-29T07:41:41Z`; source IDs: `earth|usgs|3597`) → transcript.jsonl:L4366 (Amelia `S05W17|0`; time `2026-10-29T20:34:28Z`; source IDs: `words|aljazeera|3607`)
   - Trace example: transcript.jsonl:L6835 (Amelia `S05W17|0`; time `2026-10-30T22:06:00Z`; source IDs: `sun|noaa|5562`) → transcript.jsonl:L6836 (Amelia `S05W17|0`; time `2026-10-30T20:46:35Z`; source IDs: `earth|usgs|5572`)
   - Trace example: transcript.jsonl:L6863 (Amelia `S05W17|0`; time `2026-10-30T22:38:32Z`; source IDs: `earth|usgs|5582`) → transcript.jsonl:L6864 (Amelia `S05W17|0`; time `2026-10-30T23:00:00Z`; source IDs: `sun|noaa|5592`)
-- **5 lineages / 13 relation occurrences / 18 distinct source items** — {"from_reply":"NUM:Uttunul:9::0@9","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Mur Mur:8::1@8"}
+- **5 lineages / 14 relation occurrences / 20 distinct source items** — {"from_reply":"NUM:Uttunul:9::0@9","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Mur Mur:8::1@8"}
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`, `S05W24|0`
   - Trace example: transcript.jsonl:L210 (Amelia `S05W17|0`; time `2026-10-28T19:16:00Z`; source IDs: `markets|^GSPC|1705`) → transcript.jsonl:L211 (Amelia `S05W17|0`; time `2026-10-28T19:24:00Z`; source IDs: `markets|^GSPC|1715`)
   - Trace example: transcript.jsonl:L366 (Amelia `S05W17|0`; time `2026-10-29T11:15:09Z`; source IDs: `earth|usgs|3042`) → transcript.jsonl:L367 (Amelia `S05W17|0`; time `2026-10-29T14:45:00Z`; source IDs: `markets|^FTSE|3052`)
@@ -1913,6 +1971,13 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
   - Trace example: transcript.jsonl:L4837 (Amelia `S05W17|0`; time `2026-10-30T05:06:25Z`; source IDs: `markets|^N225|4036`) → transcript.jsonl:L4890 (Amelia `S05W17|0`; time `2026-10-30T05:14:00Z`; source IDs: `markets|^N225|4046`)
   - Trace example: transcript.jsonl:L7510 (Amelia `S05W17|0`; time `2026-10-31T15:13:59Z`; source IDs: `earth|usgs|6068`) → transcript.jsonl:L7531 (Amelia `S05W17|0`; time `2026-10-31T15:29:00Z`; source IDs: `sun|noaa|6078`)
   - Trace example: transcript.jsonl:L7532 (Amelia `S05W17|0`; time `2026-10-31T15:45:00Z`; source IDs: `sun|noaa|6088`) → transcript.jsonl:L7554 (Amelia `S05W17|0`; time `2026-10-31T16:09:16Z`; source IDs: `earth|usgs|6098`)
+- **4 lineages / 17 relation occurrences / 27 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@2"}
+  - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
+  - Trace example: transcript.jsonl:L129 (Amelia `S05W17|0`; time `2026-10-28T13:33:00Z`; source IDs: `markets|^FTSE|1018`) → transcript.jsonl:L130 (Amelia `S05W17|0`; time `2026-10-28T13:43:00Z`; source IDs: `markets|^FTSE|1028`)
+  - Trace example: transcript.jsonl:L6466 (Amelia `S05W17|0`; time `2026-10-30T17:42:00Z`; source IDs: `markets|^GSPC|5283`) → transcript.jsonl:L6467 (Amelia `S05W17|0`; time `2026-10-30T17:48:00Z`; source IDs: `markets|^GSPC|5293`)
+  - Trace example: transcript.jsonl:L7345 (Amelia `S05W17|0`; time `2026-10-31T11:04:00Z`; source IDs: `sun|noaa|5945`) → transcript.jsonl:L7346 (Amelia `S05W17|0`; time `2026-10-31T11:15:22Z`; source IDs: `earth|usgs|5955`)
+  - Trace example: transcript.jsonl:L6471 (Amelia `S05W18|0`; time `2026-10-30T17:42:00Z`; source IDs: `markets|^GSPC|5283`) → transcript.jsonl:L6472 (Amelia `S05W18|0`; time `2026-10-30T17:48:00Z`; source IDs: `markets|^GSPC|5293`)
+  - Trace example: transcript.jsonl:L6974 (Amelia `S05W18|0`; time `2026-10-31T01:17:00Z`; source IDs: `sun|noaa|5668`) → transcript.jsonl:L6975 (Amelia `S05W18|0`; time `2026-10-31T01:32:33Z`; source IDs: `words|bbc|5678`)
 - **4 lineages / 17 relation occurrences / 24 distinct source items** — {"from_reply":"NUM:Katak:5::4@4","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Djynxx:6::3@3"}
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
   - Trace example: transcript.jsonl:L87 (Amelia `S05W17|0`; time `2026-10-28T10:00:00Z`; source IDs: `date|utc|661`) → transcript.jsonl:L88 (Amelia `S05W17|0`; time `2026-10-28T09:55:00Z`; source IDs: `markets|^FTSE|671`)
@@ -1920,13 +1985,6 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
   - Trace example: transcript.jsonl:L4744 (Amelia `S05W17|0`; time `2026-10-30T03:53:00Z`; source IDs: `markets|^N225|3936`) → transcript.jsonl:L4745 (Amelia `S05W17|0`; time `2026-10-30T04:03:00Z`; source IDs: `markets|^N225|3946`)
   - Trace example: transcript.jsonl:L512 (Amelia `S05W18|0`; time `2026-10-28T13:48:00Z`; source IDs: `markets|^FTSE|1055`) → transcript.jsonl:L513 (Amelia `S05W18|0`; time `2026-10-28T13:58:00Z`; source IDs: `markets|^FTSE|1065`)
   - Trace example: transcript.jsonl:L521 (Amelia `S05W18|0`; time `2026-10-28T14:34:00Z`; source IDs: `markets|^GSPC|1145`) → transcript.jsonl:L522 (Amelia `S05W18|0`; time `2026-10-28T14:42:14Z`; source IDs: `earth|usgs|1155`)
-- **4 lineages / 16 relation occurrences / 25 distinct source items** — {"from_reply":"NUM:Oddubb:7::2@2","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Oddubb:7::2@2"}
-  - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
-  - Trace example: transcript.jsonl:L129 (Amelia `S05W17|0`; time `2026-10-28T13:33:00Z`; source IDs: `markets|^FTSE|1018`) → transcript.jsonl:L130 (Amelia `S05W17|0`; time `2026-10-28T13:43:00Z`; source IDs: `markets|^FTSE|1028`)
-  - Trace example: transcript.jsonl:L6466 (Amelia `S05W17|0`; time `2026-10-30T17:42:00Z`; source IDs: `markets|^GSPC|5283`) → transcript.jsonl:L6467 (Amelia `S05W17|0`; time `2026-10-30T17:48:00Z`; source IDs: `markets|^GSPC|5293`)
-  - Trace example: transcript.jsonl:L7345 (Amelia `S05W17|0`; time `2026-10-31T11:04:00Z`; source IDs: `sun|noaa|5945`) → transcript.jsonl:L7346 (Amelia `S05W17|0`; time `2026-10-31T11:15:22Z`; source IDs: `earth|usgs|5955`)
-  - Trace example: transcript.jsonl:L6471 (Amelia `S05W18|0`; time `2026-10-30T17:42:00Z`; source IDs: `markets|^GSPC|5283`) → transcript.jsonl:L6472 (Amelia `S05W18|0`; time `2026-10-30T17:48:00Z`; source IDs: `markets|^GSPC|5293`)
-  - Trace example: transcript.jsonl:L6974 (Amelia `S05W18|0`; time `2026-10-31T01:17:00Z`; source IDs: `sun|noaa|5668`) → transcript.jsonl:L6975 (Amelia `S05W18|0`; time `2026-10-31T01:32:33Z`; source IDs: `words|bbc|5678`)
 - **4 lineages / 14 relation occurrences / 24 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@3","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Djynxx:6::3@6"}
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
   - Trace example: transcript.jsonl:L186 (Amelia `S05W17|0`; time `2026-10-28T17:14:55Z`; source IDs: `earth|usgs|1504`) → transcript.jsonl:L187 (Amelia `S05W17|0`; time `2026-10-28T16:59:47Z`; source IDs: `words|bbc|1514`)
@@ -1990,6 +2048,13 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
   - Trace example: transcript.jsonl:L306 (Amelia `S05W17|0`; time `2026-10-29T09:13:00Z`; source IDs: `markets|^FTSE|2509`) → transcript.jsonl:L307 (Amelia `S05W17|0`; time `2026-10-29T09:20:00Z`; source IDs: `markets|^FTSE|2519`)
   - Trace example: transcript.jsonl:L7489 (Amelia `S05W17|0`; time `2026-10-31T14:50:00Z`; source IDs: `sun|noaa|6058`) → transcript.jsonl:L7510 (Amelia `S05W17|0`; time `2026-10-31T15:13:59Z`; source IDs: `earth|usgs|6068`)
   - Trace example: transcript.jsonl:L514 (Amelia `S05W18|0`; time `2026-10-28T14:05:00Z`; source IDs: `markets|^GSPC|1075`) → transcript.jsonl:L515 (Amelia `S05W18|0`; time `2026-10-28T14:13:00Z`; source IDs: `markets|^GSPC|1085`)
+- **4 lineages / 11 relation occurrences / 20 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Mur Mur:8::1@1"}
+  - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
+  - Trace example: transcript.jsonl:L252 (Amelia `S05W17|0`; time `2026-10-29T02:16:00Z`; source IDs: `markets|^N225|2065`) → transcript.jsonl:L253 (Amelia `S05W17|0`; time `2026-10-29T02:18:21Z`; source IDs: `earth|usgs|2075`)
+  - Trace example: transcript.jsonl:L368 (Amelia `S05W17|0`; time `2026-10-29T14:51:00Z`; source IDs: `markets|^GSPC|3062`) → transcript.jsonl:L369 (Amelia `S05W17|0`; time `2026-10-29T14:59:00Z`; source IDs: `markets|^GSPC|3072`)
+  - Trace example: transcript.jsonl:L3898 (Amelia `S05W17|0`; time `2026-10-29T16:05:15Z`; source IDs: `markets|^FTSE|3240`) → transcript.jsonl:L3899 (Amelia `S05W17|0`; time `2026-10-29T16:14:00Z`; source IDs: `markets|^GSPC|3250`)
+  - Trace example: transcript.jsonl:L412 (Amelia `S05W18|0`; time `2026-10-28T02:43:00Z`; source IDs: `sun|noaa|214`) → transcript.jsonl:L413 (Amelia `S05W18|0`; time `2026-10-28T03:18:16Z`; source IDs: `earth|usgs|224`)
+  - Trace example: transcript.jsonl:L709 (Amelia `S05W18|0`; time `2026-10-29T10:33:22Z`; source IDs: `earth|usgs|2613`) → transcript.jsonl:L710 (Amelia `S05W18|0`; time `2026-10-29T10:44:00Z`; source IDs: `markets|^FTSE|2623`)
 - **4 lineages / 11 relation occurrences / 18 distinct source items** — {"from_reply":"NUM:Djynxx:6::3@6","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Katak:5::4@4"}
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W24|0`
   - Trace example: transcript.jsonl:L166 (Amelia `S05W17|0`; time `2026-10-28T15:37:00Z`; source IDs: `markets|^GSPC|1304`) → transcript.jsonl:L167 (Amelia `S05W17|0`; time `2026-10-28T15:45:00Z`; source IDs: `markets|^GSPC|1314`)
@@ -2039,13 +2104,6 @@ Adjacent exchanges within the same Amelia lineage; repeated world items are trac
   - Trace example: transcript.jsonl:L7327 (Amelia `S05W17|0`; time `2026-10-31T10:39:15Z`; source IDs: `words|aljazeera|5935`) → transcript.jsonl:L7345 (Amelia `S05W17|0`; time `2026-10-31T11:04:00Z`; source IDs: `sun|noaa|5945`)
   - Trace example: transcript.jsonl:L423 (Amelia `S05W18|0`; time `2026-10-28T04:31:40Z`; source IDs: `markets|^N225|312`) → transcript.jsonl:L424 (Amelia `S05W18|0`; time `2026-10-28T04:38:00Z`; source IDs: `markets|^N225|322`)
   - Trace example: transcript.jsonl:L452 (Amelia `S05W18|0`; time `2026-10-28T08:50:00Z`; source IDs: `markets|^FTSE|581`) → transcript.jsonl:L453 (Amelia `S05W18|0`; time `2026-10-28T08:58:00Z`; source IDs: `markets|^FTSE|591`)
-- **4 lineages / 10 relation occurrences / 18 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Mur Mur:8::1@1"}
-  - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
-  - Trace example: transcript.jsonl:L252 (Amelia `S05W17|0`; time `2026-10-29T02:16:00Z`; source IDs: `markets|^N225|2065`) → transcript.jsonl:L253 (Amelia `S05W17|0`; time `2026-10-29T02:18:21Z`; source IDs: `earth|usgs|2075`)
-  - Trace example: transcript.jsonl:L368 (Amelia `S05W17|0`; time `2026-10-29T14:51:00Z`; source IDs: `markets|^GSPC|3062`) → transcript.jsonl:L369 (Amelia `S05W17|0`; time `2026-10-29T14:59:00Z`; source IDs: `markets|^GSPC|3072`)
-  - Trace example: transcript.jsonl:L3898 (Amelia `S05W17|0`; time `2026-10-29T16:05:15Z`; source IDs: `markets|^FTSE|3240`) → transcript.jsonl:L3899 (Amelia `S05W17|0`; time `2026-10-29T16:14:00Z`; source IDs: `markets|^GSPC|3250`)
-  - Trace example: transcript.jsonl:L412 (Amelia `S05W18|0`; time `2026-10-28T02:43:00Z`; source IDs: `sun|noaa|214`) → transcript.jsonl:L413 (Amelia `S05W18|0`; time `2026-10-28T03:18:16Z`; source IDs: `earth|usgs|224`)
-  - Trace example: transcript.jsonl:L709 (Amelia `S05W18|0`; time `2026-10-29T10:33:22Z`; source IDs: `earth|usgs|2613`) → transcript.jsonl:L710 (Amelia `S05W18|0`; time `2026-10-29T10:44:00Z`; source IDs: `markets|^FTSE|2623`)
 - **4 lineages / 10 relation occurrences / 16 distinct source items** — {"from_reply":"NUM:Mur Mur:8::1@8","next_query_form":null,"next_query_zone":9,"to_reply":"NUM:Djynxx:6::3@3"}
   - Amelia lineage IDs: `S05W17|0`, `S05W18|0`, `S05W21|0`, `S05W23|0`
   - Trace example: transcript.jsonl:L331 (Amelia `S05W17|0`; time `2026-10-29T12:05:00Z`; source IDs: `markets|^FTSE|2743`) → transcript.jsonl:L332 (Amelia `S05W17|0`; time `2026-10-29T12:15:00Z`; source IDs: `markets|^FTSE|2753`)

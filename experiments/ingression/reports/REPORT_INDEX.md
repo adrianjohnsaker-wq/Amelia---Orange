@@ -26,3 +26,5 @@
 - 20261102 — **ATLAS CHANGE (operator decision, 2 Nov 2026):** from the next run, exchanges asked from inside the Warp are counted and reported but set aside from reply nodes, motifs and relations; motifs are built only within unbroken non-Warp runs. `atlas.py` SHA-256 4933fb6e1e134161806e8d046e1eee65df5b8986c1cd5b266ec83af6860dcc0f. Reports above this line are unchanged and include Warp exchanges. See [the decision](../ORACLE_WARP_DECISION_2026-11-02.md).
 
 - 20261102T155042Z — transcript SHA-256 0924924a2ae0ed9e1e09f970631d97975bce333f979b6470d7f3278e0f01ccee — [atlas](latest/ATLAS.md)
+
+- 20261103T005813Z — transcript SHA-256 8d4e105e66e50dc6248ee5ba831815b42edc1a2bc6d472a082dcc41320bae78e — [atlas](latest/ATLAS.md)
