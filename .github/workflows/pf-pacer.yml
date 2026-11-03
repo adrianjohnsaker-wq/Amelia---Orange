@@ -1,0 +1,30 @@
+# PF pacer (experiments/pf_storage/PF_S1_AMENDMENT_7.md): keeps PF-1/PF-2 admitting and dispatches the sealed amendment 4/5
+# recoveries for their exact cases, without a person watching. Never commits or pushes. One instance at a time; it
+# hands over to a successor before the job time limit, and the 30-minute schedule restarts it if a handover is lost.
+name: PF pacer — keep PF-1/PF-2 running and recover known halts
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf-pacer.yml', 'experiments/pf_storage/PF_PACER.py']
+  schedule:
+    - cron: '11,41 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
+  issues: write
+concurrency:
+  group: pf-pacer
+  cancel-in-progress: false
+jobs:
+  pace:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main, fetch-depth: 1, sparse-checkout: experiments/pf_storage, sparse-checkout-cone-mode: true }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: Pace PF-1/PF-2 (dispatch-only; no writes to the repository)
+        env: { GH_TOKEN: '${{ github.token }}', PYTHONDONTWRITEBYTECODE: '1' }
+        run: python experiments/pf_storage/PF_PACER.py

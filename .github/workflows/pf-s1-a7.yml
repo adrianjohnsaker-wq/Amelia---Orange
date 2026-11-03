@@ -1,0 +1,68 @@
+# PF S1 amendment 7 (experiments/pf_storage/PF_S1_AMENDMENT_7.md): ONE RFC3161 token over the PF pacer. One-shot; writes only
+# experiments/pf_storage/seal_a7/.
+name: PF S1 amendment 7 — seal the PF pacer
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf-s1-a7.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: orange, ref: main, fetch-depth: 1 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: B1 amendment 7 bundle and ONE genuine RFC3161 token
+        working-directory: orange
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e experiments/pf_storage/seal_a7/receipt.json
+          python -m pip install -q -r ../c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          p=pathlib.Path('/tmp/pfs1a7'); p.mkdir(parents=True,exist_ok=True)
+          sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          files=['experiments/pf_storage/PF_S1_AMENDMENT_7.md','.github/workflows/pf-s1-a7.yml','.github/workflows/pf-pacer.yml','experiments/pf_storage/PF_PACER.py']
+          bundle={'schema':'PF_S1_A7_OPERATIONAL_SHA256_V1','amends':'experiments/pf_storage/seal/S1_SIGNED_BUNDLE.json',
+            'adds':'PF pacer: dispatch-only automation of PF-1/PF-2 live runs and of the sealed amendment 4/5 recoveries',
+            'scienceChanged':False,'notificationsEnabled':False,
+            'sourceSHA256':[{'path':f,'sha256':sha(f)} for f in files]}
+          (p/'S1_A7_SIGNED_BUNDLE.json').write_text(json.dumps(bundle,sort_keys=True,indent=2)+'\n')
+          imprint=sha(p/'S1_A7_SIGNED_BUNDLE.json')
+          Sealer().seal(p/'seal',imprint)
+          assert Sealer().verify(p/'seal',imprint)['status']=='PASS'
+          print('PF_S1_A7_ONE_RFC3161_PASS',imprint)
+          PY
+      - name: B2 create-only archive of the amendment bundle, token and receipt
+        env: { GH_TOKEN: '${{ github.token }}', REPO: '${{ github.repository }}' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,json,os,pathlib,subprocess
+          p=pathlib.Path('/tmp/pfs1a7')
+          files={'S1_A7_SIGNED_BUNDLE.json':p/'S1_A7_SIGNED_BUNDLE.json'}
+          for n in sorted(x.name for x in (p/'seal').iterdir()): files[n]=p/'seal'/n
+          assert 'receipt.json' in files,'MISSING receipt.json'
+          for name in sorted(files,key=lambda k:k=='receipt.json'):
+            dst='experiments/pf_storage/seal_a7/'+name
+            payload={'message':'PF S1 amendment 7: ONE RFC3161 token, create-only '+name+'; zero admitted','branch':'main','content':base64.b64encode(files[name].read_bytes()).decode()}
+            r=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dst,'--input','-'],input=json.dumps(payload),capture_output=True,text=True)
+            if r.returncode: raise RuntimeError('S1_A7_CREATE_ONLY_FAILED '+dst+' '+r.stderr[-800:])
+            print('PF_S1_A7_ARCHIVED',dst)
+          PY
