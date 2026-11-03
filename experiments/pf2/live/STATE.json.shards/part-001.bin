@@ -547747,7 +547747,14 @@ d": 0,
   "lastAdmittedRound": 33536920,
   "notificationsEnabled": false,
   "notificationsSent": 0,
-  "openHalt": null,
+  "openHalt": {
+    "atUTC": "2026-11-03T00:28:23.194147+00:00",
+    "lastSealedHead": "d8d8fa6e660f94d8dd5a7bfc1d443b4bb36f8724347a67f75df6eb5894b26d42",
+    "lastSealedTick": 11910,
+    "operatorRecoveryRequired": true,
+    "reason": "PF2_A1 sealed batch failed: PF2_COMMAND_FAILURE ('python', 'experiments/pf2/PF2_LIVE_SEAL.py') Traceback (most recent call last):\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/orange/experiments/pf2/PF2_LIVE_SEAL.py\", line 67, in <module>\n    if __name__=='__main__':main()\n                            ^^^^^^\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/orange/experiments/pf2/PF2_LIVE_SEAL.py\", line 41, in main\n    sealer.seal(folder,imprint)\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/c1-pin/drift1a_c1/beacon.py\", line 67, in seal\n    if result['status']!='PASS':raise VerificationError('RFC3161: '+str(result))\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ndrift1a_c1.",
+    "scientificResultsNotReinterpreted": true
+  },
   "pandemonium": {
     "encounters": [
       {
@@ -688146,5 +688153,5 @@ d": 0,
   },
   "schema": "PF2_LIVE_RUNTIME_STATUS_V1",
   "sealedBatchCount": 624,
-  "status": "running"
+  "status": "halted"
 }
