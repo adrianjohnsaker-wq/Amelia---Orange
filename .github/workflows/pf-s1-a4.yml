@@ -105,14 +105,10 @@ jobs:
               test "$n" = 0 || { echo "PF_S1_A4_LIVE_RUN_ACTIVE $wf $st $n"; exit 1; }
             done
           done
-          python experiments/pf_storage/PF_SHARD.py join experiments/pf2/live/STATE.json
+          python experiments/pf_storage/PF_STORE.py join experiments/pf2/live/STATE.json  # PF_S1_A8
+          python experiments/pf_storage/PF_SEAL_CHECK.py experiments/pf_storage/seal_a4 experiments/pf_storage/seal_a8  # PF_S1_A8
           python - <<'PY'
-          import hashlib,json,pathlib
-          from drift1a_c1.beacon import Sealer
-          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
-          d=pathlib.Path('experiments/pf_storage/seal_a4'); b=json.loads((d/'S1_A4_SIGNED_BUNDLE.json').read_text())
-          assert Sealer().verify(d,h(d/'S1_A4_SIGNED_BUNDLE.json'))['status']=='PASS'
-          for x in b['sourceSHA256']: assert h(x['path'])==x['sha256'],x['path']
+          import json,pathlib
           root=pathlib.Path('drift1a_c1/runner_state')
           assert not [p.name for p in (root/'leases').glob('*.json') if not (root/'completions'/p.name).exists()],'OPEN_LEASE'
           print('PF_S1_A4_AUDIT_PASS')
@@ -124,6 +120,7 @@ jobs:
           PYTHONPATH: '${{ github.workspace }}/c1-pin'
           DRIFT_C1_ENABLE_LIVE: 'false'
           PF2_S1_A4_OPERATOR_CONTINUE: 'true'
+          GH_TOKEN: '${{ github.token }}'
           PF2_S1_A4_SEAL_VERIFIED: 'true'
           PF2_S1_A4_EXPECT_TICK: "${{ github.event_name == 'workflow_dispatch' && inputs.expect_tick || '8750' }}"
         shell: bash
@@ -135,14 +132,14 @@ jobs:
           test -f "$RECEIPT"
           python experiments/pf2/PF2_LIVE_CHECK.py
           WANT=$(sha256sum "$F" | cut -d' ' -f1)
-          python experiments/pf_storage/PF_SHARD.py split "$F"
+          python experiments/pf_storage/PF_STORE.py split "$F"  # PF_S1_A8
           cp "$F" /tmp/state.reopened && rm -f -- "$F"
-          python experiments/pf_storage/PF_SHARD.py join "$F"
+          python experiments/pf_storage/PF_STORE.py join "$F"
           test "$(sha256sum "$F" | cut -d' ' -f1)" = "$WANT"
           git config user.name 'PF S1 authorised amendment 4 reopening'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- "$F.shards" "$RECEIPT"
-          git diff --cached --name-only | grep -v -e "^$F.shards/" -e "^$RECEIPT\$" && { echo 'PF_S1_A4_UNEXPECTED_PATH'; exit 1; } || true
+          git add -- "$F.pointer.json" "$RECEIPT"
+          git diff --cached --name-only | grep -v -e "^$F.pointer.json\$" -e "^$RECEIPT\$" && { echo 'PF_S1_A4_UNEXPECTED_PATH'; exit 1; } || true
           git diff --cached --quiet && { echo 'PF_S1_A4_NOTHING_STAGED'; exit 1; } || true
           test "$(git rev-parse HEAD)" = "$(git ls-remote origin refs/heads/main | cut -f1)"
           git commit -qm "PF S1 amendment 4: PF-2 reopened at its sealed prefix (tick $(python -c "import json;print(json.load(open('$RECEIPT'))['newTicks'])")) after an RFC3161 seal halt; no scientific writes"

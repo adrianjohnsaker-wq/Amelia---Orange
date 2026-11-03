@@ -1,4 +1,6 @@
 name: PF2 S1 LIVE — AD2 protocol with sharded storage, original receiver/PF1 safe lease
+# PF S1 amendment 8 (experiments/pf_storage/PF_S1_AMENDMENT_8.md): latest-commit checkout, live state as a release asset
+# behind a committed SHA-256 pointer, b67ec92 core checked by tree id; sealed by seal_a8.
 # Additive successor to pf2-live-observe-ad2.yml (byte-identical, retired by S1): every genesis, AD1 and AD2 check below is
 # unchanged; the live state is joined from its verified Git shards first, the S1 seal is verified, and the S1 catch-up
 # commits the state as shards. Pinned by the S1 RFC3161 bundle (experiments/pf_storage/PF_S1_REGISTERED.md).
@@ -23,12 +25,13 @@ jobs:
       contents: write
     env:
       PF2_LEASE: ${{ github.run_id }}-${{ github.run_attempt }}
+      GH_TOKEN: ${{ github.token }}  # PF_S1_A8: live state is a release asset
     steps:
       - uses: actions/checkout@v4
         with:
           path: orange
           ref: main
-          fetch-depth: 0
+          fetch-depth: 1  # PF_S1_A8: latest commit only (history is not read)
       - uses: actions/checkout@v4
         with:
           repository: adrianjohnsaker-wq/Amelia-0.4
@@ -59,7 +62,7 @@ jobs:
             open(os.environ['GITHUB_OUTPUT'],'a').write('run=false\n')
             raise SystemExit(0)
           import subprocess
-          subprocess.run(['python','experiments/pf_storage/PF_SHARD.py','join','experiments/pf2/live/STATE.json'],check=True)
+          subprocess.run(['python','experiments/pf_storage/PF_STORE.py','join','experiments/pf2/live/STATE.json'],check=True)
           if not pathlib.Path('experiments/pf2/operational_ad2/seal/receipt.json').exists():
             print('PF2_AD2_SEAL_NOT_YET_ARCHIVED_NO_ADMISSION')
             open(os.environ['GITHUB_OUTPUT'],'a').write('run=false\n')
@@ -97,7 +100,10 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
-          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          test "$(git rev-parse HEAD:src/substrate)" = 37a4306219247ec9c9e3ee87642afcd6013cff25  # PF_S1_A8: == b67ec92 tree (shallow checkout)
+          test "$(git rev-parse HEAD:src/governance)" = e4c5190e36f909772149398f13fa6d16c0e3b8c8
+          test "$(git rev-parse HEAD:src/ai/numogram)" = d12942e4ae1e3a12c74954ea405c7874b156f92e
+          test "$(git rev-parse HEAD:src/types/amelia.ts)" = 25316d8e45e5e2be4f9218fbd26a08a8f40a8c43
           python - <<'PY'
           import json,pathlib,hashlib
           h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
@@ -166,16 +172,8 @@ jobs:
           print('PF2_AD2_INDEPENDENT_OPERATIONAL_RFC3161_AFTER_FAILED_PREFLIGHT_PASS')
           print('PF2_GENUINE_ONE_RFC3161_ACTUAL_R0_IMPRINT_VERIFIED')
           PY
-          python - <<'PY'
-          import hashlib,json,pathlib
-          from drift1a_c1.beacon import Sealer
-          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
-          d=pathlib.Path('experiments/pf_storage/seal'); b=json.loads((d/'S1_SIGNED_BUNDLE.json').read_text())
-          assert b['schema']=='PF_S1_OPERATIONAL_SHA256_V1' and b['scienceChanged'] is False
-          assert Sealer().verify(d,h(d/'S1_SIGNED_BUNDLE.json'))['status']=='PASS'
-          for x in b['sourceSHA256']: assert h(x['path'])==x['sha256'],'S1_OPERATIONAL_HASH_CHANGED '+x['path']
-          print('PF_S1_INDEPENDENT_OPERATIONAL_RFC3161_AND_HASHES_PASS')
-          PY
+          python experiments/pf_storage/PF_SEAL_CHECK.py experiments/pf_storage/seal experiments/pf_storage/seal_a8  # PF_S1_A8
+          echo PF_S1_INDEPENDENT_OPERATIONAL_RFC3161_AND_HASHES_PASS
       - name: O2 install JS tooling with no tracked/pinned file mutation or stale lease
         if: steps.due.outputs.run == 'true'
         working-directory: orange

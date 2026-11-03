@@ -104,18 +104,11 @@ jobs:
           test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
           [[ "$LEASE" =~ ^[0-9]+-[0-9]+$ ]] && [[ "$PF" =~ ^pf[12]$ ]] && [[ "$EXPECT_TICKS" =~ ^[0-9]+$ ]]
           python -m pip install -q -r ../c1-pin/drift1a_c1/requirements.txt
-          gh api "repos/${{ github.repository }}/actions/runs/${LEASE%-*}" --jq '.status+" "+.conclusion' | grep -Fx 'completed failure'
-          python - <<'PY'
-          import hashlib,json,pathlib
-          from drift1a_c1.beacon import Sealer
-          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
-          d=pathlib.Path('experiments/pf_storage/seal_a5'); b=json.loads((d/'S1_A5_SIGNED_BUNDLE.json').read_text())
-          assert Sealer().verify(d,h(d/'S1_A5_SIGNED_BUNDLE.json'))['status']=='PASS'
-          for x in b['sourceSHA256']: assert h(x['path'])==x['sha256'],x['path']
-          print('PF_S1_A5_SEAL_AND_SOURCES_PASS')
-          PY
+          gh api "repos/${{ github.repository }}/actions/runs/${LEASE%-*}" --jq '.status+" "+.conclusion' | grep -Ex 'completed (failure|cancelled)'  # PF_S1_A8: a run killed at its time limit is the same case
+          python experiments/pf_storage/PF_SEAL_CHECK.py experiments/pf_storage/seal_a5 experiments/pf_storage/seal_a8  # PF_S1_A8
+          echo PF_S1_A5_SEAL_AND_SOURCES_PASS
           if [ "$PF" = pf1 ]; then J="experiments/pf1/live/STATE.json experiments/pf1/live/SILENT_LEDGER.json"; else J=experiments/pf2/live/STATE.json; fi
-          python experiments/pf_storage/PF_SHARD.py join $J
+          python experiments/pf_storage/PF_STORE.py join $J  # PF_S1_A8
           python experiments/pf_storage/PF_S1_LEASE_RECONCILE.py "$LEASE" "$PF" "$EXPECT_TICKS"
           if [ "$PF" = pf1 ]; then python experiments/pf1/PF1_LIVE_CHECK.py; else python experiments/pf2/PF2_LIVE_CHECK.py; fi
           git config user.name 'PF S1 authorised lease reconciliation'

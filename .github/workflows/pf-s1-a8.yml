@@ -1,0 +1,164 @@
+# PF S1 amendment 8 (experiments/pf_storage/PF_S1_AMENDMENT_8.md): ONE RFC3161 token over every changed file, then (second job)
+# close PF-2's time-limit orphan lease 41675368677-1 after a full audit and move the live PF state out of Git history into
+# SHA-256-addressed release assets behind committed pointers. Writes only: seal_a8/, one lease completion, three pointers,
+# MIGRATED_A8.json, and removal of the three shard folders from the current tree.
+name: PF S1 amendment 8 — seal, close time-limit orphan, move live state to release assets
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pf-s1-a8.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pf1-exclusive-live-continuous
+  cancel-in-progress: false
+jobs:
+  seal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: orange, ref: main, fetch-depth: 1 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: B1 amendment 8 bundle and ONE genuine RFC3161 token
+        id: seal
+        working-directory: orange
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -e experiments/pf_storage/seal_a8/receipt.json ]; then echo PF_S1_A8_SEAL_ALREADY_ARCHIVED; echo 'archive=false' >> "$GITHUB_OUTPUT"; exit 0; fi
+          python -m pip install -q -r ../c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          p=pathlib.Path('/tmp/pfs1a8'); p.mkdir(parents=True,exist_ok=True)
+          sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          files=['experiments/pf_storage/PF_S1_AMENDMENT_8.md','.github/workflows/pf-s1-a8.yml',
+                 'experiments/pf_storage/PF_STORE.py','experiments/pf_storage/PF_SEAL_CHECK.py','experiments/pf_storage/PF_PACER.py','.github/workflows/pf-pacer.yml',
+                 '.github/workflows/pf1-live-observe-s1.yml','.github/workflows/pf2-live-observe-s1.yml',
+                 'experiments/pf1/operations/PF1_A1_CATCHUP_S1.py','experiments/pf2/PF2_A1_CATCHUP_S1.py',
+                 '.github/workflows/pf-s1-a4.yml','.github/workflows/pf-s1-a5.yml',
+                 '.github/workflows/pf1-c1-weekly-readonly-s1.yml','.github/workflows/pf1-p1-weekly-readonly-s1.yml','.github/workflows/pf2-weekly-committed-s1.yml']
+          bundle={'schema':'PF_S1_A8_OPERATIONAL_SHA256_V1','amends':'experiments/pf_storage/seal/S1_SIGNED_BUNDLE.json',
+            'adds':'live PF state as SHA-256-addressed release assets behind committed pointers; latest-commit checkouts; time-limit stops reconciled like refused pushes',
+            'firstUse':{'orphanLease':'41675368677-1','pf':'pf2','cause':'run cancelled at its 48-minute limit after a 36-minute checkout'},
+            'scienceChanged':False,'notificationsEnabled':False,
+            'sourceSHA256':[{'path':f,'sha256':sha(f)} for f in files]}
+          (p/'S1_A8_SIGNED_BUNDLE.json').write_text(json.dumps(bundle,sort_keys=True,indent=2)+'\n')
+          imprint=sha(p/'S1_A8_SIGNED_BUNDLE.json')
+          Sealer().seal(p/'seal',imprint)
+          assert Sealer().verify(p/'seal',imprint)['status']=='PASS'
+          print('PF_S1_A8_ONE_RFC3161_PASS',imprint)
+          PY
+          echo 'archive=true' >> "$GITHUB_OUTPUT"
+      - name: B2 create-only archive of the amendment bundle, token and receipt
+        if: steps.seal.outputs.archive == 'true'
+        env: { GH_TOKEN: '${{ github.token }}', REPO: '${{ github.repository }}' }
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,json,os,pathlib,subprocess
+          p=pathlib.Path('/tmp/pfs1a8')
+          files={'S1_A8_SIGNED_BUNDLE.json':p/'S1_A8_SIGNED_BUNDLE.json'}
+          for n in sorted(x.name for x in (p/'seal').iterdir()): files[n]=p/'seal'/n
+          assert 'receipt.json' in files,'MISSING receipt.json'
+          for name in sorted(files,key=lambda k:k=='receipt.json'):
+            dst='experiments/pf_storage/seal_a8/'+name
+            payload={'message':'PF S1 amendment 8: ONE RFC3161 token, create-only '+name+'; zero admitted','branch':'main','content':base64.b64encode(files[name].read_bytes()).decode()}
+            r=subprocess.run(['gh','api','-X','PUT','repos/'+os.environ['REPO']+'/contents/'+dst,'--input','-'],input=json.dumps(payload),capture_output=True,text=True)
+            if r.returncode: raise RuntimeError('S1_A8_CREATE_ONLY_FAILED '+dst+' '+r.stderr[-800:])
+            print('PF_S1_A8_ARCHIVED',dst)
+          PY
+  migrate:
+    needs: seal
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      actions: read
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: ${{ github.workspace }}/c1-pin
+      DRIFT_C1_ENABLE_LIVE: 'false'
+      PF1_REMOTE_LEASE_ACKNOWLEDGED: 'true'
+      LEASE: 41675368677-1
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: orange, ref: main, fetch-depth: 1 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: M0 seals and hashes; the orphan run was cancelled at its limit; full audit of PF-1 and PF-2
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
+          python -m pip install -q -r ../c1-pin/drift1a_c1/requirements.txt
+          python experiments/pf_storage/PF_SEAL_CHECK.py experiments/pf_storage/seal experiments/pf_storage/seal_a8
+          test ! -e experiments/pf_storage/MIGRATED_A8.json
+          gh api "repos/${{ github.repository }}/actions/runs/${LEASE%-*}" --jq '.status+" "+.conclusion' | grep -Fx 'completed cancelled'
+          python experiments/pf_storage/PF_STORE.py join experiments/pf1/live/STATE.json experiments/pf1/live/SILENT_LEDGER.json experiments/pf2/live/STATE.json
+          T2=$(python -c "import json;print(json.load(open('experiments/pf2/live/STATE.json'))['admittedTicks'])")
+          python experiments/pf_storage/PF_S1_LEASE_RECONCILE.py "$LEASE" pf2 "$T2"
+          python experiments/pf1/PF1_LIVE_CHECK.py
+          python experiments/pf2/PF2_LIVE_CHECK.py
+          echo PF_S1_A8_AUDIT_PASS
+      - name: M1 complete the lease; state to release assets; prove byte-exact round trip; commit pointers only
+        working-directory: orange
+        shell: bash
+        run: |
+          set -euo pipefail
+          F="experiments/pf1/live/STATE.json experiments/pf1/live/SILENT_LEDGER.json experiments/pf2/live/STATE.json"
+          git config user.name 'PF S1 authorised amendment 8 migration'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          test "$(git rev-parse HEAD)" = "$(git ls-remote origin refs/heads/main | cut -f1)"
+          python -m drift1a_c1.runner complete "$LEASE"
+          python - <<'PY'
+          import hashlib,json,os,pathlib
+          L=os.environ['LEASE']; base=pathlib.Path('drift1a_c1/runner_state')
+          lease=json.loads((base/f'leases/{L}.json').read_text()); done=json.loads((base/f'completions/{L}.json').read_text())
+          assert done['workflow_run']==L
+          assert done['lease_digest']==hashlib.sha256(json.dumps(lease,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+          assert not [p.name for p in (base/'leases').glob('*.json') if not (base/'completions'/p.name).exists()]
+          print('PF_S1_A8_LEASE_COMPLETION_VALIDATED',done['lease_digest'])
+          PY
+          gh release view pf-live-state -R "${{ github.repository }}" >/dev/null 2>&1 || gh release create pf-live-state -R "${{ github.repository }}" --target main --prerelease \
+            --title 'PF live state (PF S1 amendment 8)' --notes 'Content-addressed PF-1/PF-2 live state. Each asset is named by the SHA-256 of its exact JSON; the committed experiments/pf*/live/*.pointer.json files say which one is current. Managed by experiments/pf_storage/PF_STORE.py. Do not edit.'
+          for f in $F; do sha256sum "$f" | cut -d' ' -f1 > "$f.want"; done
+          python experiments/pf_storage/PF_STORE.py split $F
+          mkdir -p /tmp/a8full && for f in $F; do mv -- "$f" "/tmp/a8full/$(echo "$f" | tr / _)"; done
+          python experiments/pf_storage/PF_STORE.py join $F
+          for f in $F; do test "$(sha256sum "$f" | cut -d' ' -f1)" = "$(cat "$f.want")"; rm -f -- "$f.want"; done
+          echo PF_S1_A8_RELEASE_ROUND_TRIP_BYTE_EXACT
+          git rm -r -q -- experiments/pf1/live/STATE.json.shards experiments/pf1/live/SILENT_LEDGER.json.shards experiments/pf2/live/STATE.json.shards
+          python - <<'PY'
+          import datetime,json,pathlib
+          F=['experiments/pf1/live/STATE.json','experiments/pf1/live/SILENT_LEDGER.json','experiments/pf2/live/STATE.json']
+          rec={'schema':'PF_S1_A8_MIGRATION_V1','atUTC':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+               'release':'pf-live-state','orphanLeaseCompleted':'41675368677-1',
+               'pointers':{f:json.loads(pathlib.Path(f+'.pointer.json').read_text()) for f in F},
+               'admittedTicks':{'pf1':json.loads(pathlib.Path(F[0]).read_text())['admittedTicks'],'pf2':json.loads(pathlib.Path(F[2]).read_text())['admittedTicks']},
+               'shardFoldersRemovedFromTree':[f+'.shards' for f in F],'scienceChanged':False,'notificationsSent':0}
+          pathlib.Path('experiments/pf_storage/MIGRATED_A8.json').write_text(json.dumps(rec,sort_keys=True,indent=2)+'\n')
+          print('PF_S1_A8_RECORD',json.dumps(rec['admittedTicks']))
+          PY
+          git add -- experiments/pf_storage/MIGRATED_A8.json "drift1a_c1/runner_state/completions/$LEASE.json" $(for f in $F; do echo "$f.pointer.json"; done)
+          BAD=$(git diff --cached --name-only | grep -v -E '^(experiments/pf_storage/MIGRATED_A8\.json|drift1a_c1/runner_state/completions/41675368677-1\.json|experiments/pf[12]/live/(STATE|SILENT_LEDGER)\.json\.(pointer\.json|shards/.*))$' || true)
+          test -z "$BAD" || { echo "PF_S1_A8_UNEXPECTED_PATHS $BAD"; exit 1; }
+          test -z "$(git status --porcelain --untracked-files=no | grep -v '^[MADR] ' || true)"
+          test "$(git rev-parse HEAD)" = "$(git ls-remote origin refs/heads/main | cut -f1)"
+          git commit -qm 'PF S1 amendment 8: PF-2 time-limit orphan lease 41675368677-1 completed after full audit; live PF state moved to SHA-256-addressed release assets behind committed pointers; no scientific writes'
+          git push -q origin HEAD:main
+          git fetch -q origin main && test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)"
+          echo PF_S1_A8_MIGRATED

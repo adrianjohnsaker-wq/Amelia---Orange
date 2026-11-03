@@ -16,7 +16,7 @@ sys.path.insert(0,'experiments/pf1')
 from PF1_SAFE_LEASE import acquire  # REUSE real previously race-tested method, no changes
 ROOT=pathlib.Path('experiments/pf2/live')
 sys.path.insert(0,'experiments/pf_storage')  # PF_S1
-from PF_SHARD import join_all,split_all  # PF_S1
+from PF_STORE import join_all,split_all  # PF_S1 (A8: release-asset store, same calls)
 S1_FILES=[ROOT/'STATE.json']  # PF_S1
 BATCH=20;CAP=480;WALL_LIMIT=35*60;STOP_MARGIN=5*60
 def cmd(*argv):

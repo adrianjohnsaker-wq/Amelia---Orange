@@ -4,7 +4,8 @@ GitHub starts scheduled workflows late or not at all under load, so the live PF 
 pacer is one long-running job that, every few minutes:
   1. does nothing while any PF exclusive-group run is running or waiting;
   2. if a PF lease is open and its run has concluded `failure` (a refused push), dispatches the audited amendment 5
-     completion (pf-s1-a5.yml) with that lease, its experiment and committed tick count;
+     completion (pf-s1-a5.yml) with that lease, its experiment and committed tick count (amendment 8: also when the run
+     was cancelled at its time limit);
   3. if PF-2 is halted and the halt's only cause is an RFC3161 seal failure, dispatches the audited amendment 4
      reopening (pf-s1-a4.yml) with the halted tick;
   4. otherwise dispatches the next live run (PF-1 / PF-2 alternately, each at most every MIN_GAP minutes). A live run
@@ -21,7 +22,7 @@ import datetime as dt, json, os, pathlib, subprocess, sys, tempfile, time
 
 REPO = os.environ.get('GITHUB_REPOSITORY', 'adrianjohnsaker-wq/Amelia---Orange')
 DRY = os.environ.get('PF_PACER_DRY') == '1'
-GROUP = ['pf1-live-observe-s1.yml', 'pf2-live-observe-s1.yml', 'pf-s1-a4.yml', 'pf-s1-a5.yml', 'pf-s1-a6.yml', 'pf-s1-a7.yml',
+GROUP = ['pf1-live-observe-s1.yml', 'pf2-live-observe-s1.yml', 'pf-s1-a4.yml', 'pf-s1-a5.yml', 'pf-s1-a6.yml', 'pf-s1-a7.yml', 'pf-s1-a8.yml',
          'pf1-c1-weekly-readonly-s1.yml', 'pf1-p1-weekly-readonly-s1.yml', 'pf2-weekly-committed-s1.yml']
 LIVE = {'pf1': 'pf1-live-observe-s1.yml', 'pf2': 'pf2-live-observe-s1.yml'}
 ACTIVE = ('in_progress', 'queued', 'pending', 'waiting', 'requested')
@@ -42,13 +43,10 @@ def runs(wf, **q):
     return api(f'repos/{REPO}/actions/workflows/{wf}/runs?{qs}')['workflow_runs']
 
 def busy():
-    for wf in GROUP:
-        for st in ACTIVE:
-            try:
-                if runs(wf, status=st, per_page=1): return f'{wf} {st}'
-            except RuntimeError as e:
-                if '404' in str(e): continue
-                raise
+    """One call per status for the whole repository (keeps well inside the GITHUB_TOKEN hourly request budget)."""
+    for st in ACTIVE:
+        for r in api(f'repos/{REPO}/actions/runs?status={st}&per_page=100')['workflow_runs']:
+            if r['path'].split('/')[-1] in GROUP: return f"{r['path'].split('/')[-1]} {st}"
     return None
 
 def dispatch(wf, **inputs):
@@ -88,9 +86,11 @@ class Main:
         out = subprocess.run(['git', '-C', str(self.d), 'ls-tree', '--name-only', 'FETCH_HEAD', path + '/'], capture_output=True, text=True, check=True).stdout
         return {pathlib.Path(x).name for x in out.split()}
     def state(self, pf):
-        sub = f'experiments/{pf}/live/STATE.json.shards'
-        subprocess.run(['git', '-C', str(self.d), 'checkout', '-q', 'FETCH_HEAD', '--', sub, 'experiments/pf_storage/PF_SHARD.py'], check=True)
-        subprocess.run([sys.executable, 'experiments/pf_storage/PF_SHARD.py', 'join', f'experiments/{pf}/live/STATE.json'], cwd=self.d, check=True, capture_output=True)
+        # PF S1 amendment 8: the committed pointer names a SHA-256-checked release asset (PF_STORE)
+        subprocess.run(['git', '-C', str(self.d), 'checkout', '-q', 'FETCH_HEAD', '--', f'experiments/{pf}/live/STATE.json.pointer.json',
+                        'experiments/pf_storage/PF_STORE.py', 'experiments/pf_storage/PF_SHARD.py'], check=True)
+        (self.d / f'experiments/{pf}/live/STATE.json').unlink(missing_ok=True)
+        subprocess.run([sys.executable, 'experiments/pf_storage/PF_STORE.py', 'join', f'experiments/{pf}/live/STATE.json'], cwd=self.d, check=True, capture_output=True)
         return json.loads((self.d / f'experiments/{pf}/live/STATE.json').read_text())
 
 def last_state_commit(pf):
@@ -110,8 +110,8 @@ def cycle(m, turn):
         if run['status'] != 'completed': log('lease owner still running', lease); return turn
         pf = next((k for k, wf in LIVE.items() if run['path'].endswith(wf)), None)
         title = f'PF pacer: orphan lease {lease} needs the operator'
-        if run['conclusion'] != 'failure' or pf is None:
-            issue(title, f'Lease {lease} is open; its run {run["html_url"]} ({run["path"]}) concluded {run["conclusion"]}. Not the refused-push case.'); return turn
+        if run['conclusion'] not in ('failure', 'cancelled') or pf is None:  # A8: cancelled = killed at its time limit
+            issue(title, f'Lease {lease} is open; its run {run["html_url"]} ({run["path"]}) concluded {run["conclusion"]}. Not a refused push or time-limit stop.'); return turn
         prior = [r for r in runs('pf-s1-a5.yml', per_page=10) if r['created_at'] > run['updated_at']]
         if any(r['conclusion'] == 'failure' for r in prior if r['status'] == 'completed'):
             issue(title, f'An amendment 5 reconciliation for {lease} failed: {[r["html_url"] for r in prior]}.'); return turn

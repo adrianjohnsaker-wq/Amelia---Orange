@@ -1,4 +1,6 @@
 name: PF1 S1 LIVE Observation — Nine Arms, Journal-Only (A1 Catch-up, sharded storage)
+# PF S1 amendment 8 (experiments/pf_storage/PF_S1_AMENDMENT_8.md): latest-commit checkout, live state as a release asset
+# behind a committed SHA-256 pointer, b67ec92 core checked by tree id; sealed by seal_a8.
 # Additive successor to pf1-live-observe.yml (byte-identical, retired by S1): same checks, same bounds, same lease;
 # the live state is joined from its verified Git shards first, and the S1 catch-up commits it as shards.
 # Pinned by the S1 RFC3161 bundle (experiments/pf_storage/PF_S1_REGISTERED.md).
@@ -19,12 +21,13 @@ jobs:
       contents: write
     env:
       PF1_LEASE: ${{ github.run_id }}-${{ github.run_attempt }}
+      GH_TOKEN: ${{ github.token }}  # PF_S1_A8: live state is a release asset
     steps:
       - uses: actions/checkout@v4
         with:
           path: orange
           ref: main
-          fetch-depth: 0
+          fetch-depth: 1  # PF_S1_A8: latest commit only (history is not read)
       - uses: actions/checkout@v4
         with:
           repository: adrianjohnsaker-wq/Amelia-0.4
@@ -52,7 +55,7 @@ jobs:
               open(os.environ['GITHUB_OUTPUT'],'a').write('run=false\n')
               raise SystemExit(0)
           import subprocess
-          subprocess.run(['python','experiments/pf_storage/PF_SHARD.py','join','experiments/pf1/live/STATE.json','experiments/pf1/live/SILENT_LEDGER.json'],check=True)
+          subprocess.run(['python','experiments/pf_storage/PF_STORE.py','join','experiments/pf1/live/STATE.json','experiments/pf1/live/SILENT_LEDGER.json'],check=True)
           if not p.exists():
               print('PF1_A1_NO_EXISTING_GENESIS_NO_ADMISSION')
               open(os.environ['GITHUB_OUTPUT'],'a').write('run=false\n')
@@ -91,7 +94,10 @@ jobs:
           test "$(git rev-parse HEAD:experiments/pf1/operations/PF1_A1_CATCHUP.py)" = 15196a9bcd1865d9c0924cf236073d0b4dfb0d4f
           test -e experiments/pf_storage/seal/receipt.json
           test "$(git rev-parse HEAD:experiments/pf1/operations/PF1_A1_REHEARSAL.py)" = fd721466e49cd87c42b2627a377db0d629153c33
-          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          test "$(git rev-parse HEAD:src/substrate)" = 37a4306219247ec9c9e3ee87642afcd6013cff25  # PF_S1_A8: == b67ec92 tree (shallow checkout)
+          test "$(git rev-parse HEAD:src/governance)" = e4c5190e36f909772149398f13fa6d16c0e3b8c8
+          test "$(git rev-parse HEAD:src/ai/numogram)" = d12942e4ae1e3a12c74954ea405c7874b156f92e
+          test "$(git rev-parse HEAD:src/types/amelia.ts)" = 25316d8e45e5e2be4f9218fbd26a08a8f40a8c43
           python - <<'PY'
           import hashlib,json,pathlib
           root=pathlib.Path('experiments/pf1/')
@@ -111,16 +117,8 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install -r ../c1-pin/drift1a_c1/requirements.txt
-          PYTHONPATH=../c1-pin python - <<'PYS1'
-          import hashlib,json,pathlib
-          from drift1a_c1.beacon import Sealer
-          h=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
-          d=pathlib.Path('experiments/pf_storage/seal'); b=json.loads((d/'S1_SIGNED_BUNDLE.json').read_text())
-          assert b['schema']=='PF_S1_OPERATIONAL_SHA256_V1' and b['scienceChanged'] is False
-          assert Sealer().verify(d,h(d/'S1_SIGNED_BUNDLE.json'))['status']=='PASS'
-          for x in b['sourceSHA256']: assert h(x['path'])==x['sha256'],'S1_OPERATIONAL_HASH_CHANGED '+x['path']
-          print('PF_S1_INDEPENDENT_OPERATIONAL_RFC3161_AND_HASHES_PASS')
-          PYS1
+          PYTHONPATH=../c1-pin python experiments/pf_storage/PF_SEAL_CHECK.py experiments/pf_storage/seal experiments/pf_storage/seal_a8  # PF_S1_A8
+          echo PF_S1_INDEPENDENT_OPERATIONAL_RFC3161_AND_HASHES_PASS
           # Runner-local Git exclude; no tracked or pinned source change.
           printf '\n/node_modules/\n' >> .git/info/exclude
           npm install --no-save --package-lock=false --no-audit --no-fund

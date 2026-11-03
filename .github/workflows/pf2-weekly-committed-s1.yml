@@ -27,7 +27,7 @@ jobs:
         with:
           path: orange
           ref: main
-          fetch-depth: 0
+          fetch-depth: 1  # PF_S1_A8
       - uses: actions/checkout@v4
         with:
           repository: adrianjohnsaker-wq/Amelia-0.4
@@ -43,7 +43,7 @@ jobs:
         run: |
           set -euo pipefail
           test -e experiments/pf_storage/MIGRATED.json
-          PYTHONDONTWRITEBYTECODE=1 python experiments/pf_storage/PF_SHARD.py join experiments/pf2/live/STATE.json
+          GH_TOKEN='${{ github.token }}' PYTHONDONTWRITEBYTECODE=1 python experiments/pf_storage/PF_STORE.py join experiments/pf2/live/STATE.json  # PF_S1_A8
       - id: exists
         working-directory: orange
         shell: bash
@@ -67,7 +67,10 @@ jobs:
           set -euo pipefail
           test "$(git -C ../c1-pin rev-parse HEAD)" = f1875b5eea5339eb1ac73e50b5df6b103d0cabe9
           python -m pip install -r ../c1-pin/drift1a_c1/requirements.txt
-          git diff --quiet b67ec92e1cec13e9500d87292d59605428fb467e HEAD -- src/substrate src/governance src/ai/numogram src/types/amelia.ts
+          test "$(git rev-parse HEAD:src/substrate)" = 37a4306219247ec9c9e3ee87642afcd6013cff25  # PF_S1_A8: == b67ec92 tree (shallow checkout)
+          test "$(git rev-parse HEAD:src/governance)" = e4c5190e36f909772149398f13fa6d16c0e3b8c8
+          test "$(git rev-parse HEAD:src/ai/numogram)" = d12942e4ae1e3a12c74954ea405c7874b156f92e
+          test "$(git rev-parse HEAD:src/types/amelia.ts)" = 25316d8e45e5e2be4f9218fbd26a08a8f40a8c43
           python experiments/pf2/PF2_LIVE_CHECK.py
           test -z "$(git status --porcelain --untracked-files=all)"
       - name: Create all 18 pair detailed report in ephemeral runner temp only

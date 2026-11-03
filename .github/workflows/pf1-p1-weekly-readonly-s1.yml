@@ -32,7 +32,7 @@ jobs:
         run: |
           set -euo pipefail
           test -e experiments/pf_storage/MIGRATED.json
-          PYTHONDONTWRITEBYTECODE=1 python experiments/pf_storage/PF_SHARD.py join experiments/pf1/live/STATE.json experiments/pf1/live/SILENT_LEDGER.json
+          GH_TOKEN='${{ github.token }}' PYTHONDONTWRITEBYTECODE=1 python experiments/pf_storage/PF_STORE.py join experiments/pf1/live/STATE.json experiments/pf1/live/SILENT_LEDGER.json  # PF_S1_A8
       - name: Derive zones and split exposure without PF1 intake
         shell: bash
         run: |

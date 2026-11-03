@@ -17,7 +17,7 @@ from datetime import datetime,timezone
 ROOT=pathlib.Path("experiments/pf1")
 LIVE=ROOT/"live"
 sys.path.insert(0,"experiments/pf_storage")  # PF_S1
-from PF_SHARD import join_all,split_all  # PF_S1
+from PF_STORE import join_all,split_all  # PF_S1 (A8: release-asset store, same calls)
 S1_FILES=[LIVE/"STATE.json",LIVE/"SILENT_LEDGER.json"]  # PF_S1
 BATCH=20
 CAP=480
