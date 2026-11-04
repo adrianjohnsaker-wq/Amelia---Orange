@@ -1,5 +1,7 @@
 # SXI-0 — reference-field engineering report
 
+> **Subsequent handoff update:** The historical W+ runtime and season exports are now available and verified. The supplied runtime matches `experiments/studio/runtime_mirror`, and recalculation of the supplied exports reproduces INGRESS-1's null decisions to floating-point precision. The unresolved-runtime and missing-output statements below record the earlier state; see [handoff verification](INGRESS1_Handoff_Verification_2026-11-04.md). This reference-field receipt remains separate from the W+ body.
+
 **Date:** 4 November 2026
 **Status:** PARTIAL. The reference integration works in local engineering checks. The INGRESS-1 runner was subsequently supplied and matches its registered hash, but the exact underlying runtime and original outputs remain unresolved; SXI-1 has not been run.
 

@@ -1,0 +1,66 @@
+{
+  "runtime_files": 8,
+  "runtime_file_sets_and_bytes_match": true,
+  "worlds": 8,
+  "lineages_per_world": 27,
+  "arms": 4,
+  "season_files": 224,
+  "row_comparison": {
+    "numeric_differences": 4135,
+    "max_absolute_difference": 8.881784197001252e-16,
+    "non_numeric_differences": 0,
+    "numeric_over_tolerance": 0
+  },
+  "analysis_comparison": {
+    "numeric_differences": 4,
+    "max_absolute_difference": 1.3877787807814457e-16,
+    "non_numeric_differences": 0,
+    "numeric_over_tolerance": 0
+  },
+  "decisions": {
+    "H1": {
+      "positive": 121,
+      "row_sign_disagreements": 0
+    },
+    "H2": {
+      "positive": 105,
+      "row_sign_disagreements": 0
+    }
+  },
+  "recalculated_tests": [
+    {
+      "test": "H1 the Outside displaces her more than ordinary input: stream > alt",
+      "eligible": 216,
+      "mean": 0.02483867486037629,
+      "median": 0.015600198412698607,
+      "positive": 121,
+      "p": 0.043289567104328956,
+      "worlds": 4,
+      "holm_threshold": 0.005,
+      "holm_pass": false,
+      "supported": false
+    },
+    {
+      "test": "H2 its order matters: stream > shuffled",
+      "eligible": 216,
+      "mean": -0.005621463477366244,
+      "median": -0.00651041666666663,
+      "positive": 105,
+      "p": 0.6797432025679743,
+      "worlds": 3,
+      "holm_threshold": 0.01,
+      "holm_pass": false,
+      "supported": false
+    }
+  ],
+  "output_sha256": {
+    "ingress_rows.json": "8aaa03440a0d6e61110ce522c0add7dca18eaa6960fe0fb482359feffeb19c6d",
+    "analysis.json": "91a85f57bb126f2c98ee8e8883e1a256d2f7e402bb2d9541d768ac40ecdffacd"
+  },
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "interpretation": "Recalculation from supplied season exports, not an independent rerun of the original simulations."
+}

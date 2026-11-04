@@ -1,0 +1,437 @@
+{
+  "status": "EXPLORATORY_ENGINEERING_ONLY",
+  "world": "S05W9402",
+  "lineage": 0,
+  "season": 0,
+  "ticks_per_arm": 20160,
+  "runtime": "experiments/studio/runtime_mirror",
+  "runner_sha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+  "scheduled_overlay_sha256": "8048ca64fbfca690440ee9fd4352041d5e34c057e377a0b66201610c29639e51",
+  "exposure_overlay_sha256": "5cba608af9c781ef34442d07cc6bd319186335d63a424307e6adbb41af102d5d",
+  "schedule_manifest": {
+    "seed": "SXI-PILOT-UNPATTERNED-20261104",
+    "edges": [
+      "0>9",
+      "9>1",
+      "1>8",
+      "8>9"
+    ],
+    "arms": {
+      "sham": {
+        "sha256": "0404fa1695500f0595b435096e591902a465d758e7960edff41fa8e2d63f3ad0",
+        "edge_ticks": {
+          "0>9": 0,
+          "9>1": 0,
+          "1>8": 0,
+          "8>9": 0
+        },
+        "active_ticks": 0,
+        "scheduled_absolute_dose": 0.0,
+        "scheduled_squared_dose": 0.0
+      },
+      "patterned": {
+        "sha256": "68b7287d80ceae8ab752aa1ec84fa34da3294ed8a1d329288aa8322b54106459",
+        "edge_ticks": {
+          "0>9": 1200,
+          "9>1": 1200,
+          "1>8": 1200,
+          "8>9": 1200
+        },
+        "active_ticks": 4800,
+        "scheduled_absolute_dose": 2400.0,
+        "scheduled_squared_dose": 1200.0
+      },
+      "shuffled": {
+        "sha256": "e8dc4709f7d76ea23fb5d00547e36fc795f333f4d7e1adea0c86ec44c548d5e8",
+        "edge_ticks": {
+          "0>9": 1200,
+          "9>1": 1200,
+          "1>8": 1200,
+          "8>9": 1200
+        },
+        "active_ticks": 4800,
+        "scheduled_absolute_dose": 2400.0,
+        "scheduled_squared_dose": 1200.0
+      },
+      "unpatterned": {
+        "sha256": "4fca3e15210a180b40f0b95b4cd58c56688d291ac2ea4cdc6cb472a2329bbccb",
+        "edge_ticks": {
+          "0>9": 1200,
+          "9>1": 1200,
+          "1>8": 1200,
+          "8>9": 1200
+        },
+        "active_ticks": 4800,
+        "scheduled_absolute_dose": 2400.0,
+        "scheduled_squared_dose": 1200.0
+      }
+    }
+  },
+  "runs": {
+    "scheduled_only": {
+      "sham": {
+        "status": "PASS",
+        "steps": 20160,
+        "traceRecords": 20162,
+        "topologyEdges": 30,
+        "pointerActiveTicks": 0,
+        "pointerAffectedGateOptions": 0,
+        "scheduledEdgeTicks": {},
+        "scheduledAbsoluteDose": 0,
+        "scheduledSquaredDose": 0,
+        "realisedAbsoluteDelta": 0,
+        "realisedSquaredDelta": 0,
+        "rawStateSamples": 85,
+        "nativePfmEvents": 20160,
+        "independentlyRecomputedHead": "a49f5fedadb586fd7ceda2080ac7c92694cc0bef18ec19fed4aa48e60eec229b",
+        "prefix500Digest": "92f9dd3cf00663d27e5d106de390101e61bf01b0a72aebfe5a67e184ca955e99",
+        "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+        "overlaySha256": "8048ca64fbfca690440ee9fd4352041d5e34c057e377a0b66201610c29639e51",
+        "runtimeIdentity": "INGRESS1_VT_M_HASHES_CHECKED_ON_START"
+      },
+      "patterned": {
+        "status": "PASS",
+        "steps": 20160,
+        "traceRecords": 20162,
+        "topologyEdges": 30,
+        "pointerActiveTicks": 4800,
+        "pointerAffectedGateOptions": 1733,
+        "scheduledEdgeTicks": {
+          "0>9": 1200,
+          "9>1": 1200,
+          "1>8": 1200,
+          "8>9": 1200
+        },
+        "scheduledAbsoluteDose": 2400,
+        "scheduledSquaredDose": 1200,
+        "realisedAbsoluteDelta": 43.77121616311624,
+        "realisedSquaredDelta": 1.121943888257613,
+        "rawStateSamples": 94,
+        "nativePfmEvents": 20160,
+        "independentlyRecomputedHead": "d0d388f4ae19641673a1f17bcca00bfbc6c6df566c97e6e52e0423294ef51509",
+        "prefix500Digest": "92f9dd3cf00663d27e5d106de390101e61bf01b0a72aebfe5a67e184ca955e99",
+        "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+        "overlaySha256": "8048ca64fbfca690440ee9fd4352041d5e34c057e377a0b66201610c29639e51",
+        "runtimeIdentity": "INGRESS1_VT_M_HASHES_CHECKED_ON_START"
+      },
+      "shuffled": {
+        "status": "PASS",
+        "steps": 20160,
+        "traceRecords": 20162,
+        "topologyEdges": 30,
+        "pointerActiveTicks": 4800,
+        "pointerAffectedGateOptions": 1566,
+        "scheduledEdgeTicks": {
+          "1>8": 1200,
+          "0>9": 1200,
+          "8>9": 1200,
+          "9>1": 1200
+        },
+        "scheduledAbsoluteDose": 2400,
+        "scheduledSquaredDose": 1200,
+        "realisedAbsoluteDelta": 123.30578689565503,
+        "realisedSquaredDelta": 11.884037797404538,
+        "rawStateSamples": 94,
+        "nativePfmEvents": 20160,
+        "independentlyRecomputedHead": "30b62dca664c139aae3675de0915c8d1e0ad9f2feed96bda14edbdff4d7cf67d",
+        "prefix500Digest": "92f9dd3cf00663d27e5d106de390101e61bf01b0a72aebfe5a67e184ca955e99",
+        "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+        "overlaySha256": "8048ca64fbfca690440ee9fd4352041d5e34c057e377a0b66201610c29639e51",
+        "runtimeIdentity": "INGRESS1_VT_M_HASHES_CHECKED_ON_START"
+      },
+      "unpatterned": {
+        "status": "PASS",
+        "steps": 20160,
+        "traceRecords": 20162,
+        "topologyEdges": 30,
+        "pointerActiveTicks": 4800,
+        "pointerAffectedGateOptions": 373,
+        "scheduledEdgeTicks": {
+          "8>9": 1200,
+          "1>8": 1200,
+          "9>1": 1200,
+          "0>9": 1200
+        },
+        "scheduledAbsoluteDose": 2400,
+        "scheduledSquaredDose": 1200,
+        "realisedAbsoluteDelta": 18.11913531240297,
+        "realisedSquaredDelta": 1.0967938517776494,
+        "rawStateSamples": 486,
+        "nativePfmEvents": 20160,
+        "independentlyRecomputedHead": "bae0a6ca217b9f9966c42bf05737e01951c038f719ea06fca532f99fff8619ea",
+        "prefix500Digest": "92f9dd3cf00663d27e5d106de390101e61bf01b0a72aebfe5a67e184ca955e99",
+        "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+        "overlaySha256": "8048ca64fbfca690440ee9fd4352041d5e34c057e377a0b66201610c29639e51",
+        "runtimeIdentity": "INGRESS1_VT_M_HASHES_CHECKED_ON_START"
+      }
+    },
+    "exposure_matched": {
+      "sham": {
+        "status": "PASS",
+        "steps": 20160,
+        "traceRecords": 20162,
+        "topologyEdges": 30,
+        "pointerActiveTicks": 0,
+        "pointerAffectedGateOptions": 0,
+        "scheduledEdgeTicks": {},
+        "scheduledAbsoluteDose": 0,
+        "scheduledSquaredDose": 0,
+        "realisedAbsoluteDelta": 0,
+        "realisedSquaredDelta": 0,
+        "choicesWithAlternatives": 0,
+        "rawStateSamples": 85,
+        "nativePfmEvents": 20160,
+        "independentlyRecomputedHead": "f29d95016938e309d81108afc5af54d510e003b5102ef291f9816b40bfb78a29",
+        "prefix500Digest": "92f9dd3cf00663d27e5d106de390101e61bf01b0a72aebfe5a67e184ca955e99",
+        "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+        "overlaySha256": "5cba608af9c781ef34442d07cc6bd319186335d63a424307e6adbb41af102d5d",
+        "runtimeIdentity": "INGRESS1_VT_M_HASHES_CHECKED_ON_START"
+      },
+      "patterned": {
+        "status": "PASS",
+        "steps": 20160,
+        "traceRecords": 20162,
+        "topologyEdges": 30,
+        "pointerActiveTicks": 4800,
+        "pointerAffectedGateOptions": 4800,
+        "scheduledEdgeTicks": {
+          "0>9": 1200,
+          "9>1": 1200,
+          "1>8": 1200,
+          "8>9": 1200
+        },
+        "scheduledAbsoluteDose": 240,
+        "scheduledSquaredDose": 12.000000000000002,
+        "realisedAbsoluteDelta": 240.00000000002032,
+        "realisedSquaredDelta": 11.999999999999755,
+        "choicesWithAlternatives": 4407,
+        "rawStateSamples": 94,
+        "nativePfmEvents": 20160,
+        "independentlyRecomputedHead": "592fed0c9e83d5b0c3e33ca77fedf8ae7fe977148835a516541028e4084c5cea",
+        "prefix500Digest": "92f9dd3cf00663d27e5d106de390101e61bf01b0a72aebfe5a67e184ca955e99",
+        "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+        "overlaySha256": "5cba608af9c781ef34442d07cc6bd319186335d63a424307e6adbb41af102d5d",
+        "runtimeIdentity": "INGRESS1_VT_M_HASHES_CHECKED_ON_START"
+      },
+      "shuffled": {
+        "status": "PASS",
+        "steps": 20160,
+        "traceRecords": 20162,
+        "topologyEdges": 30,
+        "pointerActiveTicks": 4800,
+        "pointerAffectedGateOptions": 4800,
+        "scheduledEdgeTicks": {
+          "1>8": 1200,
+          "0>9": 1200,
+          "8>9": 1200,
+          "9>1": 1200
+        },
+        "scheduledAbsoluteDose": 240,
+        "scheduledSquaredDose": 12.000000000000002,
+        "realisedAbsoluteDelta": 240.00000000002032,
+        "realisedSquaredDelta": 11.999999999999755,
+        "choicesWithAlternatives": 4285,
+        "rawStateSamples": 94,
+        "nativePfmEvents": 20160,
+        "independentlyRecomputedHead": "144c48f1c19901b1e62d9bb739b05b10f5f5a880e850f25169181c2849355dcd",
+        "prefix500Digest": "92f9dd3cf00663d27e5d106de390101e61bf01b0a72aebfe5a67e184ca955e99",
+        "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+        "overlaySha256": "5cba608af9c781ef34442d07cc6bd319186335d63a424307e6adbb41af102d5d",
+        "runtimeIdentity": "INGRESS1_VT_M_HASHES_CHECKED_ON_START"
+      },
+      "unpatterned": {
+        "status": "PASS",
+        "steps": 20160,
+        "traceRecords": 20162,
+        "topologyEdges": 30,
+        "pointerActiveTicks": 4800,
+        "pointerAffectedGateOptions": 4800,
+        "scheduledEdgeTicks": {
+          "8>9": 1200,
+          "1>8": 1200,
+          "9>1": 1200,
+          "0>9": 1200
+        },
+        "scheduledAbsoluteDose": 240,
+        "scheduledSquaredDose": 12.000000000000002,
+        "realisedAbsoluteDelta": 240.00000000002032,
+        "realisedSquaredDelta": 11.999999999999755,
+        "choicesWithAlternatives": 4766,
+        "rawStateSamples": 486,
+        "nativePfmEvents": 20160,
+        "independentlyRecomputedHead": "9c953c17af52d248dce12a990a95c42194f4c4202a95acd16dab01d609c430da",
+        "prefix500Digest": "92f9dd3cf00663d27e5d106de390101e61bf01b0a72aebfe5a67e184ca955e99",
+        "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+        "overlaySha256": "5cba608af9c781ef34442d07cc6bd319186335d63a424307e6adbb41af102d5d",
+        "runtimeIdentity": "INGRESS1_VT_M_HASHES_CHECKED_ON_START"
+      }
+    }
+  },
+  "paired_comparisons": {
+    "scheduled_only": {
+      "sham": {
+        "status": "PASS",
+        "world": "S05W9402",
+        "lineage": 0,
+        "arms": [
+          "patterned",
+          "sham"
+        ],
+        "firstDifferentDestination": 882,
+        "intervals": {
+          "before": {
+            "steps": 500,
+            "differentDestination": 0
+          },
+          "during": {
+            "steps": 4800,
+            "differentDestination": 3883
+          },
+          "after": {
+            "steps": 14860,
+            "differentDestination": 13840
+          }
+        },
+        "note": "A single synthetic engineering fixture; differences do not establish a population effect or an ingressing organisation."
+      },
+      "shuffled": {
+        "status": "PASS",
+        "world": "S05W9402",
+        "lineage": 0,
+        "arms": [
+          "patterned",
+          "shuffled"
+        ],
+        "firstDifferentDestination": 882,
+        "intervals": {
+          "before": {
+            "steps": 500,
+            "differentDestination": 0
+          },
+          "during": {
+            "steps": 4800,
+            "differentDestination": 3786
+          },
+          "after": {
+            "steps": 14860,
+            "differentDestination": 5102
+          }
+        },
+        "note": "A single synthetic engineering fixture; differences do not establish a population effect or an ingressing organisation."
+      },
+      "unpatterned": {
+        "status": "PASS",
+        "world": "S05W9402",
+        "lineage": 0,
+        "arms": [
+          "patterned",
+          "unpatterned"
+        ],
+        "firstDifferentDestination": 954,
+        "intervals": {
+          "before": {
+            "steps": 500,
+            "differentDestination": 0
+          },
+          "during": {
+            "steps": 4800,
+            "differentDestination": 3666
+          },
+          "after": {
+            "steps": 14860,
+            "differentDestination": 11483
+          }
+        },
+        "note": "A single synthetic engineering fixture; differences do not establish a population effect or an ingressing organisation."
+      }
+    },
+    "exposure_matched": {
+      "sham": {
+        "status": "PASS",
+        "world": "S05W9402",
+        "lineage": 0,
+        "arms": [
+          "patterned",
+          "sham"
+        ],
+        "firstDifferentDestination": 634,
+        "intervals": {
+          "before": {
+            "steps": 500,
+            "differentDestination": 0
+          },
+          "during": {
+            "steps": 4800,
+            "differentDestination": 1888
+          },
+          "after": {
+            "steps": 14860,
+            "differentDestination": 12769
+          }
+        },
+        "note": "A single synthetic engineering fixture; differences do not establish a population effect or an ingressing organisation."
+      },
+      "shuffled": {
+        "status": "PASS",
+        "world": "S05W9402",
+        "lineage": 0,
+        "arms": [
+          "patterned",
+          "shuffled"
+        ],
+        "firstDifferentDestination": 551,
+        "intervals": {
+          "before": {
+            "steps": 500,
+            "differentDestination": 0
+          },
+          "during": {
+            "steps": 4800,
+            "differentDestination": 1776
+          },
+          "after": {
+            "steps": 14860,
+            "differentDestination": 8385
+          }
+        },
+        "note": "A single synthetic engineering fixture; differences do not establish a population effect or an ingressing organisation."
+      },
+      "unpatterned": {
+        "status": "PASS",
+        "world": "S05W9402",
+        "lineage": 0,
+        "arms": [
+          "patterned",
+          "unpatterned"
+        ],
+        "firstDifferentDestination": 634,
+        "intervals": {
+          "before": {
+            "steps": 500,
+            "differentDestination": 0
+          },
+          "during": {
+            "steps": 4800,
+            "differentDestination": 1917
+          },
+          "after": {
+            "steps": 14860,
+            "differentDestination": 10755
+          }
+        },
+        "note": "A single synthetic engineering fixture; differences do not establish a population effect or an ingressing organisation."
+      }
+    }
+  },
+  "neutral_comparison": {
+    "s0.json": {
+      "byte_identical": true,
+      "sha256": "863d2bafd7bf6e00f6868c445bd2b94736f4b91ed9077de0ad665432b160c9bf"
+    },
+    "state_s0.json": {
+      "byte_identical": true,
+      "sha256": "d233e7fe2edef51a3f9c871bc0eb43a24b318da459df5e771da77fc558916743"
+    }
+  },
+  "interpretation": "One synthetic lineage. The schedule-matched model has unequal realised score exposure; the score-matched model corrects dose, but opportunity and state still differ. Neither run is a population assay, an SXI-1 registration, evidence of an independent organisation, or a replay of INGRESS-1."
+}

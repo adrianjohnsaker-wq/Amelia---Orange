@@ -1,5 +1,7 @@
 # SXI-0 — W+ source-based engineering check
 
+> **Subsequent handoff update:** The eight files of the historical `vt/m` runtime have now been matched byte for byte to the Studio mirror used below. The season exports have also been independently recalculated, reproducing the registered null decisions with only floating-point-level numerical differences. See [handoff verification](INGRESS1_Handoff_Verification_2026-11-04.md) and [matched controls](WPlus_Matched_Control_Engineering_2026-11-04.md). References below to an unidentified runtime or missing season exports describe the earlier state of this engineering report. The Governor's intervention policy is a design choice for the new experiment, not an INGRESS-1 constraint.
+
 **Date:** 4 November 2026
 **Status:** PARTIAL SXI-0. The supplied INGRESS-1 runner has been identified and a separate W+ adapter has been exercised against the archived Studio runtime. The original `vt/m` runtime remains unverified, so this is an engineering check, not an SXI-1 result or independent reproduction of INGRESS-1.
 
