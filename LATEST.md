@@ -1,10 +1,10 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-04T09:16:52.084Z
-- Cycle: 260 (41805796344-1-1)
+- Last cycle (UTC): 2026-11-04T09:31:48.485Z
+- Cycle: 261 (41805796344-1-2)
 - RSS items seen: 60; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -9
-- Candidate: Skarkix / Mesh-09 / Amphidemon
+- Subdecadence: MESH_TERMINAL; score -11
+- Candidate: Tukkamu / Mesh-11 / Cyclic Chronodemon
 - Separate ingress records and trace links: 0
 - Catalogue entries added: 1
 - Source errors: none
