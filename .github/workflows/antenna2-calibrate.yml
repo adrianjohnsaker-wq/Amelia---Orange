@@ -1,0 +1,78 @@
+# ANTENNA II calibration (experiments/antenna2/REGISTRATION.md): beacon clean and planted, beta in {0.5,1,2}, 72 travellers x 19 shuffles.
+# Runs only on this branch; writes only experiments/antenna2/calibration/ on this branch.
+name: ANTENNA II calibrate
+on:
+  push:
+    branches: [antenna2-20261104]
+    paths: ['experiments/antenna2/calibrate.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: antenna2
+  cancel-in-progress: false
+jobs:
+  cal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        beta: ['0.5', '1', '2']
+        cond: ['clean', 'p02', 'p05', 'p10']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: stream, 72 travellers, analysis
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/antenna2/data; mkdir -p out
+          case "${{ matrix.cond }}" in
+            clean) cp $D/beacon.json stream.json ;;
+            p02) python3 experiments/antenna2/plant.py $D/beacon.json 0.02 stream.json ;;
+            p05) python3 experiments/antenna2/plant.py $D/beacon.json 0.05 stream.json ;;
+            p10) python3 experiments/antenna2/plant.py $D/beacon.json 0.10 stream.json ;;
+          esac
+          npx --yes tsx@4.23.15 --version
+          for w in 1 2 3 4 5 6 7 8; do for k in 0 1 2 3 4 5 6 7 8; do echo S05W$w $k; done; done |
+            xargs -P 4 -n 2 sh -c 'npx --yes tsx@4.23.15 experiments/antenna2/traveller2.mjs "$PWD/experiments/studio/runtime_mirror" experiments/antenna/start_states.json stream.json "$0" "$1" ${{ matrix.beta }} 19 cal-${{ matrix.cond }} out/"$0"_"$1".json'
+          test "$(ls out/*.json | wc -l)" = 72
+          python3 -I experiments/antenna2/analysis2.py out experiments/antenna/entity_names.json | tee result.json
+      - uses: actions/upload-artifact@v4
+        with: { name: 'cal-${{ matrix.beta }}-${{ matrix.cond }}', path: 'result.json', retention-days: 90 }
+  report:
+    needs: cal
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: cal }
+      - name: calibration verdict per the registered rule; commit to this branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/antenna2/calibration
+          python3 - <<'PY'
+          import json,glob,pathlib
+          res={}
+          for f in glob.glob('cal/cal-*/result.json'):
+              b,c=pathlib.Path(f).parent.name[4:].split('-'); res.setdefault(b,{})[c]=json.load(open(f))
+          lines=['ANTENNA II calibration (REGISTRATION.md part 1)','']
+          passing=[]
+          for b in sorted(res,key=float):
+              r=res[b]; ok=r.get('p05',{}).get('answer')=='RECEIVED' and r.get('clean',{}).get('answer')=='SILENT'
+              if ok: passing.append(float(b))
+              lines.append(f"beta {b}: clean {r.get('clean',{}).get('answer')}  planted 2% {r.get('p02',{}).get('answer')}  5% {r.get('p05',{}).get('answer')}  10% {r.get('p10',{}).get('answer')}  -> {'PASS' if ok else 'fail'}")
+              for c in ('clean','p02','p05','p10'):
+                  x=r.get(c)
+                  if x: lines.append(f"   {c:5} K={x['K']} E={x['elements']} flights/traveller {x['meanFlights']} deaths {x['meanDeaths']} warpTicks {x['meanWarpTicks']} recurs {x['recurs'][:6]}")
+          lines += ['', f"CALIBRATED BETA: {min(passing)}" if passing else 'CALIBRATION FAILED: no beta passes; the apparatus does not listen to the world']
+          pathlib.Path('experiments/antenna2/calibration/CALIBRATION.txt').write_text('\n'.join(lines)+'\n')
+          json.dump(res,open('experiments/antenna2/calibration/calibration.json','w'),indent=1)
+          print('\n'.join(lines))
+          PY
+          git add experiments/antenna2/calibration
+          git -c user.name='antenna2' -c user.email='antenna2@users.noreply.github.com' commit -qm 'ANTENNA II calibration result'
+          for i in 1 2 3 4; do git push -q origin HEAD:antenna2-20261104 && exit 0; sleep $((2**i)); git pull -q --rebase origin antenna2-20261104; done; exit 1
