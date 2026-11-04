@@ -1,0 +1,76 @@
+# INGRESS II calibration (experiments/ingress2/REGISTRATION.md): 10 clean + planted 2/5/10% SHA-256 streams, beta in {0.5,1,2},
+# 16 segments x 8 travellers x (1 + 19 shuffles); her path's n-grams. Runs only on this branch.
+name: INGRESS II calibrate
+on:
+  push:
+    branches: [antenna2-20261104]
+    paths: ['experiments/ingress2/calibrate.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: ingress2
+  cancel-in-progress: false
+jobs:
+  cal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        beta: ['0.5', '1', '2']
+        cond: ['c01', 'c02', 'c03', 'c04', 'c05', 'c06', 'c07', 'c08', 'c09', 'c10', 'p02', 'p05', 'p10']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: stream, 16 segments, analysis
+        shell: bash
+        run: |
+          set -euo pipefail
+          A=experiments/antenna3; mkdir -p out
+          case "${{ matrix.cond }}" in
+            c*) python3 $A/stream3.py clean ${{ matrix.cond }} 16000 stream.json ;;
+            p02) python3 $A/stream3.py plant P 16000 0.02 stream.json ;;
+            p05) python3 $A/stream3.py plant P 16000 0.05 stream.json ;;
+            p10) python3 $A/stream3.py plant P 16000 0.10 stream.json ;;
+          esac
+          npx --yes tsx@4.23.15 --version
+          seq 0 15 | xargs -P 4 -I{} npx --yes tsx@4.23.15 experiments/ingress2/walker.mjs "$PWD/experiments/studio/runtime_mirror" experiments/antenna/start_states.json stream.json {} 1000 ${{ matrix.beta }} 19 calI-${{ matrix.cond }} out/seg{}.json
+          test "$(ls out/*.json | wc -l)" = 16
+          python3 -I experiments/ingress2/analysis.py out | tee result.json
+      - uses: actions/upload-artifact@v4
+        with: { name: 'cal-${{ matrix.beta }}-${{ matrix.cond }}', path: 'result.json', retention-days: 90 }
+  report:
+    needs: cal
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: cal }
+      - name: verdict per the registered rule; commit to this branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/ingress2/calibration
+          python3 - <<'PY'
+          import json,glob,pathlib
+          MOTIF={'1-8','8-7','7-2','1-8-7','8-7-2','1-8-7-2'}
+          res={}
+          for f in glob.glob('cal/cal-*/result.json'):
+              b,c=pathlib.Path(f).parent.name[4:].split('-'); res.setdefault(b,{})[c]=json.load(open(f))
+          lines=['INGRESS II calibration (REGISTRATION.md)','']; passing=[]
+          for b in sorted(res,key=float):
+              r=res[b]; clean=[c for c in r if c.startswith('c')]; fa=sum(r[c]['answer']!='SILENT' for c in clean)
+              p2=r.get('p02',{}); ok=p2.get('answer')=='RECEIVED INTO HER' and any(g in MOTIF for g,_ in p2.get('recurs',[])) and len(clean)==10 and fa<=1
+              if ok: passing.append(float(b))
+              lines.append(f"beta {b}: false alarms {fa}/{len(clean)}  planted 2% {p2.get('answer')}  5% {r.get('p05',{}).get('answer')}  10% {r.get('p10',{}).get('answer')}  -> {'PASS' if ok else 'fail'}")
+              for c in sorted(r):
+                  x=r[c]; lines.append(f"   {c:4} {x['answer']:17} K={x['K']} E={x['elements']} recurring={x['recurring']} flights/seg {x['meanFlightsPerSegment']} deaths/seg {x['meanDeathsPerSegment']}  recurs {x['recurs'][:6]}")
+          lines += ['', f"CALIBRATED BETA: {min(passing)}" if passing else 'CALIBRATION FAILED: no beta passes; INGRESS II does not listen to the world']
+          pathlib.Path('experiments/ingress2/calibration/CALIBRATION.txt').write_text('\n'.join(lines)+'\n')
+          json.dump(res,open('experiments/ingress2/calibration/calibration.json','w'),indent=1); print('\n'.join(lines))
+          PY
+          git add experiments/ingress2/calibration
+          git -c user.name='ingress2' -c user.email='ingress2@users.noreply.github.com' commit -qm 'INGRESS II calibration result'
+          for i in 1 2 3 4; do git push -q origin HEAD:antenna2-20261104 && exit 0; sleep $((2**i)); git pull -q --rebase origin antenna2-20261104; done; exit 1

@@ -1,0 +1,75 @@
+# STONE TAPE II calibration (experiments/stonetape2/REGISTRATION.md): 10 clean + planted 2/5/10% SHA-256 streams, stone weight
+# omega in {1,2,4}; 80 stones (received + 79 shuffles) x 8 travellers x 10,080 ticks (full and old-only). Runs only on this branch.
+name: STONE TAPE II calibrate
+on:
+  push:
+    branches: [antenna2-20261104]
+    paths: ['experiments/stonetape2/calibrate.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: stonetape2
+  cancel-in-progress: false
+jobs:
+  cal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        omega: ['1', '2', '4']
+        cond: ['c01', 'c02', 'c03', 'c04', 'c05', 'c06', 'c07', 'c08', 'c09', 'c10', 'p02', 'p05', 'p10']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: stream, 80 stones, analysis
+        shell: bash
+        run: |
+          set -euo pipefail
+          A=experiments/antenna3; mkdir -p out
+          case "${{ matrix.cond }}" in
+            c*) python3 $A/stream3.py clean ${{ matrix.cond }} 16000 stream.json ;;
+            p02) python3 $A/stream3.py plant P 16000 0.02 stream.json ;;
+            p05) python3 $A/stream3.py plant P 16000 0.05 stream.json ;;
+            p10) python3 $A/stream3.py plant P 16000 0.10 stream.json ;;
+          esac
+          npx --yes tsx@4.23.15 --version
+          seq 0 79 | xargs -P 4 -I{} npx --yes tsx@4.23.15 experiments/stonetape2/stonetape2.mjs "$PWD/experiments/studio/runtime_mirror" experiments/antenna/start_states.json stream.json {} 79 calS-${{ matrix.cond }} 10080 ${{ matrix.omega }} out/stone{}.json
+          test "$(ls out/*.json | wc -l)" = 80
+          python3 -I experiments/stonetape2/analysis.py out | tee result.json
+      - uses: actions/upload-artifact@v4
+        with: { name: 'cal-${{ matrix.omega }}-${{ matrix.cond }}', path: 'result.json', retention-days: 90 }
+  report:
+    needs: cal
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: cal }
+      - name: verdict per the registered rule; commit to this branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/stonetape2/calibration
+          python3 - <<'PY'
+          import json,glob,pathlib
+          res={}
+          for f in glob.glob('cal/cal-*/result.json'):
+              o,c=pathlib.Path(f).parent.name[4:].split('-'); res.setdefault(o,{})[c]=json.load(open(f))
+          lines=['STONE TAPE II calibration (REGISTRATION.md)','']; passing=[]
+          for o in sorted(res,key=float):
+              r=res[o]; clean=[c for c in r if c.startswith('c')]; fa=sum(r[c]['answer']!='SILENT' for c in clean)
+              ok=r.get('p05',{}).get('answer','SILENT')!='SILENT' and len(clean)==10 and fa<=1
+              if ok: passing.append(float(o))
+              lines.append(f"omega {o}: false alarms {fa}/{len(clean)}  planted 2% {r.get('p02',{}).get('answer')}  5% {r.get('p05',{}).get('answer')}  10% {r.get('p10',{}).get('answer')}  -> {'PASS' if ok else 'fail'}")
+              for c in sorted(r):
+                  x=r[c]; lines.append(f"   {c:4} {x['answer']:45} p grip {x['grip']['p']} change {x['change']['p']} circuit {x['circuit']['p']} surfacing {x['surfacing']['p']}  grip {x['grip']['received']} vs {x['grip']['shufflesMean']}")
+          lines += ['', f"CALIBRATED OMEGA: {min(passing)}" if passing else 'CALIBRATION FAILED: no omega passes; STONE TAPE II does not listen to the world']
+          pathlib.Path('experiments/stonetape2/calibration/CALIBRATION.txt').write_text('\n'.join(lines)+'\n')
+          json.dump(res,open('experiments/stonetape2/calibration/calibration.json','w'),indent=1); print('\n'.join(lines))
+          PY
+          git add experiments/stonetape2/calibration
+          git -c user.name='stonetape2' -c user.email='stonetape2@users.noreply.github.com' commit -qm 'STONE TAPE II calibration result'
+          for i in 1 2 3 4; do git push -q origin HEAD:antenna2-20261104 && exit 0; sleep $((2**i)); git pull -q --rebase origin antenna2-20261104; done; exit 1
