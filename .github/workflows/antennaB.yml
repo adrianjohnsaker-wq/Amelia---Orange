@@ -1,0 +1,63 @@
+# ANTENNA B (experiments/antennaB/REGISTRATION.md). seal.trigger: one RFC3161 token over the registration, code and calibration,
+# fixing the world data start time. run.trigger: the registered world run on the first 16,000 data first seen after the seal.
+# Runs only on this branch; writes only experiments/antennaB/ on this branch.
+name: ANTENNA B
+on:
+  push:
+    branches: [antenna2-20261104]
+    paths: ['experiments/antennaB/seal.trigger', 'experiments/antennaB/run.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: antennaB
+  cancel-in-progress: false
+jobs:
+  b:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: seal (once) or run
+        shell: bash
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        run: |
+          set -euo pipefail
+          B=experiments/antennaB
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          if git diff --name-only HEAD~1 HEAD | grep -qx "$B/seal.trigger" && [ ! -e $B/seal/receipt.json ]; then
+            python - <<'PY'
+          import datetime,hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          B=pathlib.Path('experiments/antennaB'); sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          files=[B/'REGISTRATION.md',B/'structure.py',B/'prepare_world.py',B/'run_world.py',B/'calibrate.py',B/'calibration/CALIBRATION.txt',
+                 pathlib.Path('experiments/antenna3/stream3.py'),pathlib.Path('.github/workflows/antennaB.yml')]
+          t=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+          b={'schema':'ANTENNA_B_REGISTRATION_V1','worldDataFirstSeenAtOrAfter':t,'N':16000,'sourceSHA256':[{'path':str(f),'sha256':sha(f)} for f in files]}
+          (B/'seal').mkdir(exist_ok=True); (B/'seal/ANTENNA_B_BUNDLE.json').write_text(json.dumps(b,sort_keys=True,indent=2)+'\n')
+          imprint=sha(B/'seal/ANTENNA_B_BUNDLE.json'); Sealer().seal(B/'seal',imprint)
+          assert Sealer().verify(B/'seal',imprint)['status']=='PASS'; print('ANTENNA_B_SEALED',t,imprint)
+          PY
+            git add $B/seal; MSG='ANTENNA B registration sealed (RFC3161)'
+          else
+            python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          B=pathlib.Path('experiments/antennaB'); sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          b=json.loads((B/'seal/ANTENNA_B_BUNDLE.json').read_text())
+          assert Sealer().verify(B/'seal',sha(B/'seal/ANTENNA_B_BUNDLE.json'))['status']=='PASS'
+          for x in b['sourceSHA256']: assert sha(x['path'])==x['sha256'],x['path']
+          pathlib.Path('/tmp/since').write_text(b['worldDataFirstSeenAtOrAfter'])
+          print('ANTENNA_B_SEAL_AND_SOURCES_VERIFIED',b['worldDataFirstSeenAtOrAfter'])
+          PY
+            git fetch -q --depth 1 origin world-live && git worktree add -q /tmp/live FETCH_HEAD
+            python3 $B/prepare_world.py /tmp/live "$(cat /tmp/since)" 16000 /tmp/world.json
+            python3 -I $B/run_world.py /tmp/world.json $B/result
+            git add $B/result; MSG='ANTENNA B world result'
+          fi
+          git -c user.name='antennaB' -c user.email='antennaB@users.noreply.github.com' commit -qm "$MSG"
+          for i in 1 2 3 4; do git push -q origin HEAD:antenna2-20261104 && exit 0; sleep $((2**i)); git pull -q --rebase origin antenna2-20261104; done; exit 1
