@@ -52,3 +52,26 @@ Calibration uses no world data.
 
 ## Part 2
 The confirmatory test is registered, and sealed with an RFC 3161 token, after calibration and before its data exist. It will use the world stream (`world-live`) collected **after** that seal, never THE ANTENNA's already-seen world data. It will use the calibrated β, the same apparatus and the same rule.
+
+## Amendment 1 (4 Nov 2026, after the first calibration; before any world data)
+**Why.** In the first calibration (`calibration/CALIBRATION.txt`), β = 0.5 passed the registered rule. But at β = 1 and β = 2 the **clean** beacon came out RECEIVED, which is a false alarm.
+
+The cause is in `analysis2.py`:
+- All 72 travellers hear one and the same stream, so a chance feature of that stream is shared by all of them.
+- Counting them as 72 independent binomial trials therefore overstates the evidence.
+- One SILENT on one clean stream does not show the error rate is controlled.
+
+**Change.**
+- **Common shuffles.** `traveller2.mjs` gives every traveller the same 19 shuffles (seeded by label and shuffle index only).
+- **New test: `analysis3.py`, an exact stream-level permutation test.**
+  - The statistic T is the largest number of travellers, from at least 5 worlds, in which one element comes through.
+  - T is computed for the received stream and, symmetrically, for each shuffled stream.
+  - The answer is RECEIVED only if the received stream's T is greater than all 19 shuffles' T.
+  - The streams are exchangeable under the null, so the false-alarm rate is at most 1/20 whatever the dependence between travellers.
+  - What recurs: the elements whose count of travellers exceeds the shuffles' maximum T.
+- **Calibration, repeated with this test.**
+  - Streams: 10 independent clean streams (the beacon in 10 seeded random orders), and planted 2%, 5% and 10%.
+  - Receiver strengths: β ∈ {0.5, 1, 2}.
+  - A β passes when planted 5% → RECEIVED and at most 1 of the 10 clean streams → RECEIVED (expected 0.5).
+  - The confirmatory β is the smallest β that passes.
+- **Unchanged.** The apparatus is otherwise unchanged, and part 2 (fresh world data after a seal) is unchanged.

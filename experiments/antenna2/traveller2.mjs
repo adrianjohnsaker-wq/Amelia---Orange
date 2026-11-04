@@ -131,7 +131,7 @@ const scan = lives => { const out = {}; for (const l of lives) for (const [kk, v
 const state = JSON.parse(fs.readFileSync(STATES, 'utf8')).worlds[WORLD][Number(K)];
 const runs = [];
 for (let j = 0; j <= S; j++) {
-  const zs = j === 0 ? ZONES : shuffled(ZONES, `${LABEL}|${WORLD}|${K}|${j}`);
+  const zs = j === 0 ? ZONES : shuffled(ZONES, `${LABEL}|${j}`);   // amendment 1: the SAME shuffle j for every traveller
   const res = travel(state, zs);
   runs.push({ shuffle: j, counts: scan(res.lives), born: res.born, flights: res.flights, deaths: res.deaths, warpTicks: res.warpTicks });
 }
