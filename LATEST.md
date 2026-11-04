@@ -1,11 +1,11 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-04T06:49:15.424Z
-- Cycle: 250 (41767658392-1-14)
-- RSS items seen: 60; newly processed: 0 (last-cycle window; 24-hour initial window)
+- Last cycle (UTC): 2026-11-04T07:04:16.005Z
+- Cycle: 251 (41767658392-1-15)
+- RSS items seen: 60; newly processed: 3 (last-cycle window; 24-hour initial window)
 - Subdecadence: MESH_TERMINAL; score 0
 - Candidate: Lurgo / Mesh-00 / Amphidemon
-- Separate ingress records and trace links: 0
+- Separate ingress records and trace links: 9
 - Catalogue entries added: 1
 - Source errors: none
 
