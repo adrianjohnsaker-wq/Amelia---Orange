@@ -1,0 +1,73 @@
+# INGRESS II and STONE TAPE II world tests (experiments/ingress2/REGISTRATION.md, experiments/stonetape2/REGISTRATION.md).
+# seal.trigger: one RFC3161 token over both registrations, code and calibrations, fixing the world-data start time.
+# run.trigger: both registered tests on the first 16,000 world data first seen after the seal. Runs only on this branch.
+name: INGRESS II + STONE TAPE II world
+on:
+  push:
+    branches: [antenna2-20261104]
+    paths: ['experiments/ingress_stone/seal.trigger', 'experiments/ingress_stone/run.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: ingress-stone-world
+  cancel-in-progress: false
+jobs:
+  w:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: seal (once) or run both tests
+        shell: bash
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        run: |
+          set -euo pipefail
+          D=experiments/ingress_stone
+          git config user.name 'ingress-stone' && git config user.email 'ingress-stone@users.noreply.github.com'
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          if git diff --name-only HEAD~1 HEAD | grep -qx "$D/seal.trigger" && [ ! -e $D/seal/receipt.json ]; then
+            python - <<'PY'
+          import datetime,hashlib,json,pathlib,re
+          from drift1a_c1.beacon import Sealer
+          D=pathlib.Path('experiments/ingress_stone'); sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          files=['experiments/ingress2/REGISTRATION.md','experiments/ingress2/walker.mjs','experiments/ingress2/analysis.py','experiments/ingress2/calibration/CALIBRATION.txt',
+                 'experiments/stonetape2/REGISTRATION.md','experiments/stonetape2/stonetape2.mjs','experiments/stonetape2/analysis.py','experiments/stonetape2/calibration/CALIBRATION.txt',
+                 'experiments/antennaB/prepare_world.py','.github/workflows/ingress-stone-world.yml']
+          beta=float(re.search(r'CALIBRATED BETA: ([0-9.]+)',open(files[3]).read()).group(1)); omega=float(re.search(r'CALIBRATED OMEGA: ([0-9.]+)',open(files[7]).read()).group(1))
+          t=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+          b={'schema':'INGRESS2_STONETAPE2_REGISTRATION_V1','worldDataFirstSeenAtOrAfter':t,'N':16000,'beta':beta,'omega':omega,
+             'sourceSHA256':[{'path':f,'sha256':sha(f)} for f in files]}
+          (D/'seal').mkdir(parents=True,exist_ok=True); (D/'seal/BUNDLE.json').write_text(json.dumps(b,sort_keys=True,indent=2)+'\n')
+          imprint=sha(D/'seal/BUNDLE.json'); Sealer().seal(D/'seal',imprint); assert Sealer().verify(D/'seal',imprint)['status']=='PASS'
+          print('SEALED',t,'beta',beta,'omega',omega)
+          PY
+            git add $D/seal; MSG='INGRESS II + STONE TAPE II registration sealed (RFC3161)'
+          else
+            python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          D=pathlib.Path('experiments/ingress_stone'); sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          b=json.loads((D/'seal/BUNDLE.json').read_text()); assert Sealer().verify(D/'seal',sha(D/'seal/BUNDLE.json'))['status']=='PASS'
+          for x in b['sourceSHA256']: assert sha(x['path'])==x['sha256'],x['path']
+          open('/tmp/env','w').write(f"SINCE={b['worldDataFirstSeenAtOrAfter']}\nBETA={b['beta']}\nOMEGA={b['omega']}\n"); print('VERIFIED',b['worldDataFirstSeenAtOrAfter'])
+          PY
+            . /tmp/env
+            git fetch -q --depth 1 origin world-live && git worktree add -q /tmp/live FETCH_HEAD
+            python3 experiments/antennaB/prepare_world.py /tmp/live "$SINCE" 16000 /tmp/world.json
+            npx --yes tsx@4.23.15 --version
+            mkdir -p /tmp/ing /tmp/stone experiments/ingress2/result experiments/stonetape2/result
+            seq 0 15 | xargs -P 4 -I{} npx --yes tsx@4.23.15 experiments/ingress2/walker.mjs "$PWD/experiments/studio/runtime_mirror" experiments/antenna/start_states.json /tmp/world.json {} 1000 $BETA 19 ingress2-world /tmp/ing/seg{}.json
+            B=experiments/antennaB/result/result.json; python3 -I experiments/ingress2/analysis.py /tmp/ing $( [ -e $B ] && echo $B ) | tee experiments/ingress2/result/RESULT.json
+            seq 0 79 | xargs -P 4 -I{} npx --yes tsx@4.23.15 experiments/stonetape2/stonetape2.mjs "$PWD/experiments/studio/runtime_mirror" experiments/antenna/start_states.json /tmp/world.json {} 79 stonetape2-world 10080 $OMEGA /tmp/stone/stone{}.json
+            python3 -I experiments/stonetape2/analysis.py /tmp/stone | tee experiments/stonetape2/result/RESULT.json
+            git add experiments/ingress2/result experiments/stonetape2/result; MSG='INGRESS II + STONE TAPE II world results'
+          fi
+          git commit -qm "$MSG"
+          for i in 1 2 3 4; do git push -q origin HEAD:antenna2-20261104 && exit 0; sleep $((2**i)); git pull -q --rebase origin antenna2-20261104; done; exit 1
