@@ -1,11 +1,11 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-04T00:06:35.976Z
-- Cycle: 223 (41725001759-1-10)
-- RSS items seen: 67; newly processed: 2 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -24
-- Candidate: Pabbakis / Mesh-24 / Amphidemon
-- Separate ingress records and trace links: 6
+- Last cycle (UTC): 2026-11-04T00:21:36.075Z
+- Cycle: 224 (41725001759-1-11)
+- RSS items seen: 67; newly processed: 1 (last-cycle window; 24-hour initial window)
+- Subdecadence: MESH_TERMINAL; score -12
+- Candidate: Kuttadid / Mesh-12 / Cyclic Chronodemon
+- Separate ingress records and trace links: 3
 - Catalogue entries added: 1
 - Source errors: none
 
