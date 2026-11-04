@@ -1,11 +1,11 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-04T16:59:39.915Z
-- Cycle: 289 (41852649367-1-9)
-- RSS items seen: 58; newly processed: 0 (last-cycle window; 24-hour initial window)
+- Last cycle (UTC): 2026-11-04T17:14:40.982Z
+- Cycle: 290 (41852649367-1-10)
+- RSS items seen: 58; newly processed: 2 (last-cycle window; 24-hour initial window)
 - Subdecadence: MESH_TERMINAL; score -15
 - Candidate: Tchu / Mesh-15 / Chaotic Xenodemon
-- Separate ingress records and trace links: 0
+- Separate ingress records and trace links: 6
 - Catalogue entries added: 1
 - Source errors: none
 
