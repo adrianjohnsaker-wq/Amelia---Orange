@@ -72,5 +72,5 @@ jobs:
           print('\n'.join(lines))
           PY
           git add experiments/antenna3/calibration
-          git -c user.name='antenna3' -c user.email='antenna3@users.noreply.github.com' commit -qm 'ANTENNA III calibration result'
+          git config user.name 'antenna3' && git config user.email 'antenna3@users.noreply.github.com' && git commit -qm 'ANTENNA III calibration result'
           for i in 1 2 3 4; do git push -q origin HEAD:antenna2-20261104 && exit 0; sleep $((2**i)); git pull -q --rebase origin antenna2-20261104; done; exit 1

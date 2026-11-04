@@ -72,5 +72,5 @@ jobs:
           json.dump(res,open('experiments/ingress2/calibration/calibration.json','w'),indent=1); print('\n'.join(lines))
           PY
           git add experiments/ingress2/calibration
-          git -c user.name='ingress2' -c user.email='ingress2@users.noreply.github.com' commit -qm 'INGRESS II calibration result'
+          git config user.name 'ingress2' && git config user.email 'ingress2@users.noreply.github.com' && git commit -qm 'INGRESS II calibration result'
           for i in 1 2 3 4; do git push -q origin HEAD:antenna2-20261104 && exit 0; sleep $((2**i)); git pull -q --rebase origin antenna2-20261104; done; exit 1

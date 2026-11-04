@@ -1,0 +1,47 @@
+# STONE TAPE II calibration report only: re-collects the 39 uploaded results of the calibration run named in report.trigger and
+# applies the same verdict code as stonetape2-calibrate.yml's report job. Writes only experiments/stonetape2/calibration/.
+name: STONE TAPE II calibration report
+on:
+  push:
+    branches: [antenna2-20261104]
+    paths: ['experiments/stonetape2/report.trigger']
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: stonetape2
+  cancel-in-progress: false
+jobs:
+  report:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - id: r
+        run: echo "id=$(cat experiments/stonetape2/report.trigger)" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@v4
+        with: { path: cal, run-id: '${{ steps.r.outputs.id }}', github-token: '${{ github.token }}' }
+      - name: verdict per the registered rule; commit to this branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/stonetape2/calibration
+          python3 - <<'PY'
+          import json,glob,pathlib
+          res={}
+          for f in glob.glob('cal/cal-*/result.json'):
+              o,c=pathlib.Path(f).parent.name[4:].split('-'); res.setdefault(o,{})[c]=json.load(open(f))
+          lines=['STONE TAPE II calibration (REGISTRATION.md)','']; passing=[]
+          for o in sorted(res,key=float):
+              r=res[o]; clean=[c for c in r if c.startswith('c')]; fa=sum(r[c]['answer']!='SILENT' for c in clean)
+              ok=r.get('p05',{}).get('answer','SILENT')!='SILENT' and len(clean)==10 and fa<=1
+              if ok: passing.append(float(o))
+              lines.append(f"omega {o}: false alarms {fa}/{len(clean)}  planted 2% {r.get('p02',{}).get('answer')}  5% {r.get('p05',{}).get('answer')}  10% {r.get('p10',{}).get('answer')}  -> {'PASS' if ok else 'fail'}")
+              for c in sorted(r):
+                  x=r[c]; lines.append(f"   {c:4} {x['answer']:45} p grip {x['grip']['p']} change {x['change']['p']} circuit {x['circuit']['p']} surfacing {x['surfacing']['p']}  grip {x['grip']['received']} vs {x['grip']['shufflesMean']}")
+          lines += ['', f"CALIBRATED OMEGA: {min(passing)}" if passing else 'CALIBRATION FAILED: no omega passes; STONE TAPE II does not listen to the world']
+          pathlib.Path('experiments/stonetape2/calibration/CALIBRATION.txt').write_text('\n'.join(lines)+'\n')
+          json.dump(res,open('experiments/stonetape2/calibration/calibration.json','w'),indent=1); print('\n'.join(lines))
+          PY
+          git add experiments/stonetape2/calibration
+          git config user.name 'stonetape2' && git config user.email 'stonetape2@users.noreply.github.com' && git commit -qm 'STONE TAPE II calibration result'
+          for i in 1 2 3 4; do git push -q origin HEAD:antenna2-20261104 && exit 0; sleep $((2**i)); git pull -q --rebase origin antenna2-20261104; done; exit 1
