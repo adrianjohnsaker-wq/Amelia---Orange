@@ -1,10 +1,10 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-04T18:14:39.897Z
-- Cycle: 294 (41852649367-1-14)
+- Last cycle (UTC): 2026-11-04T18:29:39.960Z
+- Cycle: 295 (41852649367-1-15)
 - RSS items seen: 58; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -5
-- Candidate: Ixidod / Mesh-05 / Amphidemon
+- Subdecadence: MESH_TERMINAL; score -6
+- Candidate: Krako / Mesh-06 / Amphidemon
 - Separate ingress records and trace links: 0
 - Catalogue entries added: 1
 - Source errors: none
