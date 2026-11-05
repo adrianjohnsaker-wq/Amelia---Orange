@@ -6,14 +6,16 @@ import { sha256 } from '../canonical';
 import { SyntheticCoordinator } from '../coordinator';
 import { SyntheticEvidenceLedger, verifyLedger } from '../ledger';
 import { createReferenceField } from '../observer';
-const [ARM, SEED, STEPS, OUT, COMMIT, KEEP] = process.argv.slice(2);
+import { createRepairedField } from './repaired';
+const [ARM, SEED, STEPS, OUT, COMMIT, KEEP, FIELD] = process.argv.slice(2);   // FIELD: 'repaired' uses sxi0c/repaired.ts
 const seed = Number(SEED), steps = Number(STEPS), W = 12, H = 10, WIN = [50, 249], BAND = 7;
 const paths = ['experiments/synthetic-pointer/coordinator.ts', 'experiments/synthetic-pointer/observer.ts', 'experiments/synthetic-pointer/ledger.ts',
-  'experiments/synthetic-pointer/pointer.ts', 'experiments/synthetic-pointer/sxi0c/run_arm.ts', 'src/outside/OutsideEncounterRuntime.ts', 'src/governance/CognitiveGovernor.ts'];
+  'experiments/synthetic-pointer/pointer.ts', 'experiments/synthetic-pointer/sxi0c/run_arm.ts', 'experiments/synthetic-pointer/sxi0c/repaired.ts', 'src/outside/OutsideEncounterRuntime.ts', 'src/governance/CognitiveGovernor.ts'];
 const sourceHashes = Object.fromEntries(paths.map(p => [p, sha256(readFileSync(resolve(p)))]));
 const bodySeed = ARM === 'NULLNOISE' ? seed + 5000 : seed;
 const ledger = new SyntheticEvidenceLedger(OUT);
-const run = new SyntheticCoordinator(`sxi0c-${ARM}-${seed}`, createReferenceField({ width: W, height: H, preset: 'CORAL_REEF', seed: bodySeed, noiseAmp: 0.003 }), ledger,
+const make = FIELD === 'repaired' ? createRepairedField : createReferenceField;
+const run = new SyntheticCoordinator(`sxi0c${FIELD === 'repaired' ? 'r' : ''}-${ARM}-${seed}`, make({ width: W, height: H, preset: 'CORAL_REEF', seed: bodySeed, noiseAmp: 0.003 }), ledger,
   { repository: 'adrianjohnsaker-wq/Amelia---Orange', commit: COMMIT, sourceHashes });
 const neutral = { id: 'neutral', edges: [] };
 const edges = (c0: number) => { const e = []; for (const r of [0, 1]) for (let c = c0; c < c0 + 5; c++) e.push({ a: r * W + c, b: r * W + c + 1, multiplier: 0.3 }); return e; };
@@ -38,7 +40,7 @@ const rows = steps_.map(d => {
   const dec = d.passage.encounterDecisions.map((x: any) => (x.applied ? 'ATTEND' : x.disposition));
   return { step: d.bodyStep, from: d.passage.from, to: d.passage.chosen, noAttn, dec };
 });
-writeFileSync(OUT + '.metrics.json', JSON.stringify({ arm: ARM, seed, bodySeed, steps, head: v.head, records: v.count,
+writeFileSync(OUT + '.metrics.json', JSON.stringify({ arm: ARM, field: FIELD === 'repaired' ? 'repaired' : 'reference', seed, bodySeed, steps, head: v.head, records: v.count,
   plantedControl: ARM === 'PLANT' ? { band: BAND, cells: bandCells, setB: 0.9, bodySteps: planted, note: 'planted positive control: imposed on the body, not discovered' } : null, rows }));
 if (KEEP !== 'keep') rmSync(resolve(OUT, 'checkpoints'), { recursive: true, force: true });
 console.log(ARM, seed, 'records', v.count, 'head', v.head.slice(0, 12));
