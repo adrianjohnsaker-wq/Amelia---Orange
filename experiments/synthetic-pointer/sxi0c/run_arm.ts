@@ -7,10 +7,11 @@ import { SyntheticCoordinator } from '../coordinator';
 import { SyntheticEvidenceLedger, verifyLedger } from '../ledger';
 import { createReferenceField } from '../observer';
 import { createRepairedField } from './repaired';
+import { streamFor, touch } from '../sxi1r/touch';
 const [ARM, SEED, STEPS, OUT, COMMIT, KEEP, FIELD] = process.argv.slice(2);   // FIELD: 'repaired' uses sxi0c/repaired.ts
 const seed = Number(SEED), steps = Number(STEPS), W = 12, H = 10, WIN = [50, 249], BAND = 7;
 const paths = ['experiments/synthetic-pointer/coordinator.ts', 'experiments/synthetic-pointer/observer.ts', 'experiments/synthetic-pointer/ledger.ts',
-  'experiments/synthetic-pointer/pointer.ts', 'experiments/synthetic-pointer/sxi0c/run_arm.ts', 'experiments/synthetic-pointer/sxi0c/repaired.ts', 'src/outside/OutsideEncounterRuntime.ts', 'src/governance/CognitiveGovernor.ts'];
+  'experiments/synthetic-pointer/pointer.ts', 'experiments/synthetic-pointer/sxi0c/run_arm.ts', 'experiments/synthetic-pointer/sxi0c/repaired.ts', 'experiments/synthetic-pointer/sxi1r/touch.ts', 'src/outside/OutsideEncounterRuntime.ts', 'src/governance/CognitiveGovernor.ts'];
 const sourceHashes = Object.fromEntries(paths.map(p => [p, sha256(readFileSync(resolve(p)))]));
 const bodySeed = ARM === 'NULLNOISE' ? seed + 5000 : seed;
 const REPLAY = ARM === 'PLANT_REPLAY' || ARM === 'PLANT_REPLAY_TRUNC' ? JSON.parse(readFileSync(resolve(OUT, '..', `PLANT_${seed}.metrics.json`), 'utf8')).rows.map((r: any) => r.obs) : null;
@@ -47,6 +48,10 @@ function admitPointer(arr: { id: string; edges: any[] }, bodyStep: number) {
   return ok ? arr : neutral;
 }
 const planted: number[] = [];
+// SXI-1R (../sxi1r/REGISTRATION.md): TOUCH arm, the ledgered path. Stream, segment, shuffle and alpha from the environment.
+const TOUCH = ARM === 'TOUCH' ? streamFor(JSON.parse(readFileSync(process.env.SXI1R_STREAM!, 'utf8')).zones, Number(process.env.SXI1R_SEGMENT),
+  steps, Number(process.env.SXI1R_SHUFFLE), process.env.SXI1R_LABEL!) : null;
+const touchAlpha = Number(process.env.SXI1R_ALPHA ?? 0);
 const bandCells = Array.from({ length: W * H }, (_, i) => i).filter(i => Math.floor(10 * (i % W) / W) === BAND);
 for (let s = 0; s < steps; s++) {
   const active = s >= WIN[0] && s <= WIN[1];
@@ -55,6 +60,7 @@ for (let s = 0; s < steps; s++) {
     planted.push(st.stepCount);   // also visible in that step's STEP_BEGIN checkpoint (the body carries B = 0.9)
   }
   if (ARM === 'PLANT_OPEN' && active) { const st = run.getState(); for (const i of bandCells) st.cells[i].B = 0.9; planted.push(st.stepCount); }
+  if (TOUCH) touch(run.getState(), TOUCH[s], touchAlpha);
   if (REPLAY) (run.getState().nativeRuntime as any).replayVector = ARM === 'PLANT_REPLAY_TRUNC' && s > WIN[1] ? null : (REPLAY[s] ?? null);
   if (ARM.startsWith('STRESS_') && STRESS_AT.has(s)) {
     const gk = (run.getState().nativeRuntime as any).getGovernorKernel(); const before = gk.getTelemetry();
@@ -79,6 +85,6 @@ const rows = steps_.map((d, k) => {
   return { step: d.bodyStep, from: d.passage.from, to: d.passage.chosen, noAttn, dec, bands: b.observation.regionMeans.map((x: number) => +x.toFixed(5)), obs: b.observation.attentionVector, replayed: d.passage.encounterDecisions.some((x: any) => String(x.reason).includes('REPLAY')) };
 });
 writeFileSync(OUT + '.metrics.json', JSON.stringify({ arm: ARM, field: FIELD === 'repaired' ? 'repaired' : 'reference', seed, bodySeed, steps, head: v.head, records: v.count,
-  pointerDecisions, stressLog, plantedControl: ['PLANT', 'PLANT_OPEN'].includes(ARM) ? { band: BAND, cells: bandCells, setB: 0.9, bodySteps: planted, note: 'planted positive control: imposed on the body, not discovered' } : null, rows }));
+  pointerDecisions, stressLog, touch: TOUCH ? { stream: process.env.SXI1R_STREAM, segment: Number(process.env.SXI1R_SEGMENT), shuffle: Number(process.env.SXI1R_SHUFFLE), label: process.env.SXI1R_LABEL, alpha: touchAlpha } : null, plantedControl: ['PLANT', 'PLANT_OPEN'].includes(ARM) ? { band: BAND, cells: bandCells, setB: 0.9, bodySteps: planted, note: 'planted positive control: imposed on the body, not discovered' } : null, rows }));
 if (KEEP !== 'keep') rmSync(resolve(OUT, 'checkpoints'), { recursive: true, force: true });
 console.log(ARM, seed, 'records', v.count, 'head', v.head.slice(0, 12));
