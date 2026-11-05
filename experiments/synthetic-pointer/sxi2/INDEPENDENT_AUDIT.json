@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "checked_64_archive_hashes_and_decompression": 64,
+  "verified_arm_identities_and_donor_hashes": true,
+  "exact_integer_motif_and_rational_sign_flip_recalculation": [
+    {
+      "control": "replay",
+      "mean_difference": 0.2703313253012048,
+      "worlds_above_margin": 5,
+      "exact_sign_flip_p": 0.109375
+    },
+    {
+      "control": "shuffled",
+      "mean_difference": 0.05823293172690763,
+      "worlds_above_margin": 4,
+      "exact_sign_flip_p": 0.48828125
+    }
+  ],
+  "live_counterfactual_totals": {
+    "ticks": 38400,
+    "stateChanged": 38400,
+    "symbolChanged": 6515,
+    "gateChanged": 5321,
+    "eligibleChoices": 33106,
+    "winnerChanged": 294
+  },
+  "note": "Independent recalculation uses the committed trace extracts; it does not independently repeat each full simulation."
+}

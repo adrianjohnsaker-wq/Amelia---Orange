@@ -53,5 +53,6 @@ A valid hash chain proves internal consistency of the retained bytes, not that a
 3. A deliberately planted repair controller on the verified W+ body was distinguished from a passive injured twin in calibration and passed the prospective 8/8-world positive-control gate.
 4. SXI-1 used externally fixed source configurations. The subsequent live-loop engineering fixture now derives an address from W+ organ state and feeds Amelia's present state to the source; its live, donor-replay and shuffled controls have equal realised score doses. Different gate-opportunity counts and the engineered address mapping remain limitations.
 5. The prospective holdout and thresholds were registered after calibration. Both recovery tests were null; the data do not establish a source-specific retained organisation.
+6. [SXI-2](sxi2/RESULTS_2026-11-05.md) prospectively tested the live body-derived address and feedback loop in eight fresh input worlds. Its two registered route-retention tests were null, while controlled pointer changes altered realised passages. The [evidence index](sxi2/EVIDENCE_INDEX.md) links the full traces and recalculation material.
 
 Do not present this reference-field receipt as SXI-1, a discovered pattern, proof of an outside entity, or a verification of INGRESS-1.
