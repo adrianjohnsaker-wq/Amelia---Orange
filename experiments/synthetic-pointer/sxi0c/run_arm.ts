@@ -13,7 +13,7 @@ const paths = ['experiments/synthetic-pointer/coordinator.ts', 'experiments/synt
   'experiments/synthetic-pointer/pointer.ts', 'experiments/synthetic-pointer/sxi0c/run_arm.ts', 'experiments/synthetic-pointer/sxi0c/repaired.ts', 'src/outside/OutsideEncounterRuntime.ts', 'src/governance/CognitiveGovernor.ts'];
 const sourceHashes = Object.fromEntries(paths.map(p => [p, sha256(readFileSync(resolve(p)))]));
 const bodySeed = ARM === 'NULLNOISE' ? seed + 5000 : seed;
-const REPLAY = ARM === 'PLANT_REPLAY' ? JSON.parse(readFileSync(resolve(OUT, '..', `PLANT_${seed}.metrics.json`), 'utf8')).rows.map((r: any) => r.obs) : null;
+const REPLAY = ARM === 'PLANT_REPLAY' || ARM === 'PLANT_REPLAY_TRUNC' ? JSON.parse(readFileSync(resolve(OUT, '..', `PLANT_${seed}.metrics.json`), 'utf8')).rows.map((r: any) => r.obs) : null;
 const ledger = new SyntheticEvidenceLedger(OUT);
 const make = FIELD === 'repaired' ? createRepairedField : createReferenceField;
 const run = new SyntheticCoordinator(`sxi0c${FIELD === 'repaired' ? 'r' : ''}-${ARM}-${seed}`, make({ width: W, height: H, preset: 'CORAL_REEF', seed: bodySeed, noiseAmp: 0.003 }), ledger,
@@ -24,13 +24,22 @@ const PA = { id: 'POINTER_A', edges: edges(0) }, PB = { id: 'POINTER_B', edges: 
 // LOOP_CONTROLS.md: stronger pointers, full column-boundary cuts (multiplier 0, all rows)
 const cut = (c: number, id: string) => ({ id, edges: Array.from({ length: H }, (_, r) => ({ a: r * W + c, b: r * W + c + 1, multiplier: 0 })) });
 const PA2 = cut(2, 'POINTER_A2'), PB2 = cut(8, 'POINTER_B2');
+// LOOP_CONTROLS_2.md: cuts across rows. A3/B3: every vertical coupling across row boundary 2|3 / 7|8 (12 edges).
+// A4/B4: every vertical coupling inside one band's column (band 2 = column 3, band 7 = column 9; 9 edges).
+const rowCut = (r: number, id: string) => ({ id, edges: Array.from({ length: W }, (_, c) => ({ a: r * W + c, b: (r + 1) * W + c, multiplier: 0 })) });
+const colCut = (c: number, id: string) => ({ id, edges: Array.from({ length: H - 1 }, (_, r) => ({ a: r * W + c, b: (r + 1) * W + c, multiplier: 0 })) });
+const PA3 = rowCut(2, 'POINTER_A3'), PB3 = rowCut(7, 'POINTER_B3'), PA4 = colCut(3, 'POINTER_A4'), PB4 = colCut(9, 'POINTER_B4');
+// LOOP_CONTROLS_2.md: forced stress. At body steps 100 and 180 the Governor is put under stress through its own public
+// importState: deformation tension 0.95 and anti-lock integrity 80 (below the 85 floor). It recovers by its own rules.
+const STRESS_AT = new Set([100, 180]);
 // LOOP_CONTROLS.md: the Governor admits or refuses each pointer change (same safety rule as the synthetic channel)
 const pointerDecisions: Array<{ bodyStep: number; pointer: string; decision: string }> = [];
+const stressLog: Array<{ bodyStep: number; before: any; after: any }> = [];
 function admitPointer(arr: { id: string; edges: any[] }, bodyStep: number) {
   if (arr.edges.length === 0) return arr;
   const tel = (run.getState().nativeRuntime as any).getGovernorKernel().getTelemetry();
   const ok = arr.edges.length <= 20 && arr.edges.every((e: any) => e.multiplier >= 0 && e.multiplier <= 1) && tel.governorStatus !== 'LOCKED_RECOVERY' && tel.antiLockIntegrity >= 85;
-  pointerDecisions.push({ bodyStep, pointer: arr.id, decision: ok ? 'ADMIT' : 'REFUSE' });
+  pointerDecisions.push({ bodyStep, pointer: arr.id, decision: ok ? 'ADMIT' : 'REFUSE', status: tel.governorStatus, antiLock: tel.antiLockIntegrity, tension: tel.deformationFieldTension } as any);
   return ok ? arr : neutral;
 }
 const planted: number[] = [];
@@ -42,8 +51,14 @@ for (let s = 0; s < steps; s++) {
     planted.push(st.stepCount);   // also visible in that step's STEP_BEGIN checkpoint (the body carries B = 0.9)
   }
   if (ARM === 'PLANT_OPEN' && active) { const st = run.getState(); for (const i of bandCells) st.cells[i].B = 0.9; planted.push(st.stepCount); }
-  if (REPLAY) (run.getState().nativeRuntime as any).replayVector = REPLAY[s] ?? null;
-  const want = ARM === 'POINTER_A' && active ? PA : ARM === 'POINTER_B' && active ? PB : ARM === 'POINTER_A2' && active ? PA2 : ARM === 'POINTER_B2' && active ? PB2 : neutral;
+  if (REPLAY) (run.getState().nativeRuntime as any).replayVector = ARM === 'PLANT_REPLAY_TRUNC' && s > WIN[1] ? null : (REPLAY[s] ?? null);
+  if (ARM.startsWith('STRESS_') && STRESS_AT.has(s)) {
+    const gk = (run.getState().nativeRuntime as any).getGovernorKernel(); const before = gk.getTelemetry();
+    gk.importState({ deformationTension: 0.95, antiLockIntegrity: 80 }); stressLog.push({ bodyStep: run.getState().stepCount, before, after: gk.getTelemetry() });
+  }
+  const want = ARM === 'POINTER_A' && active ? PA : ARM === 'POINTER_B' && active ? PB : ARM === 'POINTER_A2' && active ? PA2 : ARM === 'POINTER_B2' && active ? PB2
+    : ARM === 'POINTER_A3' && active ? PA3 : ARM === 'POINTER_B3' && active ? PB3 : ARM === 'POINTER_A4' && active ? PA4 : ARM === 'POINTER_B4' && active ? PB4
+    : ARM === 'STRESS_A3' && active ? PA3 : neutral;
   const pointer = admitPointer(want, run.getState().stepCount);
   run.step(pointer, !['WITHHELD', 'SHAM_OPEN', 'PLANT_OPEN'].includes(ARM));
 }
@@ -59,6 +74,6 @@ const rows = steps_.map((d, k) => {
   return { step: d.bodyStep, from: d.passage.from, to: d.passage.chosen, noAttn, dec, bands: b.observation.regionMeans.map((x: number) => +x.toFixed(5)), obs: b.observation.attentionVector, replayed: d.passage.encounterDecisions.some((x: any) => String(x.reason).includes('REPLAY')) };
 });
 writeFileSync(OUT + '.metrics.json', JSON.stringify({ arm: ARM, field: FIELD === 'repaired' ? 'repaired' : 'reference', seed, bodySeed, steps, head: v.head, records: v.count,
-  pointerDecisions, plantedControl: ['PLANT', 'PLANT_OPEN'].includes(ARM) ? { band: BAND, cells: bandCells, setB: 0.9, bodySteps: planted, note: 'planted positive control: imposed on the body, not discovered' } : null, rows }));
+  pointerDecisions, stressLog, plantedControl: ['PLANT', 'PLANT_OPEN'].includes(ARM) ? { band: BAND, cells: bandCells, setB: 0.9, bodySteps: planted, note: 'planted positive control: imposed on the body, not discovered' } : null, rows }));
 if (KEEP !== 'keep') rmSync(resolve(OUT, 'checkpoints'), { recursive: true, force: true });
 console.log(ARM, seed, 'records', v.count, 'head', v.head.slice(0, 12));
