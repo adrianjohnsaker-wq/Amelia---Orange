@@ -2,7 +2,7 @@ name: Build Amelia Orange Tablet APK
 
 on:
   push:
-    branches: [main, fix/amelia-live-persistent-loop-20261105]
+    branches: [main, fix/amelia-live-persistent-loop-20261105, research/live-pointer-baseline-20261105]
     paths:
       - 'src/**'
       - 'package.json'
@@ -32,10 +32,18 @@ jobs:
       - name: Install web dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Test live synthetic source and continuity
+        if: github.ref_name == 'research/live-pointer-baseline-20261105'
+        run: node --import tsx --test experiments/live-pointer-baseline/*.test.ts experiments/live-amelia/*.test.ts
+
       - name: Build Amelia UI, substrate, and type checks for the tablet
         env:
           VITE_AMELIA_LOCAL_ONLY: '1'
-        run: npm run build
+        run: |
+          if [[ "$GITHUB_REF_NAME" == 'research/live-pointer-baseline-20261105' ]]; then
+            export VITE_AMELIA_RESEARCH_NAMESPACE='1'
+          fi
+          npm run build
 
       - name: Construct Android wrapper and record provenance
         shell: bash
@@ -71,8 +79,8 @@ jobs:
                   applicationId 'org.amelia.orange'
                   minSdk 24
                   targetSdk 35
-                  versionCode 7
-                  versionName '0.1.6'
+                  versionCode 8
+                  versionName '0.1.7'
               }
               compileOptions {
                   sourceCompatibility JavaVersion.VERSION_17
@@ -101,6 +109,10 @@ jobs:
               </application>
           </manifest>
           EOF
+          if [[ "$GITHUB_REF_NAME" == 'research/live-pointer-baseline-20261105' ]]; then
+            sed -i "s/applicationId 'org.amelia.orange'/applicationId 'org.amelia.orange.research'/" android/app/build.gradle
+            sed -i 's/android:label="Amelia Orange"/android:label="Amelia Orange Research"/' android/app/src/main/AndroidManifest.xml
+          fi
           cat > android/app/src/main/java/org/amelia/orange/MainActivity.java <<'EOF'
           package org.amelia.orange;
 
@@ -196,20 +208,28 @@ jobs:
         run: |
           set -euo pipefail
           apksigner="$(find "${ANDROID_HOME:?}/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
+          aapt="$(find "${ANDROID_HOME:?}/build-tools" -name aapt -type f | sort -V | tail -n 1)"
           test -n "$apksigner"
+          test -n "$aapt"
           "$apksigner" verify --print-certs android/app/build/outputs/apk/debug/app-debug.apk > APK_SIGNING_CERTIFICATE.txt
-          echo 'Preserve the existing tablet data. Do not uninstall the installed app to install this build. An update requires the same Android signing certificate.' > INSTALLATION_NOTE.txt
+          "$aapt" dump badging android/app/build/outputs/apk/debug/app-debug.apk > APK_BADGING.txt
+          if [[ "$GITHUB_REF_NAME" == 'research/live-pointer-baseline-20261105' ]]; then
+            echo 'This research APK uses a separate application ID and a separate cloud memory table. It can be installed alongside the existing app. On first sign-in it copies the main checkpoint, then saves an independent research history. Preserve the existing app and its data. Avoid running two research installations on the same account simultaneously; future APK updates also need a compatible signing certificate.' > INSTALLATION_NOTE.txt
+          else
+            echo 'Preserve the existing tablet data. Do not uninstall the installed app to install this build. An update requires the same Android signing certificate.' > INSTALLATION_NOTE.txt
+          fi
 
       - name: Upload tablet APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Orange-Tablet-APK-v0.1.6
+          name: Amelia-Orange-Tablet-APK-v0.1.7
           if-no-files-found: error
           retention-days: 30
           path: |
             android/app/build/outputs/apk/debug/app-debug.apk
             APK_SHA256.txt
             APK_SIGNING_CERTIFICATE.txt
+            APK_BADGING.txt
             INSTALLATION_NOTE.txt
             BUILD_COMMIT.txt
             BUILD_MODE.txt

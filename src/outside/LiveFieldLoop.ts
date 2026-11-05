@@ -99,6 +99,8 @@ export interface SyntheticSourceOffer {
   sourceStep: number;
   sourceStateDigest: string;
   attentionVector: number[];
+  /** Opt-in application recording; absent in the registered headless study. */
+  recordContext?: boolean;
 }
 export type FieldMapping = 'live' | 'uniform' | { permutation: number[] } | { source: SyntheticSourceOffer };
 
@@ -120,6 +122,7 @@ export function advanceLiveField(state: MorphogeneticState, mapping: FieldMappin
   let attentionVector = observation.attentionVector;
   let sourceDigest = observation.sourceDigest;
   let eventId = `field:${runtimeStep + 1}:${observation.bodyStep}:${sourceDigest.slice(0, 16)}`;
+  let sourceContext: SubstrateEncounterInput['sourceContext'];
   if (typeof mapping === 'object' && 'source' in mapping) {
     const source = mapping.source;
     const v = source?.attentionVector;
@@ -131,6 +134,12 @@ export function advanceLiveField(state: MorphogeneticState, mapping: FieldMappin
     attentionVector = [...v];
     sourceDigest = syntheticSourceOfferDigest(source);
     eventId = `source:${runtimeStep + 1}:${observation.bodyStep}:${sourceDigest.slice(0, 16)}`;
+    if (source.recordContext) {
+      if (!observation.attentionVector) throw new Error('Cannot record source context without a body observation');
+      sourceContext = { schema: 'amelia.live-source-context/v1', bodyDigest: observation.sourceDigest,
+        sourceId: source.sourceId, sourceStep: source.sourceStep, sourceStateDigest: source.sourceStateDigest,
+        pointerVector: [...observation.attentionVector], regionMeans: [...observation.regionMeans] };
+    }
   } else if (typeof mapping === 'object' && 'permutation' in mapping) {
     if (!Array.isArray(mapping.permutation) || mapping.permutation.length !== 10 ||
         new Set(mapping.permutation).size !== 10 || mapping.permutation.some(i => !Number.isInteger(i) || i < 0 || i > 9))
@@ -140,7 +149,7 @@ export function advanceLiveField(state: MorphogeneticState, mapping: FieldMappin
     attentionVector = Array<number>(10).fill(0.1);
   } else if (mapping !== 'live' && mapping !== 'uniform') throw new Error('Invalid experimental field mapping');
   const encounter: SubstrateEncounterInput | undefined = attentionVector ? {
-    eventId, channel: 'SYNTHETIC_FIELD', sourceDigest, attentionVector,
+    eventId, channel: 'SYNTHETIC_FIELD', sourceDigest, attentionVector, ...(sourceContext ? { sourceContext } : {}),
   } : undefined;
   let stepped = false;
   // The native field function already steps the runtime. A temporary proxy supplies its
@@ -202,6 +211,12 @@ export function restoreLiveField(saved: LiveFieldCheckpoint, runtime: AmeliaOuts
   lineage.traitEvolution.importState(decoded.lineage.traitHistory as any);
   const field = body;
   const restored = { ...field, nativeRuntime: runtime, lineageInstance: lineage };
+  const session = (restored as MorphogeneticState & { syntheticSourceSession?: any }).syntheticSourceSession;
+  if (session && (session.schema !== 'amelia.live-synthetic-source/v1' || typeof session.enabled !== 'boolean' ||
+      !session.sourceState || !Number.isSafeInteger(session.sourceState.step) || session.sourceState.step < 0 ||
+      !Number.isFinite(session.sourceState.smoothedCentroid) || session.sourceState.smoothedCentroid < 0 ||
+      session.sourceState.smoothedCentroid > 1 || ![0, 1].includes(session.sourceState.address)))
+    throw new Error('Invalid saved synthetic source session');
   observeLiveField(restored); // Reject malformed cell values rather than silently resetting the body.
   return restored;
 }

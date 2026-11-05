@@ -1,11 +1,14 @@
 import { AmeliaIndexedMemory, AmeliaMemoryStore } from './ameliaIndexedMemory';
 import { chooseLiveCheckpoint } from './checkpointReconciliation';
+import { MAIN_MEMORY_TABLE,cloudMemoryTable,selectCloudArchive,
+  type CloudMemoryRow,type CloudMemoryTable } from './cloudRecordNamespace';
 
 const SUPABASE_URL = 'https://rcgmtdponfljpribggsq.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3v_kyheXh9ODr0qQl1cXdg_5kPbHQIm';
 const SESSION_KEY = 'amelia_supabase_session_v1';
 const OWNER_KEY = 'amelia_supabase_memory_owner_v1';
 const STORES: AmeliaMemoryStore[] = ['runtime', 'dialogue', 'processMemory', 'canalizationRuns', 'paper6Assays', 'snapshots'];
+const RESEARCH_MODE = import.meta.env.VITE_AMELIA_RESEARCH_NAMESPACE === '1';
 
 export interface AmeliaCloudSession {
   access_token: string;
@@ -14,7 +17,7 @@ export interface AmeliaCloudSession {
   user: { id: string; email?: string };
 }
 
-type CloudRow = { store: AmeliaMemoryStore; record_id: string; payload: Record<string, unknown>; updated_at: string };
+type CloudRow = CloudMemoryRow;
 type AuthListener = (session: AmeliaCloudSession | null) => void;
 
 const listeners = new Set<AuthListener>();
@@ -116,6 +119,7 @@ async function requestJson(path: string, init: RequestInit = {}, token?: string)
 }
 
 export class AmeliaSupabaseMemory {
+  static isResearchCopy(): boolean { return RESEARCH_MODE; }
   static async signUp(email: string, password: string): Promise<{ session: AmeliaCloudSession | null; confirmationRequired: boolean }> {
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const useWebRedirect = origin && !origin.includes('appassets.androidplatform.net');
@@ -178,11 +182,11 @@ export class AmeliaSupabaseMemory {
     }
   }
 
-  private static async fetchCloudRows(session: AmeliaCloudSession): Promise<CloudRow[]> {
+  private static async fetchCloudRows(session: AmeliaCloudSession, table: CloudMemoryTable): Promise<CloudRow[]> {
     const rows: CloudRow[] = [];
     for (let offset = 0; ; offset += 500) {
       const response = await fetchTimed(
-        SUPABASE_URL + '/rest/v1/amelia_memory_records?select=store,record_id,payload,updated_at&order=updated_at.asc',
+        SUPABASE_URL + '/rest/v1/' + table + '?select=store,record_id,payload,updated_at&order=updated_at.asc',
         {
           headers: {
             apikey: SUPABASE_PUBLISHABLE_KEY,
@@ -204,7 +208,7 @@ export class AmeliaSupabaseMemory {
   private static async upsertRecord(store: AmeliaMemoryStore, record: Record<string, unknown>): Promise<void> {
     const session = await this.getSession();
     if (!session) throw new Error('Sign in to sync Amelia memory.');
-    await requestJson('/rest/v1/amelia_memory_records?on_conflict=user_id,store,record_id', {
+    await requestJson('/rest/v1/' + cloudMemoryTable(RESEARCH_MODE) + '?on_conflict=user_id,store,record_id', {
       method: 'POST',
       headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
       body: JSON.stringify([{
@@ -220,7 +224,7 @@ export class AmeliaSupabaseMemory {
   private static async deleteStore(store: AmeliaMemoryStore): Promise<void> {
     const session = await this.getSession();
     if (!session) return;
-    const response = await fetchTimed(SUPABASE_URL + '/rest/v1/amelia_memory_records?store=eq.' + encodeURIComponent(store), {
+    const response = await fetchTimed(SUPABASE_URL + '/rest/v1/' + cloudMemoryTable(RESEARCH_MODE) + '?store=eq.' + encodeURIComponent(store), {
       method: 'DELETE',
       headers: {
         apikey: SUPABASE_PUBLISHABLE_KEY,
@@ -244,12 +248,15 @@ export class AmeliaSupabaseMemory {
     }
     const sameOwner = savedOwner === session.user.id;
     AmeliaIndexedMemory.setCloudAdapter(null);
-    const [remoteRows, localArchive] = await Promise.all([
-      this.fetchCloudRows(session),
+    const [ownRows, localArchive] = await Promise.all([
+      this.fetchCloudRows(session, cloudMemoryTable(RESEARCH_MODE)),
       AmeliaIndexedMemory.exportAll(),
     ]);
+    const needsMain = RESEARCH_MODE && !ownRows.some(row => row.store === 'runtime' && row.record_id === 'live-checkpoint');
+    const mainRows = needsMain ? await this.fetchCloudRows(session, MAIN_MEMORY_TABLE) : RESEARCH_MODE ? [] : ownRows;
+    const selected = selectCloudArchive(mainRows, RESEARCH_MODE ? ownRows : [], RESEARCH_MODE);
     const remoteByKey = new Map<string, CloudRow>();
-    for (const row of remoteRows) remoteByKey.set(row.store + '::' + row.record_id, row);
+    for (const row of selected.rows) remoteByKey.set(row.store + '::' + row.record_id, row);
     const localByKey = new Map<string, { store: AmeliaMemoryStore; payload: Record<string, unknown> }>();
     for (const store of STORES) {
       for (const record of localArchive[store] as Array<Record<string, unknown>>) {
@@ -261,10 +268,17 @@ export class AmeliaSupabaseMemory {
     // timestamp alone cannot safely choose between two different Amelias.
     const localCheckpoint = localByKey.get('runtime::live-checkpoint');
     const remoteCheckpoint = remoteByKey.get('runtime::live-checkpoint');
-    const checkpointChoice = localCheckpoint && remoteCheckpoint
+    let checkpointChoice = localCheckpoint && remoteCheckpoint
       ? chooseLiveCheckpoint(localCheckpoint.payload, remoteCheckpoint.payload) : null;
+    const localEvents = (localCheckpoint?.payload.state as any)?.memoryState?.events;
+    const remoteEvents = (remoteCheckpoint?.payload.state as any)?.memoryState?.events;
+    if (selected.bootstrapping && checkpointChoice && remoteCheckpoint && Array.isArray(localEvents) &&
+        Array.isArray(remoteEvents) && remoteEvents.length >= localEvents.length && localEvents.length <= 1 &&
+        !localCheckpoint?.payload.fieldCheckpoint) checkpointChoice = 'remote';
 
-    const keys = new Set([...remoteByKey.keys(), ...localByKey.keys()]);
+    const keys = [...new Set([...remoteByKey.keys(), ...localByKey.keys()])];
+    // Publish the research checkpoint last, so an interrupted initial copy can resume safely.
+    if (selected.bootstrapping) keys.sort((a,b) => Number(a === 'runtime::live-checkpoint') - Number(b === 'runtime::live-checkpoint'));
     let uploaded = 0;
     let downloaded = 0;
     for (const key of keys) {
@@ -275,8 +289,10 @@ export class AmeliaSupabaseMemory {
       const preferRemote = key === 'runtime::live-checkpoint' && checkpointChoice
         ? checkpointChoice === 'remote' : Boolean(remote && (!local || !sameOwner || remoteTime > localTime));
       if (remote && preferRemote) {
-        await AmeliaIndexedMemory.put(remote.store, remote.payload as { id: string });
+        const saved = await AmeliaIndexedMemory.put(remote.store, remote.payload as { id: string });
+        if (!saved) throw new Error('A cloud record could not be saved locally; synchronization stopped.');
         downloaded++;
+        if (selected.bootstrapping) { await this.upsertRecord(remote.store, remote.payload); uploaded++; }
       } else if (local) {
         await this.upsertRecord(local.store, local.payload);
         uploaded++;

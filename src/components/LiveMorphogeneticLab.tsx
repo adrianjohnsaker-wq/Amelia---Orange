@@ -37,8 +37,9 @@ import { canonicalSha256 } from '../lib/sha256';
 import { SubstrateStepSnapshot, ZoneId } from '../types/amelia';
 import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
 import { AmeliaOutsideRuntime } from '../outside/OutsideEncounterRuntime';
-import { advanceLiveField, createLiveField, restoreLiveField } from '../outside/LiveFieldLoop';
+import { createLiveField, restoreLiveField } from '../outside/LiveFieldLoop';
 import type { LiveFieldCheckpoint } from '../outside/LiveFieldLoop';
+import { advanceWithLiveSource, getLiveSourceSession, setLiveSourceEnabled } from '../outside/LiveSyntheticSourceSession';
 
 interface LiveMorphogeneticLabProps {
   onLogMessage?: (msg: string) => void;
@@ -196,10 +197,10 @@ export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLo
     if (!current || !lineageRef.current) return;
     const lineage = lineageRef.current;
     if (sharedRuntime) onBeforeSharedStep?.();
-    const coupled = sharedRuntime instanceof AmeliaOutsideRuntime ? advanceLiveField(current) : null;
+    const coupled = sharedRuntime instanceof AmeliaOutsideRuntime ? advanceWithLiveSource(current) : null;
     const nextState = coupled ? coupled.state : stepAmeliaSubstrate(current);
     if (coupled) {
-      const decision = coupled.snapshot.encounterDecisions?.find(item =>
+      const decision = coupled.currentSourceDecision ?? coupled.snapshot.encounterDecisions?.find(item =>
         item.channel === 'SYNTHETIC_FIELD' && item.sourceDigest === coupled.observation.sourceDigest);
       setFieldDecision(decision ? `${decision.disposition}: ${decision.reason}` : 'No field observation submitted');
     }
@@ -680,12 +681,26 @@ export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLo
     onLogMessage?.(`[PERTURBATION] Applied ${arm} pulse at (${receipt.cx}, ${receipt.cy}) with magnitude 0.45`);
   };
 
+  const handleToggleSyntheticSource = () => {
+    if (!(sharedRuntime instanceof AmeliaOutsideRuntime) || !fieldRef.current) return;
+    const enabled = !getLiveSourceSession(fieldRef.current)?.enabled;
+    const next = setLiveSourceEnabled(fieldRef.current, enabled);
+    fieldRef.current = next;
+    setMorphState(next);
+    onFieldStateChange?.(next);
+    setFieldDecision(enabled ? 'Synthetic source connected; awaiting a field step' :
+      'New source offers stopped; deferred observations remain under Governor control');
+    onLogMessage?.(enabled ? '[SOURCE] Live synthetic source connected to the current field' :
+      '[SOURCE] New synthetic source offers stopped; pending Governor decisions retained');
+  };
+
   // Governor envelope evaluation
   const governorZone = morphState?.govZone || 'MORPHOGENETIC_ZONE';
   const entropy = morphState?.entropy || 0.5;
 
   const currentObservation = lineageRef.current?.getObservation();
   const defTensor = currentObservation?.deformationTensor;
+  const sourceSession = morphState ? getLiveSourceSession(morphState) : null;
 
   if (restored.error) return <div role="alert" className="p-4 text-red-300">Saved field could not be restored: {restored.error}. The checkpoint has been retained.</div>;
 
@@ -693,6 +708,23 @@ export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLo
     <div className="space-y-6">
       {/* Top Banner: Core Experiment Status */}
       <div className="p-6 rounded-2xl bg-stone-900/80 border border-stone-800 space-y-4">
+        <section id="synthetic-source-panel" className="rounded-xl border border-cyan-800 bg-stone-950/80 p-4 space-y-2">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-bold text-cyan-200">Live synthetic source</h3>
+              <p className="text-xs text-stone-400 mt-1">The current field selects an engineered source profile; the Governor decides whether its response enters the Numogram and memory.</p>
+            </div>
+            <button id="btn-toggle-synthetic-source" type="button" onClick={handleToggleSyntheticSource}
+              disabled={!morphState || !(sharedRuntime instanceof AmeliaOutsideRuntime)}
+              className="px-3 py-2 rounded-lg text-xs font-semibold border border-cyan-700 bg-cyan-950 text-cyan-100 hover:bg-cyan-900 disabled:opacity-50">
+              {sourceSession?.enabled ? 'Stop new source offers' : 'Connect synthetic source'}
+            </button>
+          </div>
+          <p className="text-xs text-cyan-300 font-mono" aria-live="polite">
+            {sourceSession?.enabled ? `Connected · address ${sourceSession.sourceState.address === 0 ? 'A' : 'B'} · observations ${sourceSession.sourceState.step}` :
+              sourceSession ? `Paused · observations ${sourceSession.sourceState.step}` : 'Not connected'}
+          </p>
+        </section>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2.5">

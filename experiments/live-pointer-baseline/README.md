@@ -1,6 +1,6 @@
 # Live pointer experiment
 
-Read `REGISTRATION.md` first. This uses private copies of a supplied runtime-only archive and does not write to the user's Supabase project or tablet. `adaptive_source.ts` implements the live body-responsive synthetic source; `run.ts` records Governor, Numogram, PFM, source, field, intervention and session-restoration traces. The profiles are intentionally constructed.
+Read `REGISTRATION.md` first. `LIVE_APP_SOURCE.md` describes the separate opt-in source in the application and the side-by-side tablet build. This uses private copies of a supplied runtime-only archive and does not write to the user's Supabase project or tablet. `adaptive_source.ts` implements the live body-responsive synthetic source; `run.ts` records Governor, Numogram, PFM, source, field, intervention and session-restoration traces. The profiles are intentionally constructed.
 
 Run wiring and control tests with:
 

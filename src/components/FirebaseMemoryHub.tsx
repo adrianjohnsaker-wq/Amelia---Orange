@@ -282,6 +282,7 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
             <p className="text-xs text-stone-400 mt-1">
               Durable, account-backed copies of Amelia’s runtime checkpoints, dialogue, and assay records. The Numogram substrate remains the source of runtime state and actions.
             </p>
+            {AmeliaSupabaseMemory.isResearchCopy() && <p className="text-xs text-cyan-300 mt-1">Research copy: on first sync it starts from your main account records, then saves its own separate history.</p>}
           </div>
           <span className={"px-2.5 py-1 rounded-full text-xs font-mono border " + (cloudSession ? "text-emerald-300 bg-emerald-950/50 border-emerald-800" : "text-stone-400 bg-stone-950 border-stone-700")}>
             {cloudConnected ? "SUPABASE SYNCED" : cloudSession ? "SIGNED IN" : "LOCAL ONLY"}
