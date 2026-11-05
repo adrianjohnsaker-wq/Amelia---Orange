@@ -1,6 +1,6 @@
 # SXI-0: synthetic-pointer engineering reference
 
-**SXI-1 continuation:** A programmed two-address synthetic source and a planted W+ recovery control have been added. The prospective, source-bound [SXI-1 registration](sxi1/REGISTRATION.md) and [calibration](sxi1/CALIBRATION.md) distinguish those fixtures from any independently discovered organisation.
+**SXI-1 result:** The registered eight-world synthetic-source screen completed; neither recovery test was supported and its planted positive-control gate passed 8/8. The [registration](sxi1/REGISTRATION.md), [calibration](sxi1/CALIBRATION.md) and [results](sxi1/RESULTS_2026-11-05.md) distinguish the programmed fixtures from any independently discovered organisation.
 
 **Status: engineering and exploratory control checks; no SXI-1 discovery or agency result.** The reference-field adapter connects an Amelia—Orange morphogenetic field to the Governor and full 29-gate Numogram. The separately instrumented W+ runner uses the verified INGRESS-1 runtime, its full Numogram and the conditional Plex exit. Matched-control checks and independent recalculation of INGRESS-1 are now recorded below.
 
@@ -44,12 +44,12 @@ The run requires its source files to be clean at a committed Git head, hashes th
 
 A valid hash chain proves internal consistency of the retained bytes, not that an observation has an external origin or that omitted data never existed.
 
-## Gates before SXI-1
+## Current scope and remaining limits
 
 1. **Done for the supplied handoff:** bind the runner to its exact `vt/m` bytes and independently recalculate the season exports. Recover the branching helper and original source stream only if a full independent historical simulation replay is required.
-2. The new W+ neutral trace matches the original runner's season summary and end state byte for byte on a second fixture. Mid-season restart and full checkpoint/replay remain unverified.
-3. Complete a recorded end-to-end positive control using an engineered repair-capable version of the verified body and matched passive controls. The current reference-field repair controller is a deliberately planted test fixture, not that verified-body test.
-4. Define and validate pointer A, pointer B and spatially matched sham/control arrangements on the verified body.
-5. Preregister the prospective holdout and thresholds only after exploratory calibration.
+2. The W+ neutral trace matches the original runner's season summary and end state byte for byte on a second fixture. The one-season SXI-1 screen used the registered policy of a full rerun on execution or verification failure; it did not rely on a mid-season restart. Full mid-season checkpoint/replay remains unverified.
+3. A deliberately planted repair controller on the verified W+ body was distinguished from a passive injured twin in calibration and passed the prospective 8/8-world positive-control gate.
+4. The screen used two addressed synthetic source configurations, sham, shuffled and unpatterned controls with equal realised score doses. The address is an external software configuration, and different gate-opportunity counts remain a limitation; an endogenous body-derived address has not been implemented.
+5. The prospective holdout and thresholds were registered after calibration. Both recovery tests were null; the data do not establish a source-specific retained organisation.
 
 Do not present this reference-field receipt as SXI-1, a discovered pattern, proof of an outside entity, or a verification of INGRESS-1.
