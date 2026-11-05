@@ -1,0 +1,76 @@
+# SXI-1R (experiments/synthetic-pointer/sxi1r/REGISTRATION.md). seal.trigger: one RFC3161 token over the registration,
+# code and calibration, fixing the world data start time. run.trigger: the registered world run on the first 12,000
+# world-stream data first seen after the seal. Runs only on this branch; writes only experiments/synthetic-pointer/sxi1r/.
+name: SXI-1R
+on:
+  push:
+    branches: [sxi0-controls-20261105]
+    paths: ['experiments/synthetic-pointer/sxi1r/seal.trigger', 'experiments/synthetic-pointer/sxi1r/run.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: sxi1r
+  cancel-in-progress: false
+jobs:
+  sxi1r:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: seal (once) or run
+        shell: bash
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        run: |
+          set -euo pipefail
+          P=experiments/synthetic-pointer/sxi1r
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          cat > /tmp/files.json <<'J'
+          ["experiments/synthetic-pointer/sxi1r/REGISTRATION.md","experiments/synthetic-pointer/sxi1r/touch.ts","experiments/synthetic-pointer/sxi1r/fast.ts",
+           "experiments/synthetic-pointer/sxi1r/analysis.py","experiments/synthetic-pointer/sxi1r/run_world.sh","experiments/synthetic-pointer/sxi1r/prepare_world.py",
+           "experiments/synthetic-pointer/sxi1r/stream3.py","experiments/synthetic-pointer/sxi1r/calibrate.sh","experiments/synthetic-pointer/sxi1r/calibration_summary.py",
+           "experiments/synthetic-pointer/sxi1r/calibration/CALIBRATION.json","experiments/synthetic-pointer/sxi1r/equivalence.sh",
+           "experiments/synthetic-pointer/sxi0c/run_arm.ts","experiments/synthetic-pointer/sxi0c/repaired.ts","experiments/synthetic-pointer/sxi0c/INTERFACE.md",
+           "experiments/synthetic-pointer/sxi0c/gate.sh","experiments/synthetic-pointer/sxi0c/gate_check.py","experiments/synthetic-pointer/sxi0c/analysis.py",
+           "experiments/synthetic-pointer/observer.ts","experiments/synthetic-pointer/pointer.ts","experiments/synthetic-pointer/coordinator.ts",
+           "experiments/synthetic-pointer/ledger.ts","experiments/synthetic-pointer/canonical.ts",".github/workflows/sxi1r.yml"]
+          J
+          if git diff --name-only HEAD~1 HEAD | grep -qx "$P/seal.trigger" && [ ! -e $P/seal/receipt.json ]; then
+            python - <<'PY'
+          import datetime,hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          P=pathlib.Path('experiments/synthetic-pointer/sxi1r'); sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          files=json.load(open('/tmp/files.json')); t=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+          b={'schema':'SXI1R_REGISTRATION_V1','worldDataFirstSeenAtOrAfter':t,'N':12000,
+             'confirmatoryAlpha':json.load(open(P/'calibration/CALIBRATION.json'))['confirmatoryAlpha'],'sourceSHA256':[{'path':f,'sha256':sha(f)} for f in files]}
+          (P/'seal').mkdir(exist_ok=True); (P/'seal/SXI1R_BUNDLE.json').write_text(json.dumps(b,sort_keys=True,indent=2)+'\n')
+          imprint=sha(P/'seal/SXI1R_BUNDLE.json'); Sealer().seal(P/'seal',imprint)
+          assert Sealer().verify(P/'seal',imprint)['status']=='PASS'; print('SXI1R_SEALED',t,imprint)
+          PY
+            git add $P/seal; MSG='SXI-1R registration sealed (RFC3161)'
+          else
+            python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          P=pathlib.Path('experiments/synthetic-pointer/sxi1r'); sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          b=json.loads((P/'seal/SXI1R_BUNDLE.json').read_text())
+          assert Sealer().verify(P/'seal',sha(P/'seal/SXI1R_BUNDLE.json'))['status']=='PASS'
+          for x in b['sourceSHA256']: assert sha(x['path'])==x['sha256'],x['path']
+          pathlib.Path('/tmp/since').write_text(b['worldDataFirstSeenAtOrAfter']); print('SXI1R_SEAL_AND_SOURCES_VERIFIED',b['worldDataFirstSeenAtOrAfter'])
+          PY
+            git fetch -q --depth 1 origin world-live && git worktree add -q /tmp/live FETCH_HEAD
+            if ! python3 $P/prepare_world.py /tmp/live "$(cat /tmp/since)" 12000 /tmp/world.json; then echo 'SXI1R_WORLD_DATA_NOT_READY'; exit 0; fi
+            mkdir -p /tmp/tsx && (cd /tmp/tsx && npm init -y >/dev/null && npm i -s tsx@4.23.15) && ln -s /tmp/tsx/node_modules node_modules
+            sh $P/run_world.sh /tmp/world.json $P/result
+            cp /tmp/world.json $P/result/world.json; rm -f node_modules
+            git add $P/result; MSG='SXI-1R world result'
+          fi
+          git commit -qm "$MSG"
+          for i in 1 2 3 4; do git pull -q --rebase origin sxi0-controls-20261105 && git push -q origin HEAD:sxi0-controls-20261105 && break; sleep $((2**i)); done
