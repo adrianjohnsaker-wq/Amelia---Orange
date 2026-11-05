@@ -2,7 +2,7 @@ name: Build Amelia Orange Tablet APK
 
 on:
   push:
-    branches: [main]
+    branches: [main, fix/amelia-live-persistent-loop-20261105]
     paths:
       - 'src/**'
       - 'package.json'
@@ -71,8 +71,8 @@ jobs:
                   applicationId 'org.amelia.orange'
                   minSdk 24
                   targetSdk 35
-                  versionCode 6
-                  versionName '0.1.5'
+                  versionCode 7
+                  versionName '0.1.6'
               }
               compileOptions {
                   sourceCompatibility JavaVersion.VERSION_17
@@ -191,15 +191,26 @@ jobs:
       - name: Hash APK
         run: sha256sum android/app/build/outputs/apk/debug/app-debug.apk > APK_SHA256.txt
 
+      - name: Record APK signing certificate
+        shell: bash
+        run: |
+          set -euo pipefail
+          apksigner="$(find "${ANDROID_HOME:?}/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
+          test -n "$apksigner"
+          "$apksigner" verify --print-certs android/app/build/outputs/apk/debug/app-debug.apk > APK_SIGNING_CERTIFICATE.txt
+          echo 'Preserve the existing tablet data. Do not uninstall the installed app to install this build. An update requires the same Android signing certificate.' > INSTALLATION_NOTE.txt
+
       - name: Upload tablet APK
         uses: actions/upload-artifact@v4
         with:
-          name: Amelia-Orange-Tablet-APK-v0.1.5
+          name: Amelia-Orange-Tablet-APK-v0.1.6
           if-no-files-found: error
           retention-days: 30
           path: |
             android/app/build/outputs/apk/debug/app-debug.apk
             APK_SHA256.txt
+            APK_SIGNING_CERTIFICATE.txt
+            INSTALLATION_NOTE.txt
             BUILD_COMMIT.txt
             BUILD_MODE.txt
             WEB_ASSET_SHA256.txt

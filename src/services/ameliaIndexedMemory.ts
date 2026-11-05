@@ -94,7 +94,7 @@ export class AmeliaIndexedMemory {
     }
   }
 
-  static async put<T extends { id: string }>(store: AmeliaMemoryStore, value: T): Promise<boolean> {
+  static async put<T extends { id: string }>(store: AmeliaMemoryStore, value: T, options?: { localOnly?: boolean }): Promise<boolean> {
     let persisted = true;
     try {
       const db = await openDatabase();
@@ -113,7 +113,7 @@ export class AmeliaIndexedMemory {
       records.set(value.id, value as StoredRecord);
       if (typeof console !== 'undefined') console.warn('Amelia IndexedDB unavailable; using memory for this session.', error);
     }
-    if (cloudAdapter) {
+    if (cloudAdapter && !options?.localOnly) {
       try {
         await cloudAdapter.upsert(store, value as Record<string, unknown>);
       } catch (error) {
@@ -123,6 +123,18 @@ export class AmeliaIndexedMemory {
     }
     notify(store);
     return persisted;
+  }
+
+  /** Separately queue cloud writes so a slow network cannot block local checkpointing. */
+  static async syncCloudRecord(store: AmeliaMemoryStore, value: Record<string, unknown>): Promise<boolean> {
+    if (!cloudAdapter) return true;
+    try {
+      await cloudAdapter.upsert(store, value);
+      return true;
+    } catch (error) {
+      reportCloudError(error);
+      return false;
+    }
   }
 
   static async list<T = StoredRecord>(store: AmeliaMemoryStore, limit = 200): Promise<T[]> {

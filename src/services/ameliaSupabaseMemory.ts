@@ -1,4 +1,5 @@
 import { AmeliaIndexedMemory, AmeliaMemoryStore } from './ameliaIndexedMemory';
+import { chooseLiveCheckpoint } from './checkpointReconciliation';
 
 const SUPABASE_URL = 'https://rcgmtdponfljpribggsq.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3v_kyheXh9ODr0qQl1cXdg_5kPbHQIm';
@@ -256,6 +257,13 @@ export class AmeliaSupabaseMemory {
       }
     }
 
+    // Inspect both histories before *any* upload or local replacement. A clock
+    // timestamp alone cannot safely choose between two different Amelias.
+    const localCheckpoint = localByKey.get('runtime::live-checkpoint');
+    const remoteCheckpoint = remoteByKey.get('runtime::live-checkpoint');
+    const checkpointChoice = localCheckpoint && remoteCheckpoint
+      ? chooseLiveCheckpoint(localCheckpoint.payload, remoteCheckpoint.payload) : null;
+
     const keys = new Set([...remoteByKey.keys(), ...localByKey.keys()]);
     let uploaded = 0;
     let downloaded = 0;
@@ -264,7 +272,9 @@ export class AmeliaSupabaseMemory {
       const local = localByKey.get(key);
       const localTime = local ? Date.parse(String(local.payload.updatedAt || local.payload.timestamp || '')) || 0 : 0;
       const remoteTime = remote ? Date.parse(remote.updated_at) || 0 : 0;
-      if (remote && (!local || !sameOwner || remoteTime > localTime)) {
+      const preferRemote = key === 'runtime::live-checkpoint' && checkpointChoice
+        ? checkpointChoice === 'remote' : Boolean(remote && (!local || !sameOwner || remoteTime > localTime));
+      if (remote && preferRemote) {
         await AmeliaIndexedMemory.put(remote.store, remote.payload as { id: string });
         downloaded++;
       } else if (local) {

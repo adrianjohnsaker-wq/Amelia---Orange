@@ -33,7 +33,7 @@ interface LocalMemoryHubProps {
   threeArmResults: Record<string, CanalizationArmResult>;
   selectedDepth: number;
   selectedSeed: number;
-  onCloudRestore?: (state: unknown) => void;
+  onCloudRestore?: (checkpoint: unknown) => void;
   cloudConnected: boolean;
   cloudSyncError: string;
   onCloudStatusChange?: (connected: boolean, error?: string) => void;
@@ -114,7 +114,7 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
     setCloudError('');
     try {
       const result = await AmeliaSupabaseMemory.syncLocalMemory(session);
-      if (result.runtimeCheckpoint?.state) onCloudRestore?.(result.runtimeCheckpoint.state);
+      if (result.runtimeCheckpoint?.state) onCloudRestore?.(result.runtimeCheckpoint);
       onCloudStatusChange?.(true, '');
       setCloudMessage('Supabase synced · ' + result.uploaded + ' uploaded · ' + result.downloaded + ' restored');
     } catch (error) {

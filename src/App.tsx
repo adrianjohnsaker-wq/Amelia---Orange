@@ -67,12 +67,40 @@ import { LiveMorphogeneticLab } from './components/LiveMorphogeneticLab';
 import { Thread3EncodingActivationLab } from './components/Thread3EncodingActivationLab';
 import { AmeliaIndexedMemory } from './services/ameliaIndexedMemory';
 import { AmeliaSupabaseMemory, AmeliaCloudSession } from './services/ameliaSupabaseMemory';
+import { captureLiveField } from './outside/LiveFieldLoop';
+import type { LiveFieldCheckpoint } from './outside/LiveFieldLoop';
+import type { MorphogeneticState } from './substrate/AmeliaMorphogeneticSubstrate';
 
 const LOCAL_CHECKPOINT_KEY = 'amelia_pfm_shared_runtime_v2';
+const WRITER_ID_KEY = 'amelia_checkpoint_writer_v1';
+function localCheckpointWriter(): string {
+  try {
+    const current = localStorage.getItem(WRITER_ID_KEY);
+    if (current) return current;
+    const created = globalThis.crypto?.randomUUID?.() ?? `device-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    localStorage.setItem(WRITER_ID_KEY, created);
+    return created;
+  } catch { return `session-${Date.now()}-${Math.random().toString(16).slice(2)}`; }
+}
+type LiveCheckpoint = { version: number; state: unknown; fieldCheckpoint?: LiveFieldCheckpoint | null;
+  updatedAt?: string; writerId?: string; revision?: number; runtimeRunning?: boolean };
+type PendingSave = { checkpoint: LiveCheckpoint & { id: string }; snapshot: { id: string; step: number; timestamp: string | number; snapshot: SubstrateStepSnapshot } };
 
 export function App() {
   const runtimeRef = useRef<AmeliaOutsideRuntime>(bornAmelia());
   const rhythmHarmonizerRef = useRef<ExternalRhythmHarmonizer>(new ExternalRhythmHarmonizer());
+  const fieldStateRef = useRef<MorphogeneticState | null>(null);
+  const restoredFieldRef = useRef<LiveFieldCheckpoint | null>(null);
+  const fieldRunningRef = useRef(false);
+  const localPendingRef = useRef<PendingSave | null>(null);
+  const cloudPendingRef = useRef<PendingSave | null>(null);
+  const localWritingRef = useRef(false);
+  const cloudWritingRef = useRef(false);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cloudTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastCloudWriteRef = useRef(0);
+  const writerIdRef = useRef(localCheckpointWriter());
+  const checkpointRevisionRef = useRef(0);
   
   const [snapshot, setSnapshot] = useState<SubstrateStepSnapshot>(() => {
     if (import.meta.env.VITE_AMELIA_LOCAL_ONLY === '1') {
@@ -90,15 +118,24 @@ export function App() {
   const [cloudConnected, setCloudConnected] = useState(false);
   const [cloudSyncError, setCloudSyncError] = useState('');
   const [checkpointHydrated, setCheckpointHydrated] = useState(false);
+  const hydratedRef = useRef(false);
+  hydratedRef.current = checkpointHydrated;
   const [history, setHistory] = useState<SubstrateStepSnapshot[]>([]);
   const [runtimeEpoch, setRuntimeEpoch] = useState(0);
+  const [fieldRevision, setFieldRevision] = useState(0);
+  const [fieldPlaying, setFieldPlaying] = useState(false);
+  const [fieldOpened, setFieldOpened] = useState(false);
   const [isRunning, setIsRunning] = useState<boolean>(false);
+  const runtimeRunningRef = useRef(isRunning);
+  runtimeRunningRef.current = isRunning;
   const [selectedZone, setSelectedZone] = useState<ZoneId>(9);
   const [isFloatingChatOpen, setIsFloatingChatOpen] = useState<boolean>(false);
   
   type TabType = 'outside' | 'morphogenetic' | 'dialogue' | 'thread3' | 'numogram' | 'atlas' | 'deformation' | 'canalization' | 'paper6' | 'midplex' | 'd288probe' | 'hyperstition' | 'benchmarks' | 'governor' | 'rhythms' | 'firebase' | 'audit';
   const [activeTab, setActiveTab] = useState<TabType>('dialogue');
   const tabletLocalMode = import.meta.env.VITE_AMELIA_LOCAL_ONLY === '1';
+  const snapshotRef = useRef(snapshot);
+  snapshotRef.current = snapshot;
   
   // Assay controls
   const [selectedDepth, setSelectedDepth] = useState<number>(288);
@@ -139,20 +176,57 @@ export function App() {
     setAuditLog(prev => [msg, ...prev]);
   };
 
+  const restoreRuntime = (checkpoint: LiveCheckpoint) => {
+    if (!checkpoint?.state) return;
+    if (checkpoint.writerId === writerIdRef.current && Number.isSafeInteger(checkpoint.revision))
+      checkpointRevisionRef.current = Math.max(checkpointRevisionRef.current, checkpoint.revision!);
+    if (hydratedRef.current) {
+      const current = runtimeRef.current.getMemory().getEvents();
+      const incoming = (checkpoint.state as any)?.memoryState?.events;
+      if (Array.isArray(incoming) && current.length && incoming.length) {
+        const common = Math.min(current.length, incoming.length);
+        const sharedHistory = Array.from({ length: common }, (_, i) => current[i].eventDigest === incoming[i]?.eventDigest).every(Boolean);
+        if (!sharedHistory) {
+          AmeliaIndexedMemory.setCloudAdapter(null);
+          cloudPendingRef.current = null;
+          if (cloudTimerRef.current !== null) { clearTimeout(cloudTimerRef.current); cloudTimerRef.current = null; }
+          void AmeliaIndexedMemory.put('runtime', { ...checkpoint, id: AmeliaIndexedMemory.createId('cloud-conflict'),
+            updatedAt: new Date().toISOString() }, { localOnly: true });
+          persistCurrentState();
+          throw new Error('Local and cloud Amelia histories differ; automatic replacement was stopped.');
+        }
+        // Sync completion must not rewind a currently active or more recent lineage.
+        if (incoming.length <= current.length && (fieldStateRef.current || !checkpoint.fieldCheckpoint)) return;
+      }
+    }
+    // A legacy runtime-only cloud record must not silently erase the active field.
+    const retainedField = checkpoint.fieldCheckpoint ?? (fieldStateRef.current
+      ? captureLiveField(fieldStateRef.current, false) : restoredFieldRef.current);
+    if (!checkpoint.fieldCheckpoint && retainedField && fieldStateRef.current) {
+      addLogMessage('[MEMORY] Runtime restored; the previous local field was retained and paused.');
+    }
+    restoredFieldRef.current = retainedField ?? null;
+    fieldStateRef.current = null;
+    fieldRunningRef.current = Boolean(checkpoint.fieldCheckpoint?.running);
+    setFieldPlaying(fieldRunningRef.current);
+    if (retainedField) setFieldOpened(true);
+    runtimeRef.current.importState(checkpoint.state as any);
+    const restoredGovernor = runtimeRef.current.getGovernor();
+    setAdvisoryWeight(restoredGovernor.advisoryWeight);
+    setMomentumDamping(restoredGovernor.momentumDampingFactor);
+    if (typeof checkpoint.runtimeRunning === 'boolean') setIsRunning(checkpoint.runtimeRunning);
+    const restored = runtimeRef.current.getSnapshots().at(-1);
+    if (restored) {
+      setSnapshot(restored);
+      setHistory([restored]);
+      setRuntimeEpoch(value => value + 1);
+    }
+  };
+
   // Restore local memory first, then merge the signed-in account's Supabase archive.
   useEffect(() => {
     let cancelled = false;
     let initializing = true;
-
-    const restoreRuntime = (state: unknown) => {
-      runtimeRef.current.importState(state as any);
-      const restored = runtimeRef.current.getSnapshots().at(-1);
-      if (restored) {
-        setSnapshot(restored);
-        setHistory([restored]);
-        setRuntimeEpoch(value => value + 1);
-      }
-    };
 
     const syncAccount = async (session: AmeliaCloudSession | null) => {
       if (!session) {
@@ -165,7 +239,7 @@ export function App() {
         if (cancelled) return;
         setCloudConnected(true);
         setCloudSyncError('');
-        if (result.runtimeCheckpoint?.state) restoreRuntime(result.runtimeCheckpoint.state);
+        if (result.runtimeCheckpoint?.state) restoreRuntime(result.runtimeCheckpoint as LiveCheckpoint);
       } catch (error) {
         AmeliaIndexedMemory.setCloudAdapter(null);
         if (!cancelled) {
@@ -195,13 +269,13 @@ export function App() {
 
     const restore = async () => {
       try {
-        const saved = await AmeliaIndexedMemory.get<{ id: string; version: number; state: unknown }>('runtime', 'live-checkpoint');
+        const saved = await AmeliaIndexedMemory.get<LiveCheckpoint & { id: string }>('runtime', 'live-checkpoint');
         let legacy = saved;
         if (!legacy && tabletLocalMode) {
           const raw = localStorage.getItem(LOCAL_CHECKPOINT_KEY);
           if (raw) legacy = JSON.parse(raw);
         }
-        if (!cancelled && legacy?.version === 2 && legacy.state) restoreRuntime(legacy.state);
+        if (!cancelled && legacy?.version === 2 && legacy.state) restoreRuntime(legacy);
       } catch (error) {
         console.warn('Local PFM checkpoint restore failed; starting from current state', error);
         if (!cancelled) setCheckpointError(true);
@@ -228,37 +302,90 @@ export function App() {
     };
   }, [tabletLocalMode]);
 
+  const scheduleCloud = () => {
+    if (cloudWritingRef.current || cloudTimerRef.current !== null || !cloudPendingRef.current) return;
+    const delay = Math.max(0, 10000 - (Date.now() - lastCloudWriteRef.current));
+    cloudTimerRef.current = setTimeout(() => { cloudTimerRef.current = null; void drainCloud(); }, delay);
+  };
+
+  const drainCloud = async () => {
+    if (cloudWritingRef.current) return;
+    cloudWritingRef.current = true;
+    try {
+      const pending = cloudPendingRef.current;
+      cloudPendingRef.current = null;
+      if (pending) {
+        await AmeliaIndexedMemory.syncCloudRecord('runtime', pending.checkpoint);
+        await AmeliaIndexedMemory.syncCloudRecord('snapshots', pending.snapshot);
+      }
+    } finally {
+      lastCloudWriteRef.current = Date.now();
+      cloudWritingRef.current = false;
+      scheduleCloud();
+    }
+  };
+
+  const drainLocal = async () => {
+    if (localWritingRef.current) return;
+    localWritingRef.current = true;
+    try {
+      while (localPendingRef.current) {
+        const pending = localPendingRef.current;
+        localPendingRef.current = null;
+        const [checkpointSaved, snapshotSaved] = await Promise.all([
+          AmeliaIndexedMemory.put('runtime', pending.checkpoint, { localOnly: true }),
+          AmeliaIndexedMemory.put('snapshots', pending.snapshot, { localOnly: true }),
+        ]);
+        setCheckpointError(!checkpointSaved || !snapshotSaved);
+        cloudPendingRef.current = pending;
+        scheduleCloud();
+      }
+    } finally { localWritingRef.current = false; }
+  };
+
+  const persistCurrentState = () => {
+    try {
+      const fieldCheckpoint = fieldStateRef.current
+        ? captureLiveField(fieldStateRef.current, fieldRunningRef.current) : restoredFieldRef.current;
+      const record: LiveCheckpoint = { version: 2, state: runtimeRef.current.exportState(), fieldCheckpoint,
+        writerId: writerIdRef.current, revision: ++checkpointRevisionRef.current, runtimeRunning: runtimeRunningRef.current };
+      // Synchronous cache is best effort; do not overwrite an older good cache if it exceeds quota.
+      try { localStorage.setItem(LOCAL_CHECKPOINT_KEY, JSON.stringify(record)); }
+      catch (error) { console.warn('Legacy local checkpoint cache unavailable', error); }
+      const current = snapshotRef.current;
+      localPendingRef.current = { checkpoint: { id: 'live-checkpoint', ...record, updatedAt: new Date().toISOString() },
+        snapshot: { id: 'step-' + current.step, step: current.step,
+          timestamp: current.timestamp || new Date().toISOString(), snapshot: current } };
+      void drainLocal();
+    } catch (error) {
+      setCheckpointError(true);
+      console.warn('Amelia field checkpoint could not be captured; existing records retained.', error);
+    }
+  };
+
+  useEffect(() => {
+    if (!checkpointHydrated || saveTimerRef.current !== null) return;
+    // Do not restart this timer on every field tick: continuous activity must still be saved.
+    saveTimerRef.current = setTimeout(() => { saveTimerRef.current = null; persistCurrentState(); }, 750);
+  }, [snapshot, fieldRevision, checkpointHydrated]);
+
   useEffect(() => {
     if (!checkpointHydrated) return;
-    const persist = async () => {
-      const record = { version: 2, state: runtimeRef.current.exportState() };
-      try {
-        localStorage.setItem(LOCAL_CHECKPOINT_KEY, JSON.stringify(record));
-      } catch (err) {
-        // IndexedDB is the primary store; this legacy cache is best-effort only.
-        console.warn('Legacy local checkpoint cache unavailable', err);
-      }
-      const snapshotRecord = {
-        id: 'step-' + snapshot.step,
-        step: snapshot.step,
-        timestamp: snapshot.timestamp || new Date().toISOString(),
-        snapshot,
-      };
-      const [checkpointSaved, snapshotSaved] = await Promise.all([
-        AmeliaIndexedMemory.put('runtime', { id: 'live-checkpoint', ...record, updatedAt: new Date().toISOString() }),
-        AmeliaIndexedMemory.put('snapshots', snapshotRecord),
-      ]);
-      setCheckpointError(!checkpointSaved || !snapshotSaved);
-    };
-    const task = setTimeout(() => { void persist(); }, 220);
-    const onPageHide = () => { void persist(); };
+    const onPageHide = () => { persistCurrentState(); };
     window.addEventListener('pagehide', onPageHide);
-    return () => { clearTimeout(task); window.removeEventListener('pagehide', onPageHide); };
-  }, [snapshot, checkpointHydrated]);
+    return () => {
+      window.removeEventListener('pagehide', onPageHide);
+      if (saveTimerRef.current !== null) { clearTimeout(saveTimerRef.current); saveTimerRef.current = null; }
+    };
+  }, [checkpointHydrated]);
+
+  useEffect(() => { if (activeTab === 'morphogenetic') setFieldOpened(true); }, [activeTab]);
+  useEffect(() => { if (checkpointHydrated) setFieldRevision(value => value + 1); }, [isRunning]);
 
   const handleExportCheckpoint = () => {
+    const fieldCheckpoint = fieldStateRef.current ? captureLiveField(fieldStateRef.current, fieldRunningRef.current) : restoredFieldRef.current;
     const capsule = { kind: 'AMELIA_LOCAL_CHECKPOINT_V2', createdAt: new Date().toISOString(),
-      note: 'Unsigned local runtime snapshot; not a sealed research receipt', state: runtimeRef.current.exportState() };
+      note: 'Unsigned local runtime and field snapshot; not a sealed research receipt', state: runtimeRef.current.exportState(), fieldCheckpoint };
     const url = URL.createObjectURL(new Blob([JSON.stringify(capsule, null, 2)], { type: 'application/json' }));
     const a = document.createElement('a');
     a.href = url;
@@ -305,10 +432,10 @@ export function App() {
   };
 
   useEffect(() => {
-    if (!isRunning || activeTab === 'morphogenetic') return;
+    if (!isRunning || activeTab === 'morphogenetic' || fieldPlaying) return;
     const interval = setInterval(() => { advanceRuntime(); }, 450);
     return () => clearInterval(interval);
-  }, [isRunning, activeTab, advisoryWeight, momentumDamping]);
+  }, [isRunning, activeTab, fieldPlaying, advisoryWeight, momentumDamping]);
 
   const handleStepOnce = () => {
     const snap = advanceRuntime();
@@ -316,6 +443,11 @@ export function App() {
   };
 
   const handleReset = () => {
+    fieldStateRef.current = null;
+    restoredFieldRef.current = null;
+    fieldRunningRef.current = false;
+    setFieldPlaying(false);
+    setFieldOpened(activeTab === 'morphogenetic');
     runtimeRef.current = bornAmelia();
     runtimeRef.current.setAdvisoryWeight(advisoryWeight);
     runtimeRef.current.setMomentumDamping(momentumDamping);
@@ -790,14 +922,20 @@ export function App() {
           </div>
 
           {/* TAB 0: LIVE MORPHOGENETIC LAB */}
-          {activeTab === 'morphogenetic' && (
+          {checkpointHydrated && fieldOpened && (
+            <div className={activeTab === 'morphogenetic' ? 'space-y-6' : 'hidden'}>
             <LiveMorphogeneticLab
               key={runtimeEpoch}
               sharedRuntime={runtimeRef.current}
               onSharedStep={publishSnapshot}
               onBeforeSharedStep={prepareRuntimeStep}
               onLogMessage={addLogMessage}
+              initialFieldCheckpoint={restoredFieldRef.current}
+              onFieldStateChange={(state) => { fieldStateRef.current = state; setFieldRevision(value => value + 1); }}
+              onPlayingChange={(playing) => { fieldRunningRef.current = playing; setFieldPlaying(playing); setFieldRevision(value => value + 1); }}
+              isVisible={activeTab === 'morphogenetic'}
             />
+            </div>
           )}
 
           {/* TAB 0.5: DIALOGUE & CHAT */}
@@ -970,15 +1108,7 @@ export function App() {
                 setCloudConnected(connected);
                 setCloudSyncError(error || '');
               }}
-              onCloudRestore={(state) => {
-                runtimeRef.current.importState(state as any);
-                const restored = runtimeRef.current.getSnapshots().at(-1);
-                if (restored) {
-                  setSnapshot(restored);
-                  setHistory([restored]);
-                  setRuntimeEpoch(value => value + 1);
-                }
-              }}
+              onCloudRestore={(checkpoint) => restoreRuntime(checkpoint as LiveCheckpoint)}
             />
           )}
 

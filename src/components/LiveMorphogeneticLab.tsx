@@ -36,12 +36,19 @@ import { CanonicalAmeliaLineageInstance } from '../substrate/canonicalAmeliaRunt
 import { canonicalSha256 } from '../lib/sha256';
 import { SubstrateStepSnapshot, ZoneId } from '../types/amelia';
 import { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogramSubstrateRuntime';
+import { AmeliaOutsideRuntime } from '../outside/OutsideEncounterRuntime';
+import { advanceLiveField, createLiveField, restoreLiveField } from '../outside/LiveFieldLoop';
+import type { LiveFieldCheckpoint } from '../outside/LiveFieldLoop';
 
 interface LiveMorphogeneticLabProps {
   onLogMessage?: (msg: string) => void;
   sharedRuntime?: AmeliaNumogramSubstrateRuntime;
   onSharedStep?: (snapshot: SubstrateStepSnapshot) => void;
   onBeforeSharedStep?: () => void;
+  initialFieldCheckpoint?: LiveFieldCheckpoint | null;
+  onFieldStateChange?: (state: MorphogeneticState) => void;
+  onPlayingChange?: (playing: boolean) => void;
+  isVisible?: boolean;
 }
 
 interface OrbitPoint {
@@ -86,21 +93,38 @@ export interface PoincareAssaySummary {
   executedAt: string;
 }
 
-export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLogMessage, sharedRuntime, onSharedStep, onBeforeSharedStep }) => {
+export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLogMessage, sharedRuntime, onSharedStep, onBeforeSharedStep,
+  initialFieldCheckpoint, onFieldStateChange, onPlayingChange, isVisible = true }) => {
+  const [restored] = useState(() => {
+    if (!initialFieldCheckpoint) return { state: null as MorphogeneticState | null, error: '' };
+    try {
+      if (!(sharedRuntime instanceof AmeliaOutsideRuntime)) throw new Error('The shared Amelia runtime is unavailable');
+      return { state: restoreLiveField(initialFieldCheckpoint, sharedRuntime), error: '' };
+    } catch (error) {
+      return { state: null, error: error instanceof Error ? error.message : 'Field checkpoint could not be restored' };
+    }
+  });
   // Lineage configuration state
-  const [selectedSeed, setSelectedSeed] = useState<number>(101);
-  const [selectedDepth, setSelectedDepth] = useState<number>(256);
-  const [preset, setPreset] = useState<MorphogeneticPreset>('SYZYGETIC_GRID');
-  const [gridSize, setGridSize] = useState<number>(32);
+  const [selectedSeed, setSelectedSeed] = useState<number>(restored.state?.seed ?? 101);
+  const [selectedDepth, setSelectedDepth] = useState<number>(() => {
+    const match = restored.state?.lineageInstance?.lineageId.match(/-d(\d+)$/);
+    return match ? Number(match[1]) : 256;
+  });
+  const [preset, setPreset] = useState<MorphogeneticPreset>(restored.state?.preset ?? 'SYZYGETIC_GRID');
+  const [gridSize, setGridSize] = useState<number>(restored.state?.width ?? 32);
   const [renderMode, setRenderMode] = useState<'A_CONC' | 'B_CONC' | 'DIFF' | 'PHASE_GRADIENT'>('DIFF');
 
   // Active Lineage Instance
-  const lineageRef = useRef<CanonicalAmeliaLineageInstance | null>(null);
-  const [morphState, setMorphState] = useState<MorphogeneticState | null>(null);
+  const lineageRef = useRef<CanonicalAmeliaLineageInstance | null>(restored.state?.lineageInstance ?? null);
+  const fieldRef = useRef<MorphogeneticState | null>(restored.state);
+  const initialConfig = restored.state ? `${restored.state.seed}/${restored.state.lineageInstance?.lineageId.match(/-d(\d+)$/)?.[1] ?? '256'}/${restored.state.preset}/${restored.state.width}` : null;
+  const lastConfig = useRef<string | null>(initialConfig);
+  const [morphState, setMorphState] = useState<MorphogeneticState | null>(restored.state);
 
   // Simulation execution loop
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isPlaying, setIsPlaying] = useState<boolean>(Boolean(restored.state && initialFieldCheckpoint?.running));
   const [simSpeedMs, setSimSpeedMs] = useState<number>(120);
+  const [fieldDecision, setFieldDecision] = useState<string>('Awaiting a field step');
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const orbitCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -124,19 +148,25 @@ export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLo
 
   // Initialize or re-hydrate lineage & substrate
   const initializeSubstrate = (seed: number, depth: number, selPreset: MorphogeneticPreset, size: number) => {
-    const lin = new CanonicalAmeliaLineageInstance(`amelia-lineage-s${seed}-d${depth}`, seed);
-    if (sharedRuntime) {
-      // The live panel observes the same memory identity as Dialogue & Chat.
-      lin.memory.importState(sharedRuntime.getMemory().exportState());
-      lin.eventIndex = sharedRuntime.getMemory().getEvents().length;
-      lin.currentZone = sharedRuntime.getCurrentZone();
+    let state: MorphogeneticState;
+    let lin: CanonicalAmeliaLineageInstance;
+    if (sharedRuntime instanceof AmeliaOutsideRuntime) {
+      state = createLiveField(sharedRuntime, { seed, depth, preset: selPreset, size });
+      lin = state.lineageInstance!;
     } else {
-      lin.hydrateDeepPFMHistory(depth);
+      lin = new CanonicalAmeliaLineageInstance(`amelia-lineage-s${seed}-d${depth}`, seed);
+      if (sharedRuntime) {
+        // The live panel observes the same memory identity as Dialogue & Chat.
+        lin.memory.importState(sharedRuntime.getMemory().exportState());
+        lin.eventIndex = sharedRuntime.getMemory().getEvents().length;
+        lin.currentZone = sharedRuntime.getCurrentZone();
+      } else lin.hydrateDeepPFMHistory(depth);
+      state = initMorphogeneticState(size, size, selPreset, seed, 0.003, lin, sharedRuntime);
     }
     lineageRef.current = lin;
-
-    const state = initMorphogeneticState(size, size, selPreset, seed, 0.003, lin, sharedRuntime);
+    fieldRef.current = state;
     setMorphState(state);
+    onFieldStateChange?.(state);
     setOrbitHistory([]);
     setPoincareRecurrenceMetric(0);
 
@@ -146,16 +176,33 @@ export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLo
   };
 
   useEffect(() => {
+    if (restored.error) return;
+    const config = `${selectedSeed}/${selectedDepth}/${preset}/${gridSize}`;
+    if (lastConfig.current === config) {
+      if (fieldRef.current) onFieldStateChange?.(fieldRef.current);
+      return;
+    }
+    lastConfig.current = config;
     initializeSubstrate(selectedSeed, selectedDepth, preset, gridSize);
   }, [selectedSeed, selectedDepth, preset, gridSize]);
+
+  useEffect(() => { onPlayingChange?.(isPlaying); }, [isPlaying]);
+  useEffect(() => () => { onPlayingChange?.(false); }, []);
 
   // Live field step: the main runtime selects and archives the transition.
   // The field and chat therefore consume the same event ledger and Governor.
   const stepOnce = () => {
-    if (!morphState || !lineageRef.current) return;
+    const current = fieldRef.current;
+    if (!current || !lineageRef.current) return;
     const lineage = lineageRef.current;
     if (sharedRuntime) onBeforeSharedStep?.();
-    const nextState = stepAmeliaSubstrate(morphState);
+    const coupled = sharedRuntime instanceof AmeliaOutsideRuntime ? advanceLiveField(current) : null;
+    const nextState = coupled ? coupled.state : stepAmeliaSubstrate(current);
+    if (coupled) {
+      const decision = coupled.snapshot.encounterDecisions?.find(item =>
+        item.channel === 'SYNTHETIC_FIELD' && item.sourceDigest === coupled.observation.sourceDigest);
+      setFieldDecision(decision ? `${decision.disposition}: ${decision.reason}` : 'No field observation submitted');
+    }
     const runtime = nextState.nativeRuntime;
     const chosenExit = runtime.getCurrentZone();
     const latest = runtime.getSnapshots().at(-1);
@@ -163,22 +210,23 @@ export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLo
 
     // The 10x10 field tensor is a derived projection of the shared PFM ledger,
     // not a second independent source of committed transitions.
-    lineage.memory.importState(runtime.getMemory().exportState());
-    lineage.eventIndex = runtime.getMemory().getEvents().length;
-    lineage.currentZone = chosenExit;
-    lineage.zoneVisitCounts[chosenExit]++;
-    for (let r = 0; r < 10; r++) {
-      for (let c = 0; c < 10; c++) {
-        if (r === chosenExit || c === chosenExit) {
-          lineage.deformationTensor[r][c] =
-            Math.min(1, lineage.deformationTensor[r][c] * 0.992 + 0.012);
-        } else {
-          lineage.deformationTensor[r][c] *= 0.998;
+    if (!coupled) {
+      lineage.memory.importState(runtime.getMemory().exportState());
+      lineage.eventIndex = runtime.getMemory().getEvents().length;
+      lineage.currentZone = chosenExit;
+      lineage.zoneVisitCounts[chosenExit]++;
+      for (let r = 0; r < 10; r++) {
+        for (let c = 0; c < 10; c++) {
+          if (r === chosenExit || c === chosenExit) {
+            lineage.deformationTensor[r][c] = Math.min(1, lineage.deformationTensor[r][c] * 0.992 + 0.012);
+          } else lineage.deformationTensor[r][c] *= 0.998;
         }
       }
     }
     const memBias = lineage.memory.readMemoryBias();
+    fieldRef.current = nextState;
     setMorphState(nextState);
+    onFieldStateChange?.(nextState);
     if (sharedRuntime && onSharedStep) onSharedStep(latest);
 
     // 6. Record orbit point & calculate recurrence/differentiation
@@ -613,20 +661,22 @@ export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLo
 
   // Run Poincaré sweep automatically on first mount if not present
   useEffect(() => {
-    if (!poincareAssay && !isRunningPoincareSweep) {
+    if (isVisible && !poincareAssay && !isRunningPoincareSweep) {
       handleRunPoincareDepthSweep();
     }
-  }, []);
+  }, [isVisible]);
 
   // Perturbation pulse injection
   const handleApplyPulse = (arm: PerturbationArm) => {
-    if (!morphState) return;
-    const { state: nextState, receipt } = applyPerturbationPulse(morphState, {
+    if (!fieldRef.current) return;
+    const { state: nextState, receipt } = applyPerturbationPulse(fieldRef.current, {
       arm,
       magnitude: 0.45,
       radius: 4,
     });
+    fieldRef.current = nextState;
     setMorphState(nextState);
+    onFieldStateChange?.(nextState);
     onLogMessage?.(`[PERTURBATION] Applied ${arm} pulse at (${receipt.cx}, ${receipt.cy}) with magnitude 0.45`);
   };
 
@@ -636,6 +686,8 @@ export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLo
 
   const currentObservation = lineageRef.current?.getObservation();
   const defTensor = currentObservation?.deformationTensor;
+
+  if (restored.error) return <div role="alert" className="p-4 text-red-300">Saved field could not be restored: {restored.error}. The checkpoint has been retained.</div>;
 
   return (
     <div className="space-y-6">
@@ -657,6 +709,7 @@ export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLo
                 <p className="text-xs text-stone-400 font-mono mt-0.5">
                   History-bearing reaction-diffusion field evolution between Carrollian freeze (S &lt; 0.15) and Landian dissolution (S &gt; 0.85).
                 </p>
+                <p className="text-xs text-cyan-300 font-mono mt-1" aria-live="polite">Field → Governor: {fieldDecision}</p>
               </div>
             </div>
           </div>
