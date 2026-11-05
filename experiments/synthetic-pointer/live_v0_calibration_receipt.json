@@ -1,0 +1,317 @@
+{
+  "status": "EXPLORATORY_V0_BEFORE_PHASE_REVISION",
+  "note": "The weight-dominant decoder saturated in this fixture. This observation motivated a revised phase-dominant decoder before any confirmatory study.",
+  "worlds": {
+    "donor": 9601,
+    "recipient": 9602
+  },
+  "verification": {
+    "donor_live": {
+      "status": "PASS",
+      "world": "S05W9601",
+      "lineage": 0,
+      "steps": 20160,
+      "mode": "live",
+      "pointerMode": "dynamic",
+      "mutationMode": "none",
+      "pointerAddressChanges": 107,
+      "sourceTicks": {
+        "A": 487,
+        "B": 4313
+      },
+      "activeTicks": 4800,
+      "absoluteDose": 240.00000000002032,
+      "squaredDose": 11.999999999999755,
+      "choicesWithAlternatives": 4755,
+      "deliveredDifferentFromBodyTicks": 0,
+      "feedbackStateCounterfactualTicks": 4800,
+      "feedbackSymbolCounterfactualTicks": 1489,
+      "rawStateSamples": 90,
+      "mutation": null,
+      "prefix699Digest": "8ff5a13d236e9306310ff08ae5e66c49157a266b02be03dca78cf627c4ece236",
+      "independentlyRecomputedHead": "d15bcc56e4e79c3e02f13700d824c60f74869677c879f7c69099b9984114291b",
+      "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+      "overlaySha256": "748624d2f3be9225b1d9991a7383fee38fad51fb9bb918b255681389d9cf2be3",
+      "moduleSha256": "afa1d340750b7007c6d622994d9c69b335d0bb6a0e6da100402f66fdd83f966e",
+      "donorSha256": null
+    },
+    "recipient_live": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "lineage": 0,
+      "steps": 20160,
+      "mode": "live",
+      "pointerMode": "dynamic",
+      "mutationMode": "none",
+      "pointerAddressChanges": 45,
+      "sourceTicks": {
+        "A": 4793,
+        "B": 7
+      },
+      "activeTicks": 4800,
+      "absoluteDose": 240.00000000002032,
+      "squaredDose": 11.999999999999755,
+      "choicesWithAlternatives": 3664,
+      "deliveredDifferentFromBodyTicks": 0,
+      "feedbackStateCounterfactualTicks": 4800,
+      "feedbackSymbolCounterfactualTicks": 1427,
+      "rawStateSamples": 90,
+      "mutation": null,
+      "prefix699Digest": "f38232b6550a5424408bef1e4ef2b1504f900cb23157cebe236193285d23ec97",
+      "independentlyRecomputedHead": "f9bcfe9e220f8ffa78b447fe9da90e07f4fc99bc218b83fc4da2f0004957b23e",
+      "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+      "overlaySha256": "748624d2f3be9225b1d9991a7383fee38fad51fb9bb918b255681389d9cf2be3",
+      "moduleSha256": "afa1d340750b7007c6d622994d9c69b335d0bb6a0e6da100402f66fdd83f966e",
+      "donorSha256": null
+    },
+    "target_dynamic": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "lineage": 0,
+      "steps": 20160,
+      "mode": "live",
+      "pointerMode": "dynamic",
+      "mutationMode": "targeted",
+      "pointerAddressChanges": 92,
+      "sourceTicks": {
+        "A": 4702,
+        "B": 98
+      },
+      "activeTicks": 4800,
+      "absoluteDose": 240.00000000002032,
+      "squaredDose": 11.999999999999755,
+      "choicesWithAlternatives": 3758,
+      "deliveredDifferentFromBodyTicks": 0,
+      "feedbackStateCounterfactualTicks": 4800,
+      "feedbackSymbolCounterfactualTicks": 1266,
+      "rawStateSamples": 90,
+      "mutation": {
+        "mode": "targeted",
+        "before": {
+          "w0": -9.207689138394638,
+          "w1": 38.14309459077414,
+          "theta1": 19.898722819670926,
+          "score": -0.5664957812680296,
+          "address": "A"
+        },
+        "after": {
+          "w0": 3,
+          "w1": 38.14309459077414,
+          "theta1": 19.898722819670926,
+          "score": 1.42855895231237,
+          "address": "B"
+        },
+        "targetW0": 3,
+        "matchedDelta": 12.207689138394638,
+        "actualL2": 12.207689138394638,
+        "preOrgan": {
+          "w": [
+            -9.207689138394638,
+            38.14309459077414,
+            25.093415531135623,
+            -43.11796460411025,
+            49.82025251166563
+          ],
+          "g": 16286431669214492,
+          "th": [
+            4.623863931893108,
+            19.898722819670926,
+            17.488051657105974,
+            -6.582173055151352,
+            -26.50467210712608,
+            19.224334838774904,
+            40.963900618358146,
+            6.437854264202665,
+            38.4939244205293,
+            7.9094156522293995
+          ],
+          "sigma": 0.3275077133078163,
+          "feats": []
+        },
+        "preOrganDigest": "08950fe47c00c0f75391011d4310882d01c859229f47ec79cd33790f1624e5cc"
+      },
+      "prefix699Digest": "f38232b6550a5424408bef1e4ef2b1504f900cb23157cebe236193285d23ec97",
+      "independentlyRecomputedHead": "d48414c91bca3ae92a73c9bd4240023201be8630ede291e9eb1096ad03a0dec0",
+      "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+      "overlaySha256": "748624d2f3be9225b1d9991a7383fee38fad51fb9bb918b255681389d9cf2be3",
+      "moduleSha256": "afa1d340750b7007c6d622994d9c69b335d0bb6a0e6da100402f66fdd83f966e",
+      "donorSha256": null
+    },
+    "orthogonal_dynamic": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "lineage": 0,
+      "steps": 20160,
+      "mode": "live",
+      "pointerMode": "dynamic",
+      "mutationMode": "orthogonal",
+      "pointerAddressChanges": 95,
+      "sourceTicks": {
+        "A": 3748,
+        "B": 1052
+      },
+      "activeTicks": 4800,
+      "absoluteDose": 240.00000000002032,
+      "squaredDose": 11.999999999999755,
+      "choicesWithAlternatives": 4198,
+      "deliveredDifferentFromBodyTicks": 0,
+      "feedbackStateCounterfactualTicks": 4800,
+      "feedbackSymbolCounterfactualTicks": 1710,
+      "rawStateSamples": 90,
+      "mutation": {
+        "mode": "orthogonal",
+        "before": {
+          "w0": -9.207689138394638,
+          "w1": 38.14309459077414,
+          "theta1": 19.898722819670926,
+          "score": -0.5664957812680296,
+          "address": "A"
+        },
+        "after": {
+          "w0": -9.207689138394638,
+          "w1": 50.35078372916878,
+          "theta1": 19.898722819670926,
+          "score": -0.5664957812680296,
+          "address": "A"
+        },
+        "targetW0": 3,
+        "matchedDelta": 12.207689138394638,
+        "actualL2": 12.207689138394638,
+        "preOrgan": {
+          "w": [
+            -9.207689138394638,
+            38.14309459077414,
+            25.093415531135623,
+            -43.11796460411025,
+            49.82025251166563
+          ],
+          "g": 16286431669214492,
+          "th": [
+            4.623863931893108,
+            19.898722819670926,
+            17.488051657105974,
+            -6.582173055151352,
+            -26.50467210712608,
+            19.224334838774904,
+            40.963900618358146,
+            6.437854264202665,
+            38.4939244205293,
+            7.9094156522293995
+          ],
+          "sigma": 0.3275077133078163,
+          "feats": []
+        },
+        "preOrganDigest": "08950fe47c00c0f75391011d4310882d01c859229f47ec79cd33790f1624e5cc"
+      },
+      "prefix699Digest": "f38232b6550a5424408bef1e4ef2b1504f900cb23157cebe236193285d23ec97",
+      "independentlyRecomputedHead": "cf371e1b451422781721651924ec68d820e2b8f7e1c698647f0044b1f903b93e",
+      "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+      "overlaySha256": "748624d2f3be9225b1d9991a7383fee38fad51fb9bb918b255681389d9cf2be3",
+      "moduleSha256": "afa1d340750b7007c6d622994d9c69b335d0bb6a0e6da100402f66fdd83f966e",
+      "donorSha256": null
+    },
+    "target_frozen": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "lineage": 0,
+      "steps": 20160,
+      "mode": "live",
+      "pointerMode": "frozen",
+      "mutationMode": "targeted",
+      "pointerAddressChanges": 47,
+      "sourceTicks": {
+        "A": 4793,
+        "B": 7
+      },
+      "activeTicks": 4800,
+      "absoluteDose": 240.00000000002032,
+      "squaredDose": 11.999999999999755,
+      "choicesWithAlternatives": 3747,
+      "deliveredDifferentFromBodyTicks": 0,
+      "feedbackStateCounterfactualTicks": 4800,
+      "feedbackSymbolCounterfactualTicks": 1307,
+      "rawStateSamples": 90,
+      "mutation": {
+        "mode": "targeted",
+        "before": {
+          "w0": -9.207689138394638,
+          "w1": 38.14309459077414,
+          "theta1": 19.898722819670926,
+          "score": -0.5664957812680296,
+          "address": "A"
+        },
+        "after": {
+          "w0": 3,
+          "w1": 38.14309459077414,
+          "theta1": 19.898722819670926,
+          "score": 1.42855895231237,
+          "address": "B"
+        },
+        "targetW0": 3,
+        "matchedDelta": 12.207689138394638,
+        "actualL2": 12.207689138394638,
+        "preOrgan": {
+          "w": [
+            -9.207689138394638,
+            38.14309459077414,
+            25.093415531135623,
+            -43.11796460411025,
+            49.82025251166563
+          ],
+          "g": 16286431669214492,
+          "th": [
+            4.623863931893108,
+            19.898722819670926,
+            17.488051657105974,
+            -6.582173055151352,
+            -26.50467210712608,
+            19.224334838774904,
+            40.963900618358146,
+            6.437854264202665,
+            38.4939244205293,
+            7.9094156522293995
+          ],
+          "sigma": 0.3275077133078163,
+          "feats": []
+        },
+        "preOrganDigest": "08950fe47c00c0f75391011d4310882d01c859229f47ec79cd33790f1624e5cc"
+      },
+      "prefix699Digest": "f38232b6550a5424408bef1e4ef2b1504f900cb23157cebe236193285d23ec97",
+      "independentlyRecomputedHead": "5e076e976ba68898b699eaf6cfa8b368cf7ec1040553ec1b80151034cfcd9194",
+      "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+      "overlaySha256": "748624d2f3be9225b1d9991a7383fee38fad51fb9bb918b255681389d9cf2be3",
+      "moduleSha256": "afa1d340750b7007c6d622994d9c69b335d0bb6a0e6da100402f66fdd83f966e",
+      "donorSha256": null
+    },
+    "recipient_sham": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "lineage": 0,
+      "steps": 20160,
+      "mode": "sham",
+      "pointerMode": "dynamic",
+      "mutationMode": "none",
+      "pointerAddressChanges": 49,
+      "sourceTicks": {
+        "A": 0,
+        "B": 0
+      },
+      "activeTicks": 0,
+      "absoluteDose": 0,
+      "squaredDose": 0,
+      "choicesWithAlternatives": 0,
+      "deliveredDifferentFromBodyTicks": 0,
+      "feedbackStateCounterfactualTicks": 0,
+      "feedbackSymbolCounterfactualTicks": 0,
+      "rawStateSamples": 90,
+      "mutation": null,
+      "prefix699Digest": "27501e66e58914072c31f876af482e035f30be91bb0d4d1f415e1e892c95881c",
+      "independentlyRecomputedHead": "ac6a3cd37371646acd466271585e19030cdf4c8afa8a6af7dd1da446edf4112b",
+      "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+      "overlaySha256": "748624d2f3be9225b1d9991a7383fee38fad51fb9bb918b255681389d9cf2be3",
+      "moduleSha256": "afa1d340750b7007c6d622994d9c69b335d0bb6a0e6da100402f66fdd83f966e",
+      "donorSha256": null
+    }
+  },
+  "neutral_season_output_matches_original": true
+}

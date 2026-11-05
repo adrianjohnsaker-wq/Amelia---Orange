@@ -1,0 +1,727 @@
+{
+  "status": "EXPLORATORY_ENGINEERING_ONLY",
+  "world": "S05W9602",
+  "donor_world": "S05W9601",
+  "inputs": "synthetic",
+  "registered_discovery_test": false,
+  "verifications": {
+    "donor_live": {
+      "status": "PASS",
+      "world": "S05W9601",
+      "lineage": 0,
+      "steps": 20160,
+      "mode": "live",
+      "pointerMode": "dynamic",
+      "mutationMode": "none",
+      "pointerAddressChanges": 433,
+      "sourceTicks": {
+        "A": 509,
+        "B": 4291
+      },
+      "activeTicks": 4800,
+      "absoluteDose": 240.00000000002032,
+      "squaredDose": 11.999999999999755,
+      "choicesWithAlternatives": 4776,
+      "deliveredDifferentFromBodyTicks": 0,
+      "feedbackStateCounterfactualTicks": 4800,
+      "feedbackSymbolCounterfactualTicks": 1521,
+      "rawStateSamples": 90,
+      "mutation": null,
+      "atMutation": null,
+      "prefix699Digest": "b9fbccc825a05ec1a2a1fc79fee2180def13ccb3d423e671f4a81a12481e4a88",
+      "independentlyRecomputedHead": "cb79c26949f485727c39362a81dd396fc0cc91fa00a519e14eb597f0e3ae4c69",
+      "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+      "overlaySha256": "75b4e05ab6a9ef65abe2d880be591f8627dc182efbe2c4d9b7e20d598caf38c0",
+      "moduleSha256": "33c9b08acacd1f662840fcc84618438998bdd9037dfd800aaa4918f593804f0a",
+      "donorSha256": null
+    },
+    "recipient_live_sidecar": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "lineage": 0,
+      "steps": 20160,
+      "mode": "live",
+      "pointerMode": "dynamic",
+      "mutationMode": "none",
+      "pointerAddressChanges": 415,
+      "sourceTicks": {
+        "A": 3372,
+        "B": 1428
+      },
+      "activeTicks": 4800,
+      "absoluteDose": 240.00000000002032,
+      "squaredDose": 11.999999999999755,
+      "choicesWithAlternatives": 3930,
+      "deliveredDifferentFromBodyTicks": 0,
+      "feedbackStateCounterfactualTicks": 4800,
+      "feedbackSymbolCounterfactualTicks": 1195,
+      "rawStateSamples": 90,
+      "mutation": null,
+      "atMutation": null,
+      "prefix699Digest": "774f27c8ee17f58466fb3f3abe3b3b8499dce74a7ee5d46aee4e49f0e778810e",
+      "independentlyRecomputedHead": "6c111f54f91fb1a998da33b165f2db21768b21d385f300486fb1b3c6cc2bdf53",
+      "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+      "overlaySha256": "4b906de3dd2d23695733037b7d0098ba269b2fa128312e30d96fc18f7c8f3ccc",
+      "moduleSha256": "33c9b08acacd1f662840fcc84618438998bdd9037dfd800aaa4918f593804f0a",
+      "donorSha256": null
+    },
+    "target_dynamic_sidecar": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "lineage": 0,
+      "steps": 20160,
+      "mode": "live",
+      "pointerMode": "dynamic",
+      "mutationMode": "targeted",
+      "pointerAddressChanges": 2462,
+      "sourceTicks": {
+        "A": 2697,
+        "B": 2103
+      },
+      "activeTicks": 4800,
+      "absoluteDose": 240.00000000002032,
+      "squaredDose": 11.999999999999755,
+      "choicesWithAlternatives": 3650,
+      "deliveredDifferentFromBodyTicks": 0,
+      "feedbackStateCounterfactualTicks": 4800,
+      "feedbackSymbolCounterfactualTicks": 1255,
+      "rawStateSamples": 90,
+      "mutation": {
+        "mode": "targeted",
+        "before": {
+          "w0": -5.4689065441062,
+          "w1": 41.95175831363294,
+          "theta1": 23.39913647325708,
+          "theta2": 0.7633801774844127,
+          "score": -1.2367670703896938,
+          "address": "A"
+        },
+        "after": {
+          "w0": -5.4689065441062,
+          "w1": 41.95175831363294,
+          "theta1": 20.420352248333657,
+          "theta2": 0.7633801774844127,
+          "score": 0.7500088864932892,
+          "address": "B"
+        },
+        "targetTheta": 1.5707963267948966,
+        "matchedDelta": -2.978784224923422,
+        "actualL2": 2.978784224923422,
+        "preOrgan": {
+          "w": [
+            -5.4689065441062,
+            41.95175831363294,
+            21.334205616930433,
+            -6.939918754171889,
+            47.49726492895944
+          ],
+          "g": 908250953.8288275,
+          "th": [
+            5.1488890548506205,
+            23.39913647325708,
+            0.7633801774844127,
+            -20.543851494467976,
+            -3.6206201674818708,
+            16.322014464747845,
+            51.596058740213856,
+            28.83667773154269,
+            21.991436440329576,
+            -9.360327159524191
+          ],
+          "sigma": 0.26971655728190524,
+          "feats": []
+        },
+        "preOrganDigest": "c698d3b21bd7043e501025642c126c9652e60ef0e642be9be21580e20ba86001"
+      },
+      "atMutation": {
+        "priorAddress": "A",
+        "derivedAddress": "B",
+        "usedAddress": "B",
+        "emittedSymbol": 3,
+        "selectedEdge": "3>3",
+        "actualFeedback": {
+          "zone": 3,
+          "organ": 1,
+          "house": 0.14454602598356653
+        },
+        "bankBefore": {
+          "A": {
+            "values": [
+              0.7619698601143449,
+              0.22847660049670548,
+              0.6741310385277351,
+              0.3594117466905248
+            ],
+            "phase": 3
+          },
+          "B": {
+            "values": [
+              0.2714132489006372,
+              0.8479339727961002,
+              0.3901271364109995,
+              0.6319807801276726
+            ],
+            "phase": 1
+          }
+        }
+      },
+      "prefix699Digest": "774f27c8ee17f58466fb3f3abe3b3b8499dce74a7ee5d46aee4e49f0e778810e",
+      "independentlyRecomputedHead": "eca18420b823132dc535e712f38a68c087fbf2d2f3b7b44854c1f041d0d9d231",
+      "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+      "overlaySha256": "4b906de3dd2d23695733037b7d0098ba269b2fa128312e30d96fc18f7c8f3ccc",
+      "moduleSha256": "33c9b08acacd1f662840fcc84618438998bdd9037dfd800aaa4918f593804f0a",
+      "donorSha256": null
+    },
+    "orthogonal_dynamic_sidecar": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "lineage": 0,
+      "steps": 20160,
+      "mode": "live",
+      "pointerMode": "dynamic",
+      "mutationMode": "orthogonal",
+      "pointerAddressChanges": 994,
+      "sourceTicks": {
+        "A": 2158,
+        "B": 2642
+      },
+      "activeTicks": 4800,
+      "absoluteDose": 240.00000000002032,
+      "squaredDose": 11.999999999999755,
+      "choicesWithAlternatives": 3809,
+      "deliveredDifferentFromBodyTicks": 0,
+      "feedbackStateCounterfactualTicks": 4800,
+      "feedbackSymbolCounterfactualTicks": 1401,
+      "rawStateSamples": 90,
+      "mutation": {
+        "mode": "orthogonal",
+        "before": {
+          "w0": -5.4689065441062,
+          "w1": 41.95175831363294,
+          "theta1": 23.39913647325708,
+          "theta2": 0.7633801774844127,
+          "score": -1.2367670703896938,
+          "address": "A"
+        },
+        "after": {
+          "w0": -5.4689065441062,
+          "w1": 41.95175831363294,
+          "theta1": 23.39913647325708,
+          "theta2": -2.2154040474390095,
+          "score": -1.2367670703896938,
+          "address": "A"
+        },
+        "targetTheta": 1.5707963267948966,
+        "matchedDelta": -2.978784224923422,
+        "actualL2": 2.978784224923422,
+        "preOrgan": {
+          "w": [
+            -5.4689065441062,
+            41.95175831363294,
+            21.334205616930433,
+            -6.939918754171889,
+            47.49726492895944
+          ],
+          "g": 908250953.8288275,
+          "th": [
+            5.1488890548506205,
+            23.39913647325708,
+            0.7633801774844127,
+            -20.543851494467976,
+            -3.6206201674818708,
+            16.322014464747845,
+            51.596058740213856,
+            28.83667773154269,
+            21.991436440329576,
+            -9.360327159524191
+          ],
+          "sigma": 0.26971655728190524,
+          "feats": []
+        },
+        "preOrganDigest": "c698d3b21bd7043e501025642c126c9652e60ef0e642be9be21580e20ba86001"
+      },
+      "atMutation": {
+        "priorAddress": "A",
+        "derivedAddress": "A",
+        "usedAddress": "A",
+        "emittedSymbol": 2,
+        "selectedEdge": "3>6",
+        "actualFeedback": {
+          "zone": 3,
+          "organ": -0.986775956882983,
+          "house": 0.14454602598356653
+        },
+        "bankBefore": {
+          "A": {
+            "values": [
+              0.7619698601143449,
+              0.22847660049670548,
+              0.6741310385277351,
+              0.3594117466905248
+            ],
+            "phase": 3
+          },
+          "B": {
+            "values": [
+              0.2714132489006372,
+              0.8479339727961002,
+              0.3901271364109995,
+              0.6319807801276726
+            ],
+            "phase": 1
+          }
+        }
+      },
+      "prefix699Digest": "774f27c8ee17f58466fb3f3abe3b3b8499dce74a7ee5d46aee4e49f0e778810e",
+      "independentlyRecomputedHead": "2a687574051262b7b0a47d7894366aba94376b4366ca9d46b14d9e8e90478fb2",
+      "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+      "overlaySha256": "4b906de3dd2d23695733037b7d0098ba269b2fa128312e30d96fc18f7c8f3ccc",
+      "moduleSha256": "33c9b08acacd1f662840fcc84618438998bdd9037dfd800aaa4918f593804f0a",
+      "donorSha256": null
+    },
+    "target_frozen_sidecar": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "lineage": 0,
+      "steps": 20160,
+      "mode": "live",
+      "pointerMode": "frozen",
+      "mutationMode": "targeted",
+      "pointerAddressChanges": 466,
+      "sourceTicks": {
+        "A": 4691,
+        "B": 109
+      },
+      "activeTicks": 4800,
+      "absoluteDose": 240.00000000002032,
+      "squaredDose": 11.999999999999755,
+      "choicesWithAlternatives": 3613,
+      "deliveredDifferentFromBodyTicks": 0,
+      "feedbackStateCounterfactualTicks": 4800,
+      "feedbackSymbolCounterfactualTicks": 843,
+      "rawStateSamples": 90,
+      "mutation": {
+        "mode": "targeted",
+        "before": {
+          "w0": -5.4689065441062,
+          "w1": 41.95175831363294,
+          "theta1": 23.39913647325708,
+          "theta2": 0.7633801774844127,
+          "score": -1.2367670703896938,
+          "address": "A"
+        },
+        "after": {
+          "w0": -5.4689065441062,
+          "w1": 41.95175831363294,
+          "theta1": 20.420352248333657,
+          "theta2": 0.7633801774844127,
+          "score": 0.7500088864932892,
+          "address": "B"
+        },
+        "targetTheta": 1.5707963267948966,
+        "matchedDelta": -2.978784224923422,
+        "actualL2": 2.978784224923422,
+        "preOrgan": {
+          "w": [
+            -5.4689065441062,
+            41.95175831363294,
+            21.334205616930433,
+            -6.939918754171889,
+            47.49726492895944
+          ],
+          "g": 908250953.8288275,
+          "th": [
+            5.1488890548506205,
+            23.39913647325708,
+            0.7633801774844127,
+            -20.543851494467976,
+            -3.6206201674818708,
+            16.322014464747845,
+            51.596058740213856,
+            28.83667773154269,
+            21.991436440329576,
+            -9.360327159524191
+          ],
+          "sigma": 0.26971655728190524,
+          "feats": []
+        },
+        "preOrganDigest": "c698d3b21bd7043e501025642c126c9652e60ef0e642be9be21580e20ba86001"
+      },
+      "atMutation": {
+        "priorAddress": "A",
+        "derivedAddress": "B",
+        "usedAddress": "A",
+        "emittedSymbol": 2,
+        "selectedEdge": "3>6",
+        "actualFeedback": {
+          "zone": 3,
+          "organ": 1,
+          "house": 0.14454602598356653
+        },
+        "bankBefore": {
+          "A": {
+            "values": [
+              0.7619698601143449,
+              0.22847660049670548,
+              0.6741310385277351,
+              0.3594117466905248
+            ],
+            "phase": 3
+          },
+          "B": {
+            "values": [
+              0.2714132489006372,
+              0.8479339727961002,
+              0.3901271364109995,
+              0.6319807801276726
+            ],
+            "phase": 1
+          }
+        }
+      },
+      "prefix699Digest": "774f27c8ee17f58466fb3f3abe3b3b8499dce74a7ee5d46aee4e49f0e778810e",
+      "independentlyRecomputedHead": "cf6c64aedbb4c1c31f77fc7085480375518bf5fad063ccca5fd4fa3951897d77",
+      "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+      "overlaySha256": "4b906de3dd2d23695733037b7d0098ba269b2fa128312e30d96fc18f7c8f3ccc",
+      "moduleSha256": "33c9b08acacd1f662840fcc84618438998bdd9037dfd800aaa4918f593804f0a",
+      "donorSha256": null
+    },
+    "recipient_sham_sidecar": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "lineage": 0,
+      "steps": 20160,
+      "mode": "sham",
+      "pointerMode": "dynamic",
+      "mutationMode": "none",
+      "pointerAddressChanges": 388,
+      "sourceTicks": {
+        "A": 0,
+        "B": 0
+      },
+      "activeTicks": 0,
+      "absoluteDose": 0,
+      "squaredDose": 0,
+      "choicesWithAlternatives": 0,
+      "deliveredDifferentFromBodyTicks": 0,
+      "feedbackStateCounterfactualTicks": 0,
+      "feedbackSymbolCounterfactualTicks": 0,
+      "rawStateSamples": 90,
+      "mutation": null,
+      "atMutation": null,
+      "prefix699Digest": "d78000e6ce8e05be973ef919fd4eca284c0a95eb93b9661f5f03728ca802c031",
+      "independentlyRecomputedHead": "9cc82e377a8cb6c6e087b962f7526d6bb93267af3bbde235f048682249da1b7e",
+      "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+      "overlaySha256": "4b906de3dd2d23695733037b7d0098ba269b2fa128312e30d96fc18f7c8f3ccc",
+      "moduleSha256": "33c9b08acacd1f662840fcc84618438998bdd9037dfd800aaa4918f593804f0a",
+      "donorSha256": null
+    },
+    "recipient_replay_sidecar": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "lineage": 0,
+      "steps": 20160,
+      "mode": "replay",
+      "pointerMode": "dynamic",
+      "mutationMode": "none",
+      "pointerAddressChanges": 445,
+      "sourceTicks": {
+        "A": 2475,
+        "B": 2325
+      },
+      "activeTicks": 4800,
+      "absoluteDose": 240.00000000002032,
+      "squaredDose": 11.999999999999755,
+      "choicesWithAlternatives": 3593,
+      "deliveredDifferentFromBodyTicks": 4800,
+      "feedbackStateCounterfactualTicks": 4800,
+      "feedbackSymbolCounterfactualTicks": 1108,
+      "rawStateSamples": 90,
+      "mutation": null,
+      "atMutation": null,
+      "prefix699Digest": "78d3d103023cd732c7abd9d260c9b6a8e5e9cd6061f1add3ca6ff8281fb297e0",
+      "independentlyRecomputedHead": "b1d62bda69e901518cb035fd3429ecfe3175aba757d93a20a4f339772ec1b94d",
+      "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+      "overlaySha256": "4b906de3dd2d23695733037b7d0098ba269b2fa128312e30d96fc18f7c8f3ccc",
+      "moduleSha256": "33c9b08acacd1f662840fcc84618438998bdd9037dfd800aaa4918f593804f0a",
+      "donorSha256": "a36bb5e30fa4653c185918624367fbfbbc3636b9cd30f89792a9baf0276c77a4"
+    },
+    "recipient_shuffled_sidecar": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "lineage": 0,
+      "steps": 20160,
+      "mode": "shuffled",
+      "pointerMode": "dynamic",
+      "mutationMode": "none",
+      "pointerAddressChanges": 516,
+      "sourceTicks": {
+        "A": 3406,
+        "B": 1394
+      },
+      "activeTicks": 4800,
+      "absoluteDose": 240.00000000002032,
+      "squaredDose": 11.999999999999755,
+      "choicesWithAlternatives": 4505,
+      "deliveredDifferentFromBodyTicks": 4800,
+      "feedbackStateCounterfactualTicks": 4800,
+      "feedbackSymbolCounterfactualTicks": 1000,
+      "rawStateSamples": 90,
+      "mutation": null,
+      "atMutation": null,
+      "prefix699Digest": "af158a952a3f718463495c73c960034a56452b6b0c69c6ec1c9b98170d496c56",
+      "independentlyRecomputedHead": "6a867ab6613c108faa531f7ce1bfb4bb1a0f08c625160dd3e81ff105fb678455",
+      "sourceRunnerSha256": "b6036fd6d15a5cb070b86f258e673ba0b5b3e13c99bc710995697656d25e82ed",
+      "overlaySha256": "4b906de3dd2d23695733037b7d0098ba269b2fa128312e30d96fc18f7c8f3ccc",
+      "moduleSha256": "33c9b08acacd1f662840fcc84618438998bdd9037dfd800aaa4918f593804f0a",
+      "donorSha256": "a36bb5e30fa4653c185918624367fbfbbc3636b9cd30f89792a9baf0276c77a4"
+    }
+  },
+  "comparisons": {
+    "compare_target_frozen_sidecar.json": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "arms": [
+        {
+          "mode": "live",
+          "pointer": "dynamic",
+          "mutation": "targeted"
+        },
+        {
+          "mode": "live",
+          "pointer": "frozen",
+          "mutation": "targeted"
+        }
+      ],
+      "firstDifferentDestination": 837,
+      "atIntervention": {
+        "sameOrganAfterMutation": true,
+        "sameHouse": true,
+        "sameFeedback": true,
+        "sameSourceStateBefore": true,
+        "left": {
+          "derivedAddress": "B",
+          "usedAddress": "B",
+          "symbol": 3,
+          "selectedEdge": "3>3"
+        },
+        "right": {
+          "derivedAddress": "B",
+          "usedAddress": "A",
+          "symbol": 2,
+          "selectedEdge": "3>6"
+        }
+      },
+      "intervals": {
+        "before": {
+          "steps": 699,
+          "differentDestinations": 0
+        },
+        "exposed": {
+          "steps": 4601,
+          "differentDestinations": 3026
+        },
+        "withdrawn": {
+          "steps": 14860,
+          "differentDestinations": 10281
+        }
+      },
+      "note": "Exploratory matched fixture: an engineered causal comparison, not a discovered organisation."
+    },
+    "compare_target_orthogonal_sidecar.json": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "arms": [
+        {
+          "mode": "live",
+          "pointer": "dynamic",
+          "mutation": "targeted"
+        },
+        {
+          "mode": "live",
+          "pointer": "dynamic",
+          "mutation": "orthogonal"
+        }
+      ],
+      "firstDifferentDestination": 731,
+      "atIntervention": {
+        "sameOrganAfterMutation": false,
+        "sameHouse": true,
+        "sameFeedback": false,
+        "sameSourceStateBefore": true,
+        "left": {
+          "derivedAddress": "B",
+          "usedAddress": "B",
+          "symbol": 3,
+          "selectedEdge": "3>3"
+        },
+        "right": {
+          "derivedAddress": "A",
+          "usedAddress": "A",
+          "symbol": 2,
+          "selectedEdge": "3>6"
+        }
+      },
+      "intervals": {
+        "before": {
+          "steps": 699,
+          "differentDestinations": 0
+        },
+        "exposed": {
+          "steps": 4601,
+          "differentDestinations": 3345
+        },
+        "withdrawn": {
+          "steps": 14860,
+          "differentDestinations": 10478
+        }
+      },
+      "note": "Exploratory matched fixture: an engineered causal comparison, not a discovered organisation."
+    },
+    "compare_live_replay.json": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "modes": [
+        "live",
+        "replay"
+      ],
+      "firstDifferentDestination": 501,
+      "periods": {
+        "before": {
+          "steps": 500,
+          "differentDestinations": 0
+        },
+        "exposed": {
+          "steps": 4800,
+          "differentDestinations": 3441,
+          "differentSymbols": 1822,
+          "differentAddresses": 2225
+        },
+        "withdrawn": {
+          "steps": 14860,
+          "differentDestinations": 13929
+        }
+      },
+      "donorSha256": "a36bb5e30fa4653c185918624367fbfbbc3636b9cd30f89792a9baf0276c77a4",
+      "note": "Exploratory single-world engineering comparison; not a test of a discovered agency."
+    },
+    "compare_replay_shuffled.json": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "modes": [
+        "replay",
+        "shuffled"
+      ],
+      "firstDifferentDestination": 552,
+      "periods": {
+        "before": {
+          "steps": 500,
+          "differentDestinations": 0
+        },
+        "exposed": {
+          "steps": 4800,
+          "differentDestinations": 4060,
+          "differentSymbols": 1668,
+          "differentAddresses": 2357
+        },
+        "withdrawn": {
+          "steps": 14860,
+          "differentDestinations": 13424
+        }
+      },
+      "donorSha256": "a36bb5e30fa4653c185918624367fbfbbc3636b9cd30f89792a9baf0276c77a4",
+      "note": "Exploratory single-world engineering comparison; not a test of a discovered agency."
+    },
+    "compare_live_shuffled.json": {
+      "status": "PASS",
+      "world": "S05W9602",
+      "modes": [
+        "live",
+        "shuffled"
+      ],
+      "firstDifferentDestination": 501,
+      "periods": {
+        "before": {
+          "steps": 500,
+          "differentDestinations": 0
+        },
+        "exposed": {
+          "steps": 4800,
+          "differentDestinations": 4072,
+          "differentSymbols": 1961,
+          "differentAddresses": 1714
+        },
+        "withdrawn": {
+          "steps": 14860,
+          "differentDestinations": 2805
+        }
+      },
+      "donorSha256": "a36bb5e30fa4653c185918624367fbfbbc3636b9cd30f89792a9baf0276c77a4",
+      "note": "Exploratory single-world engineering comparison; not a test of a discovered agency."
+    }
+  },
+  "neutral": {
+    "s0.json": {
+      "byte_identical": true,
+      "sha256": "52409a0cbcfe103d1946fe41f28d365fdb66b339a4cffd41b0362af03548a42b"
+    },
+    "state_s0.json": {
+      "byte_identical": true,
+      "sha256": "3e588a1806048f28d5224bfd3d99e53ae238e2380c8dcacef9783f63a6016a6c"
+    }
+  },
+  "donor_receipt": {
+    "status": "PASS",
+    "donor": {
+      "mode": "live",
+      "world": "S05W9601",
+      "lineage": 0,
+      "traceSha256": "b303d05c80edd69258ef8537a9464b78614a0a0700944fc1f1358667642cd280",
+      "traceHead": "cb79c26949f485727c39362a81dd396fc0cc91fa00a519e14eb597f0e3ae4c69",
+      "overlaySha256": "75b4e05ab6a9ef65abe2d880be591f8627dc182efbe2c4d9b7e20d598caf38c0",
+      "moduleSha256": "33c9b08acacd1f662840fcc84618438998bdd9037dfd800aaa4918f593804f0a",
+      "sensorCount": 4800
+    },
+    "feedbackFileSha256": "a36bb5e30fa4653c185918624367fbfbbc3636b9cd30f89792a9baf0276c77a4"
+  },
+  "donor_multiset_sha256": "7007d609a51b49403b112630b1571798826f99fe367392c95f301538ccd5e38e",
+  "failed_attempts": [
+    {
+      "attempt": "recipient_shuffled",
+      "bytes": 59036688,
+      "lines": 18069,
+      "status": "INCOMPLETE_TRACE_NOT_USED"
+    },
+    {
+      "attempt": "recipient_shuffled_retry",
+      "bytes": 65552384,
+      "lines": 20146,
+      "status": "INCOMPLETE_TRACE_NOT_USED"
+    },
+    {
+      "attempt": "recipient_shuffled_retry2",
+      "bytes": 65603887,
+      "lines": 20161,
+      "status": "INCOMPLETE_TRACE_NOT_USED"
+    },
+    {
+      "attempt": "recipient_live_append",
+      "bytes": 65672581,
+      "lines": 20161,
+      "status": "INCOMPLETE_TRACE_NOT_USED"
+    },
+    {
+      "attempt": "recipient_replay_append",
+      "bytes": 66904747,
+      "lines": 20161,
+      "status": "INCOMPLETE_TRACE_NOT_USED"
+    },
+    {
+      "attempt": "recipient_shuffled_append",
+      "bytes": 65603887,
+      "lines": 20161,
+      "status": "INCOMPLETE_TRACE_NOT_USED"
+    }
+  ],
+  "note": "Exploratory engineering data only; source and pointer decoder are programmed, not a discovery of external agency."
+}

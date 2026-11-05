@@ -1,5 +1,7 @@
 # SXI-0: synthetic-pointer engineering reference
 
+**Live endogenous pointer:** The isolated W+ research runner now derives the source address from Amelia's changing organ and supplies her current zone, organ and memory signals to a live synthetic source. The source's response modifies a Numogram gate score. [Engineering record and controls](live_loop/LIVE_ENGINEERING_2026-11-05.md). This is an engineered fixture, not a discovered agency or a deployment to the tablet app.
+
 **SXI-1 result:** The registered eight-world synthetic-source screen completed; neither recovery test was supported and its planted positive-control gate passed 8/8. The [registration](sxi1/REGISTRATION.md), [calibration](sxi1/CALIBRATION.md) and [results](sxi1/RESULTS_2026-11-05.md) distinguish the programmed fixtures from any independently discovered organisation.
 
 **Status: engineering and exploratory control checks; no SXI-1 discovery or agency result.** The reference-field adapter connects an Amelia—Orange morphogenetic field to the Governor and full 29-gate Numogram. The separately instrumented W+ runner uses the verified INGRESS-1 runtime, its full Numogram and the conditional Plex exit. Matched-control checks and independent recalculation of INGRESS-1 are now recorded below.
@@ -49,7 +51,7 @@ A valid hash chain proves internal consistency of the retained bytes, not that a
 1. **Done for the supplied handoff:** bind the runner to its exact `vt/m` bytes and independently recalculate the season exports. Recover the branching helper and original source stream only if a full independent historical simulation replay is required.
 2. The W+ neutral trace matches the original runner's season summary and end state byte for byte on a second fixture. The one-season SXI-1 screen used the registered policy of a full rerun on execution or verification failure; it did not rely on a mid-season restart. Full mid-season checkpoint/replay remains unverified.
 3. A deliberately planted repair controller on the verified W+ body was distinguished from a passive injured twin in calibration and passed the prospective 8/8-world positive-control gate.
-4. The screen used two addressed synthetic source configurations, sham, shuffled and unpatterned controls with equal realised score doses. The address is an external software configuration, and different gate-opportunity counts remain a limitation; an endogenous body-derived address has not been implemented.
+4. SXI-1 used externally fixed source configurations. The subsequent live-loop engineering fixture now derives an address from W+ organ state and feeds Amelia's present state to the source; its live, donor-replay and shuffled controls have equal realised score doses. Different gate-opportunity counts and the engineered address mapping remain limitations.
 5. The prospective holdout and thresholds were registered after calibration. Both recovery tests were null; the data do not establish a source-specific retained organisation.
 
 Do not present this reference-field receipt as SXI-1, a discovered pattern, proof of an outside entity, or a verification of INGRESS-1.
