@@ -32,10 +32,14 @@ function restart(s:MorphogeneticState):MorphogeneticState {
 }
 function stateRecord(s:MorphogeneticState) {
   const runtime=s.nativeRuntime, events=runtime.getMemory().getEvents(), e=events.at(-1) as any;
+  // An event can include an older queued encounter *and* the current offer.
+  // Retain both; the last field decision is the current offer on steps > 0.
+  const fieldDecisions=(e?.encounters ?? []).filter((x:any)=>x.channel==='SYNTHETIC_FIELD');
+  const current=fieldDecisions.at(-1);
   return { zone:runtime.getCurrentZone(), pfmHead:runtime.getMemory().exportHistoryDigest(),
     eventDigest:e?.eventDigest ?? null, fieldDigest:observeLiveField(s).sourceDigest,
-    attention:e?.encounters?.find((x:any)=>x.channel==='SYNTHETIC_FIELD')?.attentionVector ?? null,
-    disposition:e?.encounters?.find((x:any)=>x.channel==='SYNTHETIC_FIELD')?.disposition ?? null,
+    attention:current?.attentionVector ?? null, disposition:current?.disposition ?? null,
+    fieldDecisions,
     entropy:s.entropy, fieldStep:s.stepCount };
 }
 for(const seed of config.seeds) {
@@ -81,7 +85,7 @@ const result={scope:'Fresh, isolated, synthetic full-application bodies. Not the
     liveMinusShuffled:mean(summaries.map(x=>x.mappings.live.recoveryAt50-x.mappings.shuffled.recoveryAt50)),
     liveMinusUniform:mean(summaries.map(x=>x.mappings.live.recoveryAt50-x.mappings.uniform.recoveryAt50))}};
 const out='experiments/live-amelia/results';mkdirSync(out,{recursive:true});
-for(const [file,value] of [['pilot-rows.json',rows],['pilot-summary.json',result]] as const) {
+for(const [file,value] of [['corrected-pilot-rows.json',rows],['corrected-pilot-summary.json',result]] as const) {
   const bytes=JSON.stringify(value,null,2)+'\n';writeFileSync(`${out}/${file}`,bytes);
   console.log(`${file} sha256=${createHash('sha256').update(bytes).digest('hex')}`);
 }
