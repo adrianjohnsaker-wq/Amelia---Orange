@@ -1,0 +1,235 @@
+{
+ "seeds": [
+  101,
+  102,
+  103,
+  104,
+  105,
+  106,
+  107,
+  108,
+  109,
+  110,
+  111,
+  112
+ ],
+ "sensitivity": {
+  "SHAM": {
+   "dispositions": {
+    "ATTEND": 3600
+   },
+   "attendRate": 1.0,
+   "decisiveRate": 0.1103,
+   "loopShare": 0.0169
+  },
+  "PLANT": {
+   "dispositions": {
+    "ATTEND": 3600
+   },
+   "attendRate": 1.0,
+   "decisiveRate": 0.1925,
+   "loopShare": 0.0131
+  },
+  "NULLNOISE": {
+   "dispositions": {
+    "ATTEND": 3600
+   },
+   "attendRate": 1.0,
+   "decisiveRate": 0.1211,
+   "loopShare": 0.0119
+  },
+  "POINTER_A": {
+   "dispositions": {
+    "ATTEND": 3600
+   },
+   "attendRate": 1.0,
+   "decisiveRate": 0.1139,
+   "loopShare": 0.0167
+  },
+  "POINTER_B": {
+   "dispositions": {
+    "ATTEND": 3600
+   },
+   "attendRate": 1.0,
+   "decisiveRate": 0.1061,
+   "loopShare": 0.0167
+  },
+  "WITHHELD": {
+   "dispositions": {},
+   "attendRate": 0.0,
+   "decisiveRate": 0.0,
+   "loopShare": 0.0533
+  }
+ },
+ "withheldVsSham": [
+  {
+   "seed": 101,
+   "firstDifferentStep": 3,
+   "shareDifferent": 0.9833
+  },
+  {
+   "seed": 102,
+   "firstDifferentStep": 2,
+   "shareDifferent": 0.9967
+  },
+  {
+   "seed": 103,
+   "firstDifferentStep": 3,
+   "shareDifferent": 0.9933
+  },
+  {
+   "seed": 104,
+   "firstDifferentStep": 1,
+   "shareDifferent": 0.9967
+  },
+  {
+   "seed": 105,
+   "firstDifferentStep": 3,
+   "shareDifferent": 0.9933
+  },
+  {
+   "seed": 106,
+   "firstDifferentStep": 3,
+   "shareDifferent": 0.99
+  },
+  {
+   "seed": 107,
+   "firstDifferentStep": 2,
+   "shareDifferent": 0.9967
+  },
+  {
+   "seed": 108,
+   "firstDifferentStep": 4,
+   "shareDifferent": 0.99
+  },
+  {
+   "seed": 109,
+   "firstDifferentStep": 2,
+   "shareDifferent": 0.9967
+  },
+  {
+   "seed": 110,
+   "firstDifferentStep": 3,
+   "shareDifferent": 0.9933
+  },
+  {
+   "seed": 111,
+   "firstDifferentStep": 2,
+   "shareDifferent": 0.99
+  },
+  {
+   "seed": 112,
+   "firstDifferentStep": 3,
+   "shareDifferent": 0.9933
+  }
+ ],
+ "flags": [],
+ "seedIndependence": {
+  "distinctShamPaths": 12,
+  "meanPairwiseIdentical": 0.4059,
+  "maxPairwiseIdentical": 0.88
+ },
+ "positiveControl": {
+  "d": [
+   93,
+   100,
+   100,
+   100,
+   100,
+   74,
+   96,
+   99,
+   95,
+   99,
+   89,
+   91
+  ],
+  "p": 0.00024,
+  "positiveSeeds": 12,
+  "post250": [
+   15,
+   15,
+   13,
+   17,
+   15,
+   13,
+   15,
+   17,
+   12,
+   15,
+   16,
+   15
+  ],
+  "pass": true
+ },
+ "nullControl": {
+  "d": [
+   22,
+   0,
+   0,
+   1,
+   0,
+   -26,
+   0,
+   0,
+   0,
+   13,
+   26,
+   -9
+  ],
+  "p": 0.29688,
+  "pass": true
+ },
+ "pointers": {
+  "POINTER_A": [
+   0,
+   14,
+   0,
+   0,
+   0,
+   12,
+   0,
+   0,
+   2,
+   474,
+   0,
+   2
+  ],
+  "POINTER_B": [
+   0,
+   12,
+   0,
+   2,
+   0,
+   114,
+   0,
+   0,
+   0,
+   2,
+   0,
+   0
+  ],
+  "NULLNOISE": [
+   102,
+   22,
+   48,
+   514,
+   10,
+   576,
+   584,
+   64,
+   516,
+   486,
+   596,
+   150
+  ],
+  "A_minus_B_signflip_p": 0.65625
+ },
+ "validAtNominalLevel": true,
+ "verdict": {
+  "positiveControl": "PASS",
+  "nullControl": "PASS",
+  "seedsIndependent": true,
+  "flags": []
+ }
+}
