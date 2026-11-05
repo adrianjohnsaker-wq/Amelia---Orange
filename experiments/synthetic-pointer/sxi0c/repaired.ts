@@ -36,6 +36,7 @@ type RuntimeInternals = {
 
 export class RepairedSyntheticRuntime extends SyntheticQueueRuntime {
   public warpIntensity = 0;
+  public replayVector: number[] | null = null;   // set by the harness for one step (replay control)
   public flights = 0;
   public override exportState(): Record<string, unknown> { return { ...super.exportState(), sxi0cWarpIntensity: this.warpIntensity, sxi0cFlights: this.flights }; }
   public override importState(state: Record<string, unknown>): void {
@@ -64,7 +65,11 @@ export class RepairedSyntheticRuntime extends SyntheticQueueRuntime {
     //    ATTEND unless malformed (REFUSE) or the Governor is in locked recovery (DROP: not queued, never stale).
     const encounterDecisions: EncounterDecisionTrace[] = [];
     let attended: SubstrateEncounterInput | undefined;
-    const submitted = (this as any).syntheticQueued ?? encounter; (this as any).syntheticQueued = null;
+    const submitted0 = (this as any).syntheticQueued ?? encounter; (this as any).syntheticQueued = null;
+    // REPLAY control (LOOP_CONTROLS.md): the live observation is replaced by a recorded one; the trace says so.
+    const replayed = !!(submitted0 && this.replayVector);
+    const submitted = replayed ? { ...submitted0!, attentionVector: this.replayVector! } : submitted0;
+    this.replayVector = null;
     if (submitted) {
       const v = submitted.attentionVector, total = Array.isArray(v) ? v.reduce((x: number, y: number) => x + y, 0) : 0;
       const valid = Array.isArray(v) && v.length === 10 && v.every((x: number) => Number.isFinite(x) && x >= 0 && x <= 1) && total > 0.99 && total < 1.01
@@ -83,7 +88,7 @@ export class RepairedSyntheticRuntime extends SyntheticQueueRuntime {
         applied = { ...submitted, attentionVector: bonus.map(x => x / 0.9) };
         attended = applied;
       }
-      encounterDecisions.push({ ...(applied ?? submitted), disposition, reason, applied: disposition === 'ATTEND' });
+      encounterDecisions.push({ ...(applied ?? submitted), disposition, reason: replayed ? reason + ' REPLAY: recorded observation, not the live body.' : reason, applied: disposition === 'ATTEND' });
     }
     // 4b. The Warp as accelerator (ANTENNA III): intensity builds in {3, 6}; at THETA, with an attended observation, a line of
     //     flight to the zone the body marks most (largest contrast, outside {3, 5, 6}). The flight creates a Warp-born gate,

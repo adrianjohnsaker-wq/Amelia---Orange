@@ -13,6 +13,7 @@ const paths = ['experiments/synthetic-pointer/coordinator.ts', 'experiments/synt
   'experiments/synthetic-pointer/pointer.ts', 'experiments/synthetic-pointer/sxi0c/run_arm.ts', 'experiments/synthetic-pointer/sxi0c/repaired.ts', 'src/outside/OutsideEncounterRuntime.ts', 'src/governance/CognitiveGovernor.ts'];
 const sourceHashes = Object.fromEntries(paths.map(p => [p, sha256(readFileSync(resolve(p)))]));
 const bodySeed = ARM === 'NULLNOISE' ? seed + 5000 : seed;
+const REPLAY = ARM === 'PLANT_REPLAY' ? JSON.parse(readFileSync(resolve(OUT, '..', `PLANT_${seed}.metrics.json`), 'utf8')).rows.map((r: any) => r.obs) : null;
 const ledger = new SyntheticEvidenceLedger(OUT);
 const make = FIELD === 'repaired' ? createRepairedField : createReferenceField;
 const run = new SyntheticCoordinator(`sxi0c${FIELD === 'repaired' ? 'r' : ''}-${ARM}-${seed}`, make({ width: W, height: H, preset: 'CORAL_REEF', seed: bodySeed, noiseAmp: 0.003 }), ledger,
@@ -20,27 +21,44 @@ const run = new SyntheticCoordinator(`sxi0c${FIELD === 'repaired' ? 'r' : ''}-${
 const neutral = { id: 'neutral', edges: [] };
 const edges = (c0: number) => { const e = []; for (const r of [0, 1]) for (let c = c0; c < c0 + 5; c++) e.push({ a: r * W + c, b: r * W + c + 1, multiplier: 0.3 }); return e; };
 const PA = { id: 'POINTER_A', edges: edges(0) }, PB = { id: 'POINTER_B', edges: edges(6) };
+// LOOP_CONTROLS.md: stronger pointers, full column-boundary cuts (multiplier 0, all rows)
+const cut = (c: number, id: string) => ({ id, edges: Array.from({ length: H }, (_, r) => ({ a: r * W + c, b: r * W + c + 1, multiplier: 0 })) });
+const PA2 = cut(2, 'POINTER_A2'), PB2 = cut(8, 'POINTER_B2');
+// LOOP_CONTROLS.md: the Governor admits or refuses each pointer change (same safety rule as the synthetic channel)
+const pointerDecisions: Array<{ bodyStep: number; pointer: string; decision: string }> = [];
+function admitPointer(arr: { id: string; edges: any[] }, bodyStep: number) {
+  if (arr.edges.length === 0) return arr;
+  const tel = (run.getState().nativeRuntime as any).getGovernorKernel().getTelemetry();
+  const ok = arr.edges.length <= 20 && arr.edges.every((e: any) => e.multiplier >= 0 && e.multiplier <= 1) && tel.governorStatus !== 'LOCKED_RECOVERY' && tel.antiLockIntegrity >= 85;
+  pointerDecisions.push({ bodyStep, pointer: arr.id, decision: ok ? 'ADMIT' : 'REFUSE' });
+  return ok ? arr : neutral;
+}
 const planted: number[] = [];
 const bandCells = Array.from({ length: W * H }, (_, i) => i).filter(i => Math.floor(10 * (i % W) / W) === BAND);
 for (let s = 0; s < steps; s++) {
   const active = s >= WIN[0] && s <= WIN[1];
-  if (ARM === 'PLANT' && active) {
+  if (ARM === 'PLANT' && active) {   // planted, closed loop
     const st = run.getState(); for (const i of bandCells) st.cells[i].B = 0.9;
     planted.push(st.stepCount);   // also visible in that step's STEP_BEGIN checkpoint (the body carries B = 0.9)
   }
-  const pointer = ARM === 'POINTER_A' && active ? PA : ARM === 'POINTER_B' && active ? PB : neutral;
-  run.step(pointer, ARM !== 'WITHHELD');
+  if (ARM === 'PLANT_OPEN' && active) { const st = run.getState(); for (const i of bandCells) st.cells[i].B = 0.9; planted.push(st.stepCount); }
+  if (REPLAY) (run.getState().nativeRuntime as any).replayVector = REPLAY[s] ?? null;
+  const want = ARM === 'POINTER_A' && active ? PA : ARM === 'POINTER_B' && active ? PB : ARM === 'POINTER_A2' && active ? PA2 : ARM === 'POINTER_B2' && active ? PB2 : neutral;
+  const pointer = admitPointer(want, run.getState().stepCount);
+  run.step(pointer, !['WITHHELD', 'SHAM_OPEN', 'PLANT_OPEN'].includes(ARM));
 }
 run.finish();
 const v = verifyLedger(OUT, { requireComplete: true });
+const begins = v.records.filter(r => r.kind === 'STEP_BEGIN').map(r => r.data as any);
 const steps_ = v.records.filter(r => r.kind === 'STEP_COMMITTED').map(r => r.data as any);
-const rows = steps_.map(d => {
+const rows = steps_.map((d, k) => {
   const opts = d.passage.options; let noAttn = d.passage.from, best = -Infinity;
   for (const o of opts) { const sc = o.score - o.components.attention; if (sc > best) { best = sc; noAttn = o.gate.target; } }
   const dec = d.passage.encounterDecisions.map((x: any) => (x.applied ? 'ATTEND' : x.disposition));
-  return { step: d.bodyStep, from: d.passage.from, to: d.passage.chosen, noAttn, dec };
+  const b = begins[k];
+  return { step: d.bodyStep, from: d.passage.from, to: d.passage.chosen, noAttn, dec, bands: b.observation.regionMeans.map((x: number) => +x.toFixed(5)), obs: b.observation.attentionVector, replayed: d.passage.encounterDecisions.some((x: any) => String(x.reason).includes('REPLAY')) };
 });
 writeFileSync(OUT + '.metrics.json', JSON.stringify({ arm: ARM, field: FIELD === 'repaired' ? 'repaired' : 'reference', seed, bodySeed, steps, head: v.head, records: v.count,
-  plantedControl: ARM === 'PLANT' ? { band: BAND, cells: bandCells, setB: 0.9, bodySteps: planted, note: 'planted positive control: imposed on the body, not discovered' } : null, rows }));
+  pointerDecisions, plantedControl: ['PLANT', 'PLANT_OPEN'].includes(ARM) ? { band: BAND, cells: bandCells, setB: 0.9, bodySteps: planted, note: 'planted positive control: imposed on the body, not discovered' } : null, rows }));
 if (KEEP !== 'keep') rmSync(resolve(OUT, 'checkpoints'), { recursive: true, force: true });
 console.log(ARM, seed, 'records', v.count, 'head', v.head.slice(0, 12));
