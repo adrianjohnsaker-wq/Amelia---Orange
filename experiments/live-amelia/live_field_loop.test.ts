@@ -96,6 +96,39 @@ test('Governor deferral survives a checkpoint and is admitted after recovery', (
   assert.ok(second.snapshot.encounterDecisions?.some(e => e.eventId === deferred?.eventId && e.disposition === 'ATTEND' && e.applied));
 });
 
+test('sustained field deferral keeps the latest observation without crowding out other channels', () => {
+  let {runtime, body} = fresh();
+  const gov = runtime.getGovernorKernel();
+  const lock = () => gov.importState({ ...gov.exportState(), antiLockIntegrity: 60, isAntiLockActive: true });
+  lock();
+  const tarot = { eventId: 'test-tarot', channel: 'TAROT' as const,
+    sourceDigest: 'a'.repeat(64), attentionVector: Array(10).fill(0.1) };
+  assert.equal(runtime.step(undefined, tarot).encounterDecisions?.at(-1)?.disposition, 'DEFER');
+  let latest = '';
+  for (let i = 0; i < 50; i++) {
+    lock();
+    const result = advanceLiveField(body); body = result.state;
+    const offered = result.snapshot.encounterDecisions?.at(-1);
+    assert.equal(offered?.disposition, 'DEFER');
+    latest = offered!.eventId;
+  }
+  const state = JSON.parse(JSON.stringify(runtime.exportState()));
+  assert.deepEqual(state.deferredEncounters.map((e:any) => e.channel), ['TAROT', 'SYNTHETIC_FIELD']);
+  assert.equal(state.deferredEncounters[1].eventId, latest);
+  const recorded = runtime.getMemory().getEvents().flatMap((e:any) => e.encounters || [])
+    .filter((e:any) => e.channel === 'SYNTHETIC_FIELD' && e.eventId === latest);
+  assert.ok(recorded.length > 0);
+  const savedField = captureLiveField(body, false);
+  const restored = bornAmelia(); restored.importState(state);
+  restoreLiveField(savedField, restored);
+  const recovery = () => restored.getGovernorKernel().importState({ ...restored.getGovernorKernel().exportState(),
+    antiLockIntegrity: 99, isAntiLockActive: false, deformationFieldTension: 0.1 });
+  recovery();
+  assert.ok(restored.step().encounterDecisions?.some(e => e.eventId === tarot.eventId && e.disposition === 'ATTEND'));
+  recovery();
+  assert.ok(restored.step().encounterDecisions?.some(e => e.eventId === latest && e.disposition === 'ATTEND'));
+});
+
 test('whole field and lineage restore with the shared runtime and continue identically', () => {
   let {runtime, body} = fresh();
   for (let i = 0; i < 6; i++) body = advanceLiveField(body).state;

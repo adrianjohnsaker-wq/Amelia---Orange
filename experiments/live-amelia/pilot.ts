@@ -18,6 +18,8 @@ const mappings: {label:string; mapping:FieldMapping}[] = [
   {label:'uniform',mapping:'uniform'},
 ];
 const rows: any[] = [], calibrations: any[] = [], summaries: any[] = [];
+const outputPrefix = process.env.AMELIA_PILOT_PREFIX || 'corrected';
+if (!['corrected', 'queue-fix'].includes(outputPrefix)) throw new Error('Unregistered pilot output prefix');
 function twin(savedRuntime: Record<string,unknown>, savedField: ReturnType<typeof captureLiveField>): MorphogeneticState {
   const runtime = bornAmelia(); runtime.importState(JSON.parse(JSON.stringify(savedRuntime)));
   return restoreLiveField(JSON.parse(JSON.stringify(savedField)), runtime);
@@ -85,8 +87,8 @@ const result={scope:'Fresh, isolated, synthetic full-application bodies. Not the
     liveMinusShuffled:mean(summaries.map(x=>x.mappings.live.recoveryAt50-x.mappings.shuffled.recoveryAt50)),
     liveMinusUniform:mean(summaries.map(x=>x.mappings.live.recoveryAt50-x.mappings.uniform.recoveryAt50))}};
 const out='experiments/live-amelia/results';mkdirSync(out,{recursive:true});
-for(const [file,value] of [['corrected-pilot-rows.json',rows],['corrected-pilot-summary.json',result]] as const) {
-  const bytes=JSON.stringify(value,null,2)+'\n';writeFileSync(`${out}/${file}`,bytes);
+for(const [file,value] of [[`${outputPrefix}-pilot-rows.json`,rows],[`${outputPrefix}-pilot-summary.json`,result]] as const) {
+  const bytes=JSON.stringify(value,null,2)+'\n';writeFileSync(`${out}/${file}`,bytes,{flag:'wx'});
   console.log(`${file} sha256=${createHash('sha256').update(bytes).digest('hex')}`);
 }
 console.log(JSON.stringify(result.descriptive));

@@ -127,11 +127,24 @@ export class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
           reason: 'An earlier deferred encounter was attended on this step; this encounter remains queued.' };
       }
       if (decision.disposition === 'ATTEND') attended = encounter;
-      else if (decision.disposition === 'DEFER' && this.deferredEncounters.length < 32) {
-        this.deferredEncounters.push(encounter);
-      } else if (decision.disposition === 'DEFER') {
-        decision = { disposition: 'REFUSE',
-          reason: 'Governor deferral queue is full; encounter retained in PFM but not queued.' };
+      else if (decision.disposition === 'DEFER') {
+        // The body is sampled on every field step. Preserve every decision in
+        // PFM, but keep only its latest pending observation in the shared
+        // queue so a sustained lock cannot crowd out other channels.
+        const fieldIndex = encounter.channel === 'SYNTHETIC_FIELD'
+          ? this.deferredEncounters.findIndex(item => item.channel === 'SYNTHETIC_FIELD') : -1;
+        if (fieldIndex >= 0) {
+          this.deferredEncounters[fieldIndex] = encounter;
+          this.deferredEncounters = this.deferredEncounters.filter((item, i) =>
+            item.channel !== 'SYNTHETIC_FIELD' || i === fieldIndex);
+          decision = { disposition: 'DEFER', reason: decision.reason +
+            ' Latest field observation replaces the older pending field observation; both decisions remain in PFM.' };
+        } else if (this.deferredEncounters.length < 32) {
+          this.deferredEncounters.push(encounter);
+        } else {
+          decision = { disposition: 'REFUSE',
+            reason: 'Governor deferral queue is full; encounter retained in PFM but not queued.' };
+        }
       }
       encounterDecisions.push({ ...encounter, ...decision, applied: decision.disposition === 'ATTEND' });
     }
