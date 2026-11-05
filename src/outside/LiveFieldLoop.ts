@@ -92,7 +92,22 @@ export function createLiveField(runtime: AmeliaOutsideRuntime, config: {
  * isolated experimental copies: uniform preserves total attention, while a
  * permutation preserves both total attention and the distribution of weights.
  */
-export type FieldMapping = 'live' | 'uniform' | { permutation: number[] };
+export interface SyntheticSourceOffer {
+  schema: 'amelia.synthetic-source-offer/v1';
+  bodyDigest: string;
+  sourceId: string;
+  sourceStep: number;
+  sourceStateDigest: string;
+  attentionVector: number[];
+}
+export type FieldMapping = 'live' | 'uniform' | { permutation: number[] } | { source: SyntheticSourceOffer };
+
+/** Binds the recorded source response to the body observation that produced it. */
+export function syntheticSourceOfferDigest(offer: SyntheticSourceOffer): string {
+  return canonicalSha256(JSON.stringify({ schema: offer.schema, bodyDigest: offer.bodyDigest,
+    sourceId: offer.sourceId, sourceStep: offer.sourceStep, sourceStateDigest: offer.sourceStateDigest,
+    attentionVector: offer.attentionVector }));
+}
 
 /** Advance the field and the existing runtime exactly once, with Governor-gated body feedback. */
 export function advanceLiveField(state: MorphogeneticState, mapping: FieldMapping = 'live'): {
@@ -103,7 +118,20 @@ export function advanceLiveField(state: MorphogeneticState, mapping: FieldMappin
   const observation = observeLiveField(state);
   const runtimeStep = currentRuntimeStep(runtime);
   let attentionVector = observation.attentionVector;
-  if (typeof mapping === 'object') {
+  let sourceDigest = observation.sourceDigest;
+  let eventId = `field:${runtimeStep + 1}:${observation.bodyStep}:${sourceDigest.slice(0, 16)}`;
+  if (typeof mapping === 'object' && 'source' in mapping) {
+    const source = mapping.source;
+    const v = source?.attentionVector;
+    if (!source || source.schema !== 'amelia.synthetic-source-offer/v1' || source.bodyDigest !== observation.sourceDigest ||
+        !/^[a-z0-9._-]{1,64}$/.test(source.sourceId) || !Number.isSafeInteger(source.sourceStep) || source.sourceStep < 1 ||
+        !/^[a-f0-9]{64}$/.test(source.sourceStateDigest) || !Array.isArray(v) || v.length !== 10 ||
+        v.some(x => !Number.isFinite(x) || x < 0 || x > 1) || Math.abs(v.reduce((a,b) => a + b, 0) - 1) > 1e-9)
+      throw new Error('Invalid or stale synthetic source offer');
+    attentionVector = [...v];
+    sourceDigest = syntheticSourceOfferDigest(source);
+    eventId = `source:${runtimeStep + 1}:${observation.bodyStep}:${sourceDigest.slice(0, 16)}`;
+  } else if (typeof mapping === 'object' && 'permutation' in mapping) {
     if (!Array.isArray(mapping.permutation) || mapping.permutation.length !== 10 ||
         new Set(mapping.permutation).size !== 10 || mapping.permutation.some(i => !Number.isInteger(i) || i < 0 || i > 9))
       throw new Error('Invalid experimental field-zone permutation');
@@ -112,8 +140,7 @@ export function advanceLiveField(state: MorphogeneticState, mapping: FieldMappin
     attentionVector = Array<number>(10).fill(0.1);
   } else if (mapping !== 'live' && mapping !== 'uniform') throw new Error('Invalid experimental field mapping');
   const encounter: SubstrateEncounterInput | undefined = attentionVector ? {
-    eventId: `field:${runtimeStep + 1}:${observation.bodyStep}:${observation.sourceDigest.slice(0, 16)}`,
-    channel: 'SYNTHETIC_FIELD', sourceDigest: observation.sourceDigest, attentionVector,
+    eventId, channel: 'SYNTHETIC_FIELD', sourceDigest, attentionVector,
   } : undefined;
   let stepped = false;
   // The native field function already steps the runtime. A temporary proxy supplies its
