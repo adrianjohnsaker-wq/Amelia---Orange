@@ -32,6 +32,10 @@ const PA3 = rowCut(2, 'POINTER_A3'), PB3 = rowCut(7, 'POINTER_B3'), PA4 = colCut
 // LOOP_CONTROLS_2.md: forced stress. At body steps 100 and 180 the Governor is put under stress through its own public
 // importState: deformation tension 0.95 and anti-lock integrity 80 (below the 85 floor). It recovers by its own rules.
 const STRESS_AT = new Set([100, 180]);
+// LOOP_CONTROLS_3.md: band pointers. Isolate one whole band from its neighbours: every horizontal coupling across both
+// sides of that band's column(s), all rows, multiplier 0 (20 edges, at the admission limit). Band 7 = column 9; band 2 = column 3.
+const bandIso = (c: number, id: string) => ({ id, edges: Array.from({ length: H }, (_, r) => [{ a: r * W + c - 1, b: r * W + c, multiplier: 0 }, { a: r * W + c, b: r * W + c + 1, multiplier: 0 }]).flat() });
+const PI7 = bandIso(9, 'POINTER_ISO7'), PI2 = bandIso(3, 'POINTER_ISO2');
 // LOOP_CONTROLS.md: the Governor admits or refuses each pointer change (same safety rule as the synthetic channel)
 const pointerDecisions: Array<{ bodyStep: number; pointer: string; decision: string }> = [];
 const stressLog: Array<{ bodyStep: number; before: any; after: any }> = [];
@@ -58,7 +62,8 @@ for (let s = 0; s < steps; s++) {
   }
   const want = ARM === 'POINTER_A' && active ? PA : ARM === 'POINTER_B' && active ? PB : ARM === 'POINTER_A2' && active ? PA2 : ARM === 'POINTER_B2' && active ? PB2
     : ARM === 'POINTER_A3' && active ? PA3 : ARM === 'POINTER_B3' && active ? PB3 : ARM === 'POINTER_A4' && active ? PA4 : ARM === 'POINTER_B4' && active ? PB4
-    : ARM === 'STRESS_A3' && active ? PA3 : neutral;
+    : ARM === 'STRESS_A3' && active ? PA3
+    : (ARM === 'POINTER_ISO7' || ARM === 'STRESS_ISO7') && active ? PI7 : ARM === 'POINTER_ISO2' && active ? PI2 : neutral;
   const pointer = admitPointer(want, run.getState().stepCount);
   run.step(pointer, !['WITHHELD', 'SHAM_OPEN', 'PLANT_OPEN'].includes(ARM));
 }
