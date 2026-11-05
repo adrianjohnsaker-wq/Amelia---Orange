@@ -1,5 +1,7 @@
 # SXI-0: synthetic-pointer engineering reference
 
+**SXI-1 continuation:** A programmed two-address synthetic source and a planted W+ recovery control have been added. The prospective, source-bound [SXI-1 registration](sxi1/REGISTRATION.md) and [calibration](sxi1/CALIBRATION.md) distinguish those fixtures from any independently discovered organisation.
+
 **Status: engineering and exploratory control checks; no SXI-1 discovery or agency result.** The reference-field adapter connects an Amelia—Orange morphogenetic field to the Governor and full 29-gate Numogram. The separately instrumented W+ runner uses the verified INGRESS-1 runtime, its full Numogram and the conditional Plex exit. Matched-control checks and independent recalculation of INGRESS-1 are now recorded below.
 
 ## Scope and identity gate
