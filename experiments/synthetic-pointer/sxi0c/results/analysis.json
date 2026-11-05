@@ -1,0 +1,249 @@
+{
+ "seeds": [
+  101,
+  102,
+  103,
+  104,
+  105,
+  106,
+  107,
+  108,
+  109,
+  110,
+  111,
+  112
+ ],
+ "sensitivity": {
+  "SHAM": {
+   "dispositions": {
+    "ATTEND": 579,
+    "DEFER": 3648,
+    "REFUSE": 2637
+   },
+   "attendRate": 0.0844,
+   "decisiveRate": 0.0,
+   "loopShare": 0.0533
+  },
+  "PLANT": {
+   "dispositions": {
+    "ATTEND": 579,
+    "DEFER": 3648,
+    "REFUSE": 2637
+   },
+   "attendRate": 0.0844,
+   "decisiveRate": 0.0,
+   "loopShare": 0.0533
+  },
+  "NULLNOISE": {
+   "dispositions": {
+    "ATTEND": 579,
+    "DEFER": 3648,
+    "REFUSE": 2637
+   },
+   "attendRate": 0.0844,
+   "decisiveRate": 0.0,
+   "loopShare": 0.0533
+  },
+  "POINTER_A": {
+   "dispositions": {
+    "ATTEND": 579,
+    "DEFER": 3648,
+    "REFUSE": 2637
+   },
+   "attendRate": 0.0844,
+   "decisiveRate": 0.0,
+   "loopShare": 0.0533
+  },
+  "POINTER_B": {
+   "dispositions": {
+    "ATTEND": 579,
+    "DEFER": 3648,
+    "REFUSE": 2637
+   },
+   "attendRate": 0.0844,
+   "decisiveRate": 0.0,
+   "loopShare": 0.0533
+  },
+  "WITHHELD": {
+   "dispositions": {},
+   "attendRate": 0.0,
+   "decisiveRate": 0.0,
+   "loopShare": 0.0533
+  }
+ },
+ "withheldVsSham": [
+  {
+   "seed": 101,
+   "firstDifferentStep": 72,
+   "shareDifferent": 0.4
+  },
+  {
+   "seed": 102,
+   "firstDifferentStep": 72,
+   "shareDifferent": 0.4
+  },
+  {
+   "seed": 103,
+   "firstDifferentStep": 72,
+   "shareDifferent": 0.34
+  },
+  {
+   "seed": 104,
+   "firstDifferentStep": 72,
+   "shareDifferent": 0.34
+  },
+  {
+   "seed": 105,
+   "firstDifferentStep": 72,
+   "shareDifferent": 0.4
+  },
+  {
+   "seed": 106,
+   "firstDifferentStep": 72,
+   "shareDifferent": 0.4
+  },
+  {
+   "seed": 107,
+   "firstDifferentStep": 72,
+   "shareDifferent": 0.4
+  },
+  {
+   "seed": 108,
+   "firstDifferentStep": 72,
+   "shareDifferent": 0.4
+  },
+  {
+   "seed": 109,
+   "firstDifferentStep": 72,
+   "shareDifferent": 0.4
+  },
+  {
+   "seed": 110,
+   "firstDifferentStep": 72,
+   "shareDifferent": 0.4
+  },
+  {
+   "seed": 111,
+   "firstDifferentStep": 72,
+   "shareDifferent": 0.4
+  },
+  {
+   "seed": 112,
+   "firstDifferentStep": 72,
+   "shareDifferent": 0.4
+  }
+ ],
+ "flags": [
+  "DECISIVE<1%: the body signal does not steer her"
+ ],
+ "seedIndependence": {
+  "distinctShamPaths": 2,
+  "meanPairwiseIdentical": 0.9798,
+  "maxPairwiseIdentical": 1.0
+ },
+ "positiveControl": {
+  "d": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "p": 1.0,
+  "positiveSeeds": 0,
+  "post250": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pass": false
+ },
+ "nullControl": {
+  "d": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "p": 1.0,
+  "pass": true
+ },
+ "pointers": {
+  "POINTER_A": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "POINTER_B": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "NULLNOISE": [
+   0,
+   0,
+   2,
+   2,
+   2,
+   0,
+   2,
+   0,
+   2,
+   0,
+   0,
+   0
+  ],
+  "A_minus_B_signflip_p": 2.0
+ },
+ "validAtNominalLevel": false,
+ "verdict": {
+  "positiveControl": "FAIL",
+  "nullControl": "PASS",
+  "seedsIndependent": false,
+  "flags": [
+   "DECISIVE<1%: the body signal does not steer her"
+  ]
+ }
+}
