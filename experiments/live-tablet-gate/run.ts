@@ -10,7 +10,7 @@ import { advanceLiveField, captureLiveField, observeLiveField, restoreLiveField,
 import { advanceWithLiveSource, getLiveSourceSession, setLiveSourceEnabled }
   from '../../src/outside/LiveSyntheticSourceSession';
 import { respondToBody, targetProfile, type SourceArm } from '../../src/outside/AdaptiveSyntheticSource';
-import type { MorphogeneticState } from '../../src/substrate/AmeliaMorphogeneticSubstrate';
+import { canonicalJson, type MorphogeneticState } from '../../src/substrate/AmeliaMorphogeneticSubstrate';
 
 const expected = '7b4fd17bebcca8a0acd11c439a737b1b8d78fb07306770cf09282daa3c8f977d';
 const arms = ['live', 'shuffled', 'uniform', 'ordinary'] as const;
@@ -59,7 +59,7 @@ function checkpoint(ctx: Context, directory: string, arm: Arm, time: number): Co
   const body = restoreLiveField(read.field, next);
   if (captureLiveField(body, false).checksum !== field.checksum ||
       next.getMemory().exportHistoryDigest() !== head ||
-      json(getLiveSourceSession(body)) !== json(source)) throw Error('Session restore failed');
+      canonicalJson(getLiveSourceSession(body)) !== canonicalJson(source)) throw Error('Session restore failed');
   appendFileSync(join(directory, '..', 'session_receipts.jsonl'),
     json({ arm, time, checkpointSha256: sha(bytes), fieldChecksum: field.checksum, memoryHead: head }) + '\n', { mode: 0o600 });
   return context(body, read.advisory, read.damping);
