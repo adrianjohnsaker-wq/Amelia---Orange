@@ -32,3 +32,15 @@
 - **Committed.**
   - each condition's `analysis.py` output (`a<α>_<stream>.result.json`);
   - `CALIBRATION.json`.
+
+## World-run dress rehearsal (before the seal, no world data)
+`run_world.sh` was run end to end at `e55f6fc9` on a clean SHA-256-counter stream (`stream3.py clean rehearsal 12000`), at the confirmatory α = 0.1.
+
+| Check | Result |
+|---|---|
+| Answer | **SILENT** (K = 4, E = 483, nothing recurs); body also SILENT |
+| Ledgered equivalence | **48 of 48 identical**, transition for transition |
+| Standing gate | **PASS** |
+| Wall time | 69 minutes on 4 cores |
+
+**No changes were made after the rehearsal.**
