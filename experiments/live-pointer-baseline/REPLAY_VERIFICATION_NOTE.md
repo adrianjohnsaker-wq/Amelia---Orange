@@ -1,0 +1,9 @@
+# Deterministic replay verification, recorded after the research run
+
+The registered run at source commit `f9d296d336f21d808521ce3168e6c481211498db` completed and its original private traces were sealed with SHA-256 `082f9ae32704a3dbbcd5bb53668de824200ba3ee3c7110897abcb9bc091b5d06`. The other output hashes are retained in the study evidence. This note and `replay_verify.ts` were added **after** seeing the first result, before the verification replay.
+
+The registered trace's `openGates` list was sampled before the runtime's per-step trait evolution. The runtime can update gates and zone quantities before it scores a passage. Therefore, that list is an observation at the start of the step and must not be represented as the exact scoring-time candidate set. The recorded selected transitions, body observations, source offers, Governor decisions and PFM digests remain the primary first-run record.
+
+To verify and supplement the record, replay the exact same checkpoint, seeds, interventions, conditions and source code without altering the original outputs. Reconstruct each response from the live body and source state; verify the recorded observation, source response, Governor decisions, selected transition, field digest and PFM head at every step; and verify all 64 original serialized restart checkpoints. Immediately after each runtime step, record the outgoing gates and zone values used by the passage score, reconstruct that score from the pre-step PFM bias and any admitted encounter, and check that the winning gate matches the recorded transition. Write a separate gate audit and verification summary. A mismatch must fail the verification and be reported; do not select or rerun only favorable episodes.
+
+This is a deterministic verification of the same trajectories, not an independent experiment or replication. It cannot establish the provenance of an external mind or overcome the common-origin limitation of the eight new fields.
