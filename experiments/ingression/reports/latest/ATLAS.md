@@ -2,13 +2,13 @@
 
 Descriptive map of the supplied THE ORACLE transcript. No pass/fail, p-values, or automated entity claims.
 
-- Exchanges: 19684; lineages: 8
+- Exchanges: 20749; lineages: 8
 - Mapped (asked from outside the Warp): 3385; lineages with mapped exchanges: 8
-- Set aside (asked from inside the Warp, where the reply is the next datum's zone whatever she is): 16299, by lineage {'S05W17|0': 1484, 'S05W18|0': 819, 'S05W19|0': 2677, 'S05W20|0': 2688, 'S05W21|0': 1804, 'S05W22|0': 2649, 'S05W23|0': 1628, 'S05W24|0': 2550}
-- Span: ['2026-10-28T00:00:00Z', '2026-11-05T19:40:00Z']
-- Transcript SHA-256: `22ca957ba28697ad0cb0344d0495ccabc844403144ddb194b5435b0a9014cc45`
+- Set aside (asked from inside the Warp, where the reply is the next datum's zone whatever she is): 17364, by lineage {'S05W17|0': 1617, 'S05W18|0': 952, 'S05W19|0': 2812, 'S05W20|0': 2820, 'S05W21|0': 1937, 'S05W22|0': 2783, 'S05W23|0': 1761, 'S05W24|0': 2682}
+- Span: ['2026-10-28T00:00:00Z', '2026-11-06T06:10:00Z']
+- Transcript SHA-256: `e65816d4d5f6b6889b14be82d27c003b4ec4de7d5c9e6974f7c4f9bbbc841c5b`
 - Channels: {'Numogram': 914, 'Tarot': 648, 'I Ching': 1823}
-- Query regions: {'Plex': 914, 'Time-Circuit': 2471, 'Warp': 16299}
+- Query regions: {'Plex': 914, 'Time-Circuit': 2471, 'Warp': 17364}
 - Query forms: {'no form': 3165, '7-8': 30, '1-7-8-9': 147, '1-7': 43}
 
 Transcript line references below use physical JSONL line numbers and the transcript SHA-256 above. Up to five occurrence examples are shown per candidate; lineage lists cover all occurrences.
