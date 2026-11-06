@@ -20,7 +20,7 @@ export function walk(zones: number[], graph: GraphArm, receiver: 'IDENTITY' | 'I
   return { path, perm, flights: rt.flights, gatesEnd: rt.getQabbala().getGates().length };
 }
 const [STREAM, LABEL, L, M, OUT] = process.argv.slice(2);
-if (OUT) {
+if (OUT && /nr1\/run\.ts$/.test(process.argv[1] ?? "")) {   // entry point only when run directly, not when imported
   const all = JSON.parse(readFileSync(STREAM, 'utf8')).zones as number[], len = Number(L), units = Number(M);
   const runs = [];
   for (let u = 0; u < units; u++) {
