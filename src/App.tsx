@@ -70,6 +70,8 @@ import { AmeliaSupabaseMemory, AmeliaCloudSession } from './services/ameliaSupab
 import { captureLiveField } from './outside/LiveFieldLoop';
 import type { LiveFieldCheckpoint } from './outside/LiveFieldLoop';
 import type { MorphogeneticState } from './substrate/AmeliaMorphogeneticSubstrate';
+import { captureLiveControls, readLiveControls } from './app/liveControlsCheckpoint';
+import type { LiveControlsCheckpoint } from './app/liveControlsCheckpoint';
 
 const LOCAL_CHECKPOINT_KEY = 'amelia_pfm_shared_runtime_v2';
 const WRITER_ID_KEY = 'amelia_checkpoint_writer_v1';
@@ -83,7 +85,8 @@ function localCheckpointWriter(): string {
   } catch { return `session-${Date.now()}-${Math.random().toString(16).slice(2)}`; }
 }
 type LiveCheckpoint = { version: number; state: unknown; fieldCheckpoint?: LiveFieldCheckpoint | null;
-  updatedAt?: string; writerId?: string; revision?: number; runtimeRunning?: boolean };
+  updatedAt?: string; writerId?: string; revision?: number; runtimeRunning?: boolean;
+  controls?: LiveControlsCheckpoint; pauseFieldOnRestore?: boolean };
 type PendingSave = { checkpoint: LiveCheckpoint & { id: string }; snapshot: { id: string; step: number; timestamp: string | number; snapshot: SubstrateStepSnapshot } };
 
 export function App() {
@@ -91,6 +94,7 @@ export function App() {
   const rhythmHarmonizerRef = useRef<ExternalRhythmHarmonizer>(new ExternalRhythmHarmonizer());
   const fieldStateRef = useRef<MorphogeneticState | null>(null);
   const restoredFieldRef = useRef<LiveFieldCheckpoint | null>(null);
+  const pauseFieldOnRestoreRef = useRef(false);
   const fieldRunningRef = useRef(false);
   const localPendingRef = useRef<PendingSave | null>(null);
   const cloudPendingRef = useRef<PendingSave | null>(null);
@@ -155,6 +159,11 @@ export function App() {
   const [advisoryWeight, setAdvisoryWeight] = useState<number>(() => runtimeRef.current.getGovernor().advisoryWeight);
   const [momentumDamping, setMomentumDamping] = useState<number>(() => runtimeRef.current.getGovernor().momentumDampingFactor);
   const [rhythms, setRhythms] = useState<ExternalDevelopmentalRhythm[]>(() => rhythmHarmonizerRef.current.getRhythms());
+  // Save callbacks can outlive a render, so operator controls need current refs.
+  const advisoryWeightRef = useRef(advisoryWeight);
+  const momentumDampingRef = useRef(momentumDamping);
+  const controlsProvenanceRef = useRef<LiveControlsCheckpoint['provenance']>('recorded');
+  const [legacyControls, setLegacyControls] = useState(false);
   
   // Benchmarks
   const [benchmarks, setBenchmarks] = useState<ControlledBenchmark[]>(() => 
@@ -178,6 +187,10 @@ export function App() {
 
   const restoreRuntime = (checkpoint: LiveCheckpoint) => {
     if (!checkpoint?.state) return;
+    const defaultRhythms = new ExternalRhythmHarmonizer().getRhythms();
+    // Validate before replacing the running runtime or field.
+    const savedControls = checkpoint.controls === undefined ? null : readLiveControls(checkpoint.controls,
+      { advisoryWeight: advisoryWeightRef.current, momentumDamping: momentumDampingRef.current }, defaultRhythms);
     if (checkpoint.writerId === writerIdRef.current && Number.isSafeInteger(checkpoint.revision))
       checkpointRevisionRef.current = Math.max(checkpointRevisionRef.current, checkpoint.revision!);
     if (hydratedRef.current) {
@@ -205,16 +218,36 @@ export function App() {
     if (!checkpoint.fieldCheckpoint && retainedField && fieldStateRef.current) {
       addLogMessage('[MEMORY] Runtime restored; the previous local field was retained and paused.');
     }
+    // Old checkpoints did not retain the untuned controls. Pause their first
+    // continuation so an assumed setting cannot silently advance the lineage.
+    const missingControls = savedControls === null;
+    const pauseOnRestore = missingControls || checkpoint.pauseFieldOnRestore === true;
+    // The running flag is part of the field's checksummed payload. Keep the
+    // checkpoint intact and pass the pause separately to the field component.
     restoredFieldRef.current = retainedField ?? null;
+    pauseFieldOnRestoreRef.current = pauseOnRestore;
     fieldStateRef.current = null;
-    fieldRunningRef.current = Boolean(checkpoint.fieldCheckpoint?.running);
+    fieldRunningRef.current = !pauseOnRestore && Boolean(checkpoint.fieldCheckpoint?.running);
     setFieldPlaying(fieldRunningRef.current);
     if (retainedField) setFieldOpened(true);
     runtimeRef.current.importState(checkpoint.state as any);
     const restoredGovernor = runtimeRef.current.getGovernor();
-    setAdvisoryWeight(restoredGovernor.advisoryWeight);
-    setMomentumDamping(restoredGovernor.momentumDampingFactor);
-    if (typeof checkpoint.runtimeRunning === 'boolean') setIsRunning(checkpoint.runtimeRunning);
+    const controls = savedControls ?? readLiveControls(undefined, {
+      advisoryWeight: restoredGovernor.advisoryWeight, momentumDamping: restoredGovernor.momentumDampingFactor,
+    }, defaultRhythms);
+    for (const desired of controls.rhythms) {
+      const current = rhythmHarmonizerRef.current.getRhythms().find(r => r.id === desired.id)!;
+      if (current.active !== desired.active) rhythmHarmonizerRef.current.toggleRhythm(desired.id);
+    }
+    advisoryWeightRef.current = controls.advisoryWeight;
+    momentumDampingRef.current = controls.momentumDamping;
+    controlsProvenanceRef.current = controls.provenance;
+    setAdvisoryWeight(controls.advisoryWeight);
+    setMomentumDamping(controls.momentumDamping);
+    setRhythms([...rhythmHarmonizerRef.current.getRhythms()]);
+    setLegacyControls(controls.provenance === 'legacy-assumed');
+    if (pauseOnRestore) setIsRunning(false);
+    else if (typeof checkpoint.runtimeRunning === 'boolean') setIsRunning(checkpoint.runtimeRunning);
     const restored = runtimeRef.current.getSnapshots().at(-1);
     if (restored) {
       setSnapshot(restored);
@@ -348,7 +381,10 @@ export function App() {
       const fieldCheckpoint = fieldStateRef.current
         ? captureLiveField(fieldStateRef.current, fieldRunningRef.current) : restoredFieldRef.current;
       const record: LiveCheckpoint = { version: 2, state: runtimeRef.current.exportState(), fieldCheckpoint,
-        writerId: writerIdRef.current, revision: ++checkpointRevisionRef.current, runtimeRunning: runtimeRunningRef.current };
+        writerId: writerIdRef.current, revision: ++checkpointRevisionRef.current, runtimeRunning: runtimeRunningRef.current,
+        pauseFieldOnRestore: pauseFieldOnRestoreRef.current && !fieldStateRef.current,
+        controls: captureLiveControls(advisoryWeightRef.current, momentumDampingRef.current,
+          rhythmHarmonizerRef.current.getRhythms(), controlsProvenanceRef.current) };
       // Synchronous cache is best effort; do not overwrite an older good cache if it exceeds quota.
       try { localStorage.setItem(LOCAL_CHECKPOINT_KEY, JSON.stringify(record)); }
       catch (error) { console.warn('Legacy local checkpoint cache unavailable', error); }
@@ -385,7 +421,10 @@ export function App() {
   const handleExportCheckpoint = () => {
     const fieldCheckpoint = fieldStateRef.current ? captureLiveField(fieldStateRef.current, fieldRunningRef.current) : restoredFieldRef.current;
     const capsule = { kind: 'AMELIA_LOCAL_CHECKPOINT_V2', createdAt: new Date().toISOString(),
-      note: 'Unsigned local runtime and field snapshot; not a sealed research receipt', state: runtimeRef.current.exportState(), fieldCheckpoint };
+      note: 'Unsigned local runtime and field snapshot; not a sealed research receipt', state: runtimeRef.current.exportState(), fieldCheckpoint,
+      pauseFieldOnRestore: pauseFieldOnRestoreRef.current && !fieldStateRef.current,
+      controls: captureLiveControls(advisoryWeightRef.current, momentumDampingRef.current,
+        rhythmHarmonizerRef.current.getRhythms(), controlsProvenanceRef.current) };
     const url = URL.createObjectURL(new Blob([JSON.stringify(capsule, null, 2)], { type: 'application/json' }));
     const a = document.createElement('a');
     a.href = url;
@@ -404,9 +443,9 @@ export function App() {
   const prepareRuntimeStep = () => {
     const runtime = runtimeRef.current;
     const nextStep = (runtime.getSnapshots().at(-1)?.step ?? 0) + 1;
-    const tuning = rhythmHarmonizerRef.current.computeAdvisoryTuning(advisoryWeight, nextStep);
+    const tuning = rhythmHarmonizerRef.current.computeAdvisoryTuning(advisoryWeightRef.current, nextStep);
     runtime.setAdvisoryWeight(tuning);
-    runtime.setMomentumDamping(momentumDamping);
+    runtime.setMomentumDamping(momentumDampingRef.current);
   };
 
   const advanceRuntime = (inputSignal?: string): SubstrateStepSnapshot => {
@@ -418,6 +457,7 @@ export function App() {
   };
 
   const handleSetAdvisoryWeight = (value: number) => {
+    advisoryWeightRef.current = value;
     setAdvisoryWeight(value);
     runtimeRef.current.setAdvisoryWeight(value);
     setSnapshot(prev => ({ ...prev, governor: runtimeRef.current.getGovernor() }));
@@ -425,6 +465,7 @@ export function App() {
   };
 
   const handleSetMomentumDamping = (value: number) => {
+    momentumDampingRef.current = value;
     setMomentumDamping(value);
     runtimeRef.current.setMomentumDamping(value);
     setSnapshot(prev => ({ ...prev, governor: runtimeRef.current.getGovernor() }));
@@ -445,6 +486,7 @@ export function App() {
   const handleReset = () => {
     fieldStateRef.current = null;
     restoredFieldRef.current = null;
+    pauseFieldOnRestoreRef.current = false;
     fieldRunningRef.current = false;
     setFieldPlaying(false);
     setFieldOpened(activeTab === 'morphogenetic');
@@ -498,6 +540,7 @@ export function App() {
   const handleToggleRhythm = (id: string) => {
     rhythmHarmonizerRef.current.toggleRhythm(id);
     setRhythms([...rhythmHarmonizerRef.current.getRhythms()]);
+    setFieldRevision(value => value + 1);
     addLogMessage(`[RHYTHM] Toggled rhythm coupling state for ${id}`);
   };
 
@@ -552,6 +595,12 @@ export function App() {
             <RefreshCw className="h-5 w-5 animate-spin text-amber-400" />
             Restoring Amelia’s local and account memory before continuing…
           </div>
+        </div>
+      )}
+      {checkpointHydrated && legacyControls && (
+        <div role="status" className="border-b border-amber-700 bg-amber-950 px-6 py-3 text-sm text-amber-100">
+          The original checkpoint did not save the Governor controls or rhythm switches. Its first restoration was
+          paused; review the current controls before continuing. These settings are saved for future restarts.
         </div>
       )}
       {/* Top Header & Telemetry Bar */}
@@ -931,6 +980,7 @@ export function App() {
               onBeforeSharedStep={prepareRuntimeStep}
               onLogMessage={addLogMessage}
               initialFieldCheckpoint={restoredFieldRef.current}
+              initialPaused={pauseFieldOnRestoreRef.current}
               onFieldStateChange={(state) => { fieldStateRef.current = state; setFieldRevision(value => value + 1); }}
               onPlayingChange={(playing) => { fieldRunningRef.current = playing; setFieldPlaying(playing); setFieldRevision(value => value + 1); }}
               isVisible={activeTab === 'morphogenetic'}

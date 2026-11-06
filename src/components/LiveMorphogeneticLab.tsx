@@ -47,6 +47,7 @@ interface LiveMorphogeneticLabProps {
   onSharedStep?: (snapshot: SubstrateStepSnapshot) => void;
   onBeforeSharedStep?: () => void;
   initialFieldCheckpoint?: LiveFieldCheckpoint | null;
+  initialPaused?: boolean;
   onFieldStateChange?: (state: MorphogeneticState) => void;
   onPlayingChange?: (playing: boolean) => void;
   isVisible?: boolean;
@@ -95,7 +96,7 @@ export interface PoincareAssaySummary {
 }
 
 export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLogMessage, sharedRuntime, onSharedStep, onBeforeSharedStep,
-  initialFieldCheckpoint, onFieldStateChange, onPlayingChange, isVisible = true }) => {
+  initialFieldCheckpoint, initialPaused = false, onFieldStateChange, onPlayingChange, isVisible = true }) => {
   const [restored] = useState(() => {
     if (!initialFieldCheckpoint) return { state: null as MorphogeneticState | null, error: '' };
     try {
@@ -123,7 +124,7 @@ export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLo
   const [morphState, setMorphState] = useState<MorphogeneticState | null>(restored.state);
 
   // Simulation execution loop
-  const [isPlaying, setIsPlaying] = useState<boolean>(Boolean(restored.state && initialFieldCheckpoint?.running));
+  const [isPlaying, setIsPlaying] = useState<boolean>(Boolean(restored.state && initialFieldCheckpoint?.running && !initialPaused));
   const [simSpeedMs, setSimSpeedMs] = useState<number>(120);
   const [fieldDecision, setFieldDecision] = useState<string>('Awaiting a field step');
   const canvasRef = useRef<HTMLCanvasElement | null>(null);

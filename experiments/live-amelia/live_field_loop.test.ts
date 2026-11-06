@@ -155,6 +155,19 @@ test('damaged or incomplete field checkpoints are refused', () => {
   assert.throws(() => restoreLiveField(saved, runtime), /checksum mismatch/);
 });
 
+test('pausing a restored field preserves its checksum and body until a new checkpoint is captured', () => {
+  const {runtime, body} = fresh();
+  const saved = captureLiveField(body, true);
+  const pristine = JSON.parse(JSON.stringify(saved));
+  assert.throws(() => restoreLiveField({ ...saved, running: false }, runtime), /metadata mismatch/);
+  const restored = restoreLiveField(saved, runtime);
+  assert.deepEqual(saved, pristine);
+  const paused = captureLiveField(restored, false);
+  assert.equal(paused.running, false);
+  assert.deepEqual(restoreLiveField(paused, runtime).cells, body.cells);
+  assert.deepEqual(saved, pristine);
+});
+
 test('checkpoint survives JSON storage and preserves negative zero and Unicode', () => {
   const {runtime, body} = fresh();
   body.cells[0].A = -0;
