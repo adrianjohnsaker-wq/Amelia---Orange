@@ -19,6 +19,9 @@ export type RecoveryAction = {
   kind: 'ADMISSION'; at: string; step: number; eventId: string; sourceDigest: string;
   channel: string; fromZone: number; toZone: number; tension: number;
   wasDeferred: boolean;
+} | {
+  kind: 'OFFER'; at: string; step: number; eventId: string; sourceDigest: string;
+  channel: string; disposition: 'ATTEND'|'DEFER'|'REFUSE'; applied: boolean;
 };
 
 /** Extension local to the Outside collector; the frozen substrate is untouched. */
@@ -53,7 +56,15 @@ export class OutsideRecoveryRuntime extends AmeliaOutsideRuntime {
     if (!snapshot.governor.nonAuthorisingEnforced ||
         snapshot.governor.hardLimitViolationCount > governor.hardLimitViolationCount)
       throw new Error('Governor invariant violation during Outside recovery.');
+    let offeredDecisionFound = !encounter;
     for (const d of snapshot.encounterDecisions ?? []) {
+      if (encounter && d.eventId===encounter.eventId && d.sourceDigest===encounter.sourceDigest) {
+        if (offeredDecisionFound) throw new Error('Duplicate decision for an Outside offer.');
+        offeredDecisionFound = true;
+        this.recoveryActions.push({kind:'OFFER',at:new Date(snapshot.timestamp).toISOString(),
+          step:snapshot.step,eventId:d.eventId,sourceDigest:d.sourceDigest,channel:d.channel,
+          disposition:d.disposition,applied:d.applied});
+      }
       if (d.disposition !== 'ATTEND' || !d.applied) continue;
       const passage = snapshot.lastTransition;
       if (!passage) throw new Error('An admission has no Numogram transition.');
@@ -62,6 +73,7 @@ export class OutsideRecoveryRuntime extends AmeliaOutsideRuntime {
         fromZone:passage.from,toZone:passage.to,tension:snapshot.governor.deformationFieldTension,
         wasDeferred:queuedBefore.some(q=>q.eventId===d.eventId&&q.sourceDigest===d.sourceDigest)});
     }
+    if (!offeredDecisionFound) throw new Error('The Governor did not record the Outside offer.');
     return snapshot;
   }
 

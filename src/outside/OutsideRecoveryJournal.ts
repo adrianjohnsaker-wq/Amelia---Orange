@@ -51,7 +51,13 @@ export function originalOffer(records:OutsideStreamRecord[], input:Pick<Substrat
 }
 
 export function enrichRecoveryActions(actions:RecoveryAction[], records:OutsideStreamRecord[]):Record<string,unknown>[] {
-  return actions.map(action=>action.kind==='ADMISSION'
-    ? {...action,originalOffer:originalOffer(records,action)}
-    : {...action});
+  return actions.map(action=>{
+    if (action.kind==='CONSOLIDATION') return {...action};
+    const offer=originalOffer(records,action);
+    if (action.kind==='OFFER' && (offer.offerStep!==action.step || offer.initialDisposition!==action.disposition))
+      throw new Error(`Offer receipt does not match the ledger for ${action.eventId}.`);
+    if (action.kind==='ADMISSION' && (action.wasDeferred ? offer.offerStep>=action.step : offer.offerStep!==action.step))
+      throw new Error(`Admission is not aligned to the original offer for ${action.eventId}.`);
+    return {...action,originalOffer:offer};
+  });
 }

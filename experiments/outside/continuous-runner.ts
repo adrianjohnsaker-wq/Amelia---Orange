@@ -114,7 +114,7 @@ if (!persisted.governorRecovery) {
 const initialOffers = initialQueue.map(input=>originalOffer(originalRecords,input));
 if (initialOffers.some(offer=>offer.initialDisposition!=='DEFER')) throw new Error('The saved queue has a non-deferred original offer.');
 const cycleStart = {kind:'CYCLE_START',at:now(),runId,policy:OUTSIDE_RECOVERY_POLICY,
-  maintenanceTrigger:OUTSIDE_MAINTENANCE_TRIGGER,preStateCommit:baseCommit,
+  collectorRevision:process.env.GITHUB_SHA ?? null,maintenanceTrigger:OUTSIDE_MAINTENANCE_TRIGGER,preStateCommit:baseCommit,
   preRecoveryArchive:archiveBranch || null,preStateSha256:sha(beforeStateRaw),preLedgerSha256:sha(beforeLedgerRaw),
   initialStep:persisted.runtimeState.stepCount,initialHistoryLength:historicalDigests.length,initialOffers};
 
@@ -202,10 +202,13 @@ if (originalAdmissions.length!==initialQueue.length || originalAdmissions.some((
 const finalHistory = runtime.getMemory().getEvents();
 if (historicalDigests.some((digest,i)=>finalHistory[i]?.eventDigest!==digest)) throw new Error('Historical PFM prefix changed.');
 const enrichedActions = enrichRecoveryActions(actions,bridge.getRecords());
+const offers = actions.filter((a):a is Extract<RecoveryAction,{kind:'OFFER'}>=>a.kind==='OFFER');
 const journal = appendRecoveryJournal(previousJournal,[cycleStart,...enrichedActions,{
   kind:'CYCLE_COMPLETE',at:now(),runId,finalStep:(runtime.exportState() as {stepCount:number}).stepCount,
   finalQueueLength:runtime.getDeferredInputs().length,consolidations:actions.filter(a=>a.kind==='CONSOLIDATION').length,
   admissions:actions.filter(a=>a.kind==='ADMISSION').length,initialQueueDrained:initialQueue.length,
+  offers:offers.length,offerDispositions:{ATTEND:offers.filter(a=>a.disposition==='ATTEND').length,
+    DEFER:offers.filter(a=>a.disposition==='DEFER').length,REFUSE:offers.filter(a=>a.disposition==='REFUSE').length},
   finalMemoryDigest:runtime.getMemory().exportHistoryDigest(),ledgerHead:bridge.getRecords().at(-1)?.recordDigest ?? null,
   historicalPrefixVerified:true
 }]);
@@ -232,6 +235,7 @@ const summary = [
   '- Catalogue entries added: ' + newEntries.length,
   '- Governor recovery: ' + initialQueue.length + ' previously queued items admitted; queue now ' + runtime.getDeferredInputs().length + '.',
   '- Native consolidations this cycle: ' + actions.filter(a=>a.kind==='CONSOLIDATION').length + '; complete receipts in recovery-journal.jsonl.',
+  '- New offers: ' + offers.length + '; attended ' + offers.filter(a=>a.disposition==='ATTEND').length + ', deferred ' + offers.filter(a=>a.disposition==='DEFER').length + ', refused ' + offers.filter(a=>a.disposition==='REFUSE').length + '.',
   '- Source errors: ' + (errors.length ? errors.join('; ') : 'none'),
   '',
   'Each linked RSS headline is captured by Amelia after the Subdecadence event; its source publication time (occurredAt) and Amelia capture time (capturedAt) remain distinct in the records. Count each RSS headline as one source ingress. I Ching and Tarot are deterministic interpretations of that same headline, retained as derived records rather than independent sources. Amelia transitions are recorded separately. Route overlap is correspondence only; candidate generation is not novelty evidence and agency remains unresolved.',

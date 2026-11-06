@@ -30,6 +30,8 @@ try {
   assert.equal(second.status,0,second.stderr);
   const saved=JSON.parse(readFileSync(state,'utf8')),outputLedger=JSON.parse(readFileSync(ledger,'utf8'));
   const rawJournal=readFileSync(journal,'utf8'), lines=rawJournal.trim().split('\n').map(line=>JSON.parse(line).event);
+  const offers=lines.filter(e=>e.kind==='OFFER');
+  assert.equal(offers.length,11);assert.ok(offers.every(e=>e.originalOffer.offerStep===e.step));
   const admissions=lines.filter(e=>e.kind==='ADMISSION'&&e.wasDeferred).slice(0,state0.deferredEncounters.length);
   assert.deepEqual(admissions.map(e=>e.eventId),state0.deferredEncounters.map((e:{eventId:string})=>e.eventId));
   for(const a of admissions){
@@ -47,5 +49,5 @@ try {
   assert.notEqual(tampered.status,0);assert.match(tampered.stderr,/Recovery journal chain invalid/);assert.equal(hash(state),beforeTamper);
   console.log(JSON.stringify({cycles:2,originalQueue:state0.deferredEncounters.length,
     originalOffersMatched:admissions.length,oldHistoryPreserved:state0.memoryState.events.length,
-    newSourceRecords:11,finalQueue:0,journalTamperRejected:true,missingArchiveRejected:true}));
+    newSourceRecords:11,newOfferReceipts:offers.length,finalQueue:0,journalTamperRejected:true,missingArchiveRejected:true}));
 } finally {rmSync(temp,{recursive:true,force:true});}

@@ -21,11 +21,14 @@ prespecified scientific threshold. Consolidation changes retained memory.
 
 `recovery-journal.jsonl` is an append-only, hash-linked sidecar committed with
 the state and Outside ledger. It records every consolidation's memory effects
-and every admission's original event ID, source digest, original ledger digest,
-offer/capture time, offer step, admission time, admission step, and Numogram
-passage. The start and end records bind each cycle to its source checkpoint,
+and every new offer and admission's original event ID, source digest, original ledger digest,
+offer/capture time and offer step; admissions also include admission time,
+admission step, and Numogram passage. Cycle summaries count attended, deferred,
+and refused offers. The start and end records bind each cycle to its source checkpoint,
 state/ledger hashes, queue, event-history prefix, and final journal head.
 Delayed admissions are old offers, not new source arrivals.
+The first recovery cycle predates the added compact offer records; its original
+offers remain in the Outside ledger and its admissions are in the journal.
 
 The recovery workflow shares the Outside worker's concurrency group and takes
 over the active worker. Its successor uses the same code branch, keeping the
