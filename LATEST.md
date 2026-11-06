@@ -1,11 +1,11 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-06T07:29:39.784Z
-- Cycle: 444 (42177688816-1-3)
-- RSS items seen: 58; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -9
-- Candidate: Skarkix / Mesh-09 / Amphidemon
-- Separate ingress records and trace links: 0
+- Last cycle (UTC): 2026-11-06T07:44:42.523Z
+- Cycle: 445 (42177688816-1-4)
+- RSS items seen: 57; newly processed: 4 (last-cycle window; 24-hour initial window)
+- Subdecadence: MESH_TERMINAL; score -1
+- Candidate: Duoddod / Mesh-01 / Amphidemon
+- Separate ingress records and trace links: 12
 - Catalogue entries added: 1
 - Source errors: none
 
