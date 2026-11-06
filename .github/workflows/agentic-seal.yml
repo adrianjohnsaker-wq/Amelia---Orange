@@ -1,0 +1,75 @@
+# AG-1 / RC-1 / CD-1 (experiments/agentic/REGISTRATION.md, experiments/cd1/REGISTRATION.md).
+# experiments/agentic/seal.trigger: one RFC3161 token over registrations, code and calibrations (fixes the CD-1 data start
+# and opens the live study). experiments/cd1/run.trigger: the CD-1 world run. experiments/agentic/analyse.trigger: the
+# AG-1/RC-1 final analysis after the stop time. Runs only on this branch; writes only experiments/agentic and experiments/cd1.
+name: AGENTIC seal and analyses
+on:
+  push:
+    branches: [agentic-20261106]
+    paths: ['experiments/agentic/seal.trigger', 'experiments/cd1/run.trigger', 'experiments/agentic/analyse.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: agentic-seal
+  cancel-in-progress: false
+jobs:
+  go:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: seal, CD-1 world run, or AG-1/RC-1 analysis
+        shell: bash
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          mkdir -p /tmp/tsx && (cd /tmp/tsx && npm init -y >/dev/null && npm i -s tsx@4.23.15) && ln -s /tmp/tsx/node_modules node_modules
+          changed=$(git diff --name-only HEAD~1 HEAD)
+          if echo "$changed" | grep -qx 'experiments/agentic/seal.trigger' && [ ! -e experiments/agentic/seal/receipt.json ]; then
+            python - <<'PY'
+          import datetime,hashlib,json,pathlib,subprocess
+          from drift1a_c1.beacon import Sealer
+          S=pathlib.Path('experiments/agentic/seal'); sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          files=sorted(subprocess.run(['git','ls-files','experiments/agentic','experiments/cd1','experiments/synthetic-pointer/nr1','experiments/synthetic-pointer/nr2',
+            'experiments/synthetic-pointer/sxi1r','experiments/synthetic-pointer/sxi0c/repaired.ts','experiments/synthetic-pointer/observer.ts',
+            'experiments/synthetic-pointer/pointer.ts','.github/workflows/agentic-seal.yml'],capture_output=True,text=True,check=True).stdout.split())
+          files=[f for f in files if '/result' not in f and '/seal/' not in f and not f.endswith('.trigger')]
+          t=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+          b={'schema':'AGENTIC_CD1_REGISTRATION_V1','sealedAt':t,'cd1WorldDataFirstSeenAtOrAfter':t,'cd1N':12000,'agentic':{'studyStartsAfter':t,'stop':'2026-11-21T00:00:00Z','ledgerBranch':'agentic-live-ledger'},
+             'sourceSHA256':[{'path':f,'sha256':sha(f)} for f in files]}
+          S.mkdir(exist_ok=True); (S/'BUNDLE.json').write_text(json.dumps(b,sort_keys=True,indent=2)+'\n')
+          imprint=sha(S/'BUNDLE.json'); Sealer().seal(S,imprint); assert Sealer().verify(S,imprint)['status']=='PASS'; print('AGENTIC_SEALED',t,imprint)
+          PY
+            git add experiments/agentic/seal; MSG='AG-1/RC-1/CD-1 registration sealed (RFC3161)'
+          else
+            python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          S=pathlib.Path('experiments/agentic/seal'); sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          b=json.loads((S/'BUNDLE.json').read_text()); assert Sealer().verify(S,sha(S/'BUNDLE.json'))['status']=='PASS'
+          for x in b['sourceSHA256']: assert sha(x['path'])==x['sha256'],x['path']
+          pathlib.Path('/tmp/since').write_text(b['cd1WorldDataFirstSeenAtOrAfter']); print('AGENTIC_SEAL_AND_SOURCES_VERIFIED')
+          PY
+            git fetch -q --depth 1 origin world-live && git worktree add -q /tmp/live FETCH_HEAD
+            if echo "$changed" | grep -qx 'experiments/cd1/run.trigger'; then
+              if ! python3 experiments/cd1/prepare_world.py /tmp/live "$(cat /tmp/since)" 12000 /tmp/world.json; then echo 'CD1_WORLD_DATA_NOT_READY'; exit 0; fi
+              sh experiments/cd1/run_world.sh /tmp/world.json experiments/cd1/result; cp /tmp/world.json experiments/cd1/result/world.json
+              git add experiments/cd1/result; MSG='CD-1 world result'
+            else
+              git fetch -q origin agentic-live-ledger && git worktree add -q /tmp/ledger FETCH_HEAD
+              python3 -I experiments/agentic/analyse.py /tmp/live /tmp/ledger 2026-11-21T00:00:00Z /tmp/agres
+              mkdir -p experiments/agentic/result && cp /tmp/agres/RESULT.json /tmp/agres/log.json experiments/agentic/result/
+              git add experiments/agentic/result; MSG='AG-1/RC-1 final analysis'
+            fi
+          fi
+          rm -f node_modules; git commit -qm "$MSG"
+          for i in 1 2 3 4; do git pull -q --rebase origin agentic-20261106 && git push -q origin HEAD:agentic-20261106 && break; sleep $((2**i)); done
