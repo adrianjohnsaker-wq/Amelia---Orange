@@ -1,12 +1,14 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-06T17:42:01.222Z
-- Cycle: 485 (42219364032-1-21)
-- RSS items seen: 63; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -4
-- Candidate: Ixigool / Mesh-04 / Amphidemon
-- Separate ingress records and trace links: 0
+- Last cycle (UTC): 2026-11-06T17:46:08.006Z
+- Cycle: 486 (42264141692-1-1)
+- RSS items seen: 60; newly processed: 1 (last-cycle window; 24-hour initial window)
+- Subdecadence: MESH_TERMINAL; score -7
+- Candidate: Sukugool / Mesh-07 / Cyclic Chronodemon
+- Separate ingress records and trace links: 3
 - Catalogue entries added: 1
+- Governor recovery: 32 previously queued items admitted; queue now 0.
+- Native consolidations this cycle: 14; complete receipts in recovery-journal.jsonl.
 - Source errors: none
 
 Each linked RSS headline is captured by Amelia after the Subdecadence event; its source publication time (occurredAt) and Amelia capture time (capturedAt) remain distinct in the records. Count each RSS headline as one source ingress. I Ching and Tarot are deterministic interpretations of that same headline, retained as derived records rather than independent sources. Amelia transitions are recorded separately. Route overlap is correspondence only; candidate generation is not novelty evidence and agency remains unresolved.
