@@ -1,0 +1,381 @@
+{
+ "label": "NR1-clean_c01",
+ "units": 12,
+ "positiveControl_INGRESSvsIDENTITY_syzygy_lag1": {
+  "d": [
+   0.02575,
+   0.0445,
+   0.03715,
+   0.03955,
+   0.0307,
+   0.0302,
+   0.019,
+   0.0192,
+   0.03355,
+   0.03835,
+   0.02015,
+   0.04855
+  ],
+  "p": 0.00048828125
+ },
+ "nullControl_RELABELvsRELABEL_B": {
+  "syzygy": {
+   "d": [
+    0.00948,
+    -0.00728,
+    -0.01072,
+    -0.01433,
+    -0.01131,
+    -0.00598,
+    0.00017,
+    0.01216,
+    0.01771,
+    0.00449,
+    -0.00477,
+    0.00404
+   ],
+   "p": 0.85888671875
+  },
+  "current": {
+   "d": [
+    -0.03061,
+    6e-05,
+    -0.02643,
+    -2e-05,
+    0.005,
+    -0.00488,
+    -0.02135,
+    0.00131,
+    -0.00517,
+    -0.00253,
+    -0.01408,
+    -0.00493
+   ],
+   "p": 0.02099609375
+  },
+  "gate": {
+   "d": [
+    -0.00583,
+    0.02985,
+    -0.04748,
+    -0.02023,
+    -0.00237,
+    -0.04828,
+    0.00039,
+    -0.0244,
+    0.03969,
+    0.04479,
+    -0.0207,
+    0.00227
+   ],
+   "p": 0.615234375
+  }
+ },
+ "primary": {
+  "syzygy_CANONICALvsRELABEL": {
+   "d": [
+    -0.00959,
+    -0.00538,
+    -0.0188,
+    0.0096,
+    0.00481,
+    -0.00283,
+    -0.01311,
+    -0.02349,
+    0.00813,
+    -0.0077,
+    0.00637,
+    0.0017
+   ],
+   "p": 0.2060546875
+  },
+  "syzygy_CANONICALvsREWIRED": {
+   "d": [
+    -0.01,
+    0.00871,
+    0.01029,
+    0.01313,
+    -0.01469,
+    -0.01171,
+    -0.00607,
+    0.01188,
+    0.00328,
+    0.00169,
+    0.01645,
+    0.00153
+   ],
+   "p": 0.5
+  },
+  "current_CANONICALvsRELABEL": {
+   "d": [
+    0.0178,
+    0.00464,
+    -0.00847,
+    -0.00661,
+    0.00383,
+    -0.0074,
+    0.01192,
+    0.00649,
+    0.01528,
+    0.00993,
+    0.01757,
+    0.02431
+   ],
+   "p": 0.0400390625
+  },
+  "current_CANONICALvsREWIRED": {
+   "d": [
+    0.00931,
+    -0.01035,
+    -0.00727,
+    -0.00229,
+    -0.00269,
+    -0.01434,
+    0.00273,
+    0.00805,
+    0.01999,
+    0.02276,
+    0.02791,
+    0.00423
+   ],
+   "p": 0.23388671875
+  },
+  "gate_CANONICALvsRELABEL": {
+   "d": [
+    0.019,
+    -0.01656,
+    0.02327,
+    0.0171,
+    0.00796,
+    0.04191,
+    0.01634,
+    0.00888,
+    0.00843,
+    -0.01815,
+    0.03609,
+    0.01434
+   ],
+   "p": 0.02880859375
+  },
+  "gate_CANONICALvsREWIRED": {
+   "d": [
+    0.04215,
+    0.01368,
+    -0.01473,
+    0.01313,
+    0.00569,
+    0.02784,
+    0.01997,
+    0.00978,
+    0.04423,
+    0.01766,
+    0.04359,
+    0.00809
+   ],
+   "p": 0.00390625
+  }
+ },
+ "meanEnrichment": {
+  "CANONICAL/IDENTITY": {
+   "identity": 0.05995,
+   "syzygy": -0.00351,
+   "current": 0.00028,
+   "gate": 0.01082
+  },
+  "CANONICAL/INGRESS": {
+   "identity": 0.06381,
+   "syzygy": 0.0112,
+   "current": 0.02912,
+   "gate": 0.01291
+  },
+  "RELABEL/IDENTITY": {
+   "identity": 0.00562,
+   "syzygy": 0.00068,
+   "current": -0.00716,
+   "gate": -0.00239
+  },
+  "RELABEL/INGRESS": {
+   "identity": 0.00552,
+   "syzygy": 0.00433,
+   "current": -0.00588,
+   "gate": -0.00645
+  },
+  "RELABEL_B/IDENTITY": {
+   "identity": 0.00635,
+   "syzygy": 0.00121,
+   "current": 0.00148,
+   "gate": 0.00196
+  },
+  "RELABEL_B/INGRESS": {
+   "identity": 0.00276,
+   "syzygy": -0.00142,
+   "current": -0.00423,
+   "gate": -0.00035
+  },
+  "REWIRED/IDENTITY": {
+   "identity": 0.06041,
+   "syzygy": -0.00556,
+   "current": -0.00455,
+   "gate": -0.00843
+  },
+  "REWIRED/INGRESS": {
+   "identity": 0.05703,
+   "syzygy": 0.02732,
+   "current": 0.01777,
+   "gate": 0.00966
+  }
+ },
+ "lagProfile_CANONICAL_IDENTITY_unitMean": {
+  "identity": [
+   0.2065,
+   -0.0047,
+   0.0194,
+   0.0161,
+   0.0247,
+   0.0086,
+   0.0202,
+   0.0172
+  ],
+  "syzygy": [
+   -0.0496,
+   0.0353,
+   -0.0017,
+   0.0011,
+   -0.0056,
+   0.0039,
+   -0.0041,
+   -0.002
+  ],
+  "current": [
+   -0.0212,
+   0.0209,
+   0.0013,
+   0.0008,
+   -0.0007,
+   -0.0012,
+   -0.0049,
+   0.0009
+  ],
+  "gate": [
+   -0.0245,
+   0.0528,
+   -0.0049,
+   0.0195,
+   -0.0006,
+   0.0103,
+   0.0004,
+   0.0081
+  ]
+ },
+ "readout": {
+  "CANONICAL/IDENTITY": {
+   "transitions": 12011,
+   "regionShare": {
+    "Plex": 0.222,
+    "TimeCircuit": 0.625,
+    "Warp": 0.153
+   },
+   "syzygyPassages": {
+    "Abyssal 0::9": 15,
+    "BarkerLoop 3::6": 1058,
+    "Murmur 1::8": 1413,
+    "SubCrypt 2::7": 813,
+    "Centroid 4::5": 2
+   },
+   "currentPassages": 1642,
+   "gatePassages": 2886
+  },
+  "CANONICAL/INGRESS": {
+   "transitions": 12011,
+   "regionShare": {
+    "Plex": 0.046,
+    "TimeCircuit": 0.81,
+    "Warp": 0.144
+   },
+   "syzygyPassages": {
+    "Abyssal 0::9": 13,
+    "BarkerLoop 3::6": 1093,
+    "SubCrypt 2::7": 1074,
+    "Murmur 1::8": 1323
+   },
+   "currentPassages": 1948,
+   "gatePassages": 2924
+  },
+  "RELABEL/IDENTITY": {
+   "transitions": 12011,
+   "regionShare": {
+    "Plex": 0.385,
+    "TimeCircuit": 0.536,
+    "Warp": 0.08
+   },
+   "syzygyPassages": {
+    "Abyssal 0::9": 1278,
+    "Murmur 1::8": 1410,
+    "BarkerLoop 3::6": 546,
+    "SubCrypt 2::7": 465,
+    "Centroid 4::5": 3
+   },
+   "currentPassages": 1825,
+   "gatePassages": 1985
+  },
+  "RELABEL/INGRESS": {
+   "transitions": 12011,
+   "regionShare": {
+    "Plex": 0.072,
+    "TimeCircuit": 0.809,
+    "Warp": 0.12
+   },
+   "syzygyPassages": {
+    "Abyssal 0::9": 172,
+    "Murmur 1::8": 1457,
+    "SubCrypt 2::7": 859,
+    "BarkerLoop 3::6": 999
+   },
+   "currentPassages": 1714,
+   "gatePassages": 2629
+  },
+  "REWIRED/IDENTITY": {
+   "transitions": 12011,
+   "regionShare": {
+    "Plex": 0.13,
+    "TimeCircuit": 0.654,
+    "Warp": 0.216
+   },
+   "syzygyPassages": {
+    "SubCrypt 2::7": 436,
+    "Abyssal 0::9": 107,
+    "Murmur 1::8": 628,
+    "Centroid 4::5": 2,
+    "BarkerLoop 3::6": 64
+   },
+   "currentPassages": 1139,
+   "gatePassages": 923
+  },
+  "REWIRED/INGRESS": {
+   "transitions": 12011,
+   "regionShare": {
+    "Plex": 0.052,
+    "TimeCircuit": 0.763,
+    "Warp": 0.186
+   },
+   "syzygyPassages": {
+    "SubCrypt 2::7": 343,
+    "Abyssal 0::9": 20,
+    "Murmur 1::8": 596,
+    "BarkerLoop 3::6": 60
+   },
+   "currentPassages": 1463,
+   "gatePassages": 1181
+  }
+ },
+ "flights": {
+  "CANONICAL/IDENTITY": 27,
+  "CANONICAL/INGRESS": 16,
+  "RELABEL/IDENTITY": 16,
+  "RELABEL/INGRESS": 17,
+  "RELABEL_B/IDENTITY": 19,
+  "RELABEL_B/INGRESS": 17,
+  "REWIRED/IDENTITY": 9,
+  "REWIRED/INGRESS": 4
+ }
+}
