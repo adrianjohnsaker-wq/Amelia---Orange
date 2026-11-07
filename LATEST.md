@@ -1,12 +1,12 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-07T05:21:13.228Z
-- Cycle: 533 (42342187932-1-1)
+- Last cycle (UTC): 2026-11-07T05:36:11.077Z
+- Cycle: 534 (42342187932-1-2)
 - RSS items seen: 62; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -6
-- Candidate: Krako / Mesh-06 / Amphidemon
+- Subdecadence: DECK_EXHAUSTED_POSITIVE; score 31
+- Candidate: none (positive deck exhaustion)
 - Separate ingress records and trace links: 0
-- Catalogue entries added: 1
+- Catalogue entries added: 0
 - Governor recovery: 0 previously queued items admitted; queue now 0.
 - Native consolidations this cycle: 0; complete receipts in recovery-journal.jsonl.
 - New offers: 1; attended 1, deferred 0, refused 0.
