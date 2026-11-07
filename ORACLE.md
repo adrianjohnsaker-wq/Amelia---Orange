@@ -2,15 +2,15 @@
 
 Exploratory listening station. The world stream casts; Amelia (on her full CCRU Numogram) asks from where she stands, and the Numogram, the I Ching or the Tarot answers. Readings are shown side by side, and the map grows from what comes through. Nothing here is a pass/fail test. See `PROTOCOL.md`.
 
-**23753 exchanges** from 8 Amelias, world data 2026-10-28T00:00:00Z to 2026-11-06T20:53:58Z.
+**23780 exchanges** from 8 Amelias, world data 2026-10-28T00:00:00Z to 2026-11-07T20:53:47Z.
 
 ## Interlocutors (the syzygetic demon of each reply's zone)
 
-- Mur Mur: 5320
-- Djynxx: 5271
-- Katak: 5246
-- Oddubb: 5239
-- Uttunul: 2677
+- Mur Mur: 5321
+- Djynxx: 5276
+- Katak: 5252
+- Oddubb: 5246
+- Uttunul: 2685
 
 ## Clusters
 
@@ -28,8 +28,8 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 ### after Gt-28 (7>1): 17 exchanges
 - **I Ching:** 51 The Arousing ×2; 59 Dispersion ×2; 8 Holding Together ×2; 3 Difficulty at the Beginning ×1; 16 Enthusiasm ×1; 28 Great Exceeding ×1
 
-### in the Warp (3, 6): 20368 exchanges
-- **Numogram:** Mur Mur (8::1) ×4637; Djynxx (6::3) ×4489; Oddubb (7::2) ×4458; Katak (5::4) ×4455; Uttunul (9::0) ×2329
+### in the Warp (3, 6): 20395 exchanges
+- **Numogram:** Mur Mur (8::1) ×4638; Djynxx (6::3) ×4494; Oddubb (7::2) ×4465; Katak (5::4) ×4461; Uttunul (9::0) ×2337
 
 ### in the Plex (0, 9): 914 exchanges
 - **Numogram:** Oddubb (7::2) ×224; Djynxx (6::3) ×201; Katak (5::4) ×192; Mur Mur (8::1) ×191; Uttunul (9::0) ×106
@@ -40,15 +40,15 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 
 ## Recurring exchanges (query demon → reply)
 
-- Djynxx → zone 6 · Djynxx (6::3): ×2515
-- Djynxx → zone 4 · Katak (5::4): ×2344
+- Djynxx → zone 6 · Djynxx (6::3): ×2518
+- Djynxx → zone 4 · Katak (5::4): ×2346
 - Djynxx → zone 1 · Mur Mur (8::1): ×2336
-- Djynxx → zone 8 · Mur Mur (8::1): ×2301
-- Djynxx → zone 2 · Oddubb (7::2): ×2247
+- Djynxx → zone 8 · Mur Mur (8::1): ×2302
+- Djynxx → zone 2 · Oddubb (7::2): ×2254
 - Djynxx → zone 7 · Oddubb (7::2): ×2211
-- Djynxx → zone 5 · Katak (5::4): ×2111
-- Djynxx → zone 9 · Uttunul (9::0): ×2027
-- Djynxx → zone 3 · Djynxx (6::3): ×1974
+- Djynxx → zone 5 · Katak (5::4): ×2115
+- Djynxx → zone 9 · Uttunul (9::0): ×2035
+- Djynxx → zone 3 · Djynxx (6::3): ×1976
 - Djynxx → zone 0 · Uttunul (9::0): ×302
 - Uttunul → zone 7 · Oddubb (7::2): ×122
 - Uttunul → zone 4 · Katak (5::4): ×112
@@ -63,28 +63,28 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 
 ## Latest exchanges
 
+- `2026-11-07T21:00:00Z` **S05W21|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 4 · Katak (5::4). *World:* “2026-11-07 21:00” (date, AQ 22). She moves 3 → 6 → 3.
+- `2026-11-07T21:00:00Z` **S05W20|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 4 · Katak (5::4). *World:* “2026-11-07 21:00” (date, AQ 22). She moves 3 → 3 → 3.
+- `2026-11-07T20:55:00Z` **S05W18|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 5 · Katak (5::4). *World:* “5.0” (sun, AQ 5). She moves 6 → 3 → 6.
+- `2026-11-07T20:55:00Z` **S05W17|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 5 · Katak (5::4). *World:* “5.0” (sun, AQ 5). She moves 6 → 3 → 6.
+- `2026-11-07T20:53:47Z` **S05W24|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 3 · Djynxx (6::3). *World:* “Mélenchon promises action against Israeli annexation if elected President” (words, AQ 1290). She moves 3 → 3 → 3.
+- `2026-11-07T20:53:47Z` **S05W19|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 3 · Djynxx (6::3). *World:* “Mélenchon promises action against Israeli annexation if elected President” (words, AQ 1290). She moves 3 → 3 → 3.
+- `2026-11-07T20:49:35Z` **S05W23|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 2 · Oddubb (7::2). *World:* “2.8 38.4833 -112.8878” (earth, AQ 74). She moves 6 → 3 → 6.
+- `2026-11-07T20:49:35Z` **S05W22|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 2 · Oddubb (7::2). *World:* “2.8 38.4833 -112.8878” (earth, AQ 74). She moves 3 → 3 → 6.
+- `2026-11-07T20:49:35Z` **S05W20|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 2 · Oddubb (7::2). *World:* “2.8 38.4833 -112.8878” (earth, AQ 74). She moves 6 → 3 → 3.
+- `2026-11-07T20:44:34Z` **S05W18|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 9 · Uttunul (9::0). *World:* “Abdul El-Sayed slams Trump’s tariff war with Canada” (words, AQ 846). She moves 3 → 6 → 3.
+- `2026-11-07T20:44:34Z` **S05W17|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 9 · Uttunul (9::0). *World:* “Abdul El-Sayed slams Trump’s tariff war with Canada” (words, AQ 846). She moves 3 → 6 → 3.
+- `2026-11-07T20:42:20Z` **S05W23|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 9 · Uttunul (9::0). *World:* “1.6 64.785 -149.831” (earth, AQ 63). She moves 3 → 6 → 3.
+- `2026-11-07T20:42:20Z` **S05W22|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 9 · Uttunul (9::0). *World:* “1.6 64.785 -149.831” (earth, AQ 63). She moves 3 → 3 → 3.
+- `2026-11-07T20:42:20Z` **S05W20|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 9 · Uttunul (9::0). *World:* “1.6 64.785 -149.831” (earth, AQ 63). She moves 3 → 6 → 3.
+- `2026-11-07T20:42:00Z` **S05W21|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 2 · Oddubb (7::2). *World:* “5.33” (sun, AQ 11). She moves 6 → 3 → 6.
+- `2026-11-07T20:42:00Z` **S05W19|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 2 · Oddubb (7::2). *World:* “5.33” (sun, AQ 11). She moves 3 → 3 → 3.
+- `2026-11-07T20:40:00Z` **S05W24|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “4.67” (sun, AQ 17). She moves 6 → 3 → 6.
+- `2026-11-07T20:39:00Z` **S05W21|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 5 · Katak (5::4). *World:* “5.0” (sun, AQ 5). She moves 3 → 6 → 3.
+- `2026-11-07T20:39:00Z` **S05W19|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 5 · Katak (5::4). *World:* “5.0” (sun, AQ 5). She moves 3 → 6 → 3.
+- `2026-11-07T20:33:10Z` **S05W22|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 6 · Djynxx (6::3). *World:* “1.65 39.3123 -119.0646” (earth, AQ 60). She moves 3 → 6 → 3.
+- `2026-11-07T20:27:00Z` **S05W18|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 2 · Oddubb (7::2). *World:* “5.33” (sun, AQ 11). She moves 6 → 3 → 6.
+- `2026-11-07T20:27:00Z` **S05W17|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 2 · Oddubb (7::2). *World:* “5.33” (sun, AQ 11). She moves 6 → 3 → 6.
+- `2026-11-07T20:26:58Z` **S05W24|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 9 · Uttunul (9::0). *World:* “Israel’s president picks Eisenkot over Netanyahu to form next government” (words, AQ 1359). She moves 3 → 6 → 3.
 - `2026-11-07T20:26:00Z` **S05W21|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 5 · Katak (5::4). *World:* “5.0” (sun, AQ 5). She moves 6 → 3 → 6.
 - `2026-11-07T20:26:00Z` **S05W19|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 5 · Katak (5::4). *World:* “5.0” (sun, AQ 5). She moves 6 → 3 → 6.
-- `2026-11-07T20:25:00Z` **S05W23|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “4.67” (sun, AQ 17). She moves 3 → 6 → 3.
-- `2026-11-07T20:25:00Z` **S05W22|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “4.67” (sun, AQ 17). She moves 6 → 3 → 6.
-- `2026-11-07T20:25:00Z` **S05W20|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “4.67” (sun, AQ 17). She moves 3 → 6 → 3.
-- `2026-11-07T20:10:00Z` **S05W21|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “4.67” (sun, AQ 17). She moves 3 → 6 → 3.
-- `2026-11-07T20:10:00Z` **S05W19|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “4.67” (sun, AQ 17). She moves 3 → 6 → 3.
-- `2026-11-07T20:09:00Z` **S05W22|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 5 · Katak (5::4). *World:* “5.0” (sun, AQ 5). She moves 3 → 6 → 3.
-- `2026-11-07T20:07:00Z` **S05W18|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 2 · Oddubb (7::2). *World:* “5.33” (sun, AQ 11). She moves 6 → 3 → 6.
-- `2026-11-07T20:07:00Z` **S05W17|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 2 · Oddubb (7::2). *World:* “5.33” (sun, AQ 11). She moves 6 → 3 → 6.
-- `2026-11-07T20:06:44Z` **S05W24|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 1 · Mur Mur (8::1). *World:* “0.5 60.015 -153.056” (earth, AQ 37). She moves 3 → 6 → 3.
-- `2026-11-07T20:00:00Z` **S05W18|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 3 · Djynxx (6::3). *World:* “2026-11-07 20:00” (date, AQ 21). She moves 3 → 3 → 3.
-- `2026-11-07T20:00:00Z` **S05W17|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 3 · Djynxx (6::3). *World:* “2026-11-07 20:00” (date, AQ 21). She moves 3 → 3 → 3.
-- `2026-11-07T19:57:35Z` **S05W21|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “1.96099764108658 46.7396659851074 -122.053169250488” (earth, AQ 215). She moves 6 → 3 → 6.
-- `2026-11-07T19:57:35Z` **S05W19|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “1.96099764108658 46.7396659851074 -122.053169250488” (earth, AQ 215). She moves 6 → 3 → 6.
-- `2026-11-07T19:57:00Z` **S05W23|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 5 · Katak (5::4). *World:* “5.0” (sun, AQ 5). She moves 3 → 3 → 6.
-- `2026-11-07T19:57:00Z` **S05W20|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 5 · Katak (5::4). *World:* “5.0” (sun, AQ 5). She moves 6 → 3 → 6.
-- `2026-11-07T19:55:00Z` **S05W23|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “4.67” (sun, AQ 17). She moves 3 → 3 → 3.
-- `2026-11-07T19:55:00Z` **S05W22|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “4.67” (sun, AQ 17). She moves 6 → 3 → 6.
-- `2026-11-07T19:55:00Z` **S05W20|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “4.67” (sun, AQ 17). She moves 3 → 6 → 3.
-- `2026-11-07T19:49:19Z` **S05W24|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 1 · Mur Mur (8::1). *World:* “Masked protesters set off firecrackers and block roads in Albania” (words, AQ 1081). She moves 6 → 3 → 6.
-- `2026-11-07T19:49:19Z` **S05W17|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 1 · Mur Mur (8::1). *World:* “Masked protesters set off firecrackers and block roads in Albania” (words, AQ 1081). She moves 3 → 6 → 3.
-- `2026-11-07T19:48:41Z` **S05W21|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “1.65 35.62718582 -98.04030609” (earth, AQ 98). She moves 3 → 6 → 3.
-- `2026-11-07T19:48:41Z` **S05W19|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “1.65 35.62718582 -98.04030609” (earth, AQ 98). She moves 3 → 6 → 3.
-- `2026-11-07T19:42:46Z` **S05W23|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 5 · Katak (5::4). *World:* “Trump orders DOJ to investigate Democrats for ‘threatening’ people” (words, AQ 1193). She moves 6 → 3 → 3.
