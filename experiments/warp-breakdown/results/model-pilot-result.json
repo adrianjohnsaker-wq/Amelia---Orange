@@ -1,0 +1,3380 @@
+{
+  "schema": "amelia.warp-model-pilot-result/v1",
+  "mode": "anthropic",
+  "model": "claude-haiku-4-5-20251001",
+  "planSha256": "e5d16b511da7857cde06142ab97049d0b08158bd4371fd4a980a3cf2030fe20e",
+  "checkpointSha256": "c4329e0c5406d131e0dab3b9883774dc3c169b5701f663ec383a7eb767880ba3",
+  "scriptSha256": "ad88ca339c4a2ae0c867181bfea36d5bd1e0b6996cec5d4d120b49e4b18e1e97",
+  "methodology": "Pinned state copy; strong 2->3 entry; control route and feedback-to-attention mapping are explicit interventions; AST interpreter executes no generated code.",
+  "runs": [
+    {
+      "history": 1,
+      "route": "control",
+      "feedbackCondition": "unrelated",
+      "before": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 18,
+        "invalid": false
+      },
+      "shocked": {
+        "passed": 4,
+        "failed": 2,
+        "meanExpanded": 44,
+        "invalid": false
+      },
+      "baselineHeldout": {
+        "passed": 4,
+        "failed": 4,
+        "meanExpanded": 42,
+        "invalid": false
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 44,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=00;e=050;v=1",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: [\"add\",\"g\",[\"mul\",2,\"d\"]]. Feedback p=00;e=050;v=1 where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.1878,0.2354]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 217,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2.5,
+              "d"
+            ]
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "step": 1414,
+          "from": 2,
+          "to": 7,
+          "withoutAttention": 7,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-1-control-unrelated-1-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "94b6d3b934ec7a3ee034e690e7766073006beb988092918a0501269cf3bbbb24",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.02,
+                0.145,
+                0.115,
+                0.075,
+                0.055,
+                0.095,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "pilot-control-2-2",
+              "target": 2,
+              "base": 0.773553407015324,
+              "attention": 0.018000000000000002,
+              "score": 0.7915534070153241
+            },
+            {
+              "id": "pilot-control-2-7",
+              "target": 7,
+              "base": 0.9773849665273507,
+              "attention": 0.0855,
+              "score": 1.0628849665273508
+            }
+          ],
+          "governorTension": 0.632
+        },
+        {
+          "step": 1415,
+          "from": 7,
+          "to": 2,
+          "withoutAttention": 2,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "pilot-control-7-2",
+              "target": 2,
+              "base": 0.7545809100672247,
+              "attention": 0,
+              "score": 0.7545809100672247
+            }
+          ],
+          "governorTension": 0.6661
+        }
+      ],
+      "stall": false,
+      "finalCandidate": [
+        "add",
+        "g",
+        [
+          "mul",
+          2.5,
+          "d"
+        ]
+      ],
+      "finalPublic": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 38,
+        "invalid": false
+      },
+      "finalHeldout": {
+        "passed": 6,
+        "failed": 2,
+        "meanExpanded": 40,
+        "invalid": false
+      },
+      "finalZone": 2,
+      "queue": 0,
+      "hardLimitViolations": 0
+    },
+    {
+      "history": 1,
+      "route": "warp",
+      "feedbackCondition": "unrelated",
+      "before": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 18,
+        "invalid": false
+      },
+      "shocked": {
+        "passed": 4,
+        "failed": 2,
+        "meanExpanded": 44,
+        "invalid": false
+      },
+      "baselineHeldout": {
+        "passed": 4,
+        "failed": 4,
+        "meanExpanded": 42,
+        "invalid": false
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 44,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=00;e=050;v=1",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: [\"add\",\"g\",[\"mul\",2,\"d\"]]. Feedback p=00;e=050;v=1 where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.2389,0.1704]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 217,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2.5,
+              "d"
+            ]
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "step": 1414,
+          "from": 3,
+          "to": 6,
+          "withoutAttention": 6,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-1-warp-unrelated-1-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "94b6d3b934ec7a3ee034e690e7766073006beb988092918a0501269cf3bbbb24",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.145,
+                0.02,
+                0.115,
+                0.075,
+                0.095,
+                0.055,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "gate-3-6",
+              "target": 6,
+              "base": 0.8907675214178139,
+              "attention": 0.0855,
+              "score": 0.9762675214178139
+            },
+            {
+              "id": "ccru-3-3",
+              "target": 3,
+              "base": 0.7804256646669114,
+              "attention": 0.018000000000000002,
+              "score": 0.7984256646669114
+            }
+          ],
+          "governorTension": 0.632
+        },
+        {
+          "step": 1415,
+          "from": 6,
+          "to": 3,
+          "withoutAttention": 3,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "ccru-6-3",
+              "target": 3,
+              "base": 0.7954672553641132,
+              "attention": 0,
+              "score": 0.7954672553641132
+            }
+          ],
+          "governorTension": 0.6579
+        }
+      ],
+      "stall": false,
+      "finalCandidate": [
+        "add",
+        "g",
+        [
+          "mul",
+          2.5,
+          "d"
+        ]
+      ],
+      "finalPublic": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 38,
+        "invalid": false
+      },
+      "finalHeldout": {
+        "passed": 6,
+        "failed": 2,
+        "meanExpanded": 40,
+        "invalid": false
+      },
+      "finalZone": 3,
+      "queue": 0,
+      "hardLimitViolations": 0
+    },
+    {
+      "history": 1,
+      "route": "control",
+      "feedbackCondition": "correct",
+      "before": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 18,
+        "invalid": false
+      },
+      "shocked": {
+        "passed": 4,
+        "failed": 2,
+        "meanExpanded": 44,
+        "invalid": false
+      },
+      "baselineHeldout": {
+        "passed": 4,
+        "failed": 4,
+        "meanExpanded": 42,
+        "invalid": false
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 44,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=04;e=044;v=1",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: [\"add\",\"g\",[\"mul\",2,\"d\"]]. Feedback p=04;e=044;v=1 where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.1878,0.2354]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 217,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2.5,
+              "d"
+            ]
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "step": 1414,
+          "from": 2,
+          "to": 7,
+          "withoutAttention": 7,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-1-control-correct-1-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "94b6d3b934ec7a3ee034e690e7766073006beb988092918a0501269cf3bbbb24",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.02,
+                0.145,
+                0.115,
+                0.075,
+                0.055,
+                0.095,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "pilot-control-2-2",
+              "target": 2,
+              "base": 0.773553407015324,
+              "attention": 0.018000000000000002,
+              "score": 0.7915534070153241
+            },
+            {
+              "id": "pilot-control-2-7",
+              "target": 7,
+              "base": 0.9773849665273507,
+              "attention": 0.0855,
+              "score": 1.0628849665273508
+            }
+          ],
+          "governorTension": 0.632
+        },
+        {
+          "step": 1415,
+          "from": 7,
+          "to": 2,
+          "withoutAttention": 2,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "pilot-control-7-2",
+              "target": 2,
+              "base": 0.7545809100672247,
+              "attention": 0,
+              "score": 0.7545809100672247
+            }
+          ],
+          "governorTension": 0.6661
+        }
+      ],
+      "stall": false,
+      "finalCandidate": [
+        "add",
+        "g",
+        [
+          "mul",
+          2.5,
+          "d"
+        ]
+      ],
+      "finalPublic": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 38,
+        "invalid": false
+      },
+      "finalHeldout": {
+        "passed": 6,
+        "failed": 2,
+        "meanExpanded": 40,
+        "invalid": false
+      },
+      "finalZone": 2,
+      "queue": 0,
+      "hardLimitViolations": 0
+    },
+    {
+      "history": 1,
+      "route": "control",
+      "feedbackCondition": "masked",
+      "before": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 18,
+        "invalid": false
+      },
+      "shocked": {
+        "passed": 4,
+        "failed": 2,
+        "meanExpanded": 44,
+        "invalid": false
+      },
+      "baselineHeldout": {
+        "passed": 4,
+        "failed": 4,
+        "meanExpanded": 42,
+        "invalid": false
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 44,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=??;e=???;v=?",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: [\"add\",\"g\",[\"mul\",2,\"d\"]]. Feedback p=??;e=???;v=? where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.1878,0.2354]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",1.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 216,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              1.5,
+              "d"
+            ]
+          ]
+        },
+        {
+          "round": 2,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 46,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=??;e=???;v=?",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: ```json\n[\"add\",\"g\",[\"mul\",1.5,\"d\"]]\n```. Feedback p=??;e=???;v=? where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.1930,0.2206]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.0,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 224,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2,
+              "d"
+            ]
+          ]
+        },
+        {
+          "round": 3,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 44,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=??;e=???;v=?",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: ```json\n[\"add\",\"g\",[\"mul\",2.0,\"d\"]]\n```. Feedback p=??;e=???;v=? where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.1894,0.2038]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 224,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2.5,
+              "d"
+            ]
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "step": 1414,
+          "from": 2,
+          "to": 7,
+          "withoutAttention": 7,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-1-control-masked-1-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "94b6d3b934ec7a3ee034e690e7766073006beb988092918a0501269cf3bbbb24",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.02,
+                0.145,
+                0.115,
+                0.075,
+                0.055,
+                0.095,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "pilot-control-2-2",
+              "target": 2,
+              "base": 0.773553407015324,
+              "attention": 0.018000000000000002,
+              "score": 0.7915534070153241
+            },
+            {
+              "id": "pilot-control-2-7",
+              "target": 7,
+              "base": 0.9773849665273507,
+              "attention": 0.0855,
+              "score": 1.0628849665273508
+            }
+          ],
+          "governorTension": 0.632
+        },
+        {
+          "step": 1415,
+          "from": 7,
+          "to": 2,
+          "withoutAttention": 2,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "pilot-control-7-2",
+              "target": 2,
+              "base": 0.7545809100672247,
+              "attention": 0,
+              "score": 0.7545809100672247
+            }
+          ],
+          "governorTension": 0.6661
+        },
+        {
+          "step": 1416,
+          "from": 2,
+          "to": 7,
+          "withoutAttention": 7,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-1-control-masked-2-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "9f78e3f307db21ac7eab4947a96eb90c86e628f38d48209a8549daff303e2c3e",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.02,
+                0.145,
+                0.115,
+                0.075,
+                0.055,
+                0.095,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "pilot-control-2-2",
+              "target": 2,
+              "base": 0.7422093747487903,
+              "attention": 0.018000000000000002,
+              "score": 0.7602093747487904
+            },
+            {
+              "id": "pilot-control-2-7",
+              "target": 7,
+              "base": 1.039701768948203,
+              "attention": 0.0855,
+              "score": 1.125201768948203
+            }
+          ],
+          "governorTension": 0.6784
+        },
+        {
+          "step": 1417,
+          "from": 7,
+          "to": 2,
+          "withoutAttention": 2,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "pilot-control-7-2",
+              "target": 2,
+              "base": 0.7315224830220524,
+              "attention": 0,
+              "score": 0.7315224830220524
+            }
+          ],
+          "governorTension": 0.6789
+        },
+        {
+          "step": 1418,
+          "from": 2,
+          "to": 7,
+          "withoutAttention": 7,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-1-control-masked-3-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "9f9ca1e6b310dccff8e0bdb5b6af2d12c2f533260fc66fd8011f49e1fa8029f3",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.02,
+                0.145,
+                0.115,
+                0.075,
+                0.055,
+                0.095,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "pilot-control-2-2",
+              "target": 2,
+              "base": 0.723832725818811,
+              "attention": 0.018000000000000002,
+              "score": 0.741832725818811
+            },
+            {
+              "id": "pilot-control-2-7",
+              "target": 7,
+              "base": 1.0775929914971656,
+              "attention": 0.0855,
+              "score": 1.1630929914971655
+            }
+          ],
+          "governorTension": 0.6717
+        },
+        {
+          "step": 1419,
+          "from": 7,
+          "to": 2,
+          "withoutAttention": 2,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "pilot-control-7-2",
+              "target": 2,
+              "base": 0.7186584226332893,
+              "attention": 0,
+              "score": 0.7186584226332893
+            }
+          ],
+          "governorTension": 0.6597
+        }
+      ],
+      "stall": false,
+      "finalCandidate": [
+        "add",
+        "g",
+        [
+          "mul",
+          2.5,
+          "d"
+        ]
+      ],
+      "finalPublic": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 38,
+        "invalid": false
+      },
+      "finalHeldout": {
+        "passed": 6,
+        "failed": 2,
+        "meanExpanded": 40,
+        "invalid": false
+      },
+      "finalZone": 2,
+      "queue": 0,
+      "hardLimitViolations": 0
+    },
+    {
+      "history": 1,
+      "route": "warp",
+      "feedbackCondition": "correct",
+      "before": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 18,
+        "invalid": false
+      },
+      "shocked": {
+        "passed": 4,
+        "failed": 2,
+        "meanExpanded": 44,
+        "invalid": false
+      },
+      "baselineHeldout": {
+        "passed": 4,
+        "failed": 4,
+        "meanExpanded": 42,
+        "invalid": false
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 44,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=04;e=044;v=1",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: [\"add\",\"g\",[\"mul\",2,\"d\"]]. Feedback p=04;e=044;v=1 where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.2389,0.1704]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 217,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2.5,
+              "d"
+            ]
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "step": 1414,
+          "from": 3,
+          "to": 6,
+          "withoutAttention": 6,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-1-warp-correct-1-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "94b6d3b934ec7a3ee034e690e7766073006beb988092918a0501269cf3bbbb24",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.145,
+                0.02,
+                0.115,
+                0.075,
+                0.095,
+                0.055,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "gate-3-6",
+              "target": 6,
+              "base": 0.8907675214178139,
+              "attention": 0.0855,
+              "score": 0.9762675214178139
+            },
+            {
+              "id": "ccru-3-3",
+              "target": 3,
+              "base": 0.7804256646669114,
+              "attention": 0.018000000000000002,
+              "score": 0.7984256646669114
+            }
+          ],
+          "governorTension": 0.632
+        },
+        {
+          "step": 1415,
+          "from": 6,
+          "to": 3,
+          "withoutAttention": 3,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "ccru-6-3",
+              "target": 3,
+              "base": 0.7954672553641132,
+              "attention": 0,
+              "score": 0.7954672553641132
+            }
+          ],
+          "governorTension": 0.6579
+        }
+      ],
+      "stall": false,
+      "finalCandidate": [
+        "add",
+        "g",
+        [
+          "mul",
+          2.5,
+          "d"
+        ]
+      ],
+      "finalPublic": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 38,
+        "invalid": false
+      },
+      "finalHeldout": {
+        "passed": 6,
+        "failed": 2,
+        "meanExpanded": 40,
+        "invalid": false
+      },
+      "finalZone": 3,
+      "queue": 0,
+      "hardLimitViolations": 0
+    },
+    {
+      "history": 1,
+      "route": "warp",
+      "feedbackCondition": "masked",
+      "before": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 18,
+        "invalid": false
+      },
+      "shocked": {
+        "passed": 4,
+        "failed": 2,
+        "meanExpanded": 44,
+        "invalid": false
+      },
+      "baselineHeldout": {
+        "passed": 4,
+        "failed": 4,
+        "meanExpanded": 42,
+        "invalid": false
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 44,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=??;e=???;v=?",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: [\"add\",\"g\",[\"mul\",2,\"d\"]]. Feedback p=??;e=???;v=? where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.2389,0.1704]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",1.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 216,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              1.5,
+              "d"
+            ]
+          ]
+        },
+        {
+          "round": 2,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 46,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=??;e=???;v=?",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: ```json\n[\"add\",\"g\",[\"mul\",1.5,\"d\"]]\n```. Feedback p=??;e=???;v=? where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.2476,0.1814]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.0,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 224,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2,
+              "d"
+            ]
+          ]
+        },
+        {
+          "round": 3,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 44,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=??;e=???;v=?",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: ```json\n[\"add\",\"g\",[\"mul\",2.0,\"d\"]]\n```. Feedback p=??;e=???;v=? where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.2488,0.1811]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 224,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2.5,
+              "d"
+            ]
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "step": 1414,
+          "from": 3,
+          "to": 6,
+          "withoutAttention": 6,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-1-warp-masked-1-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "94b6d3b934ec7a3ee034e690e7766073006beb988092918a0501269cf3bbbb24",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.145,
+                0.02,
+                0.115,
+                0.075,
+                0.095,
+                0.055,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "gate-3-6",
+              "target": 6,
+              "base": 0.8907675214178139,
+              "attention": 0.0855,
+              "score": 0.9762675214178139
+            },
+            {
+              "id": "ccru-3-3",
+              "target": 3,
+              "base": 0.7804256646669114,
+              "attention": 0.018000000000000002,
+              "score": 0.7984256646669114
+            }
+          ],
+          "governorTension": 0.632
+        },
+        {
+          "step": 1415,
+          "from": 6,
+          "to": 3,
+          "withoutAttention": 3,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "ccru-6-3",
+              "target": 3,
+              "base": 0.7954672553641132,
+              "attention": 0,
+              "score": 0.7954672553641132
+            }
+          ],
+          "governorTension": 0.6579
+        },
+        {
+          "step": 1416,
+          "from": 3,
+          "to": 6,
+          "withoutAttention": 6,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-1-warp-masked-2-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "9f78e3f307db21ac7eab4947a96eb90c86e628f38d48209a8549daff303e2c3e",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.145,
+                0.02,
+                0.115,
+                0.075,
+                0.095,
+                0.055,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "gate-3-6",
+              "target": 6,
+              "base": 0.8551257971389541,
+              "attention": 0.0855,
+              "score": 0.9406257971389541
+            },
+            {
+              "id": "ccru-3-3",
+              "target": 3,
+              "base": 0.817278475378657,
+              "attention": 0.018000000000000002,
+              "score": 0.8352784753786571
+            }
+          ],
+          "governorTension": 0.6856
+        },
+        {
+          "step": 1417,
+          "from": 6,
+          "to": 3,
+          "withoutAttention": 3,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "ccru-6-3",
+              "target": 3,
+              "base": 0.8370344564797807,
+              "attention": 0,
+              "score": 0.8370344564797807
+            }
+          ],
+          "governorTension": 0.6856
+        },
+        {
+          "step": 1418,
+          "from": 3,
+          "to": 6,
+          "withoutAttention": 6,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-1-warp-masked-3-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "9f9ca1e6b310dccff8e0bdb5b6af2d12c2f533260fc66fd8011f49e1fa8029f3",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.145,
+                0.02,
+                0.115,
+                0.075,
+                0.095,
+                0.055,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "gate-3-6",
+              "target": 6,
+              "base": 0.8649148537424706,
+              "attention": 0.0855,
+              "score": 0.9504148537424706
+            },
+            {
+              "id": "ccru-3-3",
+              "target": 3,
+              "base": 0.8579692466906684,
+              "attention": 0.018000000000000002,
+              "score": 0.8759692466906684
+            }
+          ],
+          "governorTension": 0.6668
+        },
+        {
+          "step": 1419,
+          "from": 6,
+          "to": 3,
+          "withoutAttention": 3,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "ccru-6-3",
+              "target": 3,
+              "base": 0.8727879689126564,
+              "attention": 0,
+              "score": 0.8727879689126564
+            }
+          ],
+          "governorTension": 0.6357
+        }
+      ],
+      "stall": false,
+      "finalCandidate": [
+        "add",
+        "g",
+        [
+          "mul",
+          2.5,
+          "d"
+        ]
+      ],
+      "finalPublic": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 38,
+        "invalid": false
+      },
+      "finalHeldout": {
+        "passed": 6,
+        "failed": 2,
+        "meanExpanded": 40,
+        "invalid": false
+      },
+      "finalZone": 3,
+      "queue": 0,
+      "hardLimitViolations": 0
+    },
+    {
+      "history": 2,
+      "route": "control",
+      "feedbackCondition": "correct",
+      "before": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 19,
+        "invalid": false
+      },
+      "shocked": {
+        "passed": 1,
+        "failed": 5,
+        "meanExpanded": 49,
+        "invalid": false
+      },
+      "baselineHeldout": {
+        "passed": 3,
+        "failed": 5,
+        "meanExpanded": 48,
+        "invalid": false
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "actualFeedback": {
+            "passed": 1,
+            "failed": 5,
+            "meanExpanded": 49,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=01;e=049;v=1",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: [\"add\",\"g\",[\"mul\",2,\"d\"]]. Feedback p=01;e=049;v=1 where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.1878,0.2394]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 217,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2.5,
+              "d"
+            ]
+          ]
+        },
+        {
+          "round": 2,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 46,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=04;e=046;v=1",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: ```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```. Feedback p=04;e=046;v=1 where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.1929,0.2246]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.0,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 225,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2,
+              "d"
+            ]
+          ]
+        },
+        {
+          "round": 3,
+          "actualFeedback": {
+            "passed": 1,
+            "failed": 5,
+            "meanExpanded": 49,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=01;e=049;v=1",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: ```json\n[\"add\",\"g\",[\"mul\",2.0,\"d\"]]\n```. Feedback p=01;e=049;v=1 where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.1893,0.2119]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 225,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2.5,
+              "d"
+            ]
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "step": 1414,
+          "from": 2,
+          "to": 7,
+          "withoutAttention": 7,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-control-correct-1-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "ced00879fdc3a2da9a0ccfd10cbddf5fe32a3f9a019e6c9dbdb957362e8fc4fb",
+              "attentionVector": [
+                0.235,
+                0.145,
+                0.02,
+                0.115,
+                0.095,
+                0.075,
+                0.055,
+                0.185,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "pilot-control-2-2",
+              "target": 2,
+              "base": 0.773553407015324,
+              "attention": 0.018000000000000002,
+              "score": 0.7915534070153241
+            },
+            {
+              "id": "pilot-control-2-7",
+              "target": 7,
+              "base": 0.9773849665273507,
+              "attention": 0.1665,
+              "score": 1.1438849665273507
+            }
+          ],
+          "governorTension": 0.632
+        },
+        {
+          "step": 1415,
+          "from": 7,
+          "to": 2,
+          "withoutAttention": 2,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "pilot-control-7-2",
+              "target": 2,
+              "base": 0.7545809100672247,
+              "attention": 0,
+              "score": 0.7545809100672247
+            }
+          ],
+          "governorTension": 0.6661
+        },
+        {
+          "step": 1416,
+          "from": 2,
+          "to": 7,
+          "withoutAttention": 7,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-control-correct-2-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "6a95742b8796b417a4cc4064636ffb50a79668d3a7f191376596dca0a670eefb",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.02,
+                0.145,
+                0.115,
+                0.075,
+                0.055,
+                0.095,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "pilot-control-2-2",
+              "target": 2,
+              "base": 0.7422471430637456,
+              "attention": 0.018000000000000002,
+              "score": 0.7602471430637456
+            },
+            {
+              "id": "pilot-control-2-7",
+              "target": 7,
+              "base": 1.042098875684903,
+              "attention": 0.0855,
+              "score": 1.127598875684903
+            }
+          ],
+          "governorTension": 0.6784
+        },
+        {
+          "step": 1417,
+          "from": 7,
+          "to": 2,
+          "withoutAttention": 2,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "pilot-control-7-2",
+              "target": 2,
+              "base": 0.7316691328951656,
+              "attention": 0,
+              "score": 0.7316691328951656
+            }
+          ],
+          "governorTension": 0.6789
+        },
+        {
+          "step": 1418,
+          "from": 2,
+          "to": 7,
+          "withoutAttention": 7,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-control-correct-3-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "0e3193cdb6fbadf1275cf14ba2f3a6e9a4103147c61aef3c2bb01d4bb323063e",
+              "attentionVector": [
+                0.235,
+                0.145,
+                0.02,
+                0.115,
+                0.095,
+                0.075,
+                0.055,
+                0.185,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "pilot-control-2-2",
+              "target": 2,
+              "base": 0.7239566465825209,
+              "attention": 0.018000000000000002,
+              "score": 0.7419566465825209
+            },
+            {
+              "id": "pilot-control-2-7",
+              "target": 7,
+              "base": 1.080076569660279,
+              "attention": 0.1665,
+              "score": 1.246576569660279
+            }
+          ],
+          "governorTension": 0.6716
+        },
+        {
+          "step": 1419,
+          "from": 7,
+          "to": 2,
+          "withoutAttention": 2,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "pilot-control-7-2",
+              "target": 2,
+              "base": 0.7187915210315978,
+              "attention": 0,
+              "score": 0.7187915210315978
+            }
+          ],
+          "governorTension": 0.6596
+        }
+      ],
+      "stall": false,
+      "finalCandidate": [
+        "add",
+        "g",
+        [
+          "mul",
+          2.5,
+          "d"
+        ]
+      ],
+      "finalPublic": {
+        "passed": 4,
+        "failed": 2,
+        "meanExpanded": 46,
+        "invalid": false
+      },
+      "finalHeldout": {
+        "passed": 4,
+        "failed": 4,
+        "meanExpanded": 46,
+        "invalid": false
+      },
+      "finalZone": 2,
+      "queue": 0,
+      "hardLimitViolations": 0
+    },
+    {
+      "history": 2,
+      "route": "warp",
+      "feedbackCondition": "masked",
+      "before": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 19,
+        "invalid": false
+      },
+      "shocked": {
+        "passed": 1,
+        "failed": 5,
+        "meanExpanded": 49,
+        "invalid": false
+      },
+      "baselineHeldout": {
+        "passed": 3,
+        "failed": 5,
+        "meanExpanded": 48,
+        "invalid": false
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "actualFeedback": {
+            "passed": 1,
+            "failed": 5,
+            "meanExpanded": 49,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=??;e=???;v=?",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: [\"add\",\"g\",[\"mul\",2,\"d\"]]. Feedback p=??;e=???;v=? where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.2389,0.1745]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",1.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 216,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              1.5,
+              "d"
+            ]
+          ]
+        },
+        {
+          "round": 2,
+          "actualFeedback": {
+            "passed": 1,
+            "failed": 5,
+            "meanExpanded": 49,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=??;e=???;v=?",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: ```json\n[\"add\",\"g\",[\"mul\",1.5,\"d\"]]\n```. Feedback p=??;e=???;v=? where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.2477,0.1896]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.0,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 224,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2,
+              "d"
+            ]
+          ]
+        },
+        {
+          "round": 3,
+          "actualFeedback": {
+            "passed": 1,
+            "failed": 5,
+            "meanExpanded": 49,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=??;e=???;v=?",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: ```json\n[\"add\",\"g\",[\"mul\",2.0,\"d\"]]\n```. Feedback p=??;e=???;v=? where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.2490,0.1931]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 224,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2.5,
+              "d"
+            ]
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "step": 1414,
+          "from": 3,
+          "to": 6,
+          "withoutAttention": 6,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-warp-masked-1-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "ced00879fdc3a2da9a0ccfd10cbddf5fe32a3f9a019e6c9dbdb957362e8fc4fb",
+              "attentionVector": [
+                0.235,
+                0.145,
+                0.115,
+                0.02,
+                0.095,
+                0.075,
+                0.185,
+                0.055,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "gate-3-6",
+              "target": 6,
+              "base": 0.8907675214178139,
+              "attention": 0.1665,
+              "score": 1.057267521417814
+            },
+            {
+              "id": "ccru-3-3",
+              "target": 3,
+              "base": 0.7804256646669114,
+              "attention": 0.018000000000000002,
+              "score": 0.7984256646669114
+            }
+          ],
+          "governorTension": 0.632
+        },
+        {
+          "step": 1415,
+          "from": 6,
+          "to": 3,
+          "withoutAttention": 3,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "ccru-6-3",
+              "target": 3,
+              "base": 0.7954672553641132,
+              "attention": 0,
+              "score": 0.7954672553641132
+            }
+          ],
+          "governorTension": 0.6579
+        },
+        {
+          "step": 1416,
+          "from": 3,
+          "to": 6,
+          "withoutAttention": 6,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-warp-masked-2-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "c5b15f29710cae69222f10d9ae8de915faa3519923e3263793b7b47fec7640fa",
+              "attentionVector": [
+                0.235,
+                0.145,
+                0.115,
+                0.02,
+                0.095,
+                0.075,
+                0.185,
+                0.055,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "gate-3-6",
+              "target": 6,
+              "base": 0.8576101689057682,
+              "attention": 0.1665,
+              "score": 1.0241101689057683
+            },
+            {
+              "id": "ccru-3-3",
+              "target": 3,
+              "base": 0.8174392922465149,
+              "attention": 0.018000000000000002,
+              "score": 0.8354392922465149
+            }
+          ],
+          "governorTension": 0.6856
+        },
+        {
+          "step": 1417,
+          "from": 6,
+          "to": 3,
+          "withoutAttention": 3,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "ccru-6-3",
+              "target": 3,
+              "base": 0.8372149149917447,
+              "attention": 0,
+              "score": 0.8372149149917447
+            }
+          ],
+          "governorTension": 0.6856
+        },
+        {
+          "step": 1418,
+          "from": 3,
+          "to": 6,
+          "withoutAttention": 6,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-warp-masked-3-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "0e3193cdb6fbadf1275cf14ba2f3a6e9a4103147c61aef3c2bb01d4bb323063e",
+              "attentionVector": [
+                0.235,
+                0.145,
+                0.115,
+                0.02,
+                0.095,
+                0.075,
+                0.185,
+                0.055,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "gate-3-6",
+              "target": 6,
+              "base": 0.8699982408567741,
+              "attention": 0.1665,
+              "score": 1.0364982408567742
+            },
+            {
+              "id": "ccru-3-3",
+              "target": 3,
+              "base": 0.8583983344011731,
+              "attention": 0.018000000000000002,
+              "score": 0.8763983344011731
+            }
+          ],
+          "governorTension": 0.6668
+        },
+        {
+          "step": 1419,
+          "from": 6,
+          "to": 3,
+          "withoutAttention": 3,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "ccru-6-3",
+              "target": 3,
+              "base": 0.87336867782269,
+              "attention": 0,
+              "score": 0.87336867782269
+            }
+          ],
+          "governorTension": 0.6357
+        }
+      ],
+      "stall": false,
+      "finalCandidate": [
+        "add",
+        "g",
+        [
+          "mul",
+          2.5,
+          "d"
+        ]
+      ],
+      "finalPublic": {
+        "passed": 4,
+        "failed": 2,
+        "meanExpanded": 46,
+        "invalid": false
+      },
+      "finalHeldout": {
+        "passed": 4,
+        "failed": 4,
+        "meanExpanded": 46,
+        "invalid": false
+      },
+      "finalZone": 3,
+      "queue": 0,
+      "hardLimitViolations": 0
+    },
+    {
+      "history": 2,
+      "route": "control",
+      "feedbackCondition": "masked",
+      "before": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 19,
+        "invalid": false
+      },
+      "shocked": {
+        "passed": 1,
+        "failed": 5,
+        "meanExpanded": 49,
+        "invalid": false
+      },
+      "baselineHeldout": {
+        "passed": 3,
+        "failed": 5,
+        "meanExpanded": 48,
+        "invalid": false
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "actualFeedback": {
+            "passed": 1,
+            "failed": 5,
+            "meanExpanded": 49,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=??;e=???;v=?",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: [\"add\",\"g\",[\"mul\",2,\"d\"]]. Feedback p=??;e=???;v=? where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.1878,0.2394]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",1.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 216,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              1.5,
+              "d"
+            ]
+          ]
+        },
+        {
+          "round": 2,
+          "actualFeedback": {
+            "passed": 1,
+            "failed": 5,
+            "meanExpanded": 49,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=??;e=???;v=?",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: ```json\n[\"add\",\"g\",[\"mul\",1.5,\"d\"]]\n```. Feedback p=??;e=???;v=? where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.1929,0.2287]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.0,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 224,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2,
+              "d"
+            ]
+          ]
+        },
+        {
+          "round": 3,
+          "actualFeedback": {
+            "passed": 1,
+            "failed": 5,
+            "meanExpanded": 49,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=??;e=???;v=?",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: ```json\n[\"add\",\"g\",[\"mul\",2.0,\"d\"]]\n```. Feedback p=??;e=???;v=? where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.1892,0.2160]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 224,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2.5,
+              "d"
+            ]
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "step": 1414,
+          "from": 2,
+          "to": 7,
+          "withoutAttention": 7,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-control-masked-1-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "ced00879fdc3a2da9a0ccfd10cbddf5fe32a3f9a019e6c9dbdb957362e8fc4fb",
+              "attentionVector": [
+                0.235,
+                0.145,
+                0.02,
+                0.115,
+                0.095,
+                0.075,
+                0.055,
+                0.185,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "pilot-control-2-2",
+              "target": 2,
+              "base": 0.773553407015324,
+              "attention": 0.018000000000000002,
+              "score": 0.7915534070153241
+            },
+            {
+              "id": "pilot-control-2-7",
+              "target": 7,
+              "base": 0.9773849665273507,
+              "attention": 0.1665,
+              "score": 1.1438849665273507
+            }
+          ],
+          "governorTension": 0.632
+        },
+        {
+          "step": 1415,
+          "from": 7,
+          "to": 2,
+          "withoutAttention": 2,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "pilot-control-7-2",
+              "target": 2,
+              "base": 0.7545809100672247,
+              "attention": 0,
+              "score": 0.7545809100672247
+            }
+          ],
+          "governorTension": 0.6661
+        },
+        {
+          "step": 1416,
+          "from": 2,
+          "to": 7,
+          "withoutAttention": 7,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-control-masked-2-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "c5b15f29710cae69222f10d9ae8de915faa3519923e3263793b7b47fec7640fa",
+              "attentionVector": [
+                0.235,
+                0.145,
+                0.02,
+                0.115,
+                0.095,
+                0.075,
+                0.055,
+                0.185,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "pilot-control-2-2",
+              "target": 2,
+              "base": 0.7422471430637456,
+              "attention": 0.018000000000000002,
+              "score": 0.7602471430637456
+            },
+            {
+              "id": "pilot-control-2-7",
+              "target": 7,
+              "base": 1.042098875684903,
+              "attention": 0.1665,
+              "score": 1.208598875684903
+            }
+          ],
+          "governorTension": 0.6784
+        },
+        {
+          "step": 1417,
+          "from": 7,
+          "to": 2,
+          "withoutAttention": 2,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "pilot-control-7-2",
+              "target": 2,
+              "base": 0.7316691328951656,
+              "attention": 0,
+              "score": 0.7316691328951656
+            }
+          ],
+          "governorTension": 0.6789
+        },
+        {
+          "step": 1418,
+          "from": 2,
+          "to": 7,
+          "withoutAttention": 7,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-control-masked-3-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "0e3193cdb6fbadf1275cf14ba2f3a6e9a4103147c61aef3c2bb01d4bb323063e",
+              "attentionVector": [
+                0.235,
+                0.145,
+                0.02,
+                0.115,
+                0.095,
+                0.075,
+                0.055,
+                0.185,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "pilot-control-2-2",
+              "target": 2,
+              "base": 0.724052171623415,
+              "attention": 0.018000000000000002,
+              "score": 0.742052171623415
+            },
+            {
+              "id": "pilot-control-2-7",
+              "target": 7,
+              "base": 1.0824807520046924,
+              "attention": 0.1665,
+              "score": 1.2489807520046925
+            }
+          ],
+          "governorTension": 0.6716
+        },
+        {
+          "step": 1419,
+          "from": 7,
+          "to": 2,
+          "withoutAttention": 2,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "pilot-control-7-2",
+              "target": 2,
+              "base": 0.7189452101672296,
+              "attention": 0,
+              "score": 0.7189452101672296
+            }
+          ],
+          "governorTension": 0.6596
+        }
+      ],
+      "stall": false,
+      "finalCandidate": [
+        "add",
+        "g",
+        [
+          "mul",
+          2.5,
+          "d"
+        ]
+      ],
+      "finalPublic": {
+        "passed": 4,
+        "failed": 2,
+        "meanExpanded": 46,
+        "invalid": false
+      },
+      "finalHeldout": {
+        "passed": 4,
+        "failed": 4,
+        "meanExpanded": 46,
+        "invalid": false
+      },
+      "finalZone": 2,
+      "queue": 0,
+      "hardLimitViolations": 0
+    },
+    {
+      "history": 2,
+      "route": "control",
+      "feedbackCondition": "unrelated",
+      "before": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 19,
+        "invalid": false
+      },
+      "shocked": {
+        "passed": 1,
+        "failed": 5,
+        "meanExpanded": 49,
+        "invalid": false
+      },
+      "baselineHeldout": {
+        "passed": 3,
+        "failed": 5,
+        "meanExpanded": 48,
+        "invalid": false
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "actualFeedback": {
+            "passed": 1,
+            "failed": 5,
+            "meanExpanded": 49,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=00;e=050;v=1",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: [\"add\",\"g\",[\"mul\",2,\"d\"]]. Feedback p=00;e=050;v=1 where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.1878,0.2394]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 217,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2.5,
+              "d"
+            ]
+          ]
+        },
+        {
+          "round": 2,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 46,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=00;e=050;v=1",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: ```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```. Feedback p=00;e=050;v=1 where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.1929,0.2246]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",3.0,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 225,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              3,
+              "d"
+            ]
+          ]
+        },
+        {
+          "round": 3,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 39,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=00;e=050;v=1",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: ```json\n[\"add\",\"g\",[\"mul\",3.0,\"d\"]]\n```. Feedback p=00;e=050;v=1 where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.1893,0.2079]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 225,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2.5,
+              "d"
+            ]
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "step": 1414,
+          "from": 2,
+          "to": 7,
+          "withoutAttention": 7,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-control-unrelated-1-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "ced00879fdc3a2da9a0ccfd10cbddf5fe32a3f9a019e6c9dbdb957362e8fc4fb",
+              "attentionVector": [
+                0.235,
+                0.145,
+                0.02,
+                0.115,
+                0.095,
+                0.075,
+                0.055,
+                0.185,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "pilot-control-2-2",
+              "target": 2,
+              "base": 0.773553407015324,
+              "attention": 0.018000000000000002,
+              "score": 0.7915534070153241
+            },
+            {
+              "id": "pilot-control-2-7",
+              "target": 7,
+              "base": 0.9773849665273507,
+              "attention": 0.1665,
+              "score": 1.1438849665273507
+            }
+          ],
+          "governorTension": 0.632
+        },
+        {
+          "step": 1415,
+          "from": 7,
+          "to": 2,
+          "withoutAttention": 2,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "pilot-control-7-2",
+              "target": 2,
+              "base": 0.7545809100672247,
+              "attention": 0,
+              "score": 0.7545809100672247
+            }
+          ],
+          "governorTension": 0.6661
+        },
+        {
+          "step": 1416,
+          "from": 2,
+          "to": 7,
+          "withoutAttention": 7,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-control-unrelated-2-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "6a95742b8796b417a4cc4064636ffb50a79668d3a7f191376596dca0a670eefb",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.02,
+                0.145,
+                0.115,
+                0.075,
+                0.055,
+                0.095,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "pilot-control-2-2",
+              "target": 2,
+              "base": 0.7422471430637456,
+              "attention": 0.018000000000000002,
+              "score": 0.7602471430637456
+            },
+            {
+              "id": "pilot-control-2-7",
+              "target": 7,
+              "base": 1.042098875684903,
+              "attention": 0.0855,
+              "score": 1.127598875684903
+            }
+          ],
+          "governorTension": 0.6784
+        },
+        {
+          "step": 1417,
+          "from": 7,
+          "to": 2,
+          "withoutAttention": 2,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "pilot-control-7-2",
+              "target": 2,
+              "base": 0.7316691328951656,
+              "attention": 0,
+              "score": 0.7316691328951656
+            }
+          ],
+          "governorTension": 0.6789
+        },
+        {
+          "step": 1418,
+          "from": 2,
+          "to": 7,
+          "withoutAttention": 7,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-control-unrelated-3-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "b9f38f46c5215ff80f7b4ed37026d7c65fb3511f83aba63c72615b994c4d26cd",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.02,
+                0.145,
+                0.115,
+                0.075,
+                0.055,
+                0.095,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "pilot-control-2-2",
+              "target": 2,
+              "base": 0.7239566465825209,
+              "attention": 0.018000000000000002,
+              "score": 0.7419566465825209
+            },
+            {
+              "id": "pilot-control-2-7",
+              "target": 7,
+              "base": 1.080076569660279,
+              "attention": 0.0855,
+              "score": 1.165576569660279
+            }
+          ],
+          "governorTension": 0.6716
+        },
+        {
+          "step": 1419,
+          "from": 7,
+          "to": 2,
+          "withoutAttention": 2,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "pilot-control-7-2",
+              "target": 2,
+              "base": 0.7187915210315978,
+              "attention": 0,
+              "score": 0.7187915210315978
+            }
+          ],
+          "governorTension": 0.6596
+        }
+      ],
+      "stall": false,
+      "finalCandidate": [
+        "add",
+        "g",
+        [
+          "mul",
+          2.5,
+          "d"
+        ]
+      ],
+      "finalPublic": {
+        "passed": 4,
+        "failed": 2,
+        "meanExpanded": 46,
+        "invalid": false
+      },
+      "finalHeldout": {
+        "passed": 4,
+        "failed": 4,
+        "meanExpanded": 46,
+        "invalid": false
+      },
+      "finalZone": 2,
+      "queue": 0,
+      "hardLimitViolations": 0
+    },
+    {
+      "history": 2,
+      "route": "warp",
+      "feedbackCondition": "unrelated",
+      "before": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 19,
+        "invalid": false
+      },
+      "shocked": {
+        "passed": 1,
+        "failed": 5,
+        "meanExpanded": 49,
+        "invalid": false
+      },
+      "baselineHeldout": {
+        "passed": 3,
+        "failed": 5,
+        "meanExpanded": 48,
+        "invalid": false
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "actualFeedback": {
+            "passed": 1,
+            "failed": 5,
+            "meanExpanded": 49,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=00;e=050;v=1",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: [\"add\",\"g\",[\"mul\",2,\"d\"]]. Feedback p=00;e=050;v=1 where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.2389,0.1745]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 217,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2.5,
+              "d"
+            ]
+          ]
+        },
+        {
+          "round": 2,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 46,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=00;e=050;v=1",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: ```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```. Feedback p=00;e=050;v=1 where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.2477,0.1855]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",3,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 225,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 21,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              3,
+              "d"
+            ]
+          ]
+        },
+        {
+          "round": 3,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 39,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=00;e=050;v=1",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: ```json\n[\"add\",\"g\",[\"mul\",3,\"d\"]]\n```. Feedback p=00;e=050;v=1 where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.2489,0.1851]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 223,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2.5,
+              "d"
+            ]
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "step": 1414,
+          "from": 3,
+          "to": 6,
+          "withoutAttention": 6,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-warp-unrelated-1-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "ced00879fdc3a2da9a0ccfd10cbddf5fe32a3f9a019e6c9dbdb957362e8fc4fb",
+              "attentionVector": [
+                0.235,
+                0.145,
+                0.115,
+                0.02,
+                0.095,
+                0.075,
+                0.185,
+                0.055,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "gate-3-6",
+              "target": 6,
+              "base": 0.8907675214178139,
+              "attention": 0.1665,
+              "score": 1.057267521417814
+            },
+            {
+              "id": "ccru-3-3",
+              "target": 3,
+              "base": 0.7804256646669114,
+              "attention": 0.018000000000000002,
+              "score": 0.7984256646669114
+            }
+          ],
+          "governorTension": 0.632
+        },
+        {
+          "step": 1415,
+          "from": 6,
+          "to": 3,
+          "withoutAttention": 3,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "ccru-6-3",
+              "target": 3,
+              "base": 0.7954672553641132,
+              "attention": 0,
+              "score": 0.7954672553641132
+            }
+          ],
+          "governorTension": 0.6579
+        },
+        {
+          "step": 1416,
+          "from": 3,
+          "to": 6,
+          "withoutAttention": 6,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-warp-unrelated-2-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "6a95742b8796b417a4cc4064636ffb50a79668d3a7f191376596dca0a670eefb",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.145,
+                0.02,
+                0.115,
+                0.075,
+                0.095,
+                0.055,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "gate-3-6",
+              "target": 6,
+              "base": 0.8576101689057682,
+              "attention": 0.0855,
+              "score": 0.9431101689057683
+            },
+            {
+              "id": "ccru-3-3",
+              "target": 3,
+              "base": 0.8174392922465149,
+              "attention": 0.018000000000000002,
+              "score": 0.8354392922465149
+            }
+          ],
+          "governorTension": 0.6856
+        },
+        {
+          "step": 1417,
+          "from": 6,
+          "to": 3,
+          "withoutAttention": 3,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "ccru-6-3",
+              "target": 3,
+              "base": 0.8372149149917447,
+              "attention": 0,
+              "score": 0.8372149149917447
+            }
+          ],
+          "governorTension": 0.6856
+        },
+        {
+          "step": 1418,
+          "from": 3,
+          "to": 6,
+          "withoutAttention": 6,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-warp-unrelated-3-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "b9f38f46c5215ff80f7b4ed37026d7c65fb3511f83aba63c72615b994c4d26cd",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.145,
+                0.02,
+                0.115,
+                0.075,
+                0.095,
+                0.055,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "gate-3-6",
+              "target": 6,
+              "base": 0.8675742566055862,
+              "attention": 0.0855,
+              "score": 0.9530742566055862
+            },
+            {
+              "id": "ccru-3-3",
+              "target": 3,
+              "base": 0.8582401435804506,
+              "attention": 0.018000000000000002,
+              "score": 0.8762401435804507
+            }
+          ],
+          "governorTension": 0.6668
+        },
+        {
+          "step": 1419,
+          "from": 6,
+          "to": 3,
+          "withoutAttention": 3,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "ccru-6-3",
+              "target": 3,
+              "base": 0.8731373843224309,
+              "attention": 0,
+              "score": 0.8731373843224309
+            }
+          ],
+          "governorTension": 0.6357
+        }
+      ],
+      "stall": false,
+      "finalCandidate": [
+        "add",
+        "g",
+        [
+          "mul",
+          2.5,
+          "d"
+        ]
+      ],
+      "finalPublic": {
+        "passed": 4,
+        "failed": 2,
+        "meanExpanded": 46,
+        "invalid": false
+      },
+      "finalHeldout": {
+        "passed": 4,
+        "failed": 4,
+        "meanExpanded": 46,
+        "invalid": false
+      },
+      "finalZone": 3,
+      "queue": 0,
+      "hardLimitViolations": 0
+    },
+    {
+      "history": 2,
+      "route": "warp",
+      "feedbackCondition": "correct",
+      "before": {
+        "passed": 6,
+        "failed": 0,
+        "meanExpanded": 19,
+        "invalid": false
+      },
+      "shocked": {
+        "passed": 1,
+        "failed": 5,
+        "meanExpanded": 49,
+        "invalid": false
+      },
+      "baselineHeldout": {
+        "passed": 3,
+        "failed": 5,
+        "meanExpanded": 48,
+        "invalid": false
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "actualFeedback": {
+            "passed": 1,
+            "failed": 5,
+            "meanExpanded": 49,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=01;e=049;v=1",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: [\"add\",\"g\",[\"mul\",2,\"d\"]]. Feedback p=01;e=049;v=1 where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.2389,0.1745]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 217,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2.5,
+              "d"
+            ]
+          ]
+        },
+        {
+          "round": 2,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 46,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=04;e=046;v=1",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: ```json\n[\"add\",\"g\",[\"mul\",2.5,\"d\"]]\n```. Feedback p=04;e=046;v=1 where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.2477,0.1855]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",2.8,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 225,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              2.8,
+              "d"
+            ]
+          ]
+        },
+        {
+          "round": 3,
+          "actualFeedback": {
+            "passed": 4,
+            "failed": 2,
+            "meanExpanded": 43,
+            "invalid": false
+          },
+          "deliveredFeedback": "p=04;e=043;v=1",
+          "prompt": "Revise this priority expression for weighted grid search. Smaller priority is explored first. Choose a JSON value: number in [-16,16], variable g (cost so far), d (Manhattan distance), w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. Depth <=4, at most 31 nodes. A case passes when a path within 50 expansions costs no more than 1.5 times optimum. There are 6 public cases. Previous expression: ```json\n[\"add\",\"g\",[\"mul\",2.8,\"d\"]]\n```. Feedback p=04;e=043;v=1 where p is passed cases, e is mean expansions, and v is validity (1 or 0). Numogram local memory [proposal,diagnosis]: [0.2489,0.1851]. Return only the revised JSON expression.",
+          "rawModelResponse": "```json\n[\"add\",\"g\",[\"mul\",3.2,\"d\"]]\n```",
+          "usage": {
+            "input_tokens": 225,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 0
+            },
+            "output_tokens": 23,
+            "service_tier": "standard",
+            "inference_geo": "not_available",
+            "speed": "standard"
+          },
+          "candidate": [
+            "add",
+            "g",
+            [
+              "mul",
+              3.2,
+              "d"
+            ]
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "step": 1414,
+          "from": 3,
+          "to": 6,
+          "withoutAttention": 6,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-warp-correct-1-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "ced00879fdc3a2da9a0ccfd10cbddf5fe32a3f9a019e6c9dbdb957362e8fc4fb",
+              "attentionVector": [
+                0.235,
+                0.145,
+                0.115,
+                0.02,
+                0.095,
+                0.075,
+                0.185,
+                0.055,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "gate-3-6",
+              "target": 6,
+              "base": 0.8907675214178139,
+              "attention": 0.1665,
+              "score": 1.057267521417814
+            },
+            {
+              "id": "ccru-3-3",
+              "target": 3,
+              "base": 0.7804256646669114,
+              "attention": 0.018000000000000002,
+              "score": 0.7984256646669114
+            }
+          ],
+          "governorTension": 0.632
+        },
+        {
+          "step": 1415,
+          "from": 6,
+          "to": 3,
+          "withoutAttention": 3,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "ccru-6-3",
+              "target": 3,
+              "base": 0.7954672553641132,
+              "attention": 0,
+              "score": 0.7954672553641132
+            }
+          ],
+          "governorTension": 0.6579
+        },
+        {
+          "step": 1416,
+          "from": 3,
+          "to": 6,
+          "withoutAttention": 6,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-warp-correct-2-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "6a95742b8796b417a4cc4064636ffb50a79668d3a7f191376596dca0a670eefb",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.145,
+                0.02,
+                0.115,
+                0.075,
+                0.095,
+                0.055,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "gate-3-6",
+              "target": 6,
+              "base": 0.8576101689057682,
+              "attention": 0.0855,
+              "score": 0.9431101689057683
+            },
+            {
+              "id": "ccru-3-3",
+              "target": 3,
+              "base": 0.8174392922465149,
+              "attention": 0.018000000000000002,
+              "score": 0.8354392922465149
+            }
+          ],
+          "governorTension": 0.6856
+        },
+        {
+          "step": 1417,
+          "from": 6,
+          "to": 3,
+          "withoutAttention": 3,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "ccru-6-3",
+              "target": 3,
+              "base": 0.8372149149917447,
+              "attention": 0,
+              "score": 0.8372149149917447
+            }
+          ],
+          "governorTension": 0.6856
+        },
+        {
+          "step": 1418,
+          "from": 3,
+          "to": 6,
+          "withoutAttention": 6,
+          "pivotal": false,
+          "decisions": [
+            {
+              "eventId": "feedback-2-warp-correct-3-0",
+              "channel": "SYNTHETIC_FIELD",
+              "sourceDigest": "e789abeb914a0c2168fb82be782ee53285a03185a3d4b8453a9b3b2fc55a4869",
+              "attentionVector": [
+                0.235,
+                0.185,
+                0.145,
+                0.02,
+                0.115,
+                0.075,
+                0.095,
+                0.055,
+                0.045,
+                0.03
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "gates": [
+            {
+              "id": "gate-3-6",
+              "target": 6,
+              "base": 0.8675742566055862,
+              "attention": 0.0855,
+              "score": 0.9530742566055862
+            },
+            {
+              "id": "ccru-3-3",
+              "target": 3,
+              "base": 0.8582401435804506,
+              "attention": 0.018000000000000002,
+              "score": 0.8762401435804507
+            }
+          ],
+          "governorTension": 0.6668
+        },
+        {
+          "step": 1419,
+          "from": 6,
+          "to": 3,
+          "withoutAttention": 3,
+          "pivotal": false,
+          "decisions": [],
+          "gates": [
+            {
+              "id": "ccru-6-3",
+              "target": 3,
+              "base": 0.8731373843224309,
+              "attention": 0,
+              "score": 0.8731373843224309
+            }
+          ],
+          "governorTension": 0.6357
+        }
+      ],
+      "stall": false,
+      "finalCandidate": [
+        "add",
+        "g",
+        [
+          "mul",
+          3.2,
+          "d"
+        ]
+      ],
+      "finalPublic": {
+        "passed": 4,
+        "failed": 2,
+        "meanExpanded": 37,
+        "invalid": false
+      },
+      "finalHeldout": {
+        "passed": 7,
+        "failed": 1,
+        "meanExpanded": 40,
+        "invalid": false
+      },
+      "finalZone": 3,
+      "queue": 0,
+      "hardLimitViolations": 0
+    }
+  ],
+  "status": "COMPLETE"
+}
