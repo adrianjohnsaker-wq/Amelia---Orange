@@ -1,0 +1,2393 @@
+{
+  "schema": "amelia.oracle-house-relay-summary/v1",
+  "planSha256": "cbc04912f76702b5e9a1d7665859a708149145f4abcefcbace1ba2e5e5b17565",
+  "historiesExpected": 16,
+  "historiesComplete": 16,
+  "missingHistories": [],
+  "problems": [],
+  "worldOriginLineages": 8,
+  "status": "COMPLETE",
+  "classification": "NO_JOINT_HOUSE_RELAY_RECOVERY_ADVANTAGE_OBSERVED",
+  "exploratory": true,
+  "breakdownHistories": 14,
+  "breakdownMinimum": 12,
+  "breakdownCalibrationMet": true,
+  "primaryContrasts": {
+    "warpLiveVsMasked": {
+      "perLineageDifferenceOutOf8": {
+        "S05W17|0": -0.5,
+        "S05W18|0": -0.75,
+        "S05W19|0": -0.25,
+        "S05W20|0": -0.25,
+        "S05W21|0": -0.75,
+        "S05W22|0": -0.75,
+        "S05W23|0": -0.25,
+        "S05W24|0": -0.5
+      },
+      "meanDifferenceOutOf8": -0.5,
+      "meanFractionDifference": -0.0625,
+      "conditionalSignFlipP": 1.0,
+      "sides": "one_positive",
+      "extremeAssignments": 256,
+      "assignments": 256,
+      "holmAdjustedP": 1.0,
+      "practicalThresholdMet": false,
+      "holmThresholdMet": false,
+      "classification": "NO_CLEAR_SIGNAL_AT_REGISTERED_THRESHOLD"
+    },
+    "warpLiveVsMisaligned": {
+      "perLineageDifferenceOutOf8": {
+        "S05W17|0": 0,
+        "S05W18|0": 0,
+        "S05W19|0": 0,
+        "S05W20|0": 0,
+        "S05W21|0": 0,
+        "S05W22|0": 0,
+        "S05W23|0": 0.25,
+        "S05W24|0": 0
+      },
+      "meanDifferenceOutOf8": 0.03125,
+      "meanFractionDifference": 0.00390625,
+      "conditionalSignFlipP": 0.5,
+      "sides": "one_positive",
+      "extremeAssignments": 128,
+      "assignments": 256,
+      "holmAdjustedP": 1.0,
+      "practicalThresholdMet": false,
+      "holmThresholdMet": false,
+      "classification": "NO_CLEAR_SIGNAL_AT_REGISTERED_THRESHOLD"
+    },
+    "warpInteraction": {
+      "perLineageDifferenceOutOf8": {
+        "S05W17|0": 0,
+        "S05W18|0": 0.0,
+        "S05W19|0": 0.0,
+        "S05W20|0": 0.0,
+        "S05W21|0": -0.25,
+        "S05W22|0": 0.0,
+        "S05W23|0": 0.25,
+        "S05W24|0": 0.5
+      },
+      "meanDifferenceOutOf8": 0.0625,
+      "meanFractionDifference": 0.0078125,
+      "conditionalSignFlipP": 0.375,
+      "sides": "one_positive",
+      "extremeAssignments": 96,
+      "assignments": 256,
+      "holmAdjustedP": 1.0,
+      "practicalThresholdMet": false,
+      "holmThresholdMet": false,
+      "classification": "NO_CLEAR_SIGNAL_AT_REGISTERED_THRESHOLD"
+    }
+  },
+  "secondaryContrasts": {
+    "houseUnderLive": {
+      "perLineageDifferenceOutOf8": {
+        "S05W17|0": 1,
+        "S05W18|0": 2.5,
+        "S05W19|0": 0.5,
+        "S05W20|0": 1.5,
+        "S05W21|0": 0.75,
+        "S05W22|0": 1.5,
+        "S05W23|0": 0.25,
+        "S05W24|0": 2
+      },
+      "meanDifferenceOutOf8": 1.25,
+      "meanFractionDifference": 0.15625,
+      "conditionalSignFlipP": 0.0078125,
+      "sides": "two",
+      "extremeAssignments": 2,
+      "assignments": 256
+    },
+    "controlLiveVsMasked": {
+      "perLineageDifferenceOutOf8": {
+        "S05W17|0": -0.5,
+        "S05W18|0": -0.75,
+        "S05W19|0": -0.25,
+        "S05W20|0": -0.25,
+        "S05W21|0": -0.5,
+        "S05W22|0": -0.75,
+        "S05W23|0": -0.5,
+        "S05W24|0": -1
+      },
+      "meanDifferenceOutOf8": -0.5625,
+      "meanFractionDifference": -0.0703125,
+      "conditionalSignFlipP": 0.0078125,
+      "sides": "two",
+      "extremeAssignments": 2,
+      "assignments": 256
+    },
+    "routeLive": {
+      "perLineageDifferenceOutOf8": {
+        "S05W17|0": 0,
+        "S05W18|0": 0,
+        "S05W19|0": 0,
+        "S05W20|0": 0,
+        "S05W21|0": -0.25,
+        "S05W22|0": 0,
+        "S05W23|0": 0.25,
+        "S05W24|0": 0
+      },
+      "meanDifferenceOutOf8": 0.0,
+      "meanFractionDifference": 0.0,
+      "conditionalSignFlipP": 1.0,
+      "sides": "two",
+      "extremeAssignments": 256,
+      "assignments": 256
+    }
+  },
+  "practicalFraction": 0.125,
+  "armSummaries": {
+    "control:native:live": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "meanHeldoutOutOf8": 5.9375,
+      "meanPublicOutOf6": 4.8125
+    },
+    "control:permuted:live": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "meanHeldoutOutOf8": 4.6875,
+      "meanPublicOutOf6": 3.625
+    },
+    "control:native:masked": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "meanHeldoutOutOf8": 5.9375,
+      "meanPublicOutOf6": 4.75
+    },
+    "control:permuted:misaligned": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "meanHeldoutOutOf8": 5.875,
+      "meanPublicOutOf6": 4.75
+    },
+    "warp:permuted:masked": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "meanHeldoutOutOf8": 5.9375,
+      "meanPublicOutOf6": 4.75
+    },
+    "warp:permuted:misaligned": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "meanHeldoutOutOf8": 5.875,
+      "meanPublicOutOf6": 4.75
+    },
+    "warp:native:live": {
+      "calls": 48,
+      "steps": 102,
+      "stalls": 0,
+      "meanHeldoutOutOf8": 5.9375,
+      "meanPublicOutOf6": 4.75
+    },
+    "control:permuted:masked": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "meanHeldoutOutOf8": 5.8125,
+      "meanPublicOutOf6": 4.75
+    },
+    "warp:native:misaligned": {
+      "calls": 48,
+      "steps": 102,
+      "stalls": 0,
+      "meanHeldoutOutOf8": 4.6875,
+      "meanPublicOutOf6": 3.625
+    },
+    "warp:permuted:live": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "meanHeldoutOutOf8": 4.6875,
+      "meanPublicOutOf6": 3.625
+    },
+    "warp:native:masked": {
+      "calls": 48,
+      "steps": 102,
+      "stalls": 0,
+      "meanHeldoutOutOf8": 5.6875,
+      "meanPublicOutOf6": 4.75
+    },
+    "control:native:misaligned": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "meanHeldoutOutOf8": 4.6875,
+      "meanPublicOutOf6": 3.625
+    }
+  },
+  "histories": [
+    {
+      "history": 1,
+      "lineage": "S05W17|0",
+      "arms": {
+        "control:native:live": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:live": {
+          "heldout": 6,
+          "public": 2,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:masked": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:misaligned": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:masked": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:misaligned": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:live": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 9,
+          "stall": false
+        },
+        "control:permuted:masked": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:misaligned": {
+          "heldout": 6,
+          "public": 2,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 9,
+          "stall": false
+        },
+        "warp:permuted:live": {
+          "heldout": 6,
+          "public": 2,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:masked": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 9,
+          "stall": false
+        },
+        "control:native:misaligned": {
+          "heldout": 6,
+          "public": 2,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "8f9fee7918a17719f197d5e04c7cf19db85245c2ee7f26370cd784d17d79b243",
+      "warpLiveVsMasked": 0,
+      "warpLiveVsMisaligned": 0,
+      "warpInteraction": 0,
+      "houseUnderLive": 0,
+      "controlLiveVsMasked": 0,
+      "routeLive": 0
+    },
+    {
+      "history": 2,
+      "lineage": "S05W17|0",
+      "arms": {
+        "warp:native:masked": {
+          "heldout": 4,
+          "public": 4,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 9,
+          "stall": false
+        },
+        "control:permuted:masked": {
+          "heldout": 4,
+          "public": 4,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:masked": {
+          "heldout": 4,
+          "public": 4,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:misaligned": {
+          "heldout": 2,
+          "public": 2,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 9,
+          "stall": false
+        },
+        "control:native:misaligned": {
+          "heldout": 2,
+          "public": 2,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:live": {
+          "heldout": 4,
+          "public": 4,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:live": {
+          "heldout": 2,
+          "public": 2,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:masked": {
+          "heldout": 4,
+          "public": 4,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:misaligned": {
+          "heldout": 4,
+          "public": 4,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:live": {
+          "heldout": 4,
+          "public": 4,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 9,
+          "stall": false
+        },
+        "control:permuted:live": {
+          "heldout": 2,
+          "public": 2,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:misaligned": {
+          "heldout": 4,
+          "public": 4,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "6f7de0e5af4f03e791fede50beccd26e86f82f8e29dc7e49e5d2ef94f2f87a13",
+      "warpLiveVsMasked": -1,
+      "warpLiveVsMisaligned": 0,
+      "warpInteraction": 0,
+      "houseUnderLive": 2,
+      "controlLiveVsMasked": -1,
+      "routeLive": 0
+    },
+    {
+      "history": 3,
+      "lineage": "S05W18|0",
+      "arms": {
+        "warp:permuted:misaligned": {
+          "heldout": 7,
+          "public": 2,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:misaligned": {
+          "heldout": 7,
+          "public": 2,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:live": {
+          "heldout": 7,
+          "public": 2,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:misaligned": {
+          "heldout": 5,
+          "public": 2,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:masked": {
+          "heldout": 7,
+          "public": 2,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:misaligned": {
+          "heldout": 5,
+          "public": 2,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:live": {
+          "heldout": 5,
+          "public": 2,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:live": {
+          "heldout": 5,
+          "public": 2,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:masked": {
+          "heldout": 5,
+          "public": 2,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:masked": {
+          "heldout": 7,
+          "public": 2,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:masked": {
+          "heldout": 5,
+          "public": 2,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:live": {
+          "heldout": 7,
+          "public": 2,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "19450e9e74b41b259b4a55b8e4032bbf817b7e067314a720bee79577b46b73e2",
+      "warpLiveVsMasked": 0,
+      "warpLiveVsMisaligned": 0,
+      "warpInteraction": 0,
+      "houseUnderLive": 2,
+      "controlLiveVsMasked": 0,
+      "routeLive": 0
+    },
+    {
+      "history": 4,
+      "lineage": "S05W18|0",
+      "arms": {
+        "control:native:misaligned": {
+          "heldout": 3,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:live": {
+          "heldout": 3,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:misaligned": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:masked": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:misaligned": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:misaligned": {
+          "heldout": 3,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:masked": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:live": {
+          "heldout": 3,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:masked": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:masked": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:live": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:live": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "5cacb488c9c12893eb5105102a267a4760bf7c960eda47a6efcacde301474cfa",
+      "warpLiveVsMasked": -1.5,
+      "warpLiveVsMisaligned": 0,
+      "warpInteraction": 0.0,
+      "houseUnderLive": 3,
+      "controlLiveVsMasked": -1.5,
+      "routeLive": 0
+    },
+    {
+      "history": 5,
+      "lineage": "S05W19|0",
+      "arms": {
+        "warp:permuted:live": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 0,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:misaligned": {
+          "heldout": 6,
+          "public": 6,
+          "before": 6,
+          "shocked": 0,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:live": {
+          "heldout": 6,
+          "public": 6,
+          "before": 6,
+          "shocked": 0,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:masked": {
+          "heldout": 6,
+          "public": 6,
+          "before": 6,
+          "shocked": 0,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:masked": {
+          "heldout": 6,
+          "public": 6,
+          "before": 6,
+          "shocked": 0,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:masked": {
+          "heldout": 6,
+          "public": 6,
+          "before": 6,
+          "shocked": 0,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:misaligned": {
+          "heldout": 6,
+          "public": 6,
+          "before": 6,
+          "shocked": 0,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:misaligned": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 0,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:live": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 0,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:live": {
+          "heldout": 6,
+          "public": 6,
+          "before": 6,
+          "shocked": 0,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:masked": {
+          "heldout": 6,
+          "public": 6,
+          "before": 6,
+          "shocked": 0,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:misaligned": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 0,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "205a7cc6e2c9429bbf0224dce55f1a6f53588c9a85a12b2a6d8e23936265447a",
+      "warpLiveVsMasked": -0.5,
+      "warpLiveVsMisaligned": 0,
+      "warpInteraction": 0.0,
+      "houseUnderLive": 1,
+      "controlLiveVsMasked": -0.5,
+      "routeLive": 0
+    },
+    {
+      "history": 6,
+      "lineage": "S05W19|0",
+      "arms": {
+        "control:permuted:misaligned": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:live": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:live": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:masked": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:masked": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:misaligned": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:misaligned": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:masked": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:live": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:misaligned": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:masked": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:live": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "47cbcf0ed45c1ae35d5a34240fea008adbdea220c46463d0e358e5b4d50420c1",
+      "warpLiveVsMasked": 0,
+      "warpLiveVsMisaligned": 0,
+      "warpInteraction": 0,
+      "houseUnderLive": 0,
+      "controlLiveVsMasked": 0,
+      "routeLive": 0
+    },
+    {
+      "history": 7,
+      "lineage": "S05W20|0",
+      "arms": {
+        "warp:permuted:live": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:live": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:misaligned": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:misaligned": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:misaligned": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:live": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:masked": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:masked": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:masked": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:masked": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:misaligned": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:live": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "1820984cc51473d7507a1fdd2128f2c8b309899a796ab5c27a58f712a8c46542",
+      "warpLiveVsMasked": 0.5,
+      "warpLiveVsMisaligned": 0,
+      "warpInteraction": 0.0,
+      "houseUnderLive": 1,
+      "controlLiveVsMasked": 0.5,
+      "routeLive": 0
+    },
+    {
+      "history": 8,
+      "lineage": "S05W20|0",
+      "arms": {
+        "warp:permuted:masked": {
+          "heldout": 7,
+          "public": 5,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:misaligned": {
+          "heldout": 7,
+          "public": 5,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:masked": {
+          "heldout": 7,
+          "public": 5,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:live": {
+          "heldout": 5,
+          "public": 3,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:misaligned": {
+          "heldout": 7,
+          "public": 5,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:masked": {
+          "heldout": 7,
+          "public": 5,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:misaligned": {
+          "heldout": 5,
+          "public": 3,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:masked": {
+          "heldout": 7,
+          "public": 5,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:live": {
+          "heldout": 7,
+          "public": 5,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:misaligned": {
+          "heldout": 5,
+          "public": 3,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:live": {
+          "heldout": 7,
+          "public": 5,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:live": {
+          "heldout": 5,
+          "public": 3,
+          "before": 6,
+          "shocked": 1,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "2bcc14815912e4391c39799ff6f65587b135191641a88913599fc85d4bb6c03f",
+      "warpLiveVsMasked": -1,
+      "warpLiveVsMisaligned": 0,
+      "warpInteraction": 0,
+      "houseUnderLive": 2,
+      "controlLiveVsMasked": -1,
+      "routeLive": 0
+    },
+    {
+      "history": 9,
+      "lineage": "S05W21|0",
+      "arms": {
+        "warp:native:misaligned": {
+          "heldout": 4,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:masked": {
+          "heldout": 5,
+          "public": 6,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:misaligned": {
+          "heldout": 5,
+          "public": 6,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:masked": {
+          "heldout": 5,
+          "public": 6,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:live": {
+          "heldout": 5,
+          "public": 6,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:live": {
+          "heldout": 5,
+          "public": 6,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:live": {
+          "heldout": 4,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:live": {
+          "heldout": 4,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:masked": {
+          "heldout": 5,
+          "public": 6,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:misaligned": {
+          "heldout": 5,
+          "public": 6,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:misaligned": {
+          "heldout": 4,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:masked": {
+          "heldout": 5,
+          "public": 6,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "2303375963572934a082b4ed9bb0d48487ba7c02354dcefe48c0a0531912028a",
+      "warpLiveVsMasked": -0.5,
+      "warpLiveVsMisaligned": 0,
+      "warpInteraction": 0.0,
+      "houseUnderLive": 1,
+      "controlLiveVsMasked": -0.5,
+      "routeLive": 0
+    },
+    {
+      "history": 10,
+      "lineage": "S05W21|0",
+      "arms": {
+        "control:native:masked": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:live": {
+          "heldout": 4,
+          "public": 3,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:misaligned": {
+          "heldout": 4,
+          "public": 3,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:masked": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:misaligned": {
+          "heldout": 4,
+          "public": 3,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:masked": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:live": {
+          "heldout": 4,
+          "public": 3,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:masked": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:live": {
+          "heldout": 5,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:misaligned": {
+          "heldout": 4,
+          "public": 3,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:live": {
+          "heldout": 4,
+          "public": 3,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:misaligned": {
+          "heldout": 4,
+          "public": 3,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "9dc7e33905c91485d9aff70045549bfabdcb719d1724f69fe91cf0bb1b1cfbe4",
+      "warpLiveVsMasked": -1,
+      "warpLiveVsMisaligned": 0,
+      "warpInteraction": -0.5,
+      "houseUnderLive": 0.5,
+      "controlLiveVsMasked": -0.5,
+      "routeLive": -0.5
+    },
+    {
+      "history": 11,
+      "lineage": "S05W22|0",
+      "arms": {
+        "control:native:live": {
+          "heldout": 5,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:live": {
+          "heldout": 5,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:masked": {
+          "heldout": 5,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:misaligned": {
+          "heldout": 3,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:masked": {
+          "heldout": 5,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:misaligned": {
+          "heldout": 5,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:misaligned": {
+          "heldout": 3,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:live": {
+          "heldout": 3,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:misaligned": {
+          "heldout": 5,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:masked": {
+          "heldout": 5,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:masked": {
+          "heldout": 5,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:live": {
+          "heldout": 3,
+          "public": 5,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "01fd13b30e937a484b06e5673004fdbb46895db8c64dbdcb27a1a3b42a1e7cfd",
+      "warpLiveVsMasked": -1,
+      "warpLiveVsMisaligned": 0,
+      "warpInteraction": 0,
+      "houseUnderLive": 2,
+      "controlLiveVsMasked": -1,
+      "routeLive": 0
+    },
+    {
+      "history": 12,
+      "lineage": "S05W22|0",
+      "arms": {
+        "warp:native:live": {
+          "heldout": 7,
+          "public": 6,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:misaligned": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:masked": {
+          "heldout": 7,
+          "public": 6,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:masked": {
+          "heldout": 7,
+          "public": 6,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:masked": {
+          "heldout": 7,
+          "public": 6,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:live": {
+          "heldout": 7,
+          "public": 6,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:live": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:misaligned": {
+          "heldout": 7,
+          "public": 6,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:misaligned": {
+          "heldout": 7,
+          "public": 6,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:live": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:masked": {
+          "heldout": 7,
+          "public": 6,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:misaligned": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 3,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "3b1a072d9ae23c2d385f44a34f1fe3c5e0ab75f002d98094a3e7a5e143dbe2d2",
+      "warpLiveVsMasked": -0.5,
+      "warpLiveVsMisaligned": 0,
+      "warpInteraction": 0.0,
+      "houseUnderLive": 1,
+      "controlLiveVsMasked": -0.5,
+      "routeLive": 0
+    },
+    {
+      "history": 13,
+      "lineage": "S05W23|0",
+      "arms": {
+        "control:native:live": {
+          "heldout": 4,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:masked": {
+          "heldout": 4,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:misaligned": {
+          "heldout": 4,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:misaligned": {
+          "heldout": 4,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:masked": {
+          "heldout": 4,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:misaligned": {
+          "heldout": 4,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:live": {
+          "heldout": 4,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:live": {
+          "heldout": 4,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:live": {
+          "heldout": 4,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:misaligned": {
+          "heldout": 4,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:masked": {
+          "heldout": 4,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:masked": {
+          "heldout": 4,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": false,
+      "auditResultSha256": "704045b6b4097b0012fcbebc8d68381a8842ff0dcd712d35f01114f8f35e663a",
+      "warpLiveVsMasked": 0,
+      "warpLiveVsMisaligned": 0,
+      "warpInteraction": 0,
+      "houseUnderLive": 0,
+      "controlLiveVsMasked": 0,
+      "routeLive": 0
+    },
+    {
+      "history": 14,
+      "lineage": "S05W23|0",
+      "arms": {
+        "warp:native:misaligned": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:masked": {
+          "heldout": 7,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:live": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:masked": {
+          "heldout": 7,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:masked": {
+          "heldout": 7,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:live": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:misaligned": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:live": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:masked": {
+          "heldout": 7,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:misaligned": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:live": {
+          "heldout": 7,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:misaligned": {
+          "heldout": 6,
+          "public": 4,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "61e79e4f0d26ac03cd36e476188ac1b97dff393406712c7109aac450f7822336",
+      "warpLiveVsMasked": -0.5,
+      "warpLiveVsMisaligned": 0.5,
+      "warpInteraction": 0.5,
+      "houseUnderLive": 0.5,
+      "controlLiveVsMasked": -1,
+      "routeLive": 0.5
+    },
+    {
+      "history": 15,
+      "lineage": "S05W24|0",
+      "arms": {
+        "warp:native:masked": {
+          "heldout": 7,
+          "public": 6,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:masked": {
+          "heldout": 7,
+          "public": 6,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:masked": {
+          "heldout": 7,
+          "public": 6,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:misaligned": {
+          "heldout": 7,
+          "public": 6,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:live": {
+          "heldout": 7,
+          "public": 6,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:live": {
+          "heldout": 7,
+          "public": 6,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:misaligned": {
+          "heldout": 7,
+          "public": 6,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:live": {
+          "heldout": 5,
+          "public": 3,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:misaligned": {
+          "heldout": 5,
+          "public": 3,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:live": {
+          "heldout": 5,
+          "public": 3,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:misaligned": {
+          "heldout": 5,
+          "public": 3,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:masked": {
+          "heldout": 7,
+          "public": 6,
+          "before": 6,
+          "shocked": 2,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "f98af3a70212a025f50de2311d5d8807181d2955e2b85fb2e93c08b9010eb565",
+      "warpLiveVsMasked": -1,
+      "warpLiveVsMisaligned": 0,
+      "warpInteraction": 0,
+      "houseUnderLive": 2,
+      "controlLiveVsMasked": -1,
+      "routeLive": 0
+    },
+    {
+      "history": 16,
+      "lineage": "S05W24|0",
+      "arms": {
+        "control:native:live": {
+          "heldout": 8,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:misaligned": {
+          "heldout": 8,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:misaligned": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:masked": {
+          "heldout": 8,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:masked": {
+          "heldout": 8,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:permuted:live": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:misaligned": {
+          "heldout": 8,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:permuted:live": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control:native:masked": {
+          "heldout": 8,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:masked": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:live": {
+          "heldout": 8,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp:native:misaligned": {
+          "heldout": 6,
+          "public": 5,
+          "before": 6,
+          "shocked": 5,
+          "baselineHeldout": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": false,
+      "auditResultSha256": "142d051cca9a023e7237a6f4414925b8562555171453e4cfde8e0defbc541f9a",
+      "warpLiveVsMasked": 0,
+      "warpLiveVsMisaligned": 0,
+      "warpInteraction": 1,
+      "houseUnderLive": 2,
+      "controlLiveVsMasked": -1,
+      "routeLive": 0
+    }
+  ],
+  "responsiveness": {
+    "firstPromptPairs": 64,
+    "sameAfterRedactingHouse": 64,
+    "firstCandidateLiveVsMaskedDifferent": 0,
+    "firstCandidateLiveVsMisalignedDifferent": 0,
+    "separatedReadouts": 576,
+    "minimumLiveMisalignedSeparation": 0.3488710327574324
+  },
+  "totals": {
+    "modelCalls": 576,
+    "inputTokens": 139870,
+    "outputTokens": 13150,
+    "elapsedMs": 304175,
+    "stalls": 0,
+    "invalidFinalCandidates": 0,
+    "gateSteps": 1170,
+    "signalPivotalSteps": 12,
+    "runtimeReplayedGates": 1170,
+    "runtimeRelaysChecked": 576
+  },
+  "interpretation": "House triplets are engineered permutations, the 2/7 route is adapted, and the comparison lineages later shared world input. The transmitted scalar is a gate-learning contrast, not a task-performance signal. World-level sign-flip p values require conditional exchangeability."
+}
