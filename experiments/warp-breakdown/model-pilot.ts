@@ -125,10 +125,14 @@ function selectedFeedback(kind:string,actual:Diag,yoked:Diag){
   const text=kind==='correct'?feedback(actual):kind==='unrelated'?feedback(yoked):masked;
   assert.equal(text.length,masked.length);return text;
 }
-function adaptiveVector(proposal:number,diagnostic:number){
+function adaptiveVector(proposal:number,diagnostic:number,failed:number){
   const weights=[0.235,0.185,0.145,0.115,0.095,0.075,0.055,0.045,0.03,0.02];
-  const v=Array(10).fill(0);v[diagnostic]=weights[0];v[proposal]=weights[9];
-  let j=1;for(let i=0;i<10;i++)if(i!==proposal&&i!==diagnostic)v[i]=weights[j++];
+  // Encode public failure count as a ranked diagnostic-zone weight. This is
+  // an explicit designed mapping, not a discovered Outside representation.
+  const rank=Math.max(0,Math.min(5,6-failed));
+  const v=Array(10).fill(0);v[diagnostic]=weights[rank];v[proposal]=weights[9];
+  const remaining=weights.filter((_,i)=>i!==rank&&i!==9);
+  let j=0;for(let i=0;i<10;i++)if(i!==proposal&&i!==diagnostic)v[i]=remaining[j++];
   return v;
 }
 function scoredStep(r:OutsideRecoveryRuntime,input?:ReturnType<typeof offer>){
@@ -175,6 +179,7 @@ async function run(h:any,route:'warp'|'control',kind:'correct'|'unrelated'|'mask
   const heldout=Array.from({length:8},(_,i)=>grid(`${h.seed}:heldout:${i}`,true));
   const yokeCases=Array.from({length:6},(_,i)=>grid(`${h.seed}:unrelated:${i}`,true));
   const baseAst:Ast=['add','g',['mul',2,'d']];let candidate:unknown=baseAst;
+  let previousRaw=JSON.stringify(baseAst);
   const before=evaluate(candidate,publicBase),shocked=evaluate(candidate,publicShock),
     baselineHeldout=evaluate(candidate,heldout),yoked=evaluate(['add','g',0],yokeCases);
   const rounds:any[]=[],gates:any[]=[];let stall=false;
@@ -182,11 +187,11 @@ async function run(h:any,route:'warp'|'control',kind:'correct'|'unrelated'|'mask
     const actual=evaluate(candidate,publicShock);if(actual.failed===0)break;
     let reached=false;
     for(let tick=0;tick<plan.maxDiagnosticTicks;tick++){
-      // The same genuine diagnostic supplies a matched-strength numeric pulse
-      // to Amelia. Feedback control changes only what the model receives.
+      // Public failure count is encoded in an adaptive-strength numeric pulse.
+      // Feedback control changes only what the model receives.
       const id=`feedback-${h.id}-${route}-${kind}-${round}-${tick}`;
       const input=r.getDeferredInputs().length?undefined:
-        offer(id,adaptiveVector(proposal,diagnostic),{history:h.id,round,tick,diagnostic:actual});
+        offer(id,adaptiveVector(proposal,diagnostic,actual.failed),{history:h.id,round,tick,diagnostic:actual});
       const q=scoredStep(r,input);gates.push(q);
       if(q.from===proposal&&q.to===diagnostic){reached=true;break;}
     }
@@ -198,11 +203,12 @@ async function run(h:any,route:'warp'|'control',kind:'correct'|'unrelated'|'mask
       `w (next cell cost), x or y, or [op,left,right] where op is add, sub, mul, min, max. `+
       `Depth <=4, at most 31 nodes. A case passes when a path within ${plan.expansionCap} expansions `+
       `costs no more than ${plan.maxCostRatio} times optimum. There are 6 public cases. `+
-      `Previous expression: ${JSON.stringify(candidate)}. Feedback ${delivered}. `+
+      `Previous expression: ${previousRaw.slice(0,1024)}. `+
+      `Feedback ${delivered} where p is passed cases, e is mean expansions, and v is validity (1 or 0). `+
       `Numogram local memory [proposal,diagnosis]: [${bias[proposal].toFixed(4)},${bias[diagnostic].toFixed(4)}]. `+
       `Return only the revised JSON expression.`;
     const response=await generate(prompt,round),parsed=parse(response.text);
-    candidate=validAst(parsed)?parsed:null;
+    candidate=validAst(parsed)?parsed:null;previousRaw=response.text;
     rounds.push({round,actualFeedback:actual,deliveredFeedback:delivered,prompt,
       rawModelResponse:response.text,usage:response.usage,candidate});
     const back=scoredStep(r);gates.push(back);assert.deepEqual([back.from,back.to],[diagnostic,proposal]);
