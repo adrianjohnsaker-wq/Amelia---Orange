@@ -47,5 +47,7 @@
   "calibration": "Separate fixture-only seeds model-pilot-smoke, calibration-only-east and calibration-only-west informed cap and ratio. These are disjoint from the random study seeds.",
   "maxModelGenerations": 36,
   "maxTransportAttempts": 108,
-  "signalMapping": "Public failure count maps to a ranked adaptive-profile weight at the diagnostic zone; this is a deliberately designed encoding."
+  "signalMapping": "Public failure count maps to a ranked adaptive-profile weight at the diagnostic zone; this is a deliberately designed encoding.",
+  "feedbackControlBoundary": "Only the model-facing diagnostic text is correct, unrelated, or masked. All conditions still feed the real public failure count into Amelia, so the masked arm is not an all-channel no-feedback condition.",
+  "modelInputMatching": "Diagnostic text has equal character length; equal model token count is not guaranteed."
 }
