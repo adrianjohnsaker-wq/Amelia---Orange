@@ -1,0 +1,67 @@
+name: WBD-2 bounded model pilot
+
+on:
+  push:
+    branches: [warp-adaptive-calibration-20261107]
+    paths: [experiments/warp-breakdown/model-pilot-RUN]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  pilot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out the study code
+        uses: actions/checkout@v4
+      - name: Check out the preserved state
+        uses: actions/checkout@v4
+        with:
+          ref: 737fa1b1f1dee675e613341fd61f568538a3cb9a
+          path: pinned-outside-state
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned TypeScript runner
+        run: npm install --prefix "$RUNNER_TEMP/wbd-model-deps" --save-exact tsx@4.23.15
+      - name: Run bounded model pilot
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          WBD_MODEL_MODE: anthropic
+        run: |
+          node --import "$RUNNER_TEMP/wbd-model-deps/node_modules/tsx/dist/loader.mjs" \
+            experiments/warp-breakdown/model-pilot.ts \
+            pinned-outside-state/state.json \
+            experiments/warp-breakdown/model-pilot-plan.json model-pilot-output
+      - name: Save available result on the study branch
+        if: always()
+        shell: bash
+        run: |
+          if [ ! -f model-pilot-output/result.json ]; then
+            echo 'No result file was produced.'
+            exit 0
+          fi
+          mkdir -p experiments/warp-breakdown/results
+          cp model-pilot-output/result.json experiments/warp-breakdown/results/model-pilot-result.json
+          if [ -f "$RUNNER_TEMP/wbd-model-deps/package-lock.json" ]; then
+            cp "$RUNNER_TEMP/wbd-model-deps/package-lock.json" experiments/warp-breakdown/results/model-pilot-package-lock.json
+          fi
+          git config user.name 'amelia-warp-study'
+          git config user.email 'amelia-warp-study@users.noreply.github.com'
+          git add experiments/warp-breakdown/results/model-pilot-result.json
+          if [ -f experiments/warp-breakdown/results/model-pilot-package-lock.json ]; then
+            git add experiments/warp-breakdown/results/model-pilot-package-lock.json
+          fi
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Record bounded WBD-2 model pilot'
+          git push origin HEAD:refs/heads/warp-adaptive-calibration-20261107
+      - name: Upload available result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wbd2-model-pilot
+          path: model-pilot-output/
+          if-no-files-found: ignore
+          retention-days: 90
