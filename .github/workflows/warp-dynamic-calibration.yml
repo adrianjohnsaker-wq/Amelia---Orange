@@ -1,0 +1,145 @@
+name: Warp dynamic recovery calibration
+on:
+  push:
+    branches: [warp-dynamic-recovery-20261107]
+    paths: ['experiments/warp-breakdown/dynamic/CALIBRATE']
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 6a8becd4ae9a2e3ad84ed32b878b4868405bb6f1
+          path: oracle-code
+      - uses: actions/checkout@v4
+        with:
+          ref: 361fcbda7c69609242f179a557f6adb6ff6a1596
+          path: oracle-snapshot
+      - uses: actions/checkout@v4
+        with:
+          ref: fecb487f29da86470584d4d67003606ed951bf00
+          path: oracle-before
+      - uses: actions/checkout@v4
+        with:
+          ref: 88b6ed11ea499ae66ab71de45bbe2e4d05535ddb
+          path: oracle-after
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify sealed design and inputs
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,subprocess
+          from pathlib import Path
+          p=Path('experiments/warp-breakdown/dynamic');o=p.parent/'oracle-rerun';d=json.loads((p/'registration.json').read_bytes())
+          fs={'calibrateSha256':p/'calibrate.ts','datasetSha256':p/'dataset.ts','commonSha256':p/'common.ts','prepareSha256':p/'prepare.mjs',
+              'calAuditSha256':p/'audit-cal.py','calAggregateSha256':p/'aggregate-cal.py','dataAuditSha256':p/'audit-data.py',
+              'aggregateSha256':p/'aggregate.py','auditSupportSha256':p/'audit-support.py','replaySha256':p/'compare-replay.py','registrationDocSha256':p/'REGISTRATION.md',
+              'adapterSha256':o/'adapter.mjs','validateSha256':o/'validate.mjs','exchangeSha256':o/'validation-exchanges.json',
+              'calWorkflowSha256':Path('.github/workflows/warp-dynamic-calibration.yml'),'runWorkflowSha256':Path('.github/workflows/warp-dynamic-evaluation.yml'),
+              'checkpointSha256':Path('oracle-snapshot/state.json'),'beforeSha256':Path('oracle-before/state.json'),'afterSha256':Path('oracle-after/state.json')}
+          for k,f in fs.items():
+              if hashlib.sha256(f.read_bytes()).hexdigest()!=d[k]:raise SystemExit(k+' mismatch')
+          for folder,key in [('oracle-code','oracleCodeCommit'),('oracle-snapshot','checkpointCommit'),('oracle-before','beforeCommit'),('oracle-after','afterCommit')]:
+              if subprocess.check_output(['git','-C',folder,'rev-parse','HEAD'],text=True).strip()!=d[key]:raise SystemExit(key+' mismatch')
+          print('Sealed calibration and evaluation code verified')
+          PY
+      - name: Install TypeScript runner
+        run: npm install --prefix "$RUNNER_TEMP/dynamic-deps" --save-exact tsx@4.23.15
+      - name: Replay historical Oracle
+        env:
+          ORACLE_CODE_ROOT: ${{ github.workspace }}/oracle-code
+        run: |
+          P=experiments/warp-breakdown/oracle-rerun
+          node --import "$RUNNER_TEMP/dynamic-deps/node_modules/tsx/dist/loader.mjs" "$P/validate.mjs" oracle-before/state.json oracle-after/state.json "$P/validation-exchanges.json" "$RUNNER_TEMP/validation.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: warp-dynamic-validation
+          path: ${{ runner.temp }}/validation.json
+          if-no-files-found: ignore
+          retention-days: 90
+  calibrate:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        lineage: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 6a8becd4ae9a2e3ad84ed32b878b4868405bb6f1
+          path: oracle-code
+      - uses: actions/checkout@v4
+        with:
+          ref: 361fcbda7c69609242f179a557f6adb6ff6a1596
+          path: oracle-snapshot
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --prefix "$RUNNER_TEMP/dynamic-deps" --save-exact tsx@4.23.15
+      - name: Calibrate and replay same-state gate choices
+        env:
+          ORACLE_CODE_ROOT: ${{ github.workspace }}/oracle-code
+          DYNAMIC_LINEAGE_INDEX: ${{ matrix.lineage }}
+        run: |
+          set -eu
+          P=experiments/warp-breakdown/dynamic
+          LOADER="$RUNNER_TEMP/dynamic-deps/node_modules/tsx/dist/loader.mjs"
+          node --import "$LOADER" "$P/calibrate.ts" oracle-snapshot/state.json "$P/registration.json" calibration-output
+          node --import "$LOADER" "$P/calibrate.ts" oracle-snapshot/state.json "$P/registration.json" "$RUNNER_TEMP/calibration-replay"
+          python3 "$P/compare-replay.py" "$P/registration.json" calibration-output/calibration.json "$RUNNER_TEMP/calibration-replay/calibration.json" calibration-output/replay-audit.json
+          python3 "$P/audit-cal.py" "$P/registration.json" calibration-output/calibration.json "$P/audit-support.py"
+      - name: Preserve dependency lock
+        if: always()
+        run: |
+          if [ -d calibration-output ] && [ -f "$RUNNER_TEMP/dynamic-deps/package-lock.json" ]; then cp "$RUNNER_TEMP/dynamic-deps/package-lock.json" calibration-output/package-lock.json; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: warp-dynamic-calibration-${{ matrix.lineage }}
+          path: calibration-output/
+          if-no-files-found: ignore
+          retention-days: 90
+  freeze:
+    needs: [validate, calibrate]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: warp-dynamic-calibration-*
+          path: calibration-artifacts
+      - name: Audit and freeze route selections
+        run: |
+          P=experiments/warp-breakdown/dynamic
+          python3 "$P/aggregate-cal.py" "$P/registration.json" "$P/audit-cal.py" calibration-artifacts "$P/calibration-results"
+      - name: Commit calibration and route choices
+        if: always()
+        run: |
+          P=experiments/warp-breakdown/dynamic/calibration-results
+          if [ ! -d "$P" ]; then exit 0; fi
+          git config user.name 'amelia-dynamic-calibration'
+          git config user.email 'amelia-dynamic-calibration@users.noreply.github.com'
+          git add "$P/"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Freeze prospective gate-sensitivity calibration'
+          git push origin HEAD:refs/heads/warp-dynamic-recovery-20261107
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: warp-dynamic-calibration-aggregate
+          path: experiments/warp-breakdown/dynamic/calibration-results/
+          if-no-files-found: ignore
+          retention-days: 90

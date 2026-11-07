@@ -1,0 +1,117 @@
+name: Warp dynamic recovery evaluation
+on:
+  push:
+    branches: [warp-dynamic-recovery-20261107]
+    paths: ['experiments/warp-breakdown/dynamic/RUN']
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 6a8becd4ae9a2e3ad84ed32b878b4868405bb6f1
+          path: oracle-code
+      - uses: actions/checkout@v4
+        with:
+          ref: 361fcbda7c69609242f179a557f6adb6ff6a1596
+          path: oracle-snapshot
+      - name: Verify frozen calibration and fresh evaluation manifest
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,subprocess
+          from pathlib import Path
+          p=Path('experiments/warp-breakdown/dynamic');old=p.parent/'oracle-rerun';H=lambda f:hashlib.sha256(f.read_bytes()).hexdigest()
+          d=json.loads((p/'registration.json').read_bytes());s=json.loads((p/'calibration-results/selection.json').read_bytes());r=json.loads((p/'run-plan.json').read_bytes())
+          assert s['status']=='FROZEN' and s['registrationSha256']==H(p/'registration.json') and r['registrationSha256']==H(p/'registration.json') and r['selectionSha256']==H(p/'calibration-results/selection.json')
+          assert r['pairsPerPartition']==d['pairsPerPartition'] and r['experimentSeed']!=d['calibrationSeed']
+          fs={'datasetSha256':p/'dataset.ts','commonSha256':p/'common.ts','prepareSha256':p/'prepare.mjs','dataAuditSha256':p/'audit-data.py','aggregateSha256':p/'aggregate.py',
+              'auditSupportSha256':p/'audit-support.py','replaySha256':p/'compare-replay.py','adapterSha256':old/'adapter.mjs','runWorkflowSha256':Path('.github/workflows/warp-dynamic-evaluation.yml'),'checkpointSha256':Path('oracle-snapshot/state.json')}
+          for k,f in fs.items():
+              if H(f)!=d[k]:raise SystemExit(k+' mismatch')
+          if subprocess.check_output(['git','-C','oracle-code','rev-parse','HEAD'],text=True).strip()!=d['oracleCodeCommit']:raise SystemExit('Oracle code mismatch')
+          print('Frozen choices, fresh manifest and source verified')
+          PY
+  study:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        lineage: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 6a8becd4ae9a2e3ad84ed32b878b4868405bb6f1
+          path: oracle-code
+      - uses: actions/checkout@v4
+        with:
+          ref: 361fcbda7c69609242f179a557f6adb6ff6a1596
+          path: oracle-snapshot
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --prefix "$RUNNER_TEMP/dynamic-deps" --save-exact tsx@4.23.15
+      - name: Run and replay switching challenge histories
+        env:
+          ORACLE_CODE_ROOT: ${{ github.workspace }}/oracle-code
+          DYNAMIC_LINEAGE_INDEX: ${{ matrix.lineage }}
+        run: |
+          set -eu
+          P=experiments/warp-breakdown/dynamic
+          LOADER="$RUNNER_TEMP/dynamic-deps/node_modules/tsx/dist/loader.mjs"
+          node --import "$LOADER" "$P/dataset.ts" oracle-snapshot/state.json "$P/registration.json" "$P/calibration-results/selection.json" "$P/run-plan.json" evaluation-output
+          node --import "$LOADER" "$P/dataset.ts" oracle-snapshot/state.json "$P/registration.json" "$P/calibration-results/selection.json" "$P/run-plan.json" "$RUNNER_TEMP/evaluation-replay"
+          python3 "$P/compare-replay.py" "$P/registration.json" evaluation-output/result.json "$RUNNER_TEMP/evaluation-replay/result.json" evaluation-output/replay-audit.json
+          python3 "$P/audit-data.py" "$P/registration.json" "$P/calibration-results/selection.json" "$P/run-plan.json" evaluation-output/result.json "$P/audit-support.py"
+      - name: Preserve dependency lock
+        if: always()
+        run: |
+          if [ -d evaluation-output ] && [ -f "$RUNNER_TEMP/dynamic-deps/package-lock.json" ]; then cp "$RUNNER_TEMP/dynamic-deps/package-lock.json" evaluation-output/package-lock.json; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: warp-dynamic-evaluation-${{ matrix.lineage }}
+          path: evaluation-output/
+          if-no-files-found: ignore
+          retention-days: 90
+  aggregate:
+    needs: [validate, study]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: warp-dynamic-evaluation-*
+          path: evaluation-artifacts
+      - name: Audit and aggregate switching recovery
+        run: |
+          P=experiments/warp-breakdown/dynamic
+          python3 "$P/aggregate.py" "$P/registration.json" "$P/calibration-results/selection.json" "$P/run-plan.json" "$P/audit-data.py" "$P/audit-support.py" evaluation-artifacts "$P/results"
+      - name: Commit available outcomes
+        if: always()
+        run: |
+          P=experiments/warp-breakdown/dynamic/results
+          if [ ! -d "$P" ]; then exit 0; fi
+          git config user.name 'amelia-dynamic-recovery'
+          git config user.email 'amelia-dynamic-recovery@users.noreply.github.com'
+          git add "$P/"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Record dynamic Warp recovery outcomes'
+          git push origin HEAD:refs/heads/warp-dynamic-recovery-20261107
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: warp-dynamic-evaluation-aggregate
+          path: experiments/warp-breakdown/dynamic/results/
+          if-no-files-found: ignore
+          retention-days: 90
