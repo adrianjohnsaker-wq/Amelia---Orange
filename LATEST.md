@@ -1,1 +1,1 @@
-RC-2 live ledger: 5 epochs; latest 2026-11-07T15:44:41Z: zPre=9, fed 167
+RC-2 live ledger: 6 epochs; latest 2026-11-07T20:18:32Z: zPre=8, fed 163
