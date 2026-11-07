@@ -1,0 +1,45 @@
+# Warp mechanism: feedback memory and held-out recovery
+
+**Prospective experiment, after the disclosed exploratory pilot.** This study asks whether a measurable Warp-specific recovery mechanism exists: can the 3/6 route's House learner retain task-relevant feedback more usefully than the matched 2/7 control, and can a fixed external readout turn it into better performance on fresh challenges?
+
+The study is model-free: it uses the actual saved Oracle learner, Numogram runtime and Governor in experimental copies, and a separately trained numerical decoder. It does not call or update an LLM, execute model-generated code, change the live Oracle, or ingest a new world-stream item. The simulated challenge outcomes are known to be generated forward in time. This is a mechanism test, not a test of retrocausality or an independently originating Outside signal.
+
+## Development pilot and selection
+
+The prior House-relay experiment established that presenting a number can change a model's proposals but did not establish that the number carries task-relevant information. Before sealing this plan, an exploratory pilot examined seeded weighted 9×9 grid searches under several cost ratios, search limits and priority weights. The committed `task-pilot.py`/`.txt` and `task-pilot2.py`/`.txt` record the tested alternatives. We selected an exact-optimality condition, 50-expansion cap, cost levels 1 and 3, and two fixed policies `g+1.5d` and `g+4d`; each was favoured by a different cost regime in that development sample. This task family and the candidates were deliberately chosen after looking at the pilot; they are not a blind discovery.
+
+In the first 24-step learner pilot, feedback from `g+2.5d` was weakly informative about these regimes. In the second pilot, feedback from `g+1.5d` separated the development regimes more clearly, and the 3/6 House transition trace showed a possible lineage-dependent lead over the adapted control at cue weight 0.054. At the native weight 0.35 both routes separated the pilot regimes readily. Both pilot programs and their full outputs are committed, including the first less-informative diagnostic. The same 12 development task seeds were reused across lineages and the pilot must not be treated as an independent result. All training and evaluation histories below use a fresh sealed master seed and a different seed namespace.
+
+## System and challenge
+
+Start from the eight separately raised Oracle world-origin checkpoints `S05W17|0`–`S05W24|0`, which later received a shared world stream. Preserve the original separately stored House `L.V`, `L.S`, `L.D`, process-field memory (PFM), Numogram runtime and Governor, through the historical-replay-validated adapter. Each copy uses the same prior preparation as the previous study: normalize into zone 3 if needed, then eight alternating cues with gain 0.054. The comparison subsequently varies cue gain **0.054 and 0.35**; 0.35 is the native Oracle cue gain, while 0.054 is the earlier attenuated experimental value. This does not retrospectively alter the common preparation.
+
+The Warp copy uses its 29-gate graph with proposal/diagnostic zones 3/6. The comparison copy is explicitly adapted: project into 2, replace the 2/7 exits with the parameter-matched dwell and reciprocal loop, and map the three corresponding House entries; it has 24 gates and is not native 2/7. The two routes have exactly 24 input opportunities, with the same feedback bits per paired case. Actual passage, Governor state and input cues remain recorded.
+
+For each origin, produce **24 paired training histories and 24 fresh paired test histories** using independent seed derivations. Each pair has the same generated grid layouts but two changed cost regimes (level 1 or 3). The common pre-change cost regime is level 2. Assess the original `g+2.5d` routine on six matched pre-change and post-change grids; losing at least two cases is recorded as breakdown. All histories remain in analysis regardless of breakdown.
+
+After the change, evaluate the diagnostic `g+1.5d` on 24 new public grids in that regime. Each observed success targets the route's proposal zone and each observed failure targets its diagnostic zone for one step. This is **deliberate encoding of performance feedback**, not external or unexplained information. Freeze the two route copies before generating 16 different held-out grids in the same regime. On those held-out grids evaluate both fixed actions `g+1.5d` and `g+4d` and the original `g+2.5d` routine. The readout must choose an action before seeing those held-out grid outcomes.
+
+## Competing mechanisms and causal swaps
+
+Train identical standardized nearest-centroid classifiers, using **only training histories and their regime labels**, separately for each lineage, route and cue gain. They predict the changed regime and select its prespecified candidate (`g+1.5d` for level 1; `g+4d` for level 3). Input feature sets are: (1) change in the House `V/S/D` triplets on the three matching route edges, (2) change in the two relevant PFM biases and hysteresis, (3) House plus PFM, (4) counts of observed route transitions, (5) last feedback bit, (6) count of successes in the last four observations, and (7) count over all 24 observations. Apply frozen classifiers to test histories and compare both regime prediction and held-out cases solved. The best fixed action is selected from training outcomes only. As a secondary generalization check, train the House, PFM and last-four classifiers on the other seven world-origin lineages and test on the held-out lineage.
+
+The House features are functions of a fixed starting state and the same feedback-conditioned trajectory. Therefore they cannot contain information from the synthetic challenge that was not somehow present in its inputs; comparison with full feedback is essential. A trained external decoder making a useful choice is not, by itself, an autonomous native Oracle policy.
+
+For each matched pair of **test** histories with different regimes, transplant the whole House learner and PFM separately into the other history's otherwise unchanged recipient state. Verify hashes of the fields outside the transplanted component before and after. Apply the frozen component decoder to the donor feature in the fixed recipient challenge, and compare the chosen policy and held-out reward. Also run 12 no-cue steps from the original and transplanted states and compare the actual route paths. Record whether donor components truly differed; an identical donor is not an informative swap. Swaps are causal interventions on the component in the stated recipient background, but follow-up paths and external decoder decisions answer different questions.
+
+## Presealed outcomes and decision
+
+Within each cue gain, average matched held-out cases by lineage. The primary contrasts are:
+
+1. House-decoded regime accuracy on Warp minus the corresponding adapted 2/7 House accuracy (fraction correct).
+2. Held-out cases solved by the Warp House-selected policy minus the control House-selected policy (out of 16).
+3. Held-out cases solved by the Warp House-selected policy minus the Warp last-four-feedback-selected policy (out of 16).
+
+Use exact one-sided positive sign flips across the eight lineage means, and Holm-correct across all **six tests** (three contrasts × two gains). A gain earns an exploratory Warp-mechanism lead only if all three corrected p-values are at most 0.05, the mean accuracy advantage is at least **0.05**, both reward advantages are at least **one case out of 16**, and the training data favour `g+1.5d` in regime 1 and `g+4d` in regime 3 in every origin. Failed task specialization makes that gain inconclusive; otherwise failure of any criterion is `NO_REGISTERED_WARP_ADVANTAGE_OBSERVED`. Report all contrasts, feature baselines, decisions, breakdown frequencies and swaps, including failures.
+
+The initial task pilot informed regime and candidate selection; the fresh held-out histories were not examined before this plan was sealed. Results are exploratory for separately raised but later jointly exposed lineages. The sign-flip tests assume conditional lineage-level exchangeability and have low power with eight origins. A null is not proof of equality. Any advantage is confined to this deliberately constructed task and trained readout until replicated in genuinely different environments and a meaningful task interface. No metaphysical interpretation is assumed.
+
+## Verification
+
+The workflow verifies source, development pilot and state hashes; repeats the 43-exchange/129-transition historical adapter replay; independently regenerates every task score from the seeds; and re-executes each entire lineage dataset before accepting its memory and gate paths. The replay checks each swap's non-component boundary within each execution; only non-component hash values containing wall-clock metadata are ignored *between* executions. The output is incomplete if any lineage or audit is missing. `plan.json` seals the seed, source hashes, split, sample sizes, candidate policies, outcomes, control definitions and thresholds.

@@ -1,0 +1,157 @@
+name: Warp mechanism and recovery transfer
+on:
+  push:
+    branches: [warp-mechanism-transfer-20261107]
+    paths: ['experiments/warp-breakdown/mechanism/RUN']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 6a8becd4ae9a2e3ad84ed32b878b4868405bb6f1
+          path: oracle-code
+      - uses: actions/checkout@v4
+        with:
+          ref: 361fcbda7c69609242f179a557f6adb6ff6a1596
+          path: oracle-snapshot
+      - uses: actions/checkout@v4
+        with:
+          ref: fecb487f29da86470584d4d67003606ed951bf00
+          path: oracle-before
+      - uses: actions/checkout@v4
+        with:
+          ref: 88b6ed11ea499ae66ab71de45bbe2e4d05535ddb
+          path: oracle-after
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify the sealed sources and inputs
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,subprocess
+          from pathlib import Path
+          p=Path('experiments/warp-breakdown/mechanism');old=p.parent/'oracle-rerun';d=json.loads((p/'plan.json').read_bytes())
+          files={'scriptSha256':p/'dataset.ts','prepareSha256':p/'prepare.mjs','auditSha256':p/'audit.py',
+                 'replayAuditSha256':p/'compare-replay.py','aggregatorSha256':p/'aggregate.py','registrationSha256':p/'REGISTRATION.md',
+                 'pilotScriptSha256':p/'pilot-diagnostic15.ts','pilotDataSha256':p/'pilot-diagnostic15.json.gz',
+                 'pilot25ScriptSha256':p/'pilot-diagnostic25.ts','pilot25DataSha256':p/'pilot-diagnostic25.json.gz',
+                 'taskPilotSha256':p/'task-pilot2.py','taskPilotOutputSha256':p/'task-pilot2.txt',
+                 'taskPilot1Sha256':p/'task-pilot.py','taskPilot1OutputSha256':p/'task-pilot.txt',
+                 'adapterSha256':old/'adapter.mjs','validateSha256':old/'validate.mjs','exchangeSha256':old/'validation-exchanges.json',
+                 'workflowSha256':Path('.github/workflows/warp-mechanism-transfer.yml'),
+                 'checkpointSha256':Path('oracle-snapshot/state.json'),'beforeSha256':Path('oracle-before/state.json'),'afterSha256':Path('oracle-after/state.json')}
+          for k,f in files.items():
+              if hashlib.sha256(f.read_bytes()).hexdigest()!=d[k]:raise SystemExit(k+' mismatch')
+          for folder,key in [('oracle-code','oracleCodeCommit'),('oracle-snapshot','checkpointCommit'),('oracle-before','beforeCommit'),('oracle-after','afterCommit')]:
+              if subprocess.check_output(['git','-C',folder,'rev-parse','HEAD'],text=True).strip()!=d[key]:raise SystemExit(key+' mismatch')
+          print('Registration, development pilot, runtime and checkpoints verified')
+          PY
+      - name: Install pinned TypeScript runner
+        run: npm install --prefix "$RUNNER_TEMP/mechanism-deps" --save-exact tsx@4.23.15
+      - name: Replay historical Oracle transitions
+        env:
+          ORACLE_CODE_ROOT: ${{ github.workspace }}/oracle-code
+        run: |
+          P=experiments/warp-breakdown/oracle-rerun
+          node --import "$RUNNER_TEMP/mechanism-deps/node_modules/tsx/dist/loader.mjs" "$P/validate.mjs" \
+            oracle-before/state.json oracle-after/state.json "$P/validation-exchanges.json" "$RUNNER_TEMP/oracle-validation.json"
+      - name: Save validation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: warp-mechanism-validation
+          path: ${{ runner.temp }}/oracle-validation.json
+          if-no-files-found: ignore
+          retention-days: 90
+  study:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        lineage: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 6a8becd4ae9a2e3ad84ed32b878b4868405bb6f1
+          path: oracle-code
+      - uses: actions/checkout@v4
+        with:
+          ref: 361fcbda7c69609242f179a557f6adb6ff6a1596
+          path: oracle-snapshot
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned TypeScript runner
+        run: npm install --prefix "$RUNNER_TEMP/mechanism-deps" --save-exact tsx@4.23.15
+      - name: Generate and replay paired challenge histories
+        env:
+          ORACLE_CODE_ROOT: ${{ github.workspace }}/oracle-code
+          MECH_LINEAGE_INDEX: ${{ matrix.lineage }}
+        run: |
+          set -eu
+          P=experiments/warp-breakdown/mechanism
+          LOADER="$RUNNER_TEMP/mechanism-deps/node_modules/tsx/dist/loader.mjs"
+          node --import "$LOADER" "$P/dataset.ts" oracle-snapshot/state.json "$P/plan.json" mechanism-output
+          node --import "$LOADER" "$P/dataset.ts" oracle-snapshot/state.json "$P/plan.json" "$RUNNER_TEMP/mechanism-replay"
+          python3 "$P/compare-replay.py" "$P/plan.json" mechanism-output/result.json "$RUNNER_TEMP/mechanism-replay/result.json" mechanism-output/replay-audit.json
+          python3 "$P/audit.py" "$P/plan.json" "$P/dataset.ts" mechanism-output/result.json
+      - name: Preserve dependency lock
+        if: always()
+        run: |
+          if [ -d mechanism-output ] && [ -f "$RUNNER_TEMP/mechanism-deps/package-lock.json" ]; then
+            cp "$RUNNER_TEMP/mechanism-deps/package-lock.json" mechanism-output/package-lock.json
+          fi
+      - name: Upload lineage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: warp-mechanism-lineage-${{ matrix.lineage }}
+          path: mechanism-output/
+          if-no-files-found: ignore
+          retention-days: 90
+  aggregate:
+    needs: [validate, study]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: warp-mechanism-lineage-*
+          path: mechanism-artifacts
+      - name: Audit and calculate held-out comparisons
+        run: |
+          P=experiments/warp-breakdown/mechanism
+          python3 "$P/aggregate.py" "$P/plan.json" "$P/dataset.ts" experiments/warp-breakdown/oracle-rerun/adapter.mjs "$P/audit.py" mechanism-artifacts "$P/results"
+      - name: Save available outcomes on the study branch
+        if: always()
+        shell: bash
+        run: |
+          P=experiments/warp-breakdown/mechanism/results
+          if [ ! -d "$P" ]; then exit 0; fi
+          git config user.name 'amelia-warp-mechanism-study'
+          git config user.email 'amelia-warp-mechanism-study@users.noreply.github.com'
+          git add "$P/"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Record Warp mechanism transfer outcomes'
+          git push origin HEAD:refs/heads/warp-mechanism-transfer-20261107
+      - name: Upload aggregate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: warp-mechanism-aggregate
+          path: experiments/warp-breakdown/mechanism/results/
+          if-no-files-found: ignore
+          retention-days: 90
