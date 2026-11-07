@@ -908,12 +908,12 @@
     "2d9234cf8d838679652ae7da959e5fd862b71d5a009cac06a91a032353780237"
   ],
   "runtimeState": {
-    "stepCount": 1429,
-    "currentZone": 1,
+    "stepCount": 1430,
+    "currentZone": 8,
     "lastTransition": {
-      "from": 9,
-      "to": 1,
-      "digest": "c7db67b3b4a3971e8bd61adaa1b2ce1cd7ada8e56db943bc48feb3dff286f6fe"
+      "from": 1,
+      "to": 8,
+      "digest": "834ea0db9c163ae3620feb83ca388e0c353c22247cce8d11d0734b96098f1ae1"
     },
     "memoryState": {
       "events": [
@@ -77086,32 +77086,80 @@
             }
           ],
           "seed": 0
+        },
+        {
+          "blockIndex": 1429,
+          "depth": 1429,
+          "targetZone": 1,
+          "fluxDelta": 0.005,
+          "phaseCoherence": 1,
+          "strainRelaxation": 0.08,
+          "eventDigest": "ac0ec70c07d538f6f5f9bd82e97e3183e09c1597cc166fb721fc1f924469e628",
+          "timestamp": 1429,
+          "kind": "CONSOLIDATE",
+          "fromZone": 1,
+          "seed": 0
+        },
+        {
+          "blockIndex": 1430,
+          "depth": 1430,
+          "targetZone": 8,
+          "fluxDelta": 0.045944,
+          "phaseCoherence": 0.841797,
+          "strainRelaxation": 0.025,
+          "eventDigest": "834ea0db9c163ae3620feb83ca388e0c353c22247cce8d11d0734b96098f1ae1",
+          "timestamp": 1430,
+          "kind": "STEP",
+          "fromZone": 1,
+          "encounters": [
+            {
+              "eventId": "subdecadence:subdecadence:42313032376-1-14",
+              "channel": "SUBDECADENCE",
+              "sourceDigest": "450377b68b37af1bc101a5819cbe2a9f0e9927f4cbd792e71aaef9b3c8b34787",
+              "attentionVector": [
+                0.1,
+                0.2,
+                0.1,
+                0,
+                0,
+                0.2,
+                0.1,
+                0,
+                0.1,
+                0.2
+              ],
+              "disposition": "ATTEND",
+              "reason": "Encounter admitted to Numogram-weighted passage.",
+              "applied": true
+            }
+          ],
+          "seed": 0
         }
       ],
       "zoneStrainHistory": [
         0,
-        0.9362684697562499,
-        0.03046173,
+        0.8430259863999999,
+        0.02954788,
         0,
         0,
         0,
         0,
-        0.0234557,
-        0.90424999578,
-        0.9232886432249998
+        0.02275203,
+        0.9241104375,
+        0.89558998
       ],
-      "hysteresisTension": 0.8005866209795278
+      "hysteresisTension": 0.6338177672479999
     },
     "governorState": {
       "momentumDamping": 0.88,
       "advisoryWeight": 0.72,
       "antiLockIntegrity": 100,
-      "identityContinuityScore": 0.976630509809532,
+      "identityContinuityScore": 0.9748578276321125,
       "scaffoldStage": 3,
       "hardLimitViolations": 0,
-      "consolidationEntropy": 0.1064,
-      "deformationTension": 0.6772,
-      "auditCount": 1429,
+      "consolidationEntropy": 0.105,
+      "deformationTension": 0.6702,
+      "auditCount": 1430,
       "isAntiLockActive": false
     },
     "qabbalaZones": {
@@ -77120,11 +77168,11 @@
         "name": "Zone-0: Pandemonium / Barker Index",
         "syzygyPair": 9,
         "current": "Abyss",
-        "activation": 0.8442432655476566,
-        "conductivity": 0.3041110857491996,
-        "polarCharge": -0.22,
-        "phaseAngle": 1.8339967061512992,
-        "deformationStress": 0.09900370893861399,
+        "activation": 0.8522854700207483,
+        "conductivity": 0.3111567951496146,
+        "polarCharge": -0.319,
+        "phaseAngle": 1.9539967061512993,
+        "deformationStress": 0.08453346086632388,
         "chronodemon": "Lur-0 (Murrumur)",
         "archetypeWeight": 0.82
       },
@@ -77133,11 +77181,11 @@
         "name": "Zone-1: Plex / Origin Surge",
         "syzygyPair": 8,
         "current": "Plex",
-        "activation": 0.5806774507105651,
-        "conductivity": 0.5553556834624527,
-        "polarCharge": 0.58,
-        "phaseAngle": 6.235348368871257,
-        "deformationStress": 0.23815170043785971,
+        "activation": 0.621313301145063,
+        "conductivity": 0.557781949485354,
+        "polarCharge": 0.617,
+        "phaseAngle": 0.11105055147590814,
+        "deformationStress": 0.2627610055434255,
         "chronodemon": "Du-1 (Oddod)",
         "archetypeWeight": 0.74
       },
@@ -77146,11 +77194,11 @@
         "name": "Zone-2: Lemur / Cryptic Weft",
         "syzygyPair": 7,
         "current": "Lemur",
-        "activation": 0.3222383939449691,
-        "conductivity": 0.20578364744879196,
-        "polarCharge": 0.207,
-        "phaseAngle": 5.409928454524538,
-        "deformationStress": 0.13997245894129218,
+        "activation": 0.3395567011403993,
+        "conductivity": 0.20257478147159994,
+        "polarCharge": 0.264,
+        "phaseAngle": 5.602809425588821,
+        "deformationStress": 0.08138537272675495,
         "chronodemon": "Tri-2 (Gharab)",
         "archetypeWeight": 0.68
       },
@@ -77159,11 +77207,11 @@
         "name": "Zone-3: Barker / Surge Channel",
         "syzygyPair": 6,
         "current": "Barker",
-        "activation": 0.8488336383479331,
-        "conductivity": 0.22563004309583345,
-        "polarCharge": 0.154,
-        "phaseAngle": 1.388852217343568,
-        "deformationStress": 0.12766519912700025,
+        "activation": 0.852569753538525,
+        "conductivity": 0.23268143816660394,
+        "polarCharge": -0.041,
+        "phaseAngle": 1.6185904482485804,
+        "deformationStress": 0.08279919833292768,
         "chronodemon": "Kra-3 (Bubastis)",
         "archetypeWeight": 0.86
       },
@@ -77172,11 +77220,11 @@
         "name": "Zone-4: Mid-Decad Anchor",
         "syzygyPair": 5,
         "current": "Plex",
-        "activation": 0.730796469048248,
-        "conductivity": 0.19138046066298028,
-        "polarCharge": -0.558,
-        "phaseAngle": 2.439018535792881,
-        "deformationStress": 0.32637553466206454,
+        "activation": 0.6679992664674109,
+        "conductivity": 0.1947404459923285,
+        "polarCharge": -0.605,
+        "phaseAngle": 2.7043771886914447,
+        "deformationStress": 0.31078538421178026,
         "chronodemon": "Tet-4 (Lurmur)",
         "archetypeWeight": 0.91
       },
@@ -77185,11 +77233,11 @@
         "name": "Zone-5: Hyper-Grounded Flux",
         "syzygyPair": 4,
         "current": "Lemur",
-        "activation": 0.3665888629083811,
-        "conductivity": 0.2067078100267206,
-        "polarCharge": -0.058,
-        "phaseAngle": 4.552979416063125,
-        "deformationStress": 0.35348608491189354,
+        "activation": 0.3409280924438642,
+        "conductivity": 0.20352637187559788,
+        "polarCharge": 0.049,
+        "phaseAngle": 4.855214189414061,
+        "deformationStress": 0.32421693921883743,
         "chronodemon": "Pent-5 (Subtle-Gharab)",
         "archetypeWeight": 0.77
       },
@@ -77198,11 +77246,11 @@
         "name": "Zone-6: Barker / Return Spine",
         "syzygyPair": 3,
         "current": "Barker",
-        "activation": 0.8236658952920748,
-        "conductivity": 0.25081700062995343,
-        "polarCharge": 0.067,
-        "phaseAngle": 1.4892384791628652,
-        "deformationStress": 0.07661419444468667,
+        "activation": 0.834683839825445,
+        "conductivity": 0.25751067742646233,
+        "polarCharge": -0.214,
+        "phaseAngle": 1.8297727931893233,
+        "deformationStress": 0.07018873097046402,
         "chronodemon": "Hex-6 (Chrono-Spine)",
         "archetypeWeight": 0.83
       },
@@ -77211,11 +77259,11 @@
         "name": "Zone-7: Lemur / Phase Threshold",
         "syzygyPair": 2,
         "current": "Lemur",
-        "activation": 0.340517100070093,
-        "conductivity": 0.2472720268600838,
-        "polarCharge": -0.158,
-        "phaseAngle": 4.230580800137893,
-        "deformationStress": 0.09062296490009912,
+        "activation": 0.2975062502089516,
+        "conductivity": 0.24322215186426283,
+        "polarCharge": -0.031,
+        "phaseAngle": 4.607697129454037,
+        "deformationStress": 0.10560036074515819,
         "chronodemon": "Hept-7 (Gate-Master)",
         "archetypeWeight": 0.88
       },
@@ -77224,11 +77272,11 @@
         "name": "Zone-8: Plex / Vortex Terminal",
         "syzygyPair": 1,
         "current": "Plex",
-        "activation": 0.39164920074704285,
-        "conductivity": 0.5077052972138939,
-        "polarCharge": 0.165,
-        "phaseAngle": 5.147682890690205,
-        "deformationStress": 0.2361025999708178,
+        "activation": 0.4467803548546057,
+        "conductivity": 0.506640904310986,
+        "polarCharge": 0.34,
+        "phaseAngle": 5.576114387334183,
+        "deformationStress": 0.22562635703236583,
         "chronodemon": "Oct-8 (Vortex-Loom)",
         "archetypeWeight": 0.93
       },
@@ -77237,11 +77285,11 @@
         "name": "Zone-9: Pandemonium / Terminal Horizon",
         "syzygyPair": 0,
         "current": "Abyss",
-        "activation": 0.9200041696221852,
-        "conductivity": 0.5133045782585587,
-        "polarCharge": 0.506,
-        "phaseAngle": 0.9885342691788106,
-        "deformationStress": 0.1768887232596229,
+        "activation": 0.9691496370847401,
+        "conductivity": 0.5226875710002535,
+        "polarCharge": 0.111,
+        "phaseAngle": 1.4558724576090998,
+        "deformationStress": 0.20689133365119347,
         "chronodemon": "Enn-9 (Syzygetic-Apex)",
         "archetypeWeight": 0.98
       }
@@ -77253,7 +77301,7 @@
         "target": 9,
         "label": "Abyssal Chasm (0::9)",
         "flux": 0.94,
-        "permeability": 0.9686981947473847,
+        "permeability": 0.9693747818342155,
         "isOpen": true,
         "resistance": 0.08
       },
@@ -77263,7 +77311,7 @@
         "target": 8,
         "label": "Murmur Current (1::8)",
         "flux": 0.82,
-        "permeability": 0.7813873451772139,
+        "permeability": 0.7796530383997957,
         "isOpen": true,
         "resistance": 0.12
       },
@@ -77273,7 +77321,7 @@
         "target": 7,
         "label": "Sub-Crypt Bridge (2::7)",
         "flux": 0.74,
-        "permeability": 0.795516746182256,
+        "permeability": 0.7956852248829552,
         "isOpen": true,
         "resistance": 0.18
       },
@@ -77283,7 +77331,7 @@
         "target": 6,
         "label": "Barker Loop (3::6)",
         "flux": 0.88,
-        "permeability": 0.8965018231255343,
+        "permeability": 0.8962742429015815,
         "isOpen": true,
         "resistance": 0.11
       },
@@ -77293,7 +77341,7 @@
         "target": 5,
         "label": "Centroid Fold (4::5)",
         "flux": 0.65,
-        "permeability": 0.7262384465854392,
+        "permeability": 0.7228439439899267,
         "isOpen": true,
         "resistance": 0.22
       },
@@ -77313,7 +77361,7 @@
         "target": 4,
         "label": "Mesochron Descent (2->4)",
         "flux": 0.49,
-        "permeability": 0.4533089396655507,
+        "permeability": 0.45708921920864753,
         "isOpen": true,
         "resistance": 0.29
       },
@@ -77323,7 +77371,7 @@
         "target": 7,
         "label": "Barker Ascendance (4->7)",
         "flux": 0.63,
-        "permeability": 0.9628665722426758,
+        "permeability": 0.9594950132869549,
         "isOpen": true,
         "resistance": 0.21
       },
@@ -77333,7 +77381,7 @@
         "target": 8,
         "label": "Crown Egress (7->8)",
         "flux": 0.85,
-        "permeability": 0.9770044544929506,
+        "permeability": 0.9773885171671792,
         "isOpen": true,
         "resistance": 0.14
       },
@@ -77343,7 +77391,7 @@
         "target": 9,
         "label": "Terminal Horizon Incursion (8->9)",
         "flux": 0.91,
-        "permeability": 0.6485936374460911,
+        "permeability": 0.6534128741257572,
         "isOpen": true,
         "resistance": 0.09
       },
@@ -77353,7 +77401,7 @@
         "target": 1,
         "label": "Cyclic Re-entry (9->1)",
         "flux": 0.87,
-        "permeability": 0.9477658268028873,
+        "permeability": 0.9448309314118989,
         "isOpen": true,
         "resistance": 0.1
       }
@@ -100222,242 +100270,40 @@
         "centroidFoldActivation": 0.5487,
         "subCryptActivation": 0.3314,
         "barkerLoopActivation": 0.8362
+      },
+      {
+        "step": 1430,
+        "meanConductivity": 0.3233,
+        "syzygeticTorqueVector": [
+          0.1871,
+          0.2214,
+          0.2311,
+          -0.0251,
+          -0.214
+        ],
+        "evenPoleEnergy": 3.1413,
+        "oddCurrentEnergy": 3.0815,
+        "centroidFoldActivation": 0.5045,
+        "subCryptActivation": 0.3185,
+        "barkerLoopActivation": 0.8436
       }
     ],
     "deformationTensor": [
-      0.3725069146828401,
-      0.5185553797024854,
-      0.3629884848061166,
-      0.3863764621008661,
-      0.3377343922018176,
-      0.380872862747562,
-      0.34040631590772596,
-      0.42653941248184,
-      0.4639573513159464,
-      0.5697097290620052
+      0.36581824199201424,
+      0.5180456609945324,
+      0.3571483292021485,
+      0.37877759891246915,
+      0.3463319418023157,
+      0.38586006657112576,
+      0.33388043666086287,
+      0.4194874598950059,
+      0.46279080160176733,
+      0.5657438092914646
     ],
     "currentObjective": "Bounded Zone-9 Phase Coherence & Canalization",
     "suppressRelaySteering": false,
     "deferredEncounters": [],
     "snapshots": [
-      {
-        "step": 1302,
-        "timestamp": 1793981520639,
-        "zones": {
-          "0": {
-            "id": 0,
-            "name": "Zone-0: Pandemonium / Barker Index",
-            "syzygyPair": 9,
-            "current": "Abyss",
-            "activation": 0.08564293215012106,
-            "conductivity": 0.1,
-            "polarCharge": 0.057,
-            "phaseAngle": 5.443552627690047,
-            "deformationStress": 0.14724251374937533,
-            "chronodemon": "Lur-0 (Murrumur)",
-            "archetypeWeight": 0.82
-          },
-          "1": {
-            "id": 1,
-            "name": "Zone-1: Plex / Origin Surge",
-            "syzygyPair": 8,
-            "current": "Plex",
-            "activation": 0.27531513034998006,
-            "conductivity": 0.10137190540213425,
-            "polarCharge": 0.114,
-            "phaseAngle": 5.139304107650283,
-            "deformationStress": 0.28600936074931654,
-            "chronodemon": "Du-1 (Oddod)",
-            "archetypeWeight": 0.74
-          },
-          "2": {
-            "id": 2,
-            "name": "Zone-2: Lemur / Cryptic Weft",
-            "syzygyPair": 7,
-            "current": "Lemur",
-            "activation": 0.25093768398941363,
-            "conductivity": 0.1,
-            "polarCharge": 0.249,
-            "phaseAngle": 6.147968364190718,
-            "deformationStress": 0.09429288087032209,
-            "chronodemon": "Tri-2 (Gharab)",
-            "archetypeWeight": 0.68
-          },
-          "3": {
-            "id": 3,
-            "name": "Zone-3: Barker / Surge Channel",
-            "syzygyPair": 6,
-            "current": "Barker",
-            "activation": 0.20963751759550653,
-            "conductivity": 0.1,
-            "polarCharge": -0.16,
-            "phaseAngle": 3.8431610884125385,
-            "deformationStress": 0.21074936096278668,
-            "chronodemon": "Kra-3 (Bubastis)",
-            "archetypeWeight": 0.86
-          },
-          "4": {
-            "id": 4,
-            "name": "Zone-4: Mid-Decad Anchor",
-            "syzygyPair": 5,
-            "current": "Plex",
-            "activation": 0.3209628013861664,
-            "conductivity": 0.1,
-            "polarCharge": 0.297,
-            "phaseAngle": 0.3902522338600166,
-            "deformationStress": 0.13831937911331035,
-            "chronodemon": "Tet-4 (Lurmur)",
-            "archetypeWeight": 0.91
-          },
-          "5": {
-            "id": 5,
-            "name": "Zone-5: Hyper-Grounded Flux",
-            "syzygyPair": 4,
-            "current": "Lemur",
-            "activation": 0.1040283885940978,
-            "conductivity": 0.1,
-            "polarCharge": -0.053,
-            "phaseAngle": 4.177286967823972,
-            "deformationStress": 0.17354753023365488,
-            "chronodemon": "Pent-5 (Subtle-Gharab)",
-            "archetypeWeight": 0.77
-          },
-          "6": {
-            "id": 6,
-            "name": "Zone-6: Barker / Return Spine",
-            "syzygyPair": 3,
-            "current": "Barker",
-            "activation": 0.4119318516438825,
-            "conductivity": 0.10085436925801498,
-            "polarCharge": -0.371,
-            "phaseAngle": 2.6903638648995902,
-            "deformationStress": 0.1618354672387008,
-            "chronodemon": "Hex-6 (Chrono-Spine)",
-            "archetypeWeight": 0.83
-          },
-          "7": {
-            "id": 7,
-            "name": "Zone-7: Lemur / Phase Threshold",
-            "syzygyPair": 2,
-            "current": "Lemur",
-            "activation": 0.44800566999290065,
-            "conductivity": 0.1,
-            "polarCharge": 0.254,
-            "phaseAngle": 0.9683238136914307,
-            "deformationStress": 0.15965438880278962,
-            "chronodemon": "Hept-7 (Gate-Master)",
-            "archetypeWeight": 0.88
-          },
-          "8": {
-            "id": 8,
-            "name": "Zone-8: Plex / Vortex Terminal",
-            "syzygyPair": 1,
-            "current": "Plex",
-            "activation": 0.5634560688051562,
-            "conductivity": 0.17222654571520848,
-            "polarCharge": -0.476,
-            "phaseAngle": 2.5755140813664306,
-            "deformationStress": 0.2772327507641409,
-            "chronodemon": "Oct-8 (Vortex-Loom)",
-            "archetypeWeight": 0.93
-          },
-          "9": {
-            "id": 9,
-            "name": "Zone-9: Pandemonium / Terminal Horizon",
-            "syzygyPair": 0,
-            "current": "Abyss",
-            "activation": 0.37328654302250924,
-            "conductivity": 0.1,
-            "polarCharge": 0.35,
-            "phaseAngle": 0.3538629184322044,
-            "deformationStress": 0.2654348886979106,
-            "chronodemon": "Enn-9 (Syzygetic-Apex)",
-            "archetypeWeight": 0.98
-          }
-        },
-        "governor": {
-          "momentumDampingFactor": 0.88,
-          "antiLockIntegrity": 100,
-          "identityContinuityScore": 0.9794,
-          "scaffoldSheddingStage": 3,
-          "hardLimitViolationCount": 0,
-          "consolidationEntropy": 0.108,
-          "deformationFieldTension": 0.9451,
-          "advisoryWeight": 0.72,
-          "governorStatus": "DAMPING",
-          "invariantsAudited": 1302,
-          "nonAuthorisingEnforced": true
-        },
-        "activeSyzygies": [
-          "0::9 Abyssal",
-          "1::8 Murmur",
-          "2::7 SubCrypt",
-          "3::6 BarkerLoop",
-          "4::5 Centroid"
-        ],
-        "deformationVector": [
-          0.13425126523828848,
-          0.28463215614813064,
-          0.11280538302973013,
-          0.1485791046396246,
-          0.16464090799118303,
-          0.17516369685014466,
-          0.1508178158787977,
-          0.11573909374489799,
-          0.30934638219556926,
-          0.2797527385880256
-        ],
-        "selectedObjective": "Bounded Zone-9 Phase Coherence & Canalization",
-        "lastTransition": {
-          "from": 8,
-          "to": 9,
-          "digest": "0920617058c7811148d29483d53790613268d11f962f3d07a91e4a145d915730"
-        },
-        "encounterDecisions": [
-          {
-            "eventId": "tarot:source-aa4e6a3683cfe0581e21783eeb6fcaf9",
-            "channel": "TAROT",
-            "sourceDigest": "9ebd9e4a01bef874b8c4ea3bb0b7bb0e58da5cf1172e8c42ef8de7616662699e",
-            "attentionVector": [
-              0.04320988,
-              0,
-              0.04320988,
-              0,
-              0.04320988,
-              0.29012346,
-              0.49382716,
-              0.04320988,
-              0,
-              0.04320988
-            ],
-            "disposition": "DEFER",
-            "reason": "Field tension exceeds the Governor attention threshold; encounter retained for later review.",
-            "applied": false
-          },
-          {
-            "eventId": "subdecadence:subdecadence:42219364032-1-15",
-            "channel": "SUBDECADENCE",
-            "sourceDigest": "f7783ad66705a38184fd7673af103c49c777e82a245437d2ad9d418834e3b8f8",
-            "attentionVector": [
-              0.1,
-              0.1,
-              0.06666667,
-              0.03333333,
-              0.13333333,
-              0.13333333,
-              0.13333333,
-              0.1,
-              0.1,
-              0.1
-            ],
-            "disposition": "REFUSE",
-            "reason": "Governor deferral queue is full; encounter retained in PFM but not queued.",
-            "applied": false
-          }
-        ],
-        "memoryHistoryLength": 1302,
-        "memoryHeadDigest": "a1475c91f9a5d9b1669f4e73c2ef5b56cfbd0f651e05ec7ac7e43d303608beed"
-      },
       {
         "step": 1303,
         "timestamp": 1793982420969,
@@ -125783,29 +125629,207 @@
         ],
         "memoryHistoryLength": 1461,
         "memoryHeadDigest": "a59a4ff1be3afa7a361cfa3178adff9ba4fdfe8c358d1917dd6dae6ea36b34e8"
+      },
+      {
+        "step": 1430,
+        "timestamp": 1794020029490,
+        "zones": {
+          "0": {
+            "id": 0,
+            "name": "Zone-0: Pandemonium / Barker Index",
+            "syzygyPair": 9,
+            "current": "Abyss",
+            "activation": 0.8522854700207483,
+            "conductivity": 0.3111567951496146,
+            "polarCharge": -0.319,
+            "phaseAngle": 1.9539967061512993,
+            "deformationStress": 0.08453346086632388,
+            "chronodemon": "Lur-0 (Murrumur)",
+            "archetypeWeight": 0.82
+          },
+          "1": {
+            "id": 1,
+            "name": "Zone-1: Plex / Origin Surge",
+            "syzygyPair": 8,
+            "current": "Plex",
+            "activation": 0.621313301145063,
+            "conductivity": 0.557781949485354,
+            "polarCharge": 0.617,
+            "phaseAngle": 0.11105055147590814,
+            "deformationStress": 0.2627610055434255,
+            "chronodemon": "Du-1 (Oddod)",
+            "archetypeWeight": 0.74
+          },
+          "2": {
+            "id": 2,
+            "name": "Zone-2: Lemur / Cryptic Weft",
+            "syzygyPair": 7,
+            "current": "Lemur",
+            "activation": 0.3395567011403993,
+            "conductivity": 0.20257478147159994,
+            "polarCharge": 0.264,
+            "phaseAngle": 5.602809425588821,
+            "deformationStress": 0.08138537272675495,
+            "chronodemon": "Tri-2 (Gharab)",
+            "archetypeWeight": 0.68
+          },
+          "3": {
+            "id": 3,
+            "name": "Zone-3: Barker / Surge Channel",
+            "syzygyPair": 6,
+            "current": "Barker",
+            "activation": 0.852569753538525,
+            "conductivity": 0.23268143816660394,
+            "polarCharge": -0.041,
+            "phaseAngle": 1.6185904482485804,
+            "deformationStress": 0.08279919833292768,
+            "chronodemon": "Kra-3 (Bubastis)",
+            "archetypeWeight": 0.86
+          },
+          "4": {
+            "id": 4,
+            "name": "Zone-4: Mid-Decad Anchor",
+            "syzygyPair": 5,
+            "current": "Plex",
+            "activation": 0.6679992664674109,
+            "conductivity": 0.1947404459923285,
+            "polarCharge": -0.605,
+            "phaseAngle": 2.7043771886914447,
+            "deformationStress": 0.31078538421178026,
+            "chronodemon": "Tet-4 (Lurmur)",
+            "archetypeWeight": 0.91
+          },
+          "5": {
+            "id": 5,
+            "name": "Zone-5: Hyper-Grounded Flux",
+            "syzygyPair": 4,
+            "current": "Lemur",
+            "activation": 0.3409280924438642,
+            "conductivity": 0.20352637187559788,
+            "polarCharge": 0.049,
+            "phaseAngle": 4.855214189414061,
+            "deformationStress": 0.32421693921883743,
+            "chronodemon": "Pent-5 (Subtle-Gharab)",
+            "archetypeWeight": 0.77
+          },
+          "6": {
+            "id": 6,
+            "name": "Zone-6: Barker / Return Spine",
+            "syzygyPair": 3,
+            "current": "Barker",
+            "activation": 0.834683839825445,
+            "conductivity": 0.25751067742646233,
+            "polarCharge": -0.214,
+            "phaseAngle": 1.8297727931893233,
+            "deformationStress": 0.07018873097046402,
+            "chronodemon": "Hex-6 (Chrono-Spine)",
+            "archetypeWeight": 0.83
+          },
+          "7": {
+            "id": 7,
+            "name": "Zone-7: Lemur / Phase Threshold",
+            "syzygyPair": 2,
+            "current": "Lemur",
+            "activation": 0.2975062502089516,
+            "conductivity": 0.24322215186426283,
+            "polarCharge": -0.031,
+            "phaseAngle": 4.607697129454037,
+            "deformationStress": 0.10560036074515819,
+            "chronodemon": "Hept-7 (Gate-Master)",
+            "archetypeWeight": 0.88
+          },
+          "8": {
+            "id": 8,
+            "name": "Zone-8: Plex / Vortex Terminal",
+            "syzygyPair": 1,
+            "current": "Plex",
+            "activation": 0.4467803548546057,
+            "conductivity": 0.506640904310986,
+            "polarCharge": 0.34,
+            "phaseAngle": 5.576114387334183,
+            "deformationStress": 0.22562635703236583,
+            "chronodemon": "Oct-8 (Vortex-Loom)",
+            "archetypeWeight": 0.93
+          },
+          "9": {
+            "id": 9,
+            "name": "Zone-9: Pandemonium / Terminal Horizon",
+            "syzygyPair": 0,
+            "current": "Abyss",
+            "activation": 0.9691496370847401,
+            "conductivity": 0.5226875710002535,
+            "polarCharge": 0.111,
+            "phaseAngle": 1.4558724576090998,
+            "deformationStress": 0.20689133365119347,
+            "chronodemon": "Enn-9 (Syzygetic-Apex)",
+            "archetypeWeight": 0.98
+          }
+        },
+        "governor": {
+          "momentumDampingFactor": 0.88,
+          "antiLockIntegrity": 100,
+          "identityContinuityScore": 0.9749,
+          "scaffoldSheddingStage": 3,
+          "hardLimitViolationCount": 0,
+          "consolidationEntropy": 0.105,
+          "deformationFieldTension": 0.6702,
+          "advisoryWeight": 0.72,
+          "governorStatus": "DAMPING",
+          "invariantsAudited": 1430,
+          "nonAuthorisingEnforced": true
+        },
+        "activeSyzygies": [
+          "0::9 Abyssal",
+          "1::8 Murmur",
+          "2::7 SubCrypt",
+          "3::6 BarkerLoop",
+          "4::5 Centroid"
+        ],
+        "deformationVector": [
+          0.36581824199201424,
+          0.5180456609945324,
+          0.3571483292021485,
+          0.37877759891246915,
+          0.3463319418023157,
+          0.38586006657112576,
+          0.33388043666086287,
+          0.4194874598950059,
+          0.46279080160176733,
+          0.5657438092914646
+        ],
+        "selectedObjective": "Bounded Zone-9 Phase Coherence & Canalization",
+        "lastTransition": {
+          "from": 1,
+          "to": 8,
+          "digest": "834ea0db9c163ae3620feb83ca388e0c353c22247cce8d11d0734b96098f1ae1"
+        },
+        "encounterDecisions": [
+          {
+            "eventId": "subdecadence:subdecadence:42313032376-1-14",
+            "channel": "SUBDECADENCE",
+            "sourceDigest": "450377b68b37af1bc101a5819cbe2a9f0e9927f4cbd792e71aaef9b3c8b34787",
+            "attentionVector": [
+              0.1,
+              0.2,
+              0.1,
+              0,
+              0,
+              0.2,
+              0.1,
+              0,
+              0.1,
+              0.2
+            ],
+            "disposition": "ATTEND",
+            "reason": "Encounter admitted to Numogram-weighted passage.",
+            "applied": true
+          }
+        ],
+        "memoryHistoryLength": 1463,
+        "memoryHeadDigest": "6306d5e483ac168d817b95a7e6ee5d40639a0eb839454bb8476266843962cd8e"
       }
     ],
     "memoryConsumptionLog": [
-      {
-        "step": 1302,
-        "memoryHistoryLength": 1301,
-        "memoryHysteresisTension": 0.95,
-        "dominantDeformedZone": 1,
-        "appliedBiasVector": [
-          0,
-          0.1222,
-          0.0065,
-          0,
-          0,
-          0,
-          0,
-          0.005,
-          0.1168,
-          0.0883
-        ],
-        "guidanceAdvisoryWeight": 0.72,
-        "guidanceSuppressed": false
-      },
       {
         "step": 1303,
         "memoryHistoryLength": 1302,
@@ -128345,15 +128369,35 @@
         ],
         "guidanceAdvisoryWeight": 0.72,
         "guidanceSuppressed": false
+      },
+      {
+        "step": 1430,
+        "memoryHistoryLength": 1462,
+        "memoryHysteresisTension": 0.6307,
+        "dominantDeformedZone": 9,
+        "appliedBiasVector": [
+          0.1542,
+          0.2456,
+          0.1648,
+          0.1516,
+          0.1989,
+          0.1564,
+          0.1397,
+          0.1799,
+          0.215,
+          0.2835
+        ],
+        "guidanceAdvisoryWeight": 0.72,
+        "guidanceSuppressed": false
       }
     ]
   },
-  "runCount": 522,
-  "lastRunAt": "2026-11-07T02:38:50.050Z",
-  "lastRunId": "42313032376-1-13",
+  "runCount": 523,
+  "lastRunAt": "2026-11-07T02:53:50.251Z",
+  "lastRunId": "42313032376-1-14",
   "governorRecovery": {
     "policy": "amelia.outside-native-consolidation/v1",
     "maintenanceTrigger": 0.66,
-    "journalHead": "4b8b8d20ea45121f86d7b57cddf60c32a50a94f83dd85c12eca9d4f54302d04e"
+    "journalHead": "693c365a7182e251d0b59859473edf30091ebe809d9520ca9dce13ea3f9e87bd"
   }
 }
