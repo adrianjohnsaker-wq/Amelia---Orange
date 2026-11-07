@@ -1,0 +1,158 @@
+name: Oracle House and prompt factorial
+on:
+  push:
+    branches: [warp-house-prompt-factorial-20261107]
+    paths: ['experiments/warp-breakdown/house-prompt/RUN']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 6a8becd4ae9a2e3ad84ed32b878b4868405bb6f1
+          path: oracle-code
+      - uses: actions/checkout@v4
+        with:
+          ref: 361fcbda7c69609242f179a557f6adb6ff6a1596
+          path: oracle-snapshot
+      - uses: actions/checkout@v4
+        with:
+          ref: fecb487f29da86470584d4d67003606ed951bf00
+          path: oracle-before
+      - uses: actions/checkout@v4
+        with:
+          ref: 88b6ed11ea499ae66ab71de45bbe2e4d05535ddb
+          path: oracle-after
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify the sealed design and sources
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,subprocess
+          from pathlib import Path
+          p=Path('experiments/warp-breakdown/house-prompt');old=p.parent/'oracle-rerun';d=json.loads((p/'plan.json').read_bytes())
+          names={'scriptSha256':p/'study.ts','prepareSha256':p/'prepare.mjs','calibrateSha256':p/'calibrate.mjs',
+                 'calibrationAuditSha256':p/'audit-calibration.py','calibrationSha256':p/'calibration.json',
+                 'auditSha256':p/'audit.py','aggregatorSha256':p/'aggregate.py','registrationSha256':p/'REGISTRATION.md',
+                 'adapterSha256':old/'adapter.mjs','validateSha256':old/'validate.mjs','exchangeSha256':old/'validation-exchanges.json',
+                 'workflowSha256':Path('.github/workflows/house-prompt-factorial.yml'),
+                 'checkpointSha256':Path('oracle-snapshot/state.json'),'beforeSha256':Path('oracle-before/state.json'),'afterSha256':Path('oracle-after/state.json')}
+          for k,f in names.items():
+              if hashlib.sha256(f.read_bytes()).hexdigest()!=d[k]:raise SystemExit(k+' mismatch')
+          for folder,key in [('oracle-code','oracleCodeCommit'),('oracle-snapshot','checkpointCommit'),('oracle-before','beforeCommit'),('oracle-after','afterCommit')]:
+              if subprocess.check_output(['git','-C',folder,'rev-parse','HEAD'],text=True).strip()!=d[key]:raise SystemExit(key+' mismatch')
+          print('Registration, state and source hashes verified')
+          PY
+      - name: Install pinned TypeScript runner
+        run: npm install --prefix "$RUNNER_TEMP/house-deps" --save-exact tsx@4.23.15
+      - name: Replay historical Oracle and recalculate House contrasts
+        env:
+          ORACLE_CODE_ROOT: ${{ github.workspace }}/oracle-code
+        run: |
+          set -eu
+          P=experiments/warp-breakdown/house-prompt
+          OLD=experiments/warp-breakdown/oracle-rerun
+          LOADER="$RUNNER_TEMP/house-deps/node_modules/tsx/dist/loader.mjs"
+          node --import "$LOADER" "$OLD/validate.mjs" oracle-before/state.json oracle-after/state.json "$OLD/validation-exchanges.json" "$RUNNER_TEMP/validation.json"
+          node --import "$LOADER" "$P/calibrate.mjs" oracle-snapshot/state.json "$RUNNER_TEMP/house-calibration.json"
+          python3 "$P/audit-calibration.py" "$P/calibration.json" "$RUNNER_TEMP/house-calibration.json"
+      - name: Save validation outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: house-prompt-validation
+          path: |
+            ${{ runner.temp }}/validation.json
+            ${{ runner.temp }}/house-calibration.json
+          if-no-files-found: ignore
+          retention-days: 90
+  study:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        history: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 6a8becd4ae9a2e3ad84ed32b878b4868405bb6f1
+          path: oracle-code
+      - uses: actions/checkout@v4
+        with:
+          ref: 361fcbda7c69609242f179a557f6adb6ff6a1596
+          path: oracle-snapshot
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned TypeScript runner
+        run: npm install --prefix "$RUNNER_TEMP/house-deps" --save-exact tsx@4.23.15
+      - name: Run paired factorial history
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ORACLE_CODE_ROOT: ${{ github.workspace }}/oracle-code
+          WBD_MODEL_MODE: anthropic
+          WBD_HISTORY_ID: ${{ matrix.history }}
+        run: |
+          node --import "$RUNNER_TEMP/house-deps/node_modules/tsx/dist/loader.mjs" \
+            experiments/warp-breakdown/house-prompt/study.ts \
+            oracle-snapshot/state.json experiments/warp-breakdown/house-prompt/plan.json house-prompt-output
+      - name: Preserve dependency lock
+        if: always()
+        run: |
+          if [ -d house-prompt-output ] && [ -f "$RUNNER_TEMP/house-deps/package-lock.json" ]; then
+            cp "$RUNNER_TEMP/house-deps/package-lock.json" house-prompt-output/package-lock.json
+          fi
+      - name: Upload history
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: house-prompt-history-${{ matrix.history }}
+          path: house-prompt-output/
+          if-no-files-found: ignore
+          retention-days: 90
+  aggregate:
+    needs: [validate, study]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: house-prompt-history-*
+          path: house-prompt-artifacts
+      - name: Audit and aggregate by world of origin
+        run: |
+          P=experiments/warp-breakdown/house-prompt
+          python3 "$P/aggregate.py" "$P/plan.json" "$P/study.ts" experiments/warp-breakdown/oracle-rerun/adapter.mjs "$P/audit.py" house-prompt-artifacts "$P/results"
+      - name: Save available outcomes on the study branch
+        if: always()
+        shell: bash
+        run: |
+          P=experiments/warp-breakdown/house-prompt/results
+          if [ ! -d "$P" ]; then exit 0; fi
+          git config user.name 'amelia-house-prompt-study'
+          git config user.email 'amelia-house-prompt-study@users.noreply.github.com'
+          git add "$P/"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Record House and prompt factorial outcomes'
+          git push origin HEAD:refs/heads/warp-house-prompt-factorial-20261107
+      - name: Upload aggregate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: house-prompt-aggregate
+          path: experiments/warp-breakdown/house-prompt/results/
+          if-no-files-found: ignore
+          retention-days: 90
