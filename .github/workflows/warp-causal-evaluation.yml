@@ -1,0 +1,120 @@
+name: Warp causal gate and House test
+on:
+  push:
+    branches: [warp-gate-causal-20261107]
+    paths: ['experiments/warp-breakdown/causal/RUN']
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 6a8becd4ae9a2e3ad84ed32b878b4868405bb6f1
+          path: oracle-code
+      - uses: actions/checkout@v4
+        with:
+          ref: 361fcbda7c69609242f179a557f6adb6ff6a1596
+          path: oracle-snapshot
+      - name: Verify frozen choices and evaluation code
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,subprocess
+          from pathlib import Path
+          p=Path('experiments/warp-breakdown/causal');d=p.parent/'dynamic';o=p.parent/'oracle-rerun';H=lambda f:hashlib.sha256(f.read_bytes()).hexdigest()
+          x=json.loads((p/'registration.json').read_bytes());c=json.loads((p/'calibration-results/choice.json').read_bytes());r=json.loads((p/'run-plan.json').read_bytes())
+          assert c['status']=='FROZEN' and c['registrationSha256']==H(p/'registration.json') and r['registrationSha256']==H(p/'registration.json') and r['choiceSha256']==H(p/'calibration-results/choice.json')
+          assert r['pairsPerPartition']==x['pairsPerPartition'] and r['experimentSeed']!=x['calibrationSeed']
+          fs={'datasetSha256':p/'dataset.ts','interventionSha256':p/'intervention.mjs','dataAuditSha256':p/'audit-data.py','aggregateSha256':p/'aggregate.py',
+              'commonSha256':d/'common.ts','prepareSha256':d/'prepare.mjs','auditSupportSha256':d/'audit-support.py','replaySha256':d/'compare-replay.py',
+              'adapterSha256':o/'adapter.mjs','runWorkflowSha256':Path('.github/workflows/warp-causal-evaluation.yml'),'checkpointSha256':Path('oracle-snapshot/state.json')}
+          for k,f in fs.items():
+              if H(f)!=x[k]:raise SystemExit(k+' mismatch')
+          if subprocess.check_output(['git','-C','oracle-code','rev-parse','HEAD'],text=True).strip()!=x['oracleCodeCommit']:raise SystemExit('Oracle code mismatch')
+          print('Frozen offsets, fresh evaluation manifest and source verified')
+          PY
+  study:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        lineage: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 6a8becd4ae9a2e3ad84ed32b878b4868405bb6f1
+          path: oracle-code
+      - uses: actions/checkout@v4
+        with:
+          ref: 361fcbda7c69609242f179a557f6adb6ff6a1596
+          path: oracle-snapshot
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --prefix "$RUNNER_TEMP/causal-deps" --save-exact tsx@4.23.15
+      - name: Run and replay gate and House interventions
+        env:
+          ORACLE_CODE_ROOT: ${{ github.workspace }}/oracle-code
+          CAUSAL_LINEAGE_INDEX: ${{ matrix.lineage }}
+        run: |
+          set -eu
+          P=experiments/warp-breakdown/causal
+          D=experiments/warp-breakdown/dynamic
+          LOADER="$RUNNER_TEMP/causal-deps/node_modules/tsx/dist/loader.mjs"
+          node --import "$LOADER" "$P/dataset.ts" oracle-snapshot/state.json "$P/registration.json" "$P/calibration-results/choice.json" "$P/run-plan.json" evaluation-output
+          node --import "$LOADER" "$P/dataset.ts" oracle-snapshot/state.json "$P/registration.json" "$P/calibration-results/choice.json" "$P/run-plan.json" "$RUNNER_TEMP/evaluation-replay"
+          python3 "$D/compare-replay.py" "$P/registration.json" evaluation-output/result.json "$RUNNER_TEMP/evaluation-replay/result.json" evaluation-output/replay-audit.json
+          python3 "$P/audit-data.py" "$P/registration.json" "$P/calibration-results/choice.json" "$P/run-plan.json" evaluation-output/result.json "$D/audit-support.py"
+      - name: Preserve dependency lock
+        if: always()
+        run: |
+          if [ -d evaluation-output ] && [ -f "$RUNNER_TEMP/causal-deps/package-lock.json" ]; then cp "$RUNNER_TEMP/causal-deps/package-lock.json" evaluation-output/package-lock.json; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: warp-causal-evaluation-${{ matrix.lineage }}
+          path: evaluation-output/
+          if-no-files-found: ignore
+          retention-days: 90
+  aggregate:
+    needs: [validate, study]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: warp-causal-evaluation-*
+          path: evaluation-artifacts
+      - name: Audit and aggregate causal comparisons
+        run: |
+          P=experiments/warp-breakdown/causal
+          D=experiments/warp-breakdown/dynamic
+          python3 "$P/aggregate.py" "$P/registration.json" "$P/calibration-results/choice.json" "$P/run-plan.json" "$P/audit-data.py" "$D/audit-support.py" evaluation-artifacts "$P/results"
+      - name: Commit available outcomes
+        if: always()
+        run: |
+          P=experiments/warp-breakdown/causal/results
+          if [ ! -d "$P" ]; then exit 0; fi
+          git config user.name 'amelia-gate-intervention'
+          git config user.email 'amelia-gate-intervention@users.noreply.github.com'
+          git add "$P/"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Record gate competition and House intervention outcomes'
+          git push origin HEAD:refs/heads/warp-gate-causal-20261107
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: warp-causal-evaluation-aggregate
+          path: experiments/warp-breakdown/causal/results/
+          if-no-files-found: ignore
+          retention-days: 90
