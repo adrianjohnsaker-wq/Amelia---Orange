@@ -1,0 +1,169 @@
+{
+  "schema": "amelia.warp-recovery-calibration/v1",
+  "status": "verified-replay-plan-same-seeds-and-conditions",
+  "createdAt": "2026-11-07T01:10:11.819031+00:00",
+  "sourceCodeCommit": "6e7a942aea4130e939aa43e049dddd4ef0b83bbc",
+  "checkpointCommit": "737fa1b1f1dee675e613341fd61f568538a3cb9a",
+  "checkpointSha256": "c4329e0c5406d131e0dab3b9883774dc3c169b5701f663ec383a7eb767880ba3",
+  "scriptSha256": "509c6d7d7388a371730ba56319beee67c727319a24469751a8b94cdc2debbefa",
+  "weights": [
+    0.235,
+    0.185,
+    0.145,
+    0.115,
+    0.095,
+    0.075,
+    0.055,
+    0.045,
+    0.03,
+    0.02
+  ],
+  "weightSource": "assay_next/plan.json; adaptive-source weight multiset",
+  "histories": [
+    {
+      "id": 1,
+      "seed": "935ba01f132724523217a53fd445d408",
+      "executionOrder": [
+        "target6",
+        "target3"
+      ]
+    },
+    {
+      "id": 2,
+      "seed": "47fc295028493180aeda56286d797c74",
+      "executionOrder": [
+        "target3",
+        "target6"
+      ]
+    },
+    {
+      "id": 3,
+      "seed": "932eada8dd163805bea35deb5827498a",
+      "executionOrder": [
+        "target6",
+        "target3"
+      ]
+    },
+    {
+      "id": 4,
+      "seed": "ae76c3b263c783dde00a70ced5df1e60",
+      "executionOrder": [
+        "target3",
+        "target6"
+      ]
+    },
+    {
+      "id": 5,
+      "seed": "16b8270e726f4d5837bbbb7652cf9e73",
+      "executionOrder": [
+        "target6",
+        "target3"
+      ]
+    },
+    {
+      "id": 6,
+      "seed": "a8201244273bb61f4355216df75abaac",
+      "executionOrder": [
+        "target3",
+        "target6"
+      ]
+    },
+    {
+      "id": 7,
+      "seed": "6745177c91a9fa1333f1674494d3e52e",
+      "executionOrder": [
+        "target3",
+        "target6"
+      ]
+    },
+    {
+      "id": 8,
+      "seed": "3b5b8e7761c23e120fd5414839a4f7e0",
+      "executionOrder": [
+        "target6",
+        "target3"
+      ]
+    },
+    {
+      "id": 9,
+      "seed": "a31ec564b770659e3bb7b676cb695bcd",
+      "executionOrder": [
+        "target3",
+        "target6"
+      ]
+    },
+    {
+      "id": 10,
+      "seed": "8d57acf5dc042ad68cda4956fbd336b7",
+      "executionOrder": [
+        "target6",
+        "target3"
+      ]
+    },
+    {
+      "id": 11,
+      "seed": "0ad3b03aeb0032e790c578cb0ef003a3",
+      "executionOrder": [
+        "target6",
+        "target3"
+      ]
+    },
+    {
+      "id": 12,
+      "seed": "a66142c41366b2fe2d5911e1b8212a47",
+      "executionOrder": [
+        "target3",
+        "target6"
+      ]
+    },
+    {
+      "id": 13,
+      "seed": "c930f02c1c5fc5e386709bcc56c64cb0",
+      "executionOrder": [
+        "target3",
+        "target6"
+      ]
+    },
+    {
+      "id": 14,
+      "seed": "bbdc149f28ac8cd3596bbcfce14074b7",
+      "executionOrder": [
+        "target6",
+        "target3"
+      ]
+    },
+    {
+      "id": 15,
+      "seed": "67f6cdfa007b9c56f8b6ecb4d6d884ba",
+      "executionOrder": [
+        "target6",
+        "target3"
+      ]
+    },
+    {
+      "id": 16,
+      "seed": "2d10de4e8b3a8d8e0c2ada9b0c6518f9",
+      "executionOrder": [
+        "target6",
+        "target3"
+      ]
+    }
+  ],
+  "exposureSteps": 32,
+  "followSteps": 24,
+  "entry": "Identical strong synthetic zone-2 then zone-3 cues on a 29-edge copy; not natural entry.",
+  "conditions": "Paired adaptive-multiset target3/target6 offers; drained collector mode and intentionally preloaded one-item queue stress mode.",
+  "queueIntervention": "Queued mode preloads a valid synthetic queue seed and offers without the collector pre-drain to test delay; this does not estimate natural deferral frequency.",
+  "primary": "For each condition, admissions by original offer time and immediate decisive offers under same-state no-attention scoring.",
+  "memoryIntervention": "After exposure and drain, swap entire memoryState between paired histories while holding each recipient background unchanged; compare 24 no-input steps.",
+  "metrics": [
+    "pivotal and delayed counts",
+    "score component traces",
+    "follow-up 3-dwell difference",
+    "follow-up changed-step count"
+  ],
+  "interpretation": "16 disjoint randomized synthetic tapes conditional on one saved founder; exploratory calibration, not independent founders, observed Outside, or model-driven code evolution.",
+  "previousPlanSha256": "8adac210ee42bb6b80aa287877834fcfb84ffcfc10526312c6034cb294d89011",
+  "replayReason": "First saved trace was incomplete. Change only buffers trace records and writes them once after computation.",
+  "replayPreparedAt": "2026-11-07T01:19:40.670002+00:00"
+}
