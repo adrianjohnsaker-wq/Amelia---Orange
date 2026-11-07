@@ -1,10 +1,10 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-07T22:28:16.010Z
-- Cycle: 602 (42420570744-1-1)
-- RSS items seen: 59; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -29
-- Candidate: Mur Mur / Mesh-29 / Syzygetic Chronodemon
+- Last cycle (UTC): 2026-11-07T22:43:13.727Z
+- Cycle: 603 (42420570744-1-2)
+- RSS items seen: 60; newly processed: 0 (last-cycle window; 24-hour initial window)
+- Subdecadence: MESH_TERMINAL; score -15
+- Candidate: Tchu / Mesh-15 / Chaotic Xenodemon
 - Separate ingress records and trace links: 0
 - Catalogue entries added: 1
 - Governor recovery: 0 previously queued items admitted; queue now 0.
