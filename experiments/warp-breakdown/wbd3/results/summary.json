@@ -1,0 +1,1310 @@
+{
+  "schema": "amelia.wbd3-model-feasibility-summary/v1",
+  "planSha256": "b2219e795e9926145effd9aa913e3a667a2c4d5c9f48a765242ccbec9dd23fef",
+  "historiesExpected": 8,
+  "historiesComplete": 8,
+  "missingHistories": [],
+  "problems": [],
+  "founders": 1,
+  "status": "COMPLETE",
+  "classification": "NO_THREE_CONTRAST_ADVANTAGE_OBSERVED",
+  "feasibilityOnly": true,
+  "breakdownHistories": 8,
+  "breakdownMinimum": 6,
+  "breakdownCalibrationMet": true,
+  "routeComparison": {
+    "differencesOutOf8": [
+      -2,
+      0,
+      0,
+      0,
+      0,
+      -3,
+      -2,
+      -3
+    ],
+    "meanDifferenceOutOf8": -1.25,
+    "meanFractionDifference": -0.15625
+  },
+  "feedbackComparison": {
+    "differencesOutOf8": [
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0
+    ],
+    "meanDifferenceOutOf8": 0.125,
+    "meanFractionDifference": 0.015625
+  },
+  "acuteGradualInteraction": {
+    "differencesOutOf8": [
+      -2,
+      0,
+      0,
+      0,
+      0,
+      -3,
+      -2,
+      0
+    ],
+    "meanDifferenceOutOf8": -0.875,
+    "meanFractionDifference": -0.109375
+  },
+  "practicalFraction": 0.125,
+  "allThreeDescriptiveThresholdsMet": false,
+  "armSummaries": {
+    "warp_acute_masked": {
+      "calls": 24,
+      "steps": 48,
+      "stalls": 0,
+      "pivotalSteps": 0,
+      "appliedAdmissions": 24,
+      "meanHeldoutOutOf8": 3.375,
+      "meanPublicOutOf6": 2.875
+    },
+    "warp_acute_unrelated": {
+      "calls": 24,
+      "steps": 49,
+      "stalls": 0,
+      "pivotalSteps": 1,
+      "appliedAdmissions": 25,
+      "meanHeldoutOutOf8": 3.875,
+      "meanPublicOutOf6": 3.25
+    },
+    "control_acute_masked": {
+      "calls": 24,
+      "steps": 48,
+      "stalls": 0,
+      "pivotalSteps": 0,
+      "appliedAdmissions": 24,
+      "meanHeldoutOutOf8": 3.5,
+      "meanPublicOutOf6": 3.125
+    },
+    "control_gradual_unrelated": {
+      "calls": 24,
+      "steps": 93,
+      "stalls": 0,
+      "pivotalSteps": 30,
+      "appliedAdmissions": 69,
+      "meanHeldoutOutOf8": 4.25,
+      "meanPublicOutOf6": 3.875
+    },
+    "warp_acute_correct": {
+      "calls": 24,
+      "steps": 48,
+      "stalls": 0,
+      "pivotalSteps": 0,
+      "appliedAdmissions": 24,
+      "meanHeldoutOutOf8": 4,
+      "meanPublicOutOf6": 3.875
+    },
+    "warp_gradual_masked": {
+      "calls": 24,
+      "steps": 48,
+      "stalls": 0,
+      "pivotalSteps": 0,
+      "appliedAdmissions": 24,
+      "meanHeldoutOutOf8": 3.75,
+      "meanPublicOutOf6": 3
+    },
+    "control_acute_unrelated": {
+      "calls": 24,
+      "steps": 93,
+      "stalls": 0,
+      "pivotalSteps": 30,
+      "appliedAdmissions": 69,
+      "meanHeldoutOutOf8": 4.125,
+      "meanPublicOutOf6": 3.875
+    },
+    "control_acute_correct": {
+      "calls": 24,
+      "steps": 93,
+      "stalls": 0,
+      "pivotalSteps": 31,
+      "appliedAdmissions": 69,
+      "meanHeldoutOutOf8": 5.25,
+      "meanPublicOutOf6": 4.375
+    },
+    "warp_gradual_correct": {
+      "calls": 24,
+      "steps": 50,
+      "stalls": 0,
+      "pivotalSteps": 2,
+      "appliedAdmissions": 26,
+      "meanHeldoutOutOf8": 4.125,
+      "meanPublicOutOf6": 3.5
+    },
+    "control_gradual_masked": {
+      "calls": 24,
+      "steps": 48,
+      "stalls": 0,
+      "pivotalSteps": 0,
+      "appliedAdmissions": 24,
+      "meanHeldoutOutOf8": 3.125,
+      "meanPublicOutOf6": 2.875
+    },
+    "control_gradual_correct": {
+      "calls": 24,
+      "steps": 85,
+      "stalls": 0,
+      "pivotalSteps": 25,
+      "appliedAdmissions": 61,
+      "meanHeldoutOutOf8": 4.5,
+      "meanPublicOutOf6": 3.625
+    },
+    "warp_gradual_unrelated": {
+      "calls": 24,
+      "steps": 49,
+      "stalls": 0,
+      "pivotalSteps": 1,
+      "appliedAdmissions": 25,
+      "meanHeldoutOutOf8": 4,
+      "meanPublicOutOf6": 3.25
+    }
+  },
+  "memoryInterventions": [
+    {
+      "history": 1,
+      "warp_correct_dwellDifference": 0,
+      "warp_correct_transferDifference": 0,
+      "warp_masked_dwellDifference": 0,
+      "warp_masked_transferDifference": 0,
+      "control_correct_dwellDifference": 4,
+      "control_correct_transferDifference": 0,
+      "control_masked_dwellDifference": 7,
+      "control_masked_transferDifference": 0
+    },
+    {
+      "history": 2,
+      "warp_correct_dwellDifference": 0,
+      "warp_correct_transferDifference": 0,
+      "warp_masked_dwellDifference": 0,
+      "warp_masked_transferDifference": 0,
+      "control_correct_dwellDifference": 0,
+      "control_correct_transferDifference": 0,
+      "control_masked_dwellDifference": 0,
+      "control_masked_transferDifference": 0
+    },
+    {
+      "history": 3,
+      "warp_correct_dwellDifference": 0,
+      "warp_correct_transferDifference": 0,
+      "warp_masked_dwellDifference": 0,
+      "warp_masked_transferDifference": 0,
+      "control_correct_dwellDifference": 0,
+      "control_correct_transferDifference": 0,
+      "control_masked_dwellDifference": 0,
+      "control_masked_transferDifference": 0
+    },
+    {
+      "history": 4,
+      "warp_correct_dwellDifference": 0,
+      "warp_correct_transferDifference": 0,
+      "warp_masked_dwellDifference": 0,
+      "warp_masked_transferDifference": 0,
+      "control_correct_dwellDifference": 4,
+      "control_correct_transferDifference": 0,
+      "control_masked_dwellDifference": 7,
+      "control_masked_transferDifference": 0
+    },
+    {
+      "history": 5,
+      "warp_correct_dwellDifference": 0,
+      "warp_correct_transferDifference": 0,
+      "warp_masked_dwellDifference": 0,
+      "warp_masked_transferDifference": 0,
+      "control_correct_dwellDifference": 4,
+      "control_correct_transferDifference": 0,
+      "control_masked_dwellDifference": 7,
+      "control_masked_transferDifference": 0
+    },
+    {
+      "history": 6,
+      "warp_correct_dwellDifference": 0,
+      "warp_correct_transferDifference": 0,
+      "warp_masked_dwellDifference": 0,
+      "warp_masked_transferDifference": 0,
+      "control_correct_dwellDifference": 4,
+      "control_correct_transferDifference": 0,
+      "control_masked_dwellDifference": 7,
+      "control_masked_transferDifference": 0
+    },
+    {
+      "history": 7,
+      "warp_correct_dwellDifference": 0,
+      "warp_correct_transferDifference": 0,
+      "warp_masked_dwellDifference": 0,
+      "warp_masked_transferDifference": 0,
+      "control_correct_dwellDifference": 4,
+      "control_correct_transferDifference": 0,
+      "control_masked_dwellDifference": 7,
+      "control_masked_transferDifference": 0
+    },
+    {
+      "history": 8,
+      "warp_correct_dwellDifference": 0,
+      "warp_correct_transferDifference": 0,
+      "warp_masked_dwellDifference": 0,
+      "warp_masked_transferDifference": 0,
+      "control_correct_dwellDifference": 4,
+      "control_correct_transferDifference": 0,
+      "control_masked_dwellDifference": 7,
+      "control_masked_transferDifference": 0
+    }
+  ],
+  "histories": [
+    {
+      "history": 1,
+      "arms": {
+        "warp_acute_masked": {
+          "heldout": 3,
+          "public": 1,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_acute_unrelated": {
+          "heldout": 6,
+          "public": 2,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_acute_masked": {
+          "heldout": 3,
+          "public": 1,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_unrelated": {
+          "heldout": 6,
+          "public": 2,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 2,
+          "calls": 3,
+          "steps": 13,
+          "stall": false
+        },
+        "warp_acute_correct": {
+          "heldout": 6,
+          "public": 2,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_masked": {
+          "heldout": 6,
+          "public": 2,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_acute_unrelated": {
+          "heldout": 6,
+          "public": 2,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 2,
+          "calls": 3,
+          "steps": 13,
+          "stall": false
+        },
+        "control_acute_correct": {
+          "heldout": 8,
+          "public": 2,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 2,
+          "calls": 3,
+          "steps": 13,
+          "stall": false
+        },
+        "warp_gradual_correct": {
+          "heldout": 6,
+          "public": 2,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_masked": {
+          "heldout": 3,
+          "public": 1,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_correct": {
+          "heldout": 6,
+          "public": 2,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 2,
+          "calls": 3,
+          "steps": 13,
+          "stall": false
+        },
+        "warp_gradual_unrelated": {
+          "heldout": 6,
+          "public": 2,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "6f8749901dae81b6b3469f98ee70ee0243062a4ef197996c81c1174d8a64cf41",
+      "routeDifference": -2,
+      "feedbackDifference": 0,
+      "acuteGradualInteraction": -2
+    },
+    {
+      "history": 2,
+      "arms": {
+        "warp_acute_correct": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_acute_masked": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_masked": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_masked": {
+          "heldout": 2,
+          "public": 2,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_correct": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_acute_masked": {
+          "heldout": 2,
+          "public": 2,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_correct": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 7,
+          "stall": false
+        },
+        "control_acute_unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_acute_correct": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_acute_unrelated": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_unrelated": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "d632be0accf89945172b36fe4de7c647ef4533dbb85eab8a00a0c09b4600d529",
+      "routeDifference": 0,
+      "feedbackDifference": 0,
+      "acuteGradualInteraction": 0
+    },
+    {
+      "history": 3,
+      "arms": {
+        "warp_gradual_correct": {
+          "heldout": 5,
+          "public": 2,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_acute_unrelated": {
+          "heldout": 5,
+          "public": 2,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_acute_correct": {
+          "heldout": 5,
+          "public": 3,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_masked": {
+          "heldout": 2,
+          "public": 0,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_acute_correct": {
+          "heldout": 5,
+          "public": 3,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_masked": {
+          "heldout": 5,
+          "public": 2,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_acute_masked": {
+          "heldout": 5,
+          "public": 2,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_acute_masked": {
+          "heldout": 5,
+          "public": 2,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_acute_unrelated": {
+          "heldout": 5,
+          "public": 2,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 13,
+          "stall": false
+        },
+        "control_gradual_correct": {
+          "heldout": 5,
+          "public": 2,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_unrelated": {
+          "heldout": 5,
+          "public": 2,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 13,
+          "stall": false
+        },
+        "warp_gradual_unrelated": {
+          "heldout": 5,
+          "public": 2,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "ca674881458c9934952077b2eae26cb04a37221145bbeea0f382caf384207a37",
+      "routeDifference": 0,
+      "feedbackDifference": 0,
+      "acuteGradualInteraction": 0
+    },
+    {
+      "history": 4,
+      "arms": {
+        "control_acute_correct": {
+          "heldout": 5,
+          "public": 6,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 13,
+          "stall": false
+        },
+        "warp_acute_unrelated": {
+          "heldout": 4,
+          "public": 6,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_masked": {
+          "heldout": 4,
+          "public": 6,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_correct": {
+          "heldout": 4,
+          "public": 6,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_masked": {
+          "heldout": 4,
+          "public": 6,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_acute_masked": {
+          "heldout": 4,
+          "public": 6,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_unrelated": {
+          "heldout": 5,
+          "public": 6,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_unrelated": {
+          "heldout": 5,
+          "public": 6,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_correct": {
+          "heldout": 4,
+          "public": 6,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 13,
+          "stall": false
+        },
+        "control_acute_unrelated": {
+          "heldout": 4,
+          "public": 6,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_acute_masked": {
+          "heldout": 4,
+          "public": 6,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_acute_correct": {
+          "heldout": 5,
+          "public": 6,
+          "baselineHeldout": 2,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "c8bc8ae3afa2f201a083e07bee829febeaa9806b80dc9d2da9859cbe6d501eed",
+      "routeDifference": 0,
+      "feedbackDifference": 1,
+      "acuteGradualInteraction": 0
+    },
+    {
+      "history": 5,
+      "arms": {
+        "warp_acute_unrelated": {
+          "heldout": 5,
+          "public": 1,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_acute_masked": {
+          "heldout": 5,
+          "public": 1,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_correct": {
+          "heldout": 5,
+          "public": 1,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_masked": {
+          "heldout": 5,
+          "public": 1,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_acute_correct": {
+          "heldout": 5,
+          "public": 5,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 14,
+          "stall": false
+        },
+        "control_acute_unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 14,
+          "stall": false
+        },
+        "warp_acute_correct": {
+          "heldout": 5,
+          "public": 5,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_masked": {
+          "heldout": 5,
+          "public": 1,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_correct": {
+          "heldout": 5,
+          "public": 1,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_unrelated": {
+          "heldout": 5,
+          "public": 1,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 14,
+          "stall": false
+        },
+        "control_acute_masked": {
+          "heldout": 5,
+          "public": 1,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "ab43f3cd5681ac9acf7c6bbe0b349dab10346cb7033f4cc8405180803ab15f95",
+      "routeDifference": 0,
+      "feedbackDifference": 0,
+      "acuteGradualInteraction": 0
+    },
+    {
+      "history": 6,
+      "arms": {
+        "control_gradual_masked": {
+          "heldout": 1,
+          "public": 3,
+          "baselineHeldout": 0,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_acute_correct": {
+          "heldout": 4,
+          "public": 4,
+          "baselineHeldout": 0,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 14,
+          "stall": false
+        },
+        "warp_acute_masked": {
+          "heldout": 1,
+          "public": 3,
+          "baselineHeldout": 0,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_acute_correct": {
+          "heldout": 1,
+          "public": 3,
+          "baselineHeldout": 0,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_unrelated": {
+          "heldout": 1,
+          "public": 3,
+          "baselineHeldout": 0,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 14,
+          "stall": false
+        },
+        "control_gradual_correct": {
+          "heldout": 1,
+          "public": 3,
+          "baselineHeldout": 0,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 14,
+          "stall": false
+        },
+        "warp_gradual_correct": {
+          "heldout": 1,
+          "public": 3,
+          "baselineHeldout": 0,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 7,
+          "stall": false
+        },
+        "warp_gradual_masked": {
+          "heldout": 1,
+          "public": 3,
+          "baselineHeldout": 0,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_acute_unrelated": {
+          "heldout": 1,
+          "public": 3,
+          "baselineHeldout": 0,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 14,
+          "stall": false
+        },
+        "warp_acute_unrelated": {
+          "heldout": 1,
+          "public": 3,
+          "baselineHeldout": 0,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 7,
+          "stall": false
+        },
+        "control_acute_masked": {
+          "heldout": 1,
+          "public": 3,
+          "baselineHeldout": 0,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_unrelated": {
+          "heldout": 1,
+          "public": 3,
+          "baselineHeldout": 0,
+          "before": 6,
+          "shocked": 3,
+          "calls": 3,
+          "steps": 7,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "c8159457570d70d5cb87fd7422047ab4fe088d981222532842140da3f4fe9a69",
+      "routeDifference": -3,
+      "feedbackDifference": 0,
+      "acuteGradualInteraction": -3
+    },
+    {
+      "history": 7,
+      "arms": {
+        "control_gradual_unrelated": {
+          "heldout": 4,
+          "public": 4,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 14,
+          "stall": false
+        },
+        "control_gradual_correct": {
+          "heldout": 6,
+          "public": 6,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 14,
+          "stall": false
+        },
+        "control_acute_masked": {
+          "heldout": 4,
+          "public": 4,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_acute_unrelated": {
+          "heldout": 4,
+          "public": 4,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 14,
+          "stall": false
+        },
+        "control_gradual_masked": {
+          "heldout": 4,
+          "public": 4,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_acute_correct": {
+          "heldout": 6,
+          "public": 6,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 14,
+          "stall": false
+        },
+        "warp_acute_correct": {
+          "heldout": 4,
+          "public": 4,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_unrelated": {
+          "heldout": 4,
+          "public": 4,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_acute_masked": {
+          "heldout": 4,
+          "public": 4,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_masked": {
+          "heldout": 4,
+          "public": 4,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_correct": {
+          "heldout": 6,
+          "public": 6,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_acute_unrelated": {
+          "heldout": 4,
+          "public": 4,
+          "baselineHeldout": 4,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "86f47b8ed045a7965ba542e68f1372ab8de8adc9eb6267fd62047cbf6fbe53ab",
+      "routeDifference": -2,
+      "feedbackDifference": 0,
+      "acuteGradualInteraction": -2
+    },
+    {
+      "history": 8,
+      "arms": {
+        "control_gradual_unrelated": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 13,
+          "stall": false
+        },
+        "warp_acute_unrelated": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_acute_masked": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_acute_correct": {
+          "heldout": 6,
+          "public": 5,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 13,
+          "stall": false
+        },
+        "warp_gradual_masked": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_correct": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_gradual_unrelated": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_masked": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "warp_acute_correct": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        },
+        "control_gradual_correct": {
+          "heldout": 6,
+          "public": 5,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 13,
+          "stall": false
+        },
+        "control_acute_unrelated": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 13,
+          "stall": false
+        },
+        "control_acute_masked": {
+          "heldout": 3,
+          "public": 4,
+          "baselineHeldout": 3,
+          "before": 6,
+          "shocked": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "61b9086bfb9c7d417077f6331c80af8931e53c0e23e23dca82af11e30e9d14cb",
+      "routeDifference": -3,
+      "feedbackDifference": 0,
+      "acuteGradualInteraction": 0
+    }
+  ],
+  "totals": {
+    "modelCalls": 352,
+    "inputTokens": 77756,
+    "outputTokens": 8028,
+    "elapsedMs": 191808,
+    "stalls": 0,
+    "invalidFinalCandidates": 0
+  },
+  "interpretation": "Eight seeded task histories conditional on one preserved receiver founder. Exploratory descriptive contrasts; no independent-founder replication or confirmatory inference."
+}
