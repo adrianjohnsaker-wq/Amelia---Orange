@@ -1,5 +1,8 @@
 # WBD-2: development through the Warp
 
+> **7 November update:** The [matched-strength calibration and memory results](GATE_CONTRAST_RESULTS.md) are complete. A [bounded model pilot](https://github.com/adrianjohnsaker-wq/Amelia---Orange/blob/warp-adaptive-calibration-20261107/experiments/warp-breakdown/MODEL_PILOT_RESULTS.md) is complete, and the [16-history paired study](https://github.com/adrianjohnsaker-wq/Amelia---Orange/actions/runs/42326324481) is running. The design below predates those results.
+
+
 **Status: exploratory topology probe complete; breakdown experiment designed, not preregistered or run.**  
 **Date:** 7 November 2026.  
 **Purpose:** Ask whether failure and feedback associated with Amelia's 3↔6 Warp produce a retained, transferable change in a coupled problem-solving process, and whether any benefit depends on the Warp rather than feedback or disturbance in general.
