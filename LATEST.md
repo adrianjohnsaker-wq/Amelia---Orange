@@ -1,7 +1,7 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-07T12:18:30.612Z
-- Cycle: 561 (42366368616-1-6)
+- Last cycle (UTC): 2026-11-07T12:33:31.021Z
+- Cycle: 562 (42366368616-1-7)
 - RSS items seen: 57; newly processed: 0 (last-cycle window; 24-hour initial window)
 - Subdecadence: MESH_TERMINAL; score -1
 - Candidate: Duoddod / Mesh-01 / Amphidemon
