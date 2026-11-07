@@ -37,7 +37,7 @@ The program verifies the input SHA-256 and aborts if it is not the exact checkpo
 
 ## Why this study is needed
 
-The CCRU describes zone 3 and zone 6 as the Warp's 6::3 relation, carried by Djynxx. In the implemented full graph, 2→3 is Gt-3, 3→6 is Gt-6, and 6→3 is Gt-21. A cyclic path is observable; acceleration, breakdown, self-modification, and development are further hypotheses. The graph also contains dwell and other exits, so an endless 3↔6 path is not assumed. [CCRU, Zone Three](https://www.ccru.net/zones/Zn3.htm).
+The CCRU describes zone 3 and zone 6 as the Warp's 6::3 relation, carried by Djynxx. In the implemented full graph, 2→3 is Gt-3, 3→6 is Gt-6, and 6→3 is Gt-21. The 29-gate implementation makes the set {3,6} topologically closed: 3 can dwell or go to 6, and 6 can return to 3, but neither has an exit to another zone. It cannot naturally reach the Plex after entering that set. A cyclic path is observable; acceleration, breakdown, self-modification, and development are further hypotheses. Dwells mean that strict alternation is not guaranteed. [CCRU, Zone Three](https://www.ccru.net/zones/Zn3.htm).
 
 WBD-1 already studied an earlier, explicitly adapted Warp with failure incorporated in process memory. Across 64 paired seed blocks its registered held-out transfer contrast, W+ minus logged-only W0, was 0.078125, below the preregistered 0.10 criterion; W+ and a matched off-Warp incorporation control both reached 100% transfer. High control scores imposed a ceiling. It did not establish a Warp-specific durable gain, and it did not test an agent rewriting candidate code. [WBD-1 study and protocol](https://chatgpt.com/library?file_id=libfile_2eb327421da48191bfcb5f3a95834c1f&account_id=personal).
 
@@ -51,7 +51,7 @@ Use a source-pinned `OutsideRecoveryRuntime` carrying the full graph and its nat
 
 Couple the Numogram to a separate generator/executor loop. The generator proposes a candidate solution to an explicitly defined task; the executor runs public tests and returns diagnostic feedback. The candidate solver is the mutable object. The controller, evaluator, hidden tests, Governor, source receipts and experiment record remain outside its edit scope. Run candidate code in an isolated environment without network or credentials and with resource limits. A timed ordinary subprocess alone is not an isolation boundary. A zero exit code alone is not correctness, and compact code is not evidence of speed or intelligence.
 
-The coupling must be causal, not merely a label attached afterward: in the Warp arm actual zone 3 events open proposal opportunities and zone 6 events open diagnostic opportunities. A matched 2↔7 control schedules the same opportunities with the same prompt content, latency and computation. This constructs the operational correspondence; the question is whether the different dynamics lead to different outcomes, not whether labelling an action makes it a Numogram event. Record forced or cued crossings as interventions. If a continuation does not reach the needed phase, keep it as an outcome rather than silently excluding it.
+The coupling must be causal, not merely a label attached afterward: in the Warp arm actual zone 3 events open proposal opportunities and zone 6 events open diagnostic opportunities. A topology-matched experimental 2↔7 control schedules the same opportunities with the same prompt content, latency and computation. The native 2/7 region has exits whereas 3/6 is closed; for the matched control, explicitly restrict 2/7 to its reciprocal pair, add a 2→2 dwell corresponding to 3→3, and match the corresponding gate parameters. Record this as an adapter, and also report the unaltered 2/7 route separately. This constructs the operational correspondence; the question is whether the different dynamics lead to different outcomes, not whether labelling an action makes it a Numogram event. Record forced or cued crossings as interventions. If a continuation does not reach the needed phase, keep it as an outcome rather than silently excluding it.
 
 ### 2. Task and breakdown
 
@@ -68,11 +68,11 @@ Within each block fork the same saved state into matched continuations, with blo
 | Actual 3↔6 | Correct diagnostics | Warp plus error-informed revision |
 | Actual 3↔6 | Matched, unrelated diagnostics | Specific error information versus extra text |
 | Actual 3↔6 | Masked diagnostics | Feedback versus breakdown without usable errors |
-| Actual 2↔7 | Correct diagnostics | Warp specificity versus comparable non-Warp revision |
-| Actual 2↔7 | Matched, unrelated diagnostics | Specific feedback on the control route |
-| Actual 2↔7 | Masked diagnostics | Breakdown without usable errors on the control route |
+| Topology-matched 2↔7 adapter | Correct diagnostics | Warp specificity versus comparable non-Warp revision |
+| Topology-matched 2↔7 adapter | Matched, unrelated diagnostics | Specific feedback on the control route |
+| Topology-matched 2↔7 adapter | Masked diagnostics | Breakdown without usable errors on the control route |
 
-These are proposed manipulations, not observed conditions. Randomize within-block assignment and pulse order according to the final sealed protocol; hold feedback token counts, timing, source strength, shock schedule, attempts and test budget comparable. Compare actual 3→6 and 6→3 passage, dwell, exits, return latency, feedback and retention, including whether momentum actually grows or merely oscillates. A scripted 3↔6 tape is a positive control for accessibility, not evidence of spontaneous self-organization.
+These are proposed manipulations, not observed conditions. Randomize within-block assignment and pulse order according to the final sealed protocol; hold feedback token counts, timing, source strength, shock schedule, attempts and test budget comparable. Compare actual 3→6 and 6→3 passage, dwell, return latency, feedback and retention, including whether momentum actually grows or merely oscillates. An unmodified full graph cannot exit the Warp. To investigate passage after exit, a separate intervention can open an explicitly logged 6→7 adapter at the predeclared end of challenge, as in WBD-1; measure the adapter's effects and never describe the exit as native. The candidate solver can also be evaluated on held-out tasks while the substrate remains inside the Warp. A scripted 3↔6 tape is a positive control for accessibility, not evidence of spontaneous self-organization.
 
 ### 4. What would count as development?
 
