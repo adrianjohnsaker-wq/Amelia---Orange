@@ -1,0 +1,3456 @@
+{
+  "schema": "amelia.warp-dynamic-summary/v1",
+  "registrationSha256": "0182163c308cd015e7cea4fe0fe420f31c6244f980dc006774e3f8994b643946",
+  "selectionSha256": "1ab3441db68b5892d4f050547df9b910b53925422d688e69ae9fc7fc5edfe6c5",
+  "runSha256": "339dfd44e45e57cb7c7eeb75e1d5d82bed066be9c831972a59f43728a00f1315",
+  "lineagesComplete": 8,
+  "missing": [],
+  "problems": [],
+  "status": "COMPLETE",
+  "classification": "NO_REGISTERED_CALIBRATED_RECOVERY_ADVANTAGE",
+  "primary": {
+    "selectionVsAverage": {
+      "effect": 0.006892810263274776,
+      "rawP": 0.0703125,
+      "practical": 0.03125,
+      "holmAdjustedP": 0.140625,
+      "practicalMet": false,
+      "statisticalMet": false
+    },
+    "selectedVsLast4": {
+      "effect": -0.04200239688686758,
+      "rawP": 1.0,
+      "practical": 0.0625,
+      "holmAdjustedP": 1.0,
+      "practicalMet": false,
+      "statisticalMet": false
+    },
+    "sensitivityPrediction": {
+      "effect": 0.8372865250103046,
+      "rawP": 0.003125,
+      "practical": 0.6,
+      "holmAdjustedP": 0.009375000000000001,
+      "practicalMet": true,
+      "statisticalMet": true
+    }
+  },
+  "gains": {
+    "0.054": {
+      "selectedWarp": 3,
+      "eligibleTimepoints": 3134,
+      "means": {
+        "warpHouse": {
+          "regimeAccuracy": 0.4812458228283681,
+          "heldoutPassFraction": 0.5401875042884432
+        },
+        "controlHouse": {
+          "regimeAccuracy": 0.4967759036746766,
+          "heldoutPassFraction": 0.5500585839887858
+        },
+        "selectedHouse": {
+          "regimeAccuracy": 0.4951842465938995,
+          "heldoutPassFraction": 0.5520158544018893
+        },
+        "warpPFM": {
+          "regimeAccuracy": 0.5097175410814352,
+          "heldoutPassFraction": 0.5532161204211067
+        },
+        "controlPFM": {
+          "regimeAccuracy": 0.5210946119245969,
+          "heldoutPassFraction": 0.5581812111400812
+        },
+        "last4": {
+          "regimeAccuracy": 0.5921040637084803,
+          "heldoutPassFraction": 0.5940182512887568
+        },
+        "fullHMM": {
+          "regimeAccuracy": 0.6957983373938519,
+          "heldoutPassFraction": 0.6431516090099101
+        },
+        "fixed": {
+          "regimeAccuracy": 0.5,
+          "heldoutPassFraction": 0.5511826197140653
+        },
+        "oracle": {
+          "regimeAccuracy": 1,
+          "heldoutPassFraction": 0.7903596024231946
+        }
+      },
+      "selectionVsMatchedAverage": 0.006892810263274776,
+      "selectedVsLast4": -0.04200239688686758,
+      "selectedVsFullHMM": -0.09113575460802087,
+      "calibrationVsRouteRecoveryPearson": 0.8372865250103046,
+      "lineages": [
+        {
+          "lineage": "S05W17|0",
+          "gain": 0.054,
+          "selectedRoute": "warp",
+          "calibrationSensitivityDifference": 0.046875,
+          "eligibleTimepoints": 396,
+          "accuracy": {
+            "warpHouse": 0.49242424242424243,
+            "controlHouse": 0.49242424242424243,
+            "selectedHouse": 0.49242424242424243,
+            "warpPFM": 0.5378787878787878,
+            "controlPFM": 0.51010101010101,
+            "last4": 0.6060606060606061,
+            "fullHMM": 0.7146464646464646,
+            "fixed": 0.5,
+            "oracle": 1
+          },
+          "passFraction": {
+            "warpHouse": 0.5555555555555556,
+            "controlHouse": 0.55239898989899,
+            "selectedHouse": 0.5555555555555556,
+            "warpPFM": 0.5700757575757576,
+            "controlPFM": 0.547979797979798,
+            "last4": 0.6047979797979798,
+            "fullHMM": 0.6508838383838383,
+            "fixed": 0.5404040404040404,
+            "oracle": 0.7916666666666666
+          },
+          "fixedSelectedOnTrain": "light",
+          "hmmTrainingParameters": {
+            "switch": 0.14587525150905434,
+            "success1": 0.8501945525291829,
+            "success3": 0.311284046692607
+          },
+          "routeDifference": 0.0031565656565656353,
+          "selectionVsAverage": 0.0015782828282828731,
+          "selectedVsLast4": -0.0492424242424242,
+          "selectedVsFull": -0.09532828282828276
+        },
+        {
+          "lineage": "S05W18|0",
+          "gain": 0.054,
+          "selectedRoute": "control",
+          "calibrationSensitivityDifference": -0.126953125,
+          "eligibleTimepoints": 426,
+          "accuracy": {
+            "warpHouse": 0.4953051643192488,
+            "controlHouse": 0.539906103286385,
+            "selectedHouse": 0.539906103286385,
+            "warpPFM": 0.5070422535211268,
+            "controlPFM": 0.5234741784037559,
+            "last4": 0.6056338028169014,
+            "fullHMM": 0.7089201877934272,
+            "fixed": 0.5,
+            "oracle": 1
+          },
+          "passFraction": {
+            "warpHouse": 0.54518779342723,
+            "controlHouse": 0.5874413145539906,
+            "selectedHouse": 0.5874413145539906,
+            "warpPFM": 0.5704225352112676,
+            "controlPFM": 0.568075117370892,
+            "last4": 0.596830985915493,
+            "fullHMM": 0.6467136150234741,
+            "fixed": 0.5563380281690141,
+            "oracle": 0.7981220657276995
+          },
+          "fixedSelectedOnTrain": "light",
+          "hmmTrainingParameters": {
+            "switch": 0.1398390342052314,
+            "success1": 0.8073929961089494,
+            "success3": 0.28599221789883267
+          },
+          "routeDifference": -0.04225352112676062,
+          "selectionVsAverage": 0.021126760563380365,
+          "selectedVsLast4": -0.009389671361502372,
+          "selectedVsFull": -0.05927230046948351
+        },
+        {
+          "lineage": "S05W19|0",
+          "gain": 0.054,
+          "selectedRoute": "warp",
+          "calibrationSensitivityDifference": 0.025390625,
+          "eligibleTimepoints": 384,
+          "accuracy": {
+            "warpHouse": 0.4947916666666667,
+            "controlHouse": 0.4921875,
+            "selectedHouse": 0.4947916666666667,
+            "warpPFM": 0.5052083333333334,
+            "controlPFM": 0.5052083333333334,
+            "last4": 0.578125,
+            "fullHMM": 0.6822916666666666,
+            "fixed": 0.5,
+            "oracle": 1
+          },
+          "passFraction": {
+            "warpHouse": 0.537109375,
+            "controlHouse": 0.5384114583333334,
+            "selectedHouse": 0.537109375,
+            "warpPFM": 0.533203125,
+            "controlPFM": 0.5390625,
+            "last4": 0.5885416666666666,
+            "fullHMM": 0.6263020833333334,
+            "fixed": 0.5638020833333334,
+            "oracle": 0.775390625
+          },
+          "fixedSelectedOnTrain": "light",
+          "hmmTrainingParameters": {
+            "switch": 0.11167002012072434,
+            "success1": 0.8696498054474708,
+            "success3": 0.29766536964980544
+          },
+          "routeDifference": -0.0013020833333333703,
+          "selectionVsAverage": -0.0006510416666667407,
+          "selectedVsLast4": -0.05143229166666663,
+          "selectedVsFull": -0.08919270833333337
+        },
+        {
+          "lineage": "S05W20|0",
+          "gain": 0.054,
+          "selectedRoute": "control",
+          "calibrationSensitivityDifference": -0.013671875,
+          "eligibleTimepoints": 404,
+          "accuracy": {
+            "warpHouse": 0.452970297029703,
+            "controlHouse": 0.42574257425742573,
+            "selectedHouse": 0.42574257425742573,
+            "warpPFM": 0.5173267326732673,
+            "controlPFM": 0.5495049504950495,
+            "last4": 0.5841584158415841,
+            "fullHMM": 0.6707920792079208,
+            "fixed": 0.5,
+            "oracle": 1
+          },
+          "passFraction": {
+            "warpHouse": 0.5154702970297029,
+            "controlHouse": 0.504950495049505,
+            "selectedHouse": 0.504950495049505,
+            "warpPFM": 0.556930693069307,
+            "controlPFM": 0.5625,
+            "last4": 0.5903465346534653,
+            "fullHMM": 0.6336633663366337,
+            "fixed": 0.5532178217821783,
+            "oracle": 0.7920792079207921
+          },
+          "fixedSelectedOnTrain": "light",
+          "hmmTrainingParameters": {
+            "switch": 0.11971830985915492,
+            "success1": 0.8540856031128404,
+            "success3": 0.24708171206225682
+          },
+          "routeDifference": 0.010519801980197974,
+          "selectionVsAverage": -0.005259900990098987,
+          "selectedVsLast4": -0.08539603960396036,
+          "selectedVsFull": -0.12871287128712872
+        },
+        {
+          "lineage": "S05W21|0",
+          "gain": 0.054,
+          "selectedRoute": "control",
+          "calibrationSensitivityDifference": -0.08984375,
+          "eligibleTimepoints": 366,
+          "accuracy": {
+            "warpHouse": 0.47540983606557374,
+            "controlHouse": 0.5273224043715847,
+            "selectedHouse": 0.5273224043715847,
+            "warpPFM": 0.4918032786885246,
+            "controlPFM": 0.5683060109289617,
+            "last4": 0.592896174863388,
+            "fullHMM": 0.7349726775956285,
+            "fixed": 0.5,
+            "oracle": 1
+          },
+          "passFraction": {
+            "warpHouse": 0.5286885245901639,
+            "controlHouse": 0.5703551912568307,
+            "selectedHouse": 0.5703551912568307,
+            "warpPFM": 0.5300546448087432,
+            "controlPFM": 0.5806010928961749,
+            "last4": 0.5976775956284153,
+            "fullHMM": 0.6564207650273224,
+            "fixed": 0.5307377049180327,
+            "oracle": 0.7814207650273224
+          },
+          "fixedSelectedOnTrain": "light",
+          "hmmTrainingParameters": {
+            "switch": 0.14989939637826963,
+            "success1": 0.8093385214007782,
+            "success3": 0.26264591439688717
+          },
+          "routeDifference": -0.04166666666666674,
+          "selectionVsAverage": 0.02083333333333337,
+          "selectedVsLast4": -0.02732240437158462,
+          "selectedVsFull": -0.08606557377049173
+        },
+        {
+          "lineage": "S05W22|0",
+          "gain": 0.054,
+          "selectedRoute": "control",
+          "calibrationSensitivityDifference": -0.02734375,
+          "eligibleTimepoints": 408,
+          "accuracy": {
+            "warpHouse": 0.4730392156862745,
+            "controlHouse": 0.5294117647058824,
+            "selectedHouse": 0.5294117647058824,
+            "warpPFM": 0.48284313725490197,
+            "controlPFM": 0.5098039215686274,
+            "last4": 0.571078431372549,
+            "fullHMM": 0.7426470588235294,
+            "fixed": 0.5,
+            "oracle": 1
+          },
+          "passFraction": {
+            "warpHouse": 0.5379901960784313,
+            "controlHouse": 0.5692401960784313,
+            "selectedHouse": 0.5692401960784313,
+            "warpPFM": 0.5477941176470589,
+            "controlPFM": 0.5526960784313726,
+            "last4": 0.5723039215686274,
+            "fullHMM": 0.6678921568627451,
+            "fixed": 0.5612745098039216,
+            "oracle": 0.7947303921568627
+          },
+          "fixedSelectedOnTrain": "light",
+          "hmmTrainingParameters": {
+            "switch": 0.1317907444668008,
+            "success1": 0.8560311284046692,
+            "success3": 0.2587548638132296
+          },
+          "routeDifference": -0.03125,
+          "selectionVsAverage": 0.015625,
+          "selectedVsLast4": -0.0030637254901960675,
+          "selectedVsFull": -0.09865196078431371
+        },
+        {
+          "lineage": "S05W23|0",
+          "gain": 0.054,
+          "selectedRoute": "control",
+          "calibrationSensitivityDifference": 0.0,
+          "eligibleTimepoints": 424,
+          "accuracy": {
+            "warpHouse": 0.49056603773584906,
+            "controlHouse": 0.47641509433962265,
+            "selectedHouse": 0.47641509433962265,
+            "warpPFM": 0.4834905660377358,
+            "controlPFM": 0.5023584905660378,
+            "last4": 0.5731132075471698,
+            "fullHMM": 0.625,
+            "fixed": 0.5,
+            "oracle": 1
+          },
+          "passFraction": {
+            "warpHouse": 0.5501179245283019,
+            "controlHouse": 0.5400943396226415,
+            "selectedHouse": 0.5400943396226415,
+            "warpPFM": 0.5512971698113207,
+            "controlPFM": 0.5501179245283019,
+            "last4": 0.5843160377358491,
+            "fullHMM": 0.6137971698113207,
+            "fixed": 0.5377358490566038,
+            "oracle": 0.7942216981132075
+          },
+          "fixedSelectedOnTrain": "heavy",
+          "hmmTrainingParameters": {
+            "switch": 0.10362173038229376,
+            "success1": 0.8365758754863813,
+            "success3": 0.25486381322957197
+          },
+          "routeDifference": 0.010023584905660354,
+          "selectionVsAverage": -0.005011792452830233,
+          "selectedVsLast4": -0.04422169811320753,
+          "selectedVsFull": -0.07370283018867918
+        },
+        {
+          "lineage": "S05W24|0",
+          "gain": 0.054,
+          "selectedRoute": "warp",
+          "calibrationSensitivityDifference": 0.11328125,
+          "eligibleTimepoints": 326,
+          "accuracy": {
+            "warpHouse": 0.4754601226993865,
+            "controlHouse": 0.49079754601226994,
+            "selectedHouse": 0.4754601226993865,
+            "warpPFM": 0.5521472392638037,
+            "controlPFM": 0.5,
+            "last4": 0.6257668711656442,
+            "fullHMM": 0.6871165644171779,
+            "fixed": 0.5,
+            "oracle": 1
+          },
+          "passFraction": {
+            "warpHouse": 0.5513803680981595,
+            "controlHouse": 0.5375766871165644,
+            "selectedHouse": 0.5513803680981595,
+            "warpPFM": 0.5659509202453987,
+            "controlPFM": 0.5644171779141104,
+            "last4": 0.6173312883435583,
+            "fullHMM": 0.6495398773006135,
+            "fixed": 0.5659509202453987,
+            "oracle": 0.7952453987730062
+          },
+          "fixedSelectedOnTrain": "light",
+          "hmmTrainingParameters": {
+            "switch": 0.13782696177062373,
+            "success1": 0.8268482490272373,
+            "success3": 0.27626459143968873
+          },
+          "routeDifference": 0.013803680981595123,
+          "selectionVsAverage": 0.006901840490797562,
+          "selectedVsLast4": -0.06595092024539884,
+          "selectedVsFull": -0.09815950920245398
+        }
+      ]
+    },
+    "0.35": {
+      "selectedWarp": 4,
+      "eligibleTimepoints": 3134,
+      "means": {
+        "warpHouse": {
+          "regimeAccuracy": 0.44153799518436465,
+          "heldoutPassFraction": 0.5199978632173119
+        },
+        "controlHouse": {
+          "regimeAccuracy": 0.4406461347757416,
+          "heldoutPassFraction": 0.5226264258628046
+        },
+        "selectedHouse": {
+          "regimeAccuracy": 0.4415891619113013,
+          "heldoutPassFraction": 0.5207631147185424
+        },
+        "warpPFM": {
+          "regimeAccuracy": 0.4738635946312111,
+          "heldoutPassFraction": 0.5367946579770619
+        },
+        "controlPFM": {
+          "regimeAccuracy": 0.4722629579272438,
+          "heldoutPassFraction": 0.5300903097466985
+        },
+        "last4": {
+          "regimeAccuracy": 0.5921040637084803,
+          "heldoutPassFraction": 0.5940182512887568
+        },
+        "fullHMM": {
+          "regimeAccuracy": 0.6957983373938519,
+          "heldoutPassFraction": 0.6431516090099101
+        },
+        "fixed": {
+          "regimeAccuracy": 0.5,
+          "heldoutPassFraction": 0.5511826197140653
+        },
+        "oracle": {
+          "regimeAccuracy": 1,
+          "heldoutPassFraction": 0.7903596024231946
+        }
+      },
+      "selectionVsMatchedAverage": -0.000549029821515834,
+      "selectedVsLast4": -0.07325513657021443,
+      "selectedVsFullHMM": -0.12238849429136772,
+      "calibrationVsRouteRecoveryPearson": -0.07885428615762599,
+      "lineages": [
+        {
+          "lineage": "S05W17|0",
+          "gain": 0.35,
+          "selectedRoute": "warp",
+          "calibrationSensitivityDifference": 0.04296875,
+          "eligibleTimepoints": 396,
+          "accuracy": {
+            "warpHouse": 0.43434343434343436,
+            "controlHouse": 0.4621212121212121,
+            "selectedHouse": 0.43434343434343436,
+            "warpPFM": 0.4671717171717172,
+            "controlPFM": 0.4621212121212121,
+            "last4": 0.6060606060606061,
+            "fullHMM": 0.7146464646464646,
+            "fixed": 0.5,
+            "oracle": 1
+          },
+          "passFraction": {
+            "warpHouse": 0.5202020202020202,
+            "controlHouse": 0.5404040404040404,
+            "selectedHouse": 0.5202020202020202,
+            "warpPFM": 0.5454545454545454,
+            "controlPFM": 0.5284090909090909,
+            "last4": 0.6047979797979798,
+            "fullHMM": 0.6508838383838383,
+            "fixed": 0.5404040404040404,
+            "oracle": 0.7916666666666666
+          },
+          "fixedSelectedOnTrain": "light",
+          "hmmTrainingParameters": {
+            "switch": 0.14587525150905434,
+            "success1": 0.8501945525291829,
+            "success3": 0.311284046692607
+          },
+          "routeDifference": -0.02020202020202022,
+          "selectionVsAverage": -0.010101010101010055,
+          "selectedVsLast4": -0.08459595959595956,
+          "selectedVsFull": -0.13068181818181812
+        },
+        {
+          "lineage": "S05W18|0",
+          "gain": 0.35,
+          "selectedRoute": "warp",
+          "calibrationSensitivityDifference": 0.017578125,
+          "eligibleTimepoints": 426,
+          "accuracy": {
+            "warpHouse": 0.47183098591549294,
+            "controlHouse": 0.460093896713615,
+            "selectedHouse": 0.47183098591549294,
+            "warpPFM": 0.4812206572769953,
+            "controlPFM": 0.5352112676056338,
+            "last4": 0.6056338028169014,
+            "fullHMM": 0.7089201877934272,
+            "fixed": 0.5,
+            "oracle": 1
+          },
+          "passFraction": {
+            "warpHouse": 0.5487089201877934,
+            "controlHouse": 0.5463615023474179,
+            "selectedHouse": 0.5487089201877934,
+            "warpPFM": 0.5522300469483568,
+            "controlPFM": 0.5721830985915493,
+            "last4": 0.596830985915493,
+            "fullHMM": 0.6467136150234741,
+            "fixed": 0.5563380281690141,
+            "oracle": 0.7981220657276995
+          },
+          "fixedSelectedOnTrain": "light",
+          "hmmTrainingParameters": {
+            "switch": 0.1398390342052314,
+            "success1": 0.8073929961089494,
+            "success3": 0.28599221789883267
+          },
+          "routeDifference": 0.0023474178403755097,
+          "selectionVsAverage": 0.0011737089201877549,
+          "selectedVsLast4": -0.048122065727699614,
+          "selectedVsFull": -0.09800469483568075
+        },
+        {
+          "lineage": "S05W19|0",
+          "gain": 0.35,
+          "selectedRoute": "control",
+          "calibrationSensitivityDifference": 0.0,
+          "eligibleTimepoints": 384,
+          "accuracy": {
+            "warpHouse": 0.4010416666666667,
+            "controlHouse": 0.3984375,
+            "selectedHouse": 0.3984375,
+            "warpPFM": 0.4609375,
+            "controlPFM": 0.4296875,
+            "last4": 0.578125,
+            "fullHMM": 0.6822916666666666,
+            "fixed": 0.5,
+            "oracle": 1
+          },
+          "passFraction": {
+            "warpHouse": 0.486328125,
+            "controlHouse": 0.4895833333333333,
+            "selectedHouse": 0.4895833333333333,
+            "warpPFM": 0.5188802083333334,
+            "controlPFM": 0.4908854166666667,
+            "last4": 0.5885416666666666,
+            "fullHMM": 0.6263020833333334,
+            "fixed": 0.5638020833333334,
+            "oracle": 0.775390625
+          },
+          "fixedSelectedOnTrain": "light",
+          "hmmTrainingParameters": {
+            "switch": 0.11167002012072434,
+            "success1": 0.8696498054474708,
+            "success3": 0.29766536964980544
+          },
+          "routeDifference": -0.003255208333333315,
+          "selectionVsAverage": 0.0016276041666666852,
+          "selectedVsLast4": -0.09895833333333331,
+          "selectedVsFull": -0.13671875000000006
+        },
+        {
+          "lineage": "S05W20|0",
+          "gain": 0.35,
+          "selectedRoute": "control",
+          "calibrationSensitivityDifference": 0.0,
+          "eligibleTimepoints": 404,
+          "accuracy": {
+            "warpHouse": 0.4430693069306931,
+            "controlHouse": 0.4430693069306931,
+            "selectedHouse": 0.4430693069306931,
+            "warpPFM": 0.4381188118811881,
+            "controlPFM": 0.47277227722772275,
+            "last4": 0.5841584158415841,
+            "fullHMM": 0.6707920792079208,
+            "fixed": 0.5,
+            "oracle": 1
+          },
+          "passFraction": {
+            "warpHouse": 0.505569306930693,
+            "controlHouse": 0.504950495049505,
+            "selectedHouse": 0.504950495049505,
+            "warpPFM": 0.5117574257425742,
+            "controlPFM": 0.5136138613861386,
+            "last4": 0.5903465346534653,
+            "fullHMM": 0.6336633663366337,
+            "fixed": 0.5532178217821783,
+            "oracle": 0.7920792079207921
+          },
+          "fixedSelectedOnTrain": "light",
+          "hmmTrainingParameters": {
+            "switch": 0.11971830985915492,
+            "success1": 0.8540856031128404,
+            "success3": 0.24708171206225682
+          },
+          "routeDifference": 0.0006188118811880639,
+          "selectionVsAverage": -0.0003094059405940319,
+          "selectedVsLast4": -0.08539603960396036,
+          "selectedVsFull": -0.12871287128712872
+        },
+        {
+          "lineage": "S05W21|0",
+          "gain": 0.35,
+          "selectedRoute": "control",
+          "calibrationSensitivityDifference": 0.0,
+          "eligibleTimepoints": 366,
+          "accuracy": {
+            "warpHouse": 0.4562841530054645,
+            "controlHouse": 0.46174863387978143,
+            "selectedHouse": 0.46174863387978143,
+            "warpPFM": 0.46994535519125685,
+            "controlPFM": 0.47540983606557374,
+            "last4": 0.592896174863388,
+            "fullHMM": 0.7349726775956285,
+            "fixed": 0.5,
+            "oracle": 1
+          },
+          "passFraction": {
+            "warpHouse": 0.5334699453551912,
+            "controlHouse": 0.537568306010929,
+            "selectedHouse": 0.537568306010929,
+            "warpPFM": 0.5355191256830601,
+            "controlPFM": 0.5416666666666666,
+            "last4": 0.5976775956284153,
+            "fullHMM": 0.6564207650273224,
+            "fixed": 0.5307377049180327,
+            "oracle": 0.7814207650273224
+          },
+          "fixedSelectedOnTrain": "light",
+          "hmmTrainingParameters": {
+            "switch": 0.14989939637826963,
+            "success1": 0.8093385214007782,
+            "success3": 0.26264591439688717
+          },
+          "routeDifference": -0.004098360655737765,
+          "selectionVsAverage": 0.002049180327868938,
+          "selectedVsLast4": -0.060109289617486295,
+          "selectedVsFull": -0.11885245901639341
+        },
+        {
+          "lineage": "S05W22|0",
+          "gain": 0.35,
+          "selectedRoute": "control",
+          "calibrationSensitivityDifference": 0.0,
+          "eligibleTimepoints": 408,
+          "accuracy": {
+            "warpHouse": 0.45098039215686275,
+            "controlHouse": 0.4485294117647059,
+            "selectedHouse": 0.4485294117647059,
+            "warpPFM": 0.4534313725490196,
+            "controlPFM": 0.4583333333333333,
+            "last4": 0.571078431372549,
+            "fullHMM": 0.7426470588235294,
+            "fixed": 0.5,
+            "oracle": 1
+          },
+          "passFraction": {
+            "warpHouse": 0.5232843137254902,
+            "controlHouse": 0.522671568627451,
+            "selectedHouse": 0.522671568627451,
+            "warpPFM": 0.5263480392156863,
+            "controlPFM": 0.5269607843137255,
+            "last4": 0.5723039215686274,
+            "fullHMM": 0.6678921568627451,
+            "fixed": 0.5612745098039216,
+            "oracle": 0.7947303921568627
+          },
+          "fixedSelectedOnTrain": "light",
+          "hmmTrainingParameters": {
+            "switch": 0.1317907444668008,
+            "success1": 0.8560311284046692,
+            "success3": 0.2587548638132296
+          },
+          "routeDifference": 0.0006127450980392135,
+          "selectionVsAverage": -0.00030637254901955124,
+          "selectedVsLast4": -0.049632352941176405,
+          "selectedVsFull": -0.14522058823529405
+        },
+        {
+          "lineage": "S05W23|0",
+          "gain": 0.35,
+          "selectedRoute": "warp",
+          "calibrationSensitivityDifference": 0.091796875,
+          "eligibleTimepoints": 424,
+          "accuracy": {
+            "warpHouse": 0.39622641509433965,
+            "controlHouse": 0.37264150943396224,
+            "selectedHouse": 0.39622641509433965,
+            "warpPFM": 0.44339622641509435,
+            "controlPFM": 0.45990566037735847,
+            "last4": 0.5731132075471698,
+            "fullHMM": 0.625,
+            "fixed": 0.5,
+            "oracle": 1
+          },
+          "passFraction": {
+            "warpHouse": 0.486438679245283,
+            "controlHouse": 0.4834905660377358,
+            "selectedHouse": 0.486438679245283,
+            "warpPFM": 0.5182783018867925,
+            "controlPFM": 0.5194575471698113,
+            "last4": 0.5843160377358491,
+            "fullHMM": 0.6137971698113207,
+            "fixed": 0.5377358490566038,
+            "oracle": 0.7942216981132075
+          },
+          "fixedSelectedOnTrain": "heavy",
+          "hmmTrainingParameters": {
+            "switch": 0.10362173038229376,
+            "success1": 0.8365758754863813,
+            "success3": 0.25486381322957197
+          },
+          "routeDifference": 0.002948113207547176,
+          "selectionVsAverage": 0.001474056603773588,
+          "selectedVsLast4": -0.09787735849056606,
+          "selectedVsFull": -0.1273584905660377
+        },
+        {
+          "lineage": "S05W24|0",
+          "gain": 0.35,
+          "selectedRoute": "warp",
+          "calibrationSensitivityDifference": 0.0078125,
+          "eligibleTimepoints": 326,
+          "accuracy": {
+            "warpHouse": 0.4785276073619632,
+            "controlHouse": 0.4785276073619632,
+            "selectedHouse": 0.4785276073619632,
+            "warpPFM": 0.5766871165644172,
+            "controlPFM": 0.48466257668711654,
+            "last4": 0.6257668711656442,
+            "fullHMM": 0.6871165644171779,
+            "fixed": 0.5,
+            "oracle": 1
+          },
+          "passFraction": {
+            "warpHouse": 0.5559815950920245,
+            "controlHouse": 0.5559815950920245,
+            "selectedHouse": 0.5559815950920245,
+            "warpPFM": 0.5858895705521472,
+            "controlPFM": 0.5475460122699386,
+            "last4": 0.6173312883435583,
+            "fullHMM": 0.6495398773006135,
+            "fixed": 0.5659509202453987,
+            "oracle": 0.7952453987730062
+          },
+          "fixedSelectedOnTrain": "light",
+          "hmmTrainingParameters": {
+            "switch": 0.13782696177062373,
+            "success1": 0.8268482490272373,
+            "success3": 0.27626459143968873
+          },
+          "routeDifference": 0.0,
+          "selectionVsAverage": 0.0,
+          "selectedVsLast4": -0.06134969325153383,
+          "selectedVsFull": -0.09355828220858897
+        }
+      ]
+    }
+  },
+  "models": {
+    "S05W17|0:0.054": {
+      "housePFM": {
+        "warp": {
+          "house": {
+            "mean": [
+              0,
+              0,
+              0,
+              0.012963423412911396,
+              -0.004416009628010004,
+              -0.008545953071432666,
+              0.0019166465389781088,
+              0.0013438113537302572,
+              0.0013475752984428019
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.016412013074256764,
+              0.008658731771427154,
+              0.00847302888282215,
+              0.0010661410006918299,
+              0.0007609084478955782,
+              0.0007606211378595989
+            ],
+            "middle": [
+              0.0,
+              0.0,
+              0.0,
+              5.551115123125783e-17,
+              -4.85722573273506e-17,
+              -4.85722573273506e-17,
+              -2.6020852139652106e-18,
+              2.6020852139652106e-18,
+              5.204170427930421e-18
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.17196400121595404,
+              0.21463815931737557,
+              0.11374694930754484,
+              0.020595628060066623,
+              -0.013816486060842716,
+              -0.01504660069853067
+            ]
+          },
+          "pfm": {
+            "mean": [
+              -0.009571777343749994,
+              -0.015907910156250003,
+              0.03276972656250002
+            ],
+            "scale": [
+              0.007643009876092611,
+              0.006546169109299964,
+              0.05341652202929801
+            ],
+            "middle": [
+              3.8163916471489756e-17,
+              2.3418766925686896e-16,
+              -2.7755575615628914e-17
+            ],
+            "weight": [
+              -0.08762602343285072,
+              0.04520177107548699,
+              0.40312609155252005
+            ]
+          }
+        },
+        "control": {
+          "house": {
+            "mean": [
+              0,
+              0,
+              0,
+              -0.02337286254630727,
+              0.013968087412680727,
+              0.009406235847095682,
+              0.001640497626348443,
+              0.00148648770795708,
+              0.0014810478568475262
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.013264643700387838,
+              0.006987097297495082,
+              0.007180275637530181,
+              0.0008812907834723668,
+              0.0008491054864368749,
+              0.0008480570073375655
+            ],
+            "middle": [
+              0.0,
+              0.0,
+              0.0,
+              -6.938893903907228e-17,
+              6.938893903907228e-18,
+              5.551115123125783e-17,
+              1.1058862159352145e-17,
+              -2.6020852139652106e-18,
+              5.637851296924623e-18
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.1234417680645412,
+              0.15615208330938074,
+              0.07609196351420097,
+              -0.0009117872899291391,
+              0.0007950493012793378,
+              0.00015148629166055307
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.055821777343750004,
+              0.02138818359375,
+              -0.011610546874999976
+            ],
+            "scale": [
+              0.034202138153380475,
+              0.014676104190168055,
+              0.0885761413612657
+            ],
+            "middle": [
+              5.4643789493269423e-17,
+              -8.586881206085195e-17,
+              -2.7755575615628914e-17
+            ],
+            "weight": [
+              -0.011403937986299528,
+              0.009941223884042874,
+              0.1681066046247019
+            ]
+          }
+        }
+      },
+      "last4": {
+        "mean": [
+          2.2294921875,
+          3.8125
+        ],
+        "scale": [
+          1.2896331448813128,
+          0.6343057228182637
+        ],
+        "middle": [
+          0.0,
+          2.949029909160572e-17
+        ],
+        "weight": [
+          -1.0525643516435257,
+          0.0
+        ]
+      },
+      "hmm": {
+        "switch": 0.14587525150905434,
+        "success1": 0.8501945525291829,
+        "success3": 0.311284046692607
+      },
+      "fixed": "light"
+    },
+    "S05W17|0:0.35": {
+      "housePFM": {
+        "warp": {
+          "house": {
+            "mean": [
+              0,
+              0,
+              0,
+              0.048941981314508304,
+              -0.023084824538942016,
+              -0.02585569606209588,
+              0.002079678558949594,
+              0.001257620707936509,
+              0.0012707339242682657
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.04371041875740886,
+              0.022080983870552618,
+              0.021853834889132895,
+              0.0012685209396430758,
+              0.0006791606321125377,
+              0.0006849294347154605
+            ],
+            "middle": [
+              0.0,
+              0.0,
+              0.0,
+              6.245004513516506e-17,
+              4.163336342344337e-17,
+              -5.551115123125783e-17,
+              -1.734723475976807e-18,
+              -3.469446951953614e-18,
+              -1.734723475976807e-18
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.23016265430379418,
+              0.2960635467577397,
+              0.16121342634793392,
+              0.0388395930910726,
+              -0.033859652368843356,
+              -0.03835824960173882
+            ]
+          },
+          "pfm": {
+            "mean": [
+              -0.0011297851562499942,
+              -0.0185837890625,
+              -0.025684082031249975
+            ],
+            "scale": [
+              0.00943008201601885,
+              0.008587183337640776,
+              0.10248666067229867
+            ],
+            "middle": [
+              -4.163336342344337e-17,
+              1.3877787807814457e-17,
+              -2.7755575615628914e-17
+            ],
+            "weight": [
+              -0.24810478143516104,
+              0.13683182876153865,
+              0.6925691704353196
+            ]
+          }
+        },
+        "control": {
+          "house": {
+            "mean": [
+              0,
+              0.0023916417902166195,
+              0,
+              0.040927020617671554,
+              -0.019008186810367173,
+              -0.021917373093834416,
+              0.0020204575410612572,
+              0.0012882517039669653,
+              0.0012993239461258285
+            ],
+            "scale": [
+              1,
+              0.006664805489235213,
+              1,
+              0.0383665759665354,
+              0.01946583472610125,
+              0.019164019850637933,
+              0.001217509939875622,
+              0.0006941131072363021,
+              0.0007001357109147659
+            ],
+            "middle": [
+              0.0,
+              -3.8163916471489756e-17,
+              0.0,
+              2.7755575615628914e-17,
+              8.326672684688674e-17,
+              -5.551115123125783e-17,
+              3.469446951953614e-18,
+              8.673617379884035e-19,
+              1.734723475976807e-18
+            ],
+            "weight": [
+              0.0,
+              0.1098159113857678,
+              0.0,
+              -0.21112194537405193,
+              0.27901652973625635,
+              0.13925765692687148,
+              0.034952129216912695,
+              -0.028692979145389076,
+              -0.032334291020475595
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.06492900390625,
+              0.011234082031249999,
+              -0.08502041015624998
+            ],
+            "scale": [
+              0.03698180703199273,
+              0.009222361609128156,
+              0.1263292662032086
+            ],
+            "middle": [
+              -1.3877787807814457e-17,
+              2.0816681711721685e-17,
+              4.163336342344337e-17
+            ],
+            "weight": [
+              -0.05974749450692105,
+              0.15631587912071493,
+              0.34647027765596494
+            ]
+          }
+        }
+      },
+      "last4": {
+        "mean": [
+          2.2294921875,
+          3.8125
+        ],
+        "scale": [
+          1.2896331448813128,
+          0.6343057228182637
+        ],
+        "middle": [
+          0.0,
+          2.949029909160572e-17
+        ],
+        "weight": [
+          -1.0525643516435257,
+          0.0
+        ]
+      },
+      "hmm": {
+        "switch": 0.14587525150905434,
+        "success1": 0.8501945525291829,
+        "success3": 0.311284046692607
+      },
+      "fixed": "light"
+    },
+    "S05W18|0:0.054": {
+      "housePFM": {
+        "warp": {
+          "house": {
+            "mean": [
+              0,
+              -1.4522051238231745e-94,
+              0,
+              -0.0219951639614041,
+              0.013524305272172975,
+              0.00855140819367819,
+              0.0017803479180542973,
+              0.0027151137746841796,
+              0.002709955339596913
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.013963390769067299,
+              0.0074100668565069165,
+              0.007459399717879406,
+              0.000961685907466616,
+              0.0015365309792732614,
+              0.0015341240064688602
+            ],
+            "middle": [
+              0.0,
+              -7.74458027540545e-111,
+              0.0,
+              7.632783294297951e-17,
+              -1.214306433183765e-16,
+              -5.551115123125783e-17,
+              4.336808689942018e-18,
+              9.947554932554503e-18,
+              -1.0760706561918632e-17
+            ],
+            "weight": [
+              0.0,
+              9.934693497579058e-98,
+              0.0,
+              -0.06375598747991515,
+              0.07580896625417757,
+              0.044038430866805756,
+              -0.0021281302513310573,
+              0.000757546187938061,
+              0.000575311827975374
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.0060744140625000114,
+              0.01023330078125,
+              -0.19603017578124995
+            ],
+            "scale": [
+              0.004870239026198021,
+              0.010803509378257288,
+              0.13221432875484448
+            ],
+            "middle": [
+              -1.3877787807814457e-17,
+              4.8138576458356397e-17,
+              -3.0357660829594124e-17
+            ],
+            "weight": [
+              -0.03553149528578466,
+              0.01375782695196548,
+              0.01345914776604569
+            ]
+          }
+        },
+        "control": {
+          "house": {
+            "mean": [
+              0,
+              -2.6454034958637846e-95,
+              0,
+              -0.00877527553959457,
+              0.00674049440444735,
+              0.0021153306395945257,
+              0.0018420586416570805,
+              0.0026825597903848454,
+              0.002680798600296262
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.016136837119834564,
+              0.008532507936549376,
+              0.00836247239131761,
+              0.0010324590279893453,
+              0.00150173242318169,
+              0.0015017870321098316
+            ],
+            "middle": [
+              0.0,
+              -1.143495074220939e-111,
+              0.0,
+              1.3877787807814457e-17,
+              4.163336342344337e-17,
+              2.7755575615628914e-17,
+              -4.336808689942018e-19,
+              1.734723475976807e-18,
+              -1.951563910473908e-18
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.27633954935260896,
+              0.28277177755546457,
+              0.24472354175684055,
+              -0.012702931060434668,
+              0.004769075958815001,
+              0.003964197141349195
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.05746298828125,
+              0.013020800781249998,
+              -0.04993603515624998
+            ],
+            "scale": [
+              0.0316083356424504,
+              0.009595188559865533,
+              0.07350144835615069
+            ],
+            "middle": [
+              2.7755575615628914e-17,
+              -8.803721640582296e-17,
+              -6.245004513516506e-17
+            ],
+            "weight": [
+              -0.0399110997734964,
+              0.009628035126523337,
+              0.15656844960031308
+            ]
+          }
+        }
+      },
+      "last4": {
+        "mean": [
+          2.103515625,
+          3.8125
+        ],
+        "scale": [
+          1.257410589418134,
+          0.6343057228182637
+        ],
+        "middle": [
+          0.0,
+          2.949029909160572e-17
+        ],
+        "weight": [
+          -1.0686644532092096,
+          0.0
+        ]
+      },
+      "hmm": {
+        "switch": 0.1398390342052314,
+        "success1": 0.8073929961089494,
+        "success3": 0.28599221789883267
+      },
+      "fixed": "light"
+    },
+    "S05W18|0:0.35": {
+      "housePFM": {
+        "warp": {
+          "house": {
+            "mean": [
+              0,
+              -1.418360934641422e-94,
+              0,
+              0.04340433385381148,
+              -0.020162197437203565,
+              -0.023161586912159266,
+              0.0021515207138257603,
+              0.0025210933029241253,
+              0.0025328030155897623
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.038331566555944496,
+              0.019477330341477764,
+              0.01909517893030383,
+              0.0012887598431492902,
+              0.001380636079387493,
+              0.0013868795719512942
+            ],
+            "middle": [
+              0.0,
+              3.6383934179757147e-112,
+              0.0,
+              1.3877787807814457e-17,
+              5.551115123125783e-17,
+              -8.326672684688674e-17,
+              -1.734723475976807e-18,
+              2.6020852139652106e-18,
+              -2.168404344971009e-18
+            ],
+            "weight": [
+              0.0,
+              -2.5324296447181614e-97,
+              0.0,
+              -0.4742031064411498,
+              0.5407824276699017,
+              0.4003078461265595,
+              -0.03159216281825278,
+              0.01665568451420551,
+              0.012776359382527636
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.014839355468750013,
+              -0.0020835937500000017,
+              -0.27348046875
+            ],
+            "scale": [
+              0.010217871902955354,
+              0.00759204355665923,
+              0.15655598916531513
+            ],
+            "middle": [
+              4.163336342344337e-17,
+              -2.7755575615628914e-17,
+              1.5265566588595902e-16
+            ],
+            "weight": [
+              -0.2537106392721752,
+              0.5291827022615079,
+              0.18417183065767995
+            ]
+          }
+        },
+        "control": {
+          "house": {
+            "mean": [
+              0,
+              0.0025176134976473722,
+              0,
+              0.04126132590847314,
+              -0.019072254341884462,
+              -0.022108522062140024,
+              0.002135522332261973,
+              0.002529365332385111,
+              0.0025405293676923207
+            ],
+            "scale": [
+              1,
+              0.0068241617906084516,
+              1,
+              0.0385753789856226,
+              0.01961501573052062,
+              0.019201899587149802,
+              0.0012793195561862107,
+              0.0013863021877601285,
+              0.001392441602340839
+            ],
+            "middle": [
+              0.0,
+              -4.380176776841438e-17,
+              0.0,
+              0.0,
+              8.326672684688674e-17,
+              4.163336342344337e-17,
+              0.0,
+              -8.673617379884035e-19,
+              0.0
+            ],
+            "weight": [
+              0.0,
+              0.012018471092495122,
+              0.0,
+              -0.4643720566916268,
+              0.5302733447770696,
+              0.391211715478465,
+              -0.02990822077298033,
+              0.015679275403990445,
+              0.011868331068615111
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.06616279296875001,
+              0.008118749999999997,
+              -0.10084726562499997
+            ],
+            "scale": [
+              0.035842032331502224,
+              0.0067357401458562815,
+              0.11276762192678885
+            ],
+            "middle": [
+              -1.734723475976807e-16,
+              8.326672684688674e-17,
+              0.0
+            ],
+            "weight": [
+              -0.11476683365648853,
+              0.29205216611721296,
+              0.5175916378097737
+            ]
+          }
+        }
+      },
+      "last4": {
+        "mean": [
+          2.103515625,
+          3.8125
+        ],
+        "scale": [
+          1.257410589418134,
+          0.6343057228182637
+        ],
+        "middle": [
+          0.0,
+          2.949029909160572e-17
+        ],
+        "weight": [
+          -1.0686644532092096,
+          0.0
+        ]
+      },
+      "hmm": {
+        "switch": 0.1398390342052314,
+        "success1": 0.8073929961089494,
+        "success3": 0.28599221789883267
+      },
+      "fixed": "light"
+    },
+    "S05W19|0:0.054": {
+      "housePFM": {
+        "warp": {
+          "house": {
+            "mean": [
+              0,
+              0,
+              0,
+              -0.02475408190234258,
+              0.01468166585395918,
+              0.010072416155019389,
+              0.0007738744483936034,
+              -0.0003387120386292401,
+              -0.0003455157608243803
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.013359584967938027,
+              0.006981295888196893,
+              0.007274248669253903,
+              0.00039399399666741075,
+              0.0001708682978849564,
+              0.00017312441741504654
+            ],
+            "middle": [
+              0.0,
+              0.0,
+              0.0,
+              3.469446951953614e-17,
+              6.938893903907228e-17,
+              -5.898059818321144e-17,
+              7.37257477290143e-18,
+              8.673617379884035e-19,
+              4.7704895589362195e-18
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.1703290580915186,
+              0.20333524341316814,
+              0.1176729122465254,
+              -0.006110678857806002,
+              0.009126100486205081,
+              0.004899421709740936
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.007340332031250001,
+              0.023038671875000007,
+              0.003698242187499966
+            ],
+            "scale": [
+              0.006479444984844786,
+              0.011416037264735692,
+              0.14952805233269806
+            ],
+            "middle": [
+              -4.163336342344337e-17,
+              -1.1882855810441129e-16,
+              -2.0816681711721685e-17
+            ],
+            "weight": [
+              -0.09841820001428349,
+              0.010196730029918494,
+              0.053645347811742336
+            ]
+          }
+        },
+        "control": {
+          "house": {
+            "mean": [
+              0,
+              0,
+              0,
+              -0.02433564280140508,
+              0.014428754409271681,
+              0.00990688849876939,
+              0.0007742451319034767,
+              -0.0003389607319047236,
+              -0.0003456377510587631
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.01358533449576183,
+              0.007117055723404519,
+              0.007348859088941887,
+              0.0003945827538694083,
+              0.00017126326141481374,
+              0.00017331838559381875
+            ],
+            "middle": [
+              0.0,
+              0.0,
+              0.0,
+              2.0816681711721685e-17,
+              -6.938893903907228e-17,
+              1.0408340855860843e-17,
+              -1.6479873021779667e-17,
+              -7.806255641895632e-18,
+              0.0
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.14601975136875361,
+              0.17760638164726997,
+              0.09793256907041165,
+              -0.005360047355406704,
+              0.008023405036575629,
+              0.004274605546307776
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.0556482421875,
+              0.0582890625,
+              0.13280253906249995
+            ],
+            "scale": [
+              0.03231210554697489,
+              0.02927758043808596,
+              0.07751518634852728
+            ],
+            "middle": [
+              -5.117434254131581e-17,
+              -9.280770596475918e-17,
+              2.0816681711721685e-17
+            ],
+            "weight": [
+              -0.019971230258017496,
+              0.01893246869126311,
+              0.09766231440071649
+            ]
+          }
+        }
+      },
+      "last4": {
+        "mean": [
+          2.2421875,
+          3.8125
+        ],
+        "scale": [
+          1.2639601318252685,
+          0.6343057228182637
+        ],
+        "middle": [
+          -5.551115123125783e-17,
+          2.949029909160572e-17
+        ],
+        "weight": [
+          -1.2609179355194424,
+          0.0
+        ]
+      },
+      "hmm": {
+        "switch": 0.11167002012072434,
+        "success1": 0.8696498054474708,
+        "success3": 0.29766536964980544
+      },
+      "fixed": "light"
+    },
+    "S05W19|0:0.35": {
+      "housePFM": {
+        "warp": {
+          "house": {
+            "mean": [
+              0,
+              0,
+              0,
+              0.0517520626170215,
+              -0.02448918830285913,
+              -0.02726287420752407,
+              0.001241875047377849,
+              -0.0005825190714994037,
+              -0.0005697093269353415
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.038085354068293886,
+              0.019198685091374897,
+              0.01914539842443999,
+              0.0007980494725664534,
+              0.00037877921536072555,
+              0.00037119384227135154
+            ],
+            "middle": [
+              0.0,
+              0.0,
+              0.0,
+              6.938893903907228e-17,
+              -1.3877787807814457e-17,
+              9.020562075079397e-17,
+              3.469446951953614e-18,
+              3.469446951953614e-18,
+              -3.469446951953614e-18
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.2529612633399525,
+              0.33653223176444746,
+              0.16573919585141045,
+              0.11168639933861638,
+              -0.11338003412148456,
+              -0.12442359344603413
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.01794375,
+              0.009297167968750004,
+              -0.08974482421875003
+            ],
+            "scale": [
+              0.011625761063797072,
+              0.007544467252246775,
+              0.1504571105070064
+            ],
+            "middle": [
+              -1.1796119636642288e-16,
+              6.938893903907228e-18,
+              -2.7755575615628914e-17
+            ],
+            "weight": [
+              -0.2084876948441564,
+              0.18978622209190354,
+              0.5575496193222027
+            ]
+          }
+        },
+        "control": {
+          "house": {
+            "mean": [
+              0,
+              0.002400658347389915,
+              0,
+              0.0517520626170215,
+              -0.02448918830285913,
+              -0.02726287420752407,
+              0.001241875047377849,
+              -0.0005825190714994037,
+              -0.0005697093269353415
+            ],
+            "scale": [
+              1,
+              0.006692272556405604,
+              1,
+              0.038085354068293886,
+              0.019198685091374897,
+              0.01914539842443999,
+              0.0007980494725664534,
+              0.00037877921536072555,
+              0.00037119384227135154
+            ],
+            "middle": [
+              0.0,
+              -4.163336342344337e-17,
+              0.0,
+              6.938893903907228e-17,
+              -1.3877787807814457e-17,
+              9.020562075079397e-17,
+              3.469446951953614e-18,
+              3.469446951953614e-18,
+              -3.469446951953614e-18
+            ],
+            "weight": [
+              0.0,
+              -0.15758330069889945,
+              0.0,
+              -0.2529612633399525,
+              0.33653223176444746,
+              0.16573919585141045,
+              0.11168639933861638,
+              -0.11338003412148456,
+              -0.12442359344603413
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.0695650390625,
+              0.029893359375,
+              -0.02778750000000003
+            ],
+            "scale": [
+              0.03718499634952381,
+              0.019969029605919755,
+              0.15149171710546586
+            ],
+            "middle": [
+              5.898059818321144e-17,
+              -8.326672684688674e-17,
+              -2.7755575615628914e-17
+            ],
+            "weight": [
+              -0.06430054752528219,
+              0.22570106504644097,
+              0.5647560210532006
+            ]
+          }
+        }
+      },
+      "last4": {
+        "mean": [
+          2.2421875,
+          3.8125
+        ],
+        "scale": [
+          1.2639601318252685,
+          0.6343057228182637
+        ],
+        "middle": [
+          -5.551115123125783e-17,
+          2.949029909160572e-17
+        ],
+        "weight": [
+          -1.2609179355194424,
+          0.0
+        ]
+      },
+      "hmm": {
+        "switch": 0.11167002012072434,
+        "success1": 0.8696498054474708,
+        "success3": 0.29766536964980544
+      },
+      "fixed": "light"
+    },
+    "S05W20|0:0.054": {
+      "housePFM": {
+        "warp": {
+          "house": {
+            "mean": [
+              0,
+              0,
+              0,
+              -0.01738283661547951,
+              0.011014366270628224,
+              0.006368470398926107,
+              0.0008962732364559429,
+              -0.0004159469099739889,
+              -0.0004209373259954144
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.012517451009409623,
+              0.006723572820063734,
+              0.0067496004713305715,
+              0.00048483184629522955,
+              0.0002255394262656451,
+              0.00022623244492106856
+            ],
+            "middle": [
+              0.0,
+              0.0,
+              0.0,
+              -5.204170427930421e-17,
+              -1.3877787807814457e-17,
+              -7.632783294297951e-17,
+              -4.336808689942018e-19,
+              3.469446951953614e-18,
+              4.336808689942018e-19
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.12001060019425669,
+              0.15513136466324307,
+              0.06803214256943586,
+              0.009201130144983298,
+              -0.008730874128206318,
+              -0.011014532311413375
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.016133886718750014,
+              0.020336816406249993,
+              0.11882666015625001
+            ],
+            "scale": [
+              0.007911544307587321,
+              0.008140363000911312,
+              0.1569304987180884
+            ],
+            "middle": [
+              -1.682681771697503e-16,
+              1.8301332671555315e-16,
+              1.0408340855860843e-17
+            ],
+            "weight": [
+              -0.04214075337734827,
+              0.02742410718969273,
+              0.10471768440002938
+            ]
+          }
+        },
+        "control": {
+          "house": {
+            "mean": [
+              0,
+              0,
+              0,
+              -0.002775799989633332,
+              0.0035913327420526784,
+              -0.0008155326983439884,
+              0.0009944768246309696,
+              -0.0004669070003103064,
+              -0.00046818082383172713
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.020247452814781346,
+              0.010542561033500555,
+              0.010302064149730526,
+              0.0005796132647605673,
+              0.00027414928060183377,
+              0.00027303611908793514
+            ],
+            "middle": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -2.7755575615628914e-17,
+              -3.469446951953614e-17,
+              0.0,
+              -8.673617379884035e-19,
+              4.7704895589362195e-18
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.27970566018416426,
+              0.3016382504883947,
+              0.24104756626455237,
+              -0.0171626672447683,
+              0.021048216768067327,
+              0.01529964651253686
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.06240537109375,
+              0.04940947265625,
+              0.23104423828125
+            ],
+            "scale": [
+              0.033451365998520555,
+              0.024758569738641177,
+              0.08444719426450084
+            ],
+            "middle": [
+              1.734723475976807e-18,
+              -1.734723475976807e-17,
+              6.938893903907228e-17
+            ],
+            "weight": [
+              -0.0595839363507054,
+              0.0534773798113859,
+              0.20195914098793658
+            ]
+          }
+        }
+      },
+      "last4": {
+        "mean": [
+          2.0927734375,
+          3.8125
+        ],
+        "scale": [
+          1.304359623261328,
+          0.6343057228182637
+        ],
+        "middle": [
+          0.0,
+          2.949029909160572e-17
+        ],
+        "weight": [
+          -1.2113822728192745,
+          0.0
+        ]
+      },
+      "hmm": {
+        "switch": 0.11971830985915492,
+        "success1": 0.8540856031128404,
+        "success3": 0.24708171206225682
+      },
+      "fixed": "light"
+    },
+    "S05W20|0:0.35": {
+      "housePFM": {
+        "warp": {
+          "house": {
+            "mean": [
+              0,
+              0,
+              0,
+              0.04023430283518313,
+              -0.01864827043633393,
+              -0.02158603234477348,
+              0.0012452636207923836,
+              -0.0005978684456405016,
+              -0.0005880061746622381
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.03883680670186981,
+              0.019752450709244345,
+              0.01934549051110338,
+              0.0007910530332337586,
+              0.0003834129658703107,
+              0.0003758288846209168
+            ],
+            "middle": [
+              0.0,
+              0.0,
+              0.0,
+              -1.3877787807814457e-17,
+              2.7755575615628914e-17,
+              -2.7755575615628914e-17,
+              0.0,
+              1.3010426069826053e-18,
+              -4.336808689942018e-18
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.3223330536282769,
+              0.40299816904184493,
+              0.23562002859806397,
+              0.01196594385312753,
+              -0.00714279826736626,
+              -0.01789924879670319
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.024372363281250014,
+              0.010307031249999994,
+              0.033393066406250026
+            ],
+            "scale": [
+              0.012083014771877162,
+              0.006843469555826447,
+              0.1659646607973092
+            ],
+            "middle": [
+              -6.938893903907228e-18,
+              -8.326672684688674e-17,
+              1.3877787807814457e-17
+            ],
+            "weight": [
+              -0.19670238407982665,
+              0.3105150074337368,
+              0.4375943346228167
+            ]
+          }
+        },
+        "control": {
+          "house": {
+            "mean": [
+              0,
+              0.0017900466918945312,
+              0,
+              0.04023430283518313,
+              -0.01864827043633393,
+              -0.02158603234477348,
+              0.0012452636207923836,
+              -0.0005978684456405016,
+              -0.0005880061746622381
+            ],
+            "scale": [
+              1,
+              0.005870182054859146,
+              1,
+              0.03883680670186981,
+              0.019752450709244345,
+              0.01934549051110338,
+              0.0007910530332337586,
+              0.0003834129658703107,
+              0.0003758288846209168
+            ],
+            "middle": [
+              0.0,
+              1.0408340855860843e-17,
+              0.0,
+              -1.3877787807814457e-17,
+              2.7755575615628914e-17,
+              -2.7755575615628914e-17,
+              0.0,
+              1.3010426069826053e-18,
+              -4.336808689942018e-18
+            ],
+            "weight": [
+              0.0,
+              0.0824414579004433,
+              0.0,
+              -0.3223330536282769,
+              0.40299816904184493,
+              0.23562002859806397,
+              0.01196594385312753,
+              -0.00714279826736626,
+              -0.01789924879670319
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.06850029296875,
+              0.0333076171875,
+              0.15866962890625003
+            ],
+            "scale": [
+              0.03656977318033357,
+              0.020037623805224627,
+              0.12855083626850133
+            ],
+            "middle": [
+              0.0,
+              8.326672684688674e-17,
+              -5.551115123125783e-17
+            ],
+            "weight": [
+              -0.11150025575473933,
+              0.20387428617832584,
+              0.4150215489541129
+            ]
+          }
+        }
+      },
+      "last4": {
+        "mean": [
+          2.0927734375,
+          3.8125
+        ],
+        "scale": [
+          1.304359623261328,
+          0.6343057228182637
+        ],
+        "middle": [
+          0.0,
+          2.949029909160572e-17
+        ],
+        "weight": [
+          -1.2113822728192745,
+          0.0
+        ]
+      },
+      "hmm": {
+        "switch": 0.11971830985915492,
+        "success1": 0.8540856031128404,
+        "success3": 0.24708171206225682
+      },
+      "fixed": "light"
+    },
+    "S05W21|0:0.054": {
+      "housePFM": {
+        "warp": {
+          "house": {
+            "mean": [
+              0,
+              -3.59291326927149e-166,
+              0,
+              -0.015753114023032668,
+              0.010258958347687615,
+              0.005494361132452591,
+              0.0014164631093050023,
+              0.0010127258268383017,
+              0.0010082135352407554
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.015115997961367953,
+              0.008002295650967358,
+              0.007915909224271449,
+              0.0007730722497100981,
+              0.000579423276532442,
+              0.0005769857281527883
+            ],
+            "middle": [
+              0.0,
+              2.7182201603455382e-182,
+              0.0,
+              0.0,
+              6.938893903907228e-17,
+              4.163336342344337e-17,
+              2.168404344971009e-18,
+              -4.553649124439119e-18,
+              5.854691731421724e-18
+            ],
+            "weight": [
+              0.0,
+              -3.70668330286264e-170,
+              0.0,
+              -0.16654643661698945,
+              0.1742099686853639,
+              0.14192127395355286,
+              -0.006967188535541122,
+              0.005250444602936149,
+              0.004062336701781192
+            ]
+          },
+          "pfm": {
+            "mean": [
+              -0.00036269531249999215,
+              0.009161718749999997,
+              -0.19232578124999997
+            ],
+            "scale": [
+              0.0034380191313880906,
+              0.010555093528228369,
+              0.14567442240537506
+            ],
+            "middle": [
+              1.734723475976807e-17,
+              -8.153200337090993e-17,
+              5.204170427930421e-18
+            ],
+            "weight": [
+              -0.10816548302622617,
+              0.04141217449480687,
+              0.042161120487637385
+            ]
+          }
+        },
+        "control": {
+          "house": {
+            "mean": [
+              0,
+              -6.3450844348487174e-167,
+              0,
+              -0.02304906130571577,
+              0.01379108809336686,
+              0.00925817866945586,
+              0.0013483891917263641,
+              0.0010476467588442819,
+              0.0010413665208121765
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.012815230943982087,
+              0.006767739605837422,
+              0.006978195875074115,
+              0.000718407116802867,
+              0.0006034886391086693,
+              0.0006018278881928333
+            ],
+            "middle": [
+              0.0,
+              -1.1767186841322676e-183,
+              0.0,
+              -4.163336342344337e-17,
+              1.3183898417423734e-16,
+              0.0,
+              5.854691731421724e-18,
+              9.324138683375338e-18,
+              2.168404344971009e-19
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.18980209141980198,
+              0.22997577448568773,
+              0.1255254930510655,
+              -0.0031487256584462413,
+              0.002520177912236926,
+              0.0012315284779131704
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.0503685546875,
+              0.023203515624999997,
+              -0.06986630859374998
+            ],
+            "scale": [
+              0.029077247391729184,
+              0.009708497774971722,
+              0.07839167129587822
+            ],
+            "middle": [
+              3.8163916471489756e-17,
+              -2.3852447794681098e-17,
+              6.245004513516506e-17
+            ],
+            "weight": [
+              -0.023724520437110604,
+              0.010903785266645802,
+              0.12467692869578974
+            ]
+          }
+        }
+      },
+      "last4": {
+        "mean": [
+          2.044921875,
+          3.8125
+        ],
+        "scale": [
+          1.2366212132850076,
+          0.6343057228182637
+        ],
+        "middle": [
+          0.0,
+          2.949029909160572e-17
+        ],
+        "weight": [
+          -1.0676773823834638,
+          0.0
+        ]
+      },
+      "hmm": {
+        "switch": 0.14989939637826963,
+        "success1": 0.8093385214007782,
+        "success3": 0.26264591439688717
+      },
+      "fixed": "light"
+    },
+    "S05W21|0:0.35": {
+      "housePFM": {
+        "warp": {
+          "house": {
+            "mean": [
+              0,
+              -3.518120783097829e-166,
+              0,
+              0.039008460237826684,
+              -0.017977324976179695,
+              -0.02103092980453872,
+              0.0017225317879145888,
+              0.0008526219193839869,
+              0.0008622487640829388
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.040140732733019206,
+              0.020427473495200226,
+              0.019971224275732797,
+              0.0010490789011075635,
+              0.00046245771778031066,
+              0.0004660833809284267
+            ],
+            "middle": [
+              0.0,
+              1.6827077183091427e-182,
+              0.0,
+              4.163336342344337e-17,
+              -1.3877787807814457e-17,
+              4.163336342344337e-17,
+              2.6020852139652106e-18,
+              1.734723475976807e-18,
+              -2.168404344971009e-18
+            ],
+            "weight": [
+              0.0,
+              1.4116581474958685e-168,
+              0.0,
+              -0.36373393537768073,
+              0.42722246856567936,
+              0.29409669390583604,
+              -0.016070456306926342,
+              0.022954689734408073,
+              0.013395893247509831
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.006884472656250007,
+              -0.000843164062500003,
+              -0.24437353515624996
+            ],
+            "scale": [
+              0.007840939680514771,
+              0.00828893582893537,
+              0.16560826906297257
+            ],
+            "middle": [
+              -1.3877787807814457e-17,
+              -4.163336342344337e-17,
+              -6.938893903907228e-18
+            ],
+            "weight": [
+              -0.2814504418372362,
+              0.40679226737759455,
+              0.19024209504007294
+            ]
+          }
+        },
+        "control": {
+          "house": {
+            "mean": [
+              0,
+              0.002756335518576882,
+              0,
+              0.039008460237826684,
+              -0.017977324976179695,
+              -0.02103092980453872,
+              0.0017225317879145888,
+              0.0008526219193839869,
+              0.0008622487640829388
+            ],
+            "scale": [
+              1,
+              0.0069800504939343515,
+              1,
+              0.040140732733019206,
+              0.020427473495200226,
+              0.019971224275732797,
+              0.0010490789011075635,
+              0.00046245771778031066,
+              0.0004660833809284267
+            ],
+            "middle": [
+              0.0,
+              3.469446951953614e-17,
+              0.0,
+              4.163336342344337e-17,
+              -1.3877787807814457e-17,
+              4.163336342344337e-17,
+              2.6020852139652106e-18,
+              1.734723475976807e-18,
+              -2.168404344971009e-18
+            ],
+            "weight": [
+              0.0,
+              -0.02947450874848949,
+              0.0,
+              -0.36373393537768073,
+              0.42722246856567936,
+              0.29409669390583604,
+              -0.016070456306926342,
+              0.022954689734408073,
+              0.013395893247509831
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.06183193359375,
+              0.013645507812499997,
+              -0.13727685546874996
+            ],
+            "scale": [
+              0.03416238516736961,
+              0.00779950164523359,
+              0.11636236790948586
+            ],
+            "middle": [
+              -1.3877787807814457e-17,
+              8.326672684688674e-17,
+              -5.551115123125783e-17
+            ],
+            "weight": [
+              -0.0993931716378878,
+              0.2654917223160588,
+              0.424527485345827
+            ]
+          }
+        }
+      },
+      "last4": {
+        "mean": [
+          2.044921875,
+          3.8125
+        ],
+        "scale": [
+          1.2366212132850076,
+          0.6343057228182637
+        ],
+        "middle": [
+          0.0,
+          2.949029909160572e-17
+        ],
+        "weight": [
+          -1.0676773823834638,
+          0.0
+        ]
+      },
+      "hmm": {
+        "switch": 0.14989939637826963,
+        "success1": 0.8093385214007782,
+        "success3": 0.26264591439688717
+      },
+      "fixed": "light"
+    },
+    "S05W22|0:0.054": {
+      "housePFM": {
+        "warp": {
+          "house": {
+            "mean": [
+              0,
+              0,
+              0,
+              -0.015028652899395967,
+              0.00984820862049018,
+              0.00518044450950912,
+              0.0011407967869562514,
+              -0.00037300035850206664,
+              -0.00037767779290485276
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.014459811696515603,
+              0.007694788868561611,
+              0.007599868503205896,
+              0.0006286099503305826,
+              0.00020580063436704903,
+              0.00020661931651161375
+            ],
+            "middle": [
+              0.0,
+              0.0,
+              0.0,
+              1.3877787807814457e-17,
+              1.3877787807814457e-17,
+              -6.938893903907228e-17,
+              -1.214306433183765e-17,
+              6.938893903907228e-18,
+              1.0408340855860843e-17
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.34135820980730314,
+              0.36605654722441205,
+              0.2788531918851761,
+              -0.025456165192053095,
+              0.04230506943419516,
+              0.0353093250629048
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.004248632812499991,
+              0.018245605468750006,
+              0.21695156249999994
+            ],
+            "scale": [
+              0.0061997714554286884,
+              0.006747461923334216,
+              0.17964273800482747
+            ],
+            "middle": [
+              -3.469446951953614e-17,
+              -2.255140518769849e-16,
+              -3.122502256758253e-17
+            ],
+            "weight": [
+              -0.15386151842173695,
+              0.0930616125936895,
+              0.10767247448922881
+            ]
+          }
+        },
+        "control": {
+          "house": {
+            "mean": [
+              0,
+              0,
+              0,
+              -0.014326294162527717,
+              0.009438845685357588,
+              0.00488744870777307,
+              0.0011263482420821236,
+              -0.00036587881506532777,
+              -0.0003703507914655027
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.014834107469657706,
+              0.007863272518627784,
+              0.007783046158406458,
+              0.0006210765912468139,
+              0.00020222562616435544,
+              0.00020199309456939195
+            ],
+            "middle": [
+              0.0,
+              0.0,
+              0.0,
+              -4.163336342344337e-17,
+              5.551115123125783e-17,
+              -7.28583859910259e-17,
+              7.15573433840433e-18,
+              -6.938893903907228e-18,
+              -8.673617379884035e-19
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.14563252880758437,
+              0.18685821032791905,
+              0.08878420340751525,
+              0.004783890964261229,
+              -0.005525855634730764,
+              -0.009177012117403188
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.0571193359375,
+              0.0477220703125,
+              0.27778535156249995
+            ],
+            "scale": [
+              0.0327644197910862,
+              0.022086675874439687,
+              0.16014922655414865
+            ],
+            "middle": [
+              -8.066464163292153e-17,
+              6.938893903907228e-18,
+              -1.3530843112619095e-16
+            ],
+            "weight": [
+              -0.01471203375715325,
+              0.03820176493722393,
+              0.07387884961779417
+            ]
+          }
+        }
+      },
+      "last4": {
+        "mean": [
+          2.1435546875,
+          3.8125
+        ],
+        "scale": [
+          1.2974951307025306,
+          0.6343057228182637
+        ],
+        "middle": [
+          0.0,
+          2.949029909160572e-17
+        ],
+        "weight": [
+          -1.1876850930188962,
+          0.0
+        ]
+      },
+      "hmm": {
+        "switch": 0.1317907444668008,
+        "success1": 0.8560311284046692,
+        "success3": 0.2587548638132296
+      },
+      "fixed": "light"
+    },
+    "S05W22|0:0.35": {
+      "housePFM": {
+        "warp": {
+          "house": {
+            "mean": [
+              0,
+              0,
+              0,
+              0.04387509712544547,
+              -0.020486356973123607,
+              -0.023388739921717153,
+              0.0014855207010173368,
+              -0.0005529570354303216,
+              -0.0005424450300396955
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.04226565717065271,
+              0.02145234950018359,
+              0.0210514664501013,
+              0.0009335985170557176,
+              0.0003667148231956935,
+              0.0003583737959975119
+            ],
+            "middle": [
+              0.0,
+              0.0,
+              0.0,
+              2.7755575615628914e-17,
+              -4.163336342344337e-17,
+              1.3877787807814457e-17,
+              -4.336808689942018e-19,
+              -3.2526065174565133e-18,
+              -6.071532165918825e-18
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.38028298088000645,
+              0.45200926969579935,
+              0.302888603128176,
+              0.010087416171509375,
+              -0.00621626544936698,
+              -0.019917751166588303
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.014137597656249992,
+              0.009289257812500003,
+              0.11949667968749995
+            ],
+            "scale": [
+              0.009175629155573994,
+              0.006455419676454639,
+              0.18791372508391457
+            ],
+            "middle": [
+              -8.326672684688674e-17,
+              -5.551115123125783e-17,
+              1.3877787807814457e-17
+            ],
+            "weight": [
+              -0.4139915365032395,
+              0.2833738109502219,
+              0.47778949134719395
+            ]
+          }
+        },
+        "control": {
+          "house": {
+            "mean": [
+              0,
+              0.001979264346036044,
+              0,
+              0.04387509712544547,
+              -0.020486356973123607,
+              -0.023388739921717153,
+              0.0014855207010173368,
+              -0.0005529570354303216,
+              -0.0005424450300396955
+            ],
+            "scale": [
+              1,
+              0.00616052811939133,
+              1,
+              0.04226565717065271,
+              0.02145234950018359,
+              0.0210514664501013,
+              0.0009335985170557176,
+              0.0003667148231956935,
+              0.0003583737959975119
+            ],
+            "middle": [
+              0.0,
+              3.469446951953614e-18,
+              0.0,
+              2.7755575615628914e-17,
+              -4.163336342344337e-17,
+              1.3877787807814457e-17,
+              -4.336808689942018e-19,
+              -3.2526065174565133e-18,
+              -6.071532165918825e-18
+            ],
+            "weight": [
+              0.0,
+              0.08653542886900503,
+              0.0,
+              -0.38028298088000645,
+              0.45200926969579935,
+              0.302888603128176,
+              0.010087416171509375,
+              -0.00621626544936698,
+              -0.019917751166588303
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.06722841796875,
+              0.029456640625000002,
+              0.17562070312499994
+            ],
+            "scale": [
+              0.03695104768258848,
+              0.018862798074903934,
+              0.18138135138424336
+            ],
+            "middle": [
+              1.1449174941446927e-16,
+              2.7755575615628914e-17,
+              2.7755575615628914e-17
+            ],
+            "weight": [
+              -0.09250520017354355,
+              0.347824192039092,
+              0.5317461105506931
+            ]
+          }
+        }
+      },
+      "last4": {
+        "mean": [
+          2.1435546875,
+          3.8125
+        ],
+        "scale": [
+          1.2974951307025306,
+          0.6343057228182637
+        ],
+        "middle": [
+          0.0,
+          2.949029909160572e-17
+        ],
+        "weight": [
+          -1.1876850930188962,
+          0.0
+        ]
+      },
+      "hmm": {
+        "switch": 0.1317907444668008,
+        "success1": 0.8560311284046692,
+        "success3": 0.2587548638132296
+      },
+      "fixed": "light"
+    },
+    "S05W23|0:0.054": {
+      "housePFM": {
+        "warp": {
+          "house": {
+            "mean": [
+              0,
+              -1.7487154896754636e-152,
+              0,
+              -0.02721902237103787,
+              0.01601563521913667,
+              0.011203980680497716,
+              0.0026357539648651064,
+              0.0004469974411535349,
+              0.00043918242689524115
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.014263145484986452,
+              0.0074598040725434075,
+              0.007651107475910269,
+              0.00143506900605894,
+              0.0002696554992906527,
+              0.0002668684815495292
+            ],
+            "middle": [
+              0.0,
+              1.3248674568444952e-169,
+              0.0,
+              8.326672684688674e-17,
+              -1.3877787807814457e-17,
+              -7.632783294297951e-17,
+              1.3010426069826053e-18,
+              -1.951563910473908e-18,
+              -4.553649124439119e-18
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.1552776939749588,
+              0.17445266210118401,
+              0.11937692202145674,
+              -0.0020580222527413557,
+              0.006685088475641905,
+              0.0043119857032792
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.0071772460937499895,
+              0.016895117187499996,
+              -0.11707568359375005
+            ],
+            "scale": [
+              0.0037317812428015323,
+              0.011304677698939147,
+              0.1323432556237869
+            ],
+            "middle": [
+              3.8163916471489756e-17,
+              -2.6020852139652106e-17,
+              -7.979727989493313e-17
+            ],
+            "weight": [
+              -0.10640235497885459,
+              0.03251557760328665,
+              0.09456499315746461
+            ]
+          }
+        },
+        "control": {
+          "house": {
+            "mean": [
+              0,
+              -3.07990196167313e-153,
+              0,
+              -0.027537951708704232,
+              0.016145672714877952,
+              0.011392872522422838,
+              0.0026324793633735874,
+              0.0004486672763028103,
+              0.00044078719323685164
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.014842891276061884,
+              0.0077131270737504885,
+              0.007944978508253656,
+              0.001431477694021183,
+              0.00027142455703634146,
+              0.0002687081574837566
+            ],
+            "middle": [
+              0.0,
+              -3.643385506322362e-169,
+              0.0,
+              -5.551115123125783e-17,
+              1.8735013540549517e-16,
+              -8.326672684688674e-17,
+              -4.445228907190568e-18,
+              -3.903127820947816e-18,
+              4.7704895589362195e-18
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.1831066657068724,
+              0.2038323192683253,
+              0.14419771552122296,
+              -0.002888832433094386,
+              0.009068603030218371,
+              0.006229277308302312
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.0656708984375,
+              0.02525263671875,
+              0.04742675781249993
+            ],
+            "scale": [
+              0.03591702232845605,
+              0.014564384698347685,
+              0.08206843363708405
+            ],
+            "middle": [
+              5.811323644522304e-17,
+              1.214306433183765e-17,
+              0.0
+            ],
+            "weight": [
+              -0.01865193247017137,
+              0.018358675497656612,
+              0.1611079243752675
+            ]
+          }
+        }
+      },
+      "last4": {
+        "mean": [
+          2.072265625,
+          3.8125
+        ],
+        "scale": [
+          1.29853145107978,
+          0.6343057228182637
+        ],
+        "middle": [
+          0.0,
+          2.949029909160572e-17
+        ],
+        "weight": [
+          -1.2965367520363296,
+          0.0
+        ]
+      },
+      "hmm": {
+        "switch": 0.10362173038229376,
+        "success1": 0.8365758754863813,
+        "success3": 0.25486381322957197
+      },
+      "fixed": "heavy"
+    },
+    "S05W23|0:0.35": {
+      "housePFM": {
+        "warp": {
+          "house": {
+            "mean": [
+              0,
+              -1.7047893473832892e-152,
+              0,
+              0.03623477977648571,
+              -0.016630702530851436,
+              -0.019603483717035543,
+              0.0030197075681515128,
+              0.00024684729428689836,
+              0.00025537897048933875
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.0432503689498657,
+              0.022033411799086234,
+              0.021451104440267856,
+              0.0017667892609545823,
+              0.0001810984213077138,
+              0.0001775065375517028
+            ],
+            "middle": [
+              0.0,
+              -3.312168642111238e-170,
+              0.0,
+              8.326672684688674e-17,
+              2.7755575615628914e-17,
+              -2.7755575615628914e-17,
+              0.0,
+              0.0,
+              -1.3877787807814457e-17
+            ],
+            "weight": [
+              0.0,
+              -1.533063798330819e-154,
+              0.0,
+              -0.753547546355841,
+              0.8074759203945179,
+              0.6899299740238605,
+              -0.06721793603500896,
+              0.35248991188590606,
+              0.3094227498076145
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.01600791015624999,
+              0.005691601562499997,
+              -0.18020126953125004
+            ],
+            "scale": [
+              0.009192855896771313,
+              0.009152563665648416,
+              0.12815724155443348
+            ],
+            "middle": [
+              -5.551115123125783e-17,
+              2.7755575615628914e-17,
+              -6.938893903907228e-17
+            ],
+            "weight": [
+              -0.5476186882542223,
+              0.6386103488072175,
+              0.4426980500622152
+            ]
+          }
+        },
+        "control": {
+          "house": {
+            "mean": [
+              0,
+              -2.5914344480256016e-153,
+              0,
+              0.022681241035179968,
+              -0.00974852444272684,
+              -0.012932123063854582,
+              0.002909612641362463,
+              0.0003036174170642225,
+              0.0003087037744926614
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.03674275256016691,
+              0.01885308848434841,
+              0.01817518177415935,
+              0.0016918037775411235,
+              0.00017563984640641704,
+              0.00017567146238900203
+            ],
+            "middle": [
+              0.0,
+              -2.0701054013195238e-170,
+              0.0,
+              0.0,
+              -2.7755575615628914e-17,
+              0.0,
+              1.734723475976807e-18,
+              -6.938893903907228e-18,
+              6.938893903907228e-18
+            ],
+            "weight": [
+              0.0,
+              -7.245263055196332e-155,
+              0.0,
+              -0.6588560599184301,
+              0.7107196383152183,
+              0.5947079422884137,
+              -0.041957639809730954,
+              0.2211785779968662,
+              0.18293422062607584
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.070717578125,
+              0.01505615234375,
+              -0.02149121093750006
+            ],
+            "scale": [
+              0.03904350217517982,
+              0.010600515043143723,
+              0.12081163298681082
+            ],
+            "middle": [
+              4.5102810375396984e-17,
+              -6.938893903907228e-17,
+              -2.7755575615628914e-17
+            ],
+            "weight": [
+              -0.10434074552845199,
+              0.4353967395655177,
+              0.47806861452079974
+            ]
+          }
+        }
+      },
+      "last4": {
+        "mean": [
+          2.072265625,
+          3.8125
+        ],
+        "scale": [
+          1.29853145107978,
+          0.6343057228182637
+        ],
+        "middle": [
+          0.0,
+          2.949029909160572e-17
+        ],
+        "weight": [
+          -1.2965367520363296,
+          0.0
+        ]
+      },
+      "hmm": {
+        "switch": 0.10362173038229376,
+        "success1": 0.8365758754863813,
+        "success3": 0.25486381322957197
+      },
+      "fixed": "heavy"
+    },
+    "S05W24|0:0.054": {
+      "housePFM": {
+        "warp": {
+          "house": {
+            "mean": [
+              0,
+              0,
+              0,
+              0.0072234957344468505,
+              -0.0016276945472464594,
+              -0.0055958002073343525,
+              0.0017282476619210315,
+              -0.00033575040513652774,
+              -0.00033288424413881537
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.015766907765519256,
+              0.008359780294686408,
+              0.008145451608563902,
+              0.00099125134096642,
+              0.00020281728042177854,
+              0.00020055347918479074
+            ],
+            "middle": [
+              0.0,
+              0.0,
+              0.0,
+              2.7755575615628914e-17,
+              -2.7755575615628914e-17,
+              0.0,
+              -7.37257477290143e-18,
+              6.938893903907228e-18,
+              3.469446951953614e-18
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.3514330520568622,
+              0.387093158664334,
+              0.282979860208352,
+              -0.011327190077973944,
+              0.031676545337202384,
+              0.02395142480751411
+            ]
+          },
+          "pfm": {
+            "mean": [
+              -0.019125488281249988,
+              -0.009753222656250008,
+              -0.02169091796874999
+            ],
+            "scale": [
+              0.010477575792526816,
+              0.0077570764923543655,
+              0.04576056535211111
+            ],
+            "middle": [
+              -1.249000902703301e-16,
+              5.898059818321144e-17,
+              0.0
+            ],
+            "weight": [
+              -0.14336793808462972,
+              0.04086490417007461,
+              0.41452602620926504
+            ]
+          }
+        },
+        "control": {
+          "house": {
+            "mean": [
+              0,
+              0,
+              0,
+              -0.02359974270925939,
+              0.014197755010720048,
+              0.009401988678404655,
+              0.001533742287149139,
+              -0.0002345357590484605,
+              -0.000239593515456403
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.012968244935521034,
+              0.006864486418863923,
+              0.007030527310016128,
+              0.0008259758919446089,
+              0.00011689299488774625,
+              0.00011808787892108401
+            ],
+            "middle": [
+              0.0,
+              0.0,
+              0.0,
+              3.642919299551295e-17,
+              3.469446951953614e-18,
+              1.1492543028346347e-16,
+              -2.168404344971009e-19,
+              4.336808689942018e-18,
+              -7.37257477290143e-18
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.033821067584595896,
+              0.060339170545802075,
+              0.0034709305013127705,
+              0.0026966926927895507,
+              -0.008639647502387535,
+              -0.010310024133213792
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.0631642578125,
+              0.026926171875,
+              -0.07049384765624998
+            ],
+            "scale": [
+              0.03262360497250852,
+              0.012274484403701403,
+              0.08326772668838624
+            ],
+            "middle": [
+              -2.949029909160572e-17,
+              2.6020852139652106e-17,
+              9.71445146547012e-17
+            ],
+            "weight": [
+              -0.008429479213953794,
+              0.004900918688027306,
+              0.10444707281426263
+            ]
+          }
+        }
+      },
+      "last4": {
+        "mean": [
+          2.1083984375,
+          3.8125
+        ],
+        "scale": [
+          1.2488149747851194,
+          0.6343057228182637
+        ],
+        "middle": [
+          -5.551115123125783e-17,
+          2.949029909160572e-17
+        ],
+        "weight": [
+          -1.058816279191014,
+          0.0
+        ]
+      },
+      "hmm": {
+        "switch": 0.13782696177062373,
+        "success1": 0.8268482490272373,
+        "success3": 0.27626459143968873
+      },
+      "fixed": "light"
+    },
+    "S05W24|0:0.35": {
+      "housePFM": {
+        "warp": {
+          "house": {
+            "mean": [
+              0,
+              0,
+              0,
+              0.039497470658316804,
+              -0.018250955122958698,
+              -0.021246514555492153,
+              0.0019091913926528809,
+              -0.0004303842561839723,
+              -0.0004191941238260201
+            ],
+            "scale": [
+              1,
+              1,
+              1,
+              0.03603823323800339,
+              0.018315758970053775,
+              0.018008179749378253,
+              0.0011509050759755414,
+              0.0002936322667704571,
+              0.00028542951371823334
+            ],
+            "middle": [
+              0.0,
+              0.0,
+              0.0,
+              5.551115123125783e-17,
+              5.551115123125783e-17,
+              1.3877787807814457e-17,
+              0.0,
+              3.469446951953614e-18,
+              6.938893903907228e-18
+            ],
+            "weight": [
+              0.0,
+              0.0,
+              0.0,
+              -0.4551136884967047,
+              0.5309201805602862,
+              0.3707919006418703,
+              -0.04768001802836914,
+              0.10173570506522459,
+              0.08759531821351817
+            ]
+          },
+          "pfm": {
+            "mean": [
+              -0.01113652343749999,
+              -0.011938574218750008,
+              -0.04606884765624998
+            ],
+            "scale": [
+              0.009267841430911146,
+              0.008743339335332516,
+              0.06723598073727602
+            ],
+            "middle": [
+              2.7755575615628914e-17,
+              4.5102810375396984e-17,
+              -5.551115123125783e-17
+            ],
+            "weight": [
+              -0.46464433299833013,
+              0.12301775056967909,
+              0.867928957793086
+            ]
+          }
+        },
+        "control": {
+          "house": {
+            "mean": [
+              0,
+              0.0019142844460227273,
+              0,
+              0.03932229425230118,
+              -0.01814394289663057,
+              -0.021178350375804653,
+              0.0019090401855615348,
+              -0.00043028184718833795,
+              -0.0004191453257303135
+            ],
+            "scale": [
+              1,
+              0.0061521474823714945,
+              1,
+              0.036013827348918004,
+              0.018302155483726754,
+              0.017999789592033428,
+              0.0011506790734297648,
+              0.00029350034131449986,
+              0.0002853640551332535
+            ],
+            "middle": [
+              0.0,
+              1.214306433183765e-17,
+              0.0,
+              -1.3877787807814457e-17,
+              -5.551115123125783e-17,
+              -5.551115123125783e-17,
+              1.734723475976807e-18,
+              0.0,
+              0.0
+            ],
+            "weight": [
+              0.0,
+              -0.05231047107968413,
+              0.0,
+              -0.4489391100653667,
+              0.5238766765258092,
+              0.36555667377965567,
+              -0.04749442899556962,
+              0.10128308974466223,
+              0.08734184874346838
+            ]
+          },
+          "pfm": {
+            "mean": [
+              0.07220976562499999,
+              0.015368164062499998,
+              -0.14225136718749998
+            ],
+            "scale": [
+              0.037644177296363754,
+              0.008806688140517608,
+              0.11989739859370196
+            ],
+            "middle": [
+              1.6653345369377348e-16,
+              -2.7755575615628914e-17,
+              8.326672684688674e-17
+            ],
+            "weight": [
+              -0.09164763976215927,
+              0.3102666781657382,
+              0.44733560218225893
+            ]
+          }
+        }
+      },
+      "last4": {
+        "mean": [
+          2.1083984375,
+          3.8125
+        ],
+        "scale": [
+          1.2488149747851194,
+          0.6343057228182637
+        ],
+        "middle": [
+          -5.551115123125783e-17,
+          2.949029909160572e-17
+        ],
+        "weight": [
+          -1.058816279191014,
+          0.0
+        ]
+      },
+      "hmm": {
+        "switch": 0.13782696177062373,
+        "success1": 0.8268482490272373,
+        "success3": 0.27626459143968873
+      },
+      "fixed": "light"
+    }
+  },
+  "breakdown": {
+    "switches": 996,
+    "twoCaseLoss": 861,
+    "beforeSum": 4769,
+    "afterSum": 1828
+  },
+  "interpretation": "Gate calibration, model training, and switching test histories use separate seeds. Decoders are externally trained on synthetic feedback. All inputs are forward-generated. Full-history HMM is trained on labelled training episodes and uses only past and present test feedback. Historical origins later shared inputs; eight-origin inference is conditional."
+}
