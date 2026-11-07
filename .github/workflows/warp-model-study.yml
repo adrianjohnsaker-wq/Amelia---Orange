@@ -1,0 +1,100 @@
+name: WBD-2 matched model study
+
+on:
+  push:
+    branches: [warp-wbd2-study-20261107]
+    paths: [experiments/warp-breakdown/model-study-RUN]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  study:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        history: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+    steps:
+      - name: Check out the study code
+        uses: actions/checkout@v4
+      - name: Check out the preserved state
+        uses: actions/checkout@v4
+        with:
+          ref: 737fa1b1f1dee675e613341fd61f568538a3cb9a
+          path: pinned-outside-state
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned TypeScript runner
+        run: npm install --prefix "$RUNNER_TEMP/wbd-study-deps" --save-exact tsx@4.23.15
+      - name: Run one paired history
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          WBD_MODEL_MODE: anthropic
+          WBD_HISTORY_ID: ${{ matrix.history }}
+        run: |
+          node --import "$RUNNER_TEMP/wbd-study-deps/node_modules/tsx/dist/loader.mjs" \
+            experiments/warp-breakdown/model-study.ts \
+            pinned-outside-state/state.json \
+            experiments/warp-breakdown/model-study-plan.json model-study-output
+      - name: Preserve dependency lock
+        if: always()
+        run: |
+          if [ -d model-study-output ] && [ -f "$RUNNER_TEMP/wbd-study-deps/package-lock.json" ]; then
+            cp "$RUNNER_TEMP/wbd-study-deps/package-lock.json" model-study-output/package-lock.json
+          fi
+      - name: Upload history
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wbd2-study-history-${{ matrix.history }}
+          path: model-study-output/
+          if-no-files-found: ignore
+          retention-days: 90
+
+  aggregate:
+    needs: study
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download available histories
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: wbd2-study-history-*
+          path: study-artifacts
+      - name: Independently audit and aggregate
+        run: |
+          python experiments/warp-breakdown/aggregate-model-study.py \
+            experiments/warp-breakdown/model-study-plan.json \
+            experiments/warp-breakdown/model-study.ts \
+            experiments/warp-breakdown/audit-model-study.py \
+            study-artifacts experiments/warp-breakdown/results/study
+      - name: Save available evidence on the study branch
+        if: always()
+        shell: bash
+        run: |
+          if [ ! -d experiments/warp-breakdown/results/study ]; then
+            echo 'No aggregate output was produced.'
+            exit 0
+          fi
+          git config user.name 'amelia-warp-study'
+          git config user.email 'amelia-warp-study@users.noreply.github.com'
+          git add experiments/warp-breakdown/results/study/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Record matched WBD-2 model study'
+          git push origin HEAD:refs/heads/warp-wbd2-study-20261107
+      - name: Upload aggregate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wbd2-study-aggregate
+          path: experiments/warp-breakdown/results/study/
+          if-no-files-found: ignore
+          retention-days: 90
