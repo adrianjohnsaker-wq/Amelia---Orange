@@ -1,1 +1,1 @@
-AG-1/RC-1 live ledger: 5 epochs; latest 2026-11-07T14:39:46Z: round 33753007, X=7, APPLY, zPre=1, fed 170
+AG-1/RC-1 live ledger: 6 epochs; latest 2026-11-07T19:05:41Z: round 33758325, X=9, APPLY, zPre=9, fed 138
