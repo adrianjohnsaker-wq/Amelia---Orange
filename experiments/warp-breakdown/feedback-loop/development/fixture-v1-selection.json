@@ -1,0 +1,92 @@
+{
+  "schema": "amelia.warp-feedback-selection/v1",
+  "status": "FROZEN",
+  "registrationSha256": "160c9487e940f48eb8142c3855dc71e9809d95e72075dc83650d2036ee1b5f54",
+  "calibrationRunSha256": "66d86babaaee7942fb049534e26adb059de8f1b3e2503d1be51762f84b831c2c",
+  "calibrationSeed": "FIXTURE-ONLY-LOOP",
+  "candidateResults": [
+    {
+      "eta": 0.1,
+      "real": 0.41562499999999997,
+      "yoked": 0.5125,
+      "feedbackDifference": -0.09687499999999999,
+      "qualifies": false
+    },
+    {
+      "eta": 0.5,
+      "real": 0.353125,
+      "yoked": 0.45625,
+      "feedbackDifference": -0.10312499999999997,
+      "qualifies": false
+    }
+  ],
+  "chosenEta": 0.1,
+  "selectionRuleApplied": "fallback_highest_pooled_feedback_difference",
+  "calibratedTaskModel": {
+    "countsIncludingLaplacePrior": {
+      "1": [
+        [
+          1,
+          38,
+          92
+        ],
+        [
+          57,
+          57,
+          17
+        ]
+      ],
+      "3": [
+        [
+          63,
+          60,
+          8
+        ],
+        [
+          8,
+          60,
+          63
+        ]
+      ]
+    },
+    "likelihood": {
+      "1": [
+        [
+          0.007633587786259542,
+          0.2900763358778626,
+          0.7022900763358778
+        ],
+        [
+          0.4351145038167939,
+          0.4351145038167939,
+          0.1297709923664122
+        ]
+      ],
+      "3": [
+        [
+          0.48091603053435117,
+          0.4580152671755725,
+          0.061068702290076333
+        ],
+        [
+          0.061068702290076333,
+          0.4580152671755725,
+          0.48091603053435117
+        ]
+      ]
+    },
+    "meanSuccess": {
+      "1": [
+        0.8473282442748091,
+        0.34732824427480913
+      ],
+      "3": [
+        0.2900763358778626,
+        0.7099236641221374
+      ]
+    },
+    "hazard": 0.125,
+    "fixedPolicy": 0
+  },
+  "caveat": "Task model was fitted with mode labels and both strategy outcomes during calibration; internal learners are not given these labels or tables."
+}

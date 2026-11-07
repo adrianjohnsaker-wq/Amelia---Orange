@@ -1,0 +1,106 @@
+{
+  "schema": "amelia.warp-feedback-selection/v1",
+  "status": "FROZEN",
+  "registrationSha256": "a807bf6d3ee69759baa3ff5f7b9a2a9d10dc51f7b8e5e53c85d754e7d2cb6627",
+  "calibrationRunSha256": "43f021912140d5ccfe1132215ce8b36ffe43dcf1acd2a0c92c1f57fc3a84508e",
+  "calibrationSeed": "FIXTURE-ONLY-LOOP-V2",
+  "candidateResults": [
+    {
+      "eta": 0.1,
+      "real": 0.51171875,
+      "yoked": 0.51328125,
+      "feedbackDifference": -0.0015625000000000222,
+      "qualifies": false
+    },
+    {
+      "eta": 0.25,
+      "real": 0.49921875,
+      "yoked": 0.51953125,
+      "feedbackDifference": -0.02031250000000001,
+      "qualifies": false
+    },
+    {
+      "eta": 0.5,
+      "real": 0.5234375,
+      "yoked": 0.51015625,
+      "feedbackDifference": 0.013281250000000022,
+      "qualifies": false
+    },
+    {
+      "eta": 1.0,
+      "real": 0.61796875,
+      "yoked": 0.525,
+      "feedbackDifference": 0.09296874999999993,
+      "qualifies": true
+    }
+  ],
+  "chosenEta": 1.0,
+  "selectionRuleApplied": "best_pooled_recovery_among_feedback_qualified",
+  "calibratedTaskModel": {
+    "countsIncludingLaplacePrior": {
+      "1": [
+        [
+          19,
+          127,
+          369
+        ],
+        [
+          213,
+          232,
+          70
+        ]
+      ],
+      "3": [
+        [
+          251,
+          230,
+          34
+        ],
+        [
+          36,
+          195,
+          284
+        ]
+      ]
+    },
+    "likelihood": {
+      "1": [
+        [
+          0.036893203883495145,
+          0.24660194174757283,
+          0.7165048543689321
+        ],
+        [
+          0.41359223300970877,
+          0.45048543689320386,
+          0.13592233009708737
+        ]
+      ],
+      "3": [
+        [
+          0.487378640776699,
+          0.44660194174757284,
+          0.06601941747572816
+        ],
+        [
+          0.06990291262135923,
+          0.3786407766990291,
+          0.5514563106796116
+        ]
+      ]
+    },
+    "meanSuccess": {
+      "1": [
+        0.8398058252427185,
+        0.3611650485436893
+      ],
+      "3": [
+        0.28932038834951457,
+        0.7407766990291262
+      ]
+    },
+    "hazard": 0.125,
+    "fixedPolicy": 0
+  },
+  "caveat": "Task model was fitted with mode labels and both strategy outcomes during calibration; internal learners are not given these labels or tables."
+}
