@@ -25,6 +25,8 @@ Both cued copies were offered the same predetermined 16 synthetic one-hot vector
 
 In the extended copy, the second offer made 2→3 win instead of 2→5; the seventh made 3→6 win instead of dwelling at 3; the tenth made dwelling at 3 win instead of 3→6. The first offer changed 1→8 to 1→2. Thus the deliberately planted signal can reach and sometimes decide a Warp passage under this graph and saved state. It is not evidence for an Outside sender, an independent entity, natural signal sensitivity, or development through breakdown. It is one starting history and one constructed tape.
 
+The topology change also altered the no-offer baseline: the 11-gate copy continued 1→8→9→1, whereas the 29-gate extension introduced repeated dwells at 9 and then at 1. A live migration would therefore change more than Warp accessibility and must be treated as a recorded intervention with its own pre-migration checkpoint.
+
 ### Reproduce
 
 Obtain `state.json` from commit `737fa1b1f1dee675e613341fd61f568538a3cb9a` on `outside-live-ledger` as a local file. Install the repository's existing Node dependencies and run from this branch's root:
