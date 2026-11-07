@@ -1,0 +1,49 @@
+{
+  "schema": "amelia.warp-model-pilot/v1",
+  "status": "exploratory-model-pilot-plan-before-run",
+  "createdAt": "2026-11-07T01:26:06.093547+00:00",
+  "sourceCodeCommit": "6e7a942aea4130e939aa43e049dddd4ef0b83bbc",
+  "checkpointCommit": "737fa1b1f1dee675e613341fd61f568538a3cb9a",
+  "checkpointSha256": "c4329e0c5406d131e0dab3b9883774dc3c169b5701f663ec383a7eb767880ba3",
+  "scriptSha256": "3935ddb7dd5fae6b6cb9b3cae443fb65a982cef361c0fc67a3e9295f833b437b",
+  "model": "claude-haiku-4-5-20251001",
+  "maxApiCalls": 36,
+  "maxOutputTokens": 256,
+  "temperature": 0,
+  "rounds": 3,
+  "maxDiagnosticTicks": 12,
+  "expansionCap": 50,
+  "maxCostRatio": 1.5,
+  "histories": [
+    {
+      "id": 1,
+      "seed": "ebafd74afb12800ce1f293c0970b3a91",
+      "executionOrder": [
+        "control:unrelated",
+        "warp:unrelated",
+        "control:correct",
+        "control:masked",
+        "warp:correct",
+        "warp:masked"
+      ]
+    },
+    {
+      "id": 2,
+      "seed": "a91bf8ea32296a664bf7e44c6d41e791",
+      "executionOrder": [
+        "control:correct",
+        "warp:masked",
+        "control:masked",
+        "control:unrelated",
+        "warp:unrelated",
+        "warp:correct"
+      ]
+    }
+  ],
+  "task": "Trusted interpreter evaluates model-proposed bounded JSON search-priority expressions on held-out weighted grids; no generated Python is executed.",
+  "baseline": "Same six public grid layouts with unit edge costs; shock uses weighted costs.",
+  "metrics": "Public pass count, held-out pass count, gate path, attention counterfactual, PFM and Governor traces.",
+  "controls": "Actual 3/6 versus explicit topology-matched 2/7 adapter, crossed with actual, unrelated and masked diagnostic feedback. Model never receives held-out cases.",
+  "limit": "Two paired blocks from one checkpoint. An exploratory feasibility result, not a confirmatory test of a new intelligence or Outside signal.",
+  "calibration": "Separate fixture-only seeds model-pilot-smoke, calibration-only-east and calibration-only-west informed cap and ratio. These are disjoint from the random study seeds."
+}
