@@ -1,0 +1,106 @@
+name: WBD-3 breakdown recovery feasibility
+on:
+  push:
+    branches: [warp-wbd3-feasibility-20261107]
+    paths: ['experiments/warp-breakdown/wbd3/RUN']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  study:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        history: [1, 2, 3, 4, 5, 6, 7, 8]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore the pinned Outside receiver
+        uses: actions/checkout@v4
+        with:
+          ref: 737fa1b1f1dee675e613341fd61f568538a3cb9a
+          path: pinned-outside-state
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check the sealed files and checkpoint
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          p=Path('experiments/warp-breakdown/wbd3');d=json.loads((p/'plan.json').read_bytes())
+          files={'scriptSha256':p/'study.ts','auditSha256':p/'audit.py','aggregatorSha256':p/'aggregate.py',
+                 'calibrationScriptSha256':p/'calibrate.ts','inventorySha256':p/'inventory.json',
+                 'workflowSha256':Path('.github/workflows/wbd3-feasibility.yml'),
+                 'checkpointSha256':Path('pinned-outside-state/state.json')}
+          for k,f in files.items():
+              actual=hashlib.sha256(f.read_bytes()).hexdigest()
+              if actual!=d[k]:raise SystemExit(f'{k} mismatch')
+          print('Sealed file hashes and checkpoint verified')
+          PY
+      - name: Install pinned TypeScript runner
+        run: npm install --prefix "$RUNNER_TEMP/wbd3-deps" --save-exact tsx@4.23.15
+      - name: Run paired WBD-3 history
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          WBD_MODEL_MODE: anthropic
+          WBD_HISTORY_ID: ${{ matrix.history }}
+        run: |
+          node --import "$RUNNER_TEMP/wbd3-deps/node_modules/tsx/dist/loader.mjs" \
+            experiments/warp-breakdown/wbd3/study.ts \
+            pinned-outside-state/state.json experiments/warp-breakdown/wbd3/plan.json wbd3-output
+      - name: Preserve dependency lock
+        if: always()
+        run: |
+          if [ -d wbd3-output ] && [ -f "$RUNNER_TEMP/wbd3-deps/package-lock.json" ]; then
+            cp "$RUNNER_TEMP/wbd3-deps/package-lock.json" wbd3-output/package-lock.json
+          fi
+      - name: Upload history
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wbd3-history-${{ matrix.history }}
+          path: wbd3-output/
+          if-no-files-found: ignore
+          retention-days: 90
+  aggregate:
+    needs: study
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: wbd3-history-*
+          path: wbd3-artifacts
+      - name: Audit and aggregate the histories
+        run: |
+          python3 experiments/warp-breakdown/wbd3/aggregate.py \
+            experiments/warp-breakdown/wbd3/plan.json \
+            experiments/warp-breakdown/wbd3/study.ts \
+            experiments/warp-breakdown/wbd3/audit.py \
+            wbd3-artifacts experiments/warp-breakdown/wbd3/results
+      - name: Preserve available outcomes on the study branch
+        if: always()
+        shell: bash
+        run: |
+          if [ ! -d experiments/warp-breakdown/wbd3/results ]; then exit 0; fi
+          git config user.name 'amelia-wbd3-study'
+          git config user.email 'amelia-wbd3-study@users.noreply.github.com'
+          git add experiments/warp-breakdown/wbd3/results/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Record WBD-3 feasibility outcomes'
+          git push origin HEAD:refs/heads/warp-wbd3-feasibility-20261107
+      - name: Upload aggregate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wbd3-aggregate
+          path: experiments/warp-breakdown/wbd3/results/
+          if-no-files-found: ignore
+          retention-days: 90

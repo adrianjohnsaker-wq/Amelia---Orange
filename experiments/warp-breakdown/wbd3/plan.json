@@ -1,0 +1,267 @@
+{
+  "schema": "amelia.wbd3-model-feasibility/v1",
+  "status": "prospective_before_model_study",
+  "createdAt": "2026-11-07T09:22:49.872292+00:00",
+  "baseCommit": "b9d234051240fd418e14009995e9c251d67a4805",
+  "sourceCodeCommit": "6e7a942aea4130e939aa43e049dddd4ef0b83bbc",
+  "checkpointCommit": "737fa1b1f1dee675e613341fd61f568538a3cb9a",
+  "checkpointSha256": "c4329e0c5406d131e0dab3b9883774dc3c169b5701f663ec383a7eb767880ba3",
+  "scriptSha256": "b47e92e4f40aef3d87496194563cfcd5598761d50880ad00ffeaabe21373f8fa",
+  "auditSha256": "7e91c32c644d4290089ed449656919786b3976f490b3992ccd1af1e833111a66",
+  "aggregatorSha256": "bd99515cc8098876830abca9ae853ad95d88f09dd25c07ce3b78200da5529b6f",
+  "calibrationScriptSha256": "7627b08accfddd3036deda25821b2824a2a9c84113330cbb719135c8c1fd05f7",
+  "inventorySha256": "d21410cd25e247f4bc40737bbdad2b70af63e9c18267a61172aac671a8a9b1dd",
+  "model": "claude-haiku-4-5-20251001",
+  "maxOutputTokens": 256,
+  "temperature": 0,
+  "rounds": 3,
+  "maxDiagnosticTicks": 12,
+  "burnInSteps": 8,
+  "followSteps": 24,
+  "expansionCap": 50,
+  "maxCostRatio": 1.5,
+  "histories": [
+    {
+      "id": 1,
+      "seed": "1d38f0c792eb3e7ff039b573eb4d7da5",
+      "executionOrder": [
+        "warp:acute:masked",
+        "warp:acute:unrelated",
+        "control:acute:masked",
+        "control:gradual:unrelated",
+        "warp:acute:correct",
+        "warp:gradual:masked",
+        "control:acute:unrelated",
+        "control:acute:correct",
+        "warp:gradual:correct",
+        "control:gradual:masked",
+        "control:gradual:correct",
+        "warp:gradual:unrelated"
+      ],
+      "memoryOrder": [
+        "warp:correct:correct",
+        "warp:masked:masked",
+        "warp:masked:correct",
+        "control:masked:masked",
+        "warp:correct:masked",
+        "control:correct:correct",
+        "control:masked:correct",
+        "control:correct:masked"
+      ]
+    },
+    {
+      "id": 2,
+      "seed": "0e59f159063ca45e4b4d6ef53135fbc4",
+      "executionOrder": [
+        "warp:acute:correct",
+        "control:acute:masked",
+        "control:gradual:masked",
+        "warp:gradual:masked",
+        "control:gradual:unrelated",
+        "control:gradual:correct",
+        "warp:acute:masked",
+        "warp:gradual:correct",
+        "control:acute:unrelated",
+        "control:acute:correct",
+        "warp:acute:unrelated",
+        "warp:gradual:unrelated"
+      ],
+      "memoryOrder": [
+        "warp:correct:correct",
+        "warp:masked:masked",
+        "warp:correct:masked",
+        "control:masked:correct",
+        "control:correct:masked",
+        "warp:masked:correct",
+        "control:masked:masked",
+        "control:correct:correct"
+      ]
+    },
+    {
+      "id": 3,
+      "seed": "099f6d432e6a430ecc2357c89ea82a5d",
+      "executionOrder": [
+        "warp:gradual:correct",
+        "warp:acute:unrelated",
+        "control:acute:correct",
+        "control:gradual:masked",
+        "warp:acute:correct",
+        "warp:gradual:masked",
+        "control:acute:masked",
+        "warp:acute:masked",
+        "control:acute:unrelated",
+        "control:gradual:correct",
+        "control:gradual:unrelated",
+        "warp:gradual:unrelated"
+      ],
+      "memoryOrder": [
+        "warp:masked:masked",
+        "warp:correct:masked",
+        "control:masked:masked",
+        "control:correct:masked",
+        "warp:masked:correct",
+        "warp:correct:correct",
+        "control:correct:correct",
+        "control:masked:correct"
+      ]
+    },
+    {
+      "id": 4,
+      "seed": "bc20dd06ca098d88e3aa04a23ac2a645",
+      "executionOrder": [
+        "control:acute:correct",
+        "warp:acute:unrelated",
+        "control:gradual:masked",
+        "warp:gradual:correct",
+        "warp:gradual:masked",
+        "control:acute:masked",
+        "warp:gradual:unrelated",
+        "control:gradual:unrelated",
+        "control:gradual:correct",
+        "control:acute:unrelated",
+        "warp:acute:masked",
+        "warp:acute:correct"
+      ],
+      "memoryOrder": [
+        "warp:correct:masked",
+        "warp:correct:correct",
+        "warp:masked:masked",
+        "control:masked:correct",
+        "control:correct:masked",
+        "control:correct:correct",
+        "control:masked:masked",
+        "warp:masked:correct"
+      ]
+    },
+    {
+      "id": 5,
+      "seed": "6a876259ddac4e94e5379d9183a458d0",
+      "executionOrder": [
+        "warp:acute:unrelated",
+        "warp:acute:masked",
+        "warp:gradual:correct",
+        "warp:gradual:masked",
+        "control:acute:correct",
+        "control:acute:unrelated",
+        "warp:acute:correct",
+        "control:gradual:masked",
+        "control:gradual:correct",
+        "warp:gradual:unrelated",
+        "control:gradual:unrelated",
+        "control:acute:masked"
+      ],
+      "memoryOrder": [
+        "warp:masked:correct",
+        "warp:correct:correct",
+        "warp:correct:masked",
+        "control:masked:correct",
+        "control:correct:correct",
+        "warp:masked:masked",
+        "control:correct:masked",
+        "control:masked:masked"
+      ]
+    },
+    {
+      "id": 6,
+      "seed": "55587678c620cc852bb705a3f9f0e504",
+      "executionOrder": [
+        "control:gradual:masked",
+        "control:acute:correct",
+        "warp:acute:masked",
+        "warp:acute:correct",
+        "control:gradual:unrelated",
+        "control:gradual:correct",
+        "warp:gradual:correct",
+        "warp:gradual:masked",
+        "control:acute:unrelated",
+        "warp:acute:unrelated",
+        "control:acute:masked",
+        "warp:gradual:unrelated"
+      ],
+      "memoryOrder": [
+        "control:correct:correct",
+        "warp:masked:masked",
+        "warp:masked:correct",
+        "warp:correct:correct",
+        "control:masked:masked",
+        "control:masked:correct",
+        "control:correct:masked",
+        "warp:correct:masked"
+      ]
+    },
+    {
+      "id": 7,
+      "seed": "00e47d7fc14a30ebefef6a025a86fab0",
+      "executionOrder": [
+        "control:gradual:unrelated",
+        "control:gradual:correct",
+        "control:acute:masked",
+        "control:acute:unrelated",
+        "control:gradual:masked",
+        "control:acute:correct",
+        "warp:acute:correct",
+        "warp:gradual:unrelated",
+        "warp:acute:masked",
+        "warp:gradual:masked",
+        "warp:gradual:correct",
+        "warp:acute:unrelated"
+      ],
+      "memoryOrder": [
+        "control:masked:correct",
+        "warp:masked:correct",
+        "warp:correct:correct",
+        "warp:correct:masked",
+        "control:masked:masked",
+        "warp:masked:masked",
+        "control:correct:masked",
+        "control:correct:correct"
+      ]
+    },
+    {
+      "id": 8,
+      "seed": "f53277032291a2beab95e7c6e5e775e8",
+      "executionOrder": [
+        "control:gradual:unrelated",
+        "warp:acute:unrelated",
+        "warp:acute:masked",
+        "control:acute:correct",
+        "warp:gradual:masked",
+        "warp:gradual:correct",
+        "warp:gradual:unrelated",
+        "control:gradual:masked",
+        "warp:acute:correct",
+        "control:gradual:correct",
+        "control:acute:unrelated",
+        "control:acute:masked"
+      ],
+      "memoryOrder": [
+        "warp:correct:correct",
+        "control:masked:masked",
+        "warp:masked:correct",
+        "warp:masked:masked",
+        "control:masked:correct",
+        "control:correct:masked",
+        "warp:correct:masked",
+        "control:correct:correct"
+      ]
+    }
+  ],
+  "founders": 1,
+  "conditionCount": 12,
+  "maxModelGenerations": 352,
+  "maxTransportAttempts": 1056,
+  "minimumBreakdownHistories": 6,
+  "practicalFraction": 0.125,
+  "sample": "Eight fresh independently seeded task histories conditional on one preserved receiver founder. Exploratory feasibility, not independent-founder replication.",
+  "routeIntervention": "Actual saved 11-gate receiver state is extended using its existing 29-gate construction; strong cues 1\u21922\u21923. Adapted 2/7 control explicitly projects zone and replaces 2/7 outgoing gates with parameter-matched dwell and reciprocal pair.",
+  "disruption": "Acute cost level 3 each round versus gradual cost levels 1, 2, 3. Same six public maps and same final distribution; three model opportunities if reachable, with no early stop after public success.",
+  "feedback": "Correct public diagnostic vs unrelated public diagnostic on different maps vs masked; unrelated feedback is format-matched by character count, not necessarily token count. Uniform Numogram attention in masked arm. Failed crossings and differing timing remain observable.",
+  "breakdownRule": "At least 2/6 public case loss immediately after full change; calibration met if at least 6 of 8 histories meet this rule. All histories and stalls retained.",
+  "primary": "Final score on 8 newly generated held-out cases. Per history compute acute Warp/correct minus acute control/correct.",
+  "secondary": "Warp/correct minus Warp/unrelated under acute change; acute-vs-gradual interaction in Warp-control difference. Whole-PFM correct/masked swaps on identical backgrounds; 24 no-new-input steps and one common transfer proposal assessed on distinct hidden cases.",
+  "decision": "If the breakdown calibration fails, classify inconclusive. If all three mean fraction contrasts are >=0.125, classify as an exploratory lead; otherwise no three-contrast advantage observed. This is descriptive, not a confirmatory statistical test or evidence of general intelligence.",
+  "missingData": "Any missing/failed history or failed audit makes the overall experiment incomplete; never treat missing model results as zero. A gate stall retains the final candidate and is included.",
+  "blinding": "Task seeds and hidden cases are never included in the model prompts; the final candidate is frozen before hidden cases are constructed. The same task seeds are paired across arms.",
+  "limits": "One founder; adaptive 2/7 is not native 2/7. WBD-2 result and calibration preceded this plan. No arbitrary model-generated code is executed. Clock and model response nondeterminism can prevent byte-identical replay.",
+  "workflowSha256": "d3a726a87a63b3f1832587cf76a8c0b23e52379a3e98f6e34eea45ed08ec5e6c"
+}
