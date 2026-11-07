@@ -1,0 +1,54 @@
+{
+  "schema": "amelia.warp-feedback-registration/v1",
+  "createdUtc": "2026-11-07T22:19:07.591912+00:00",
+  "parentCommit": "4e01a6fd0a74fe75241e115eb1d558c4e161f69f",
+  "oracleSourceCommit": "6a8becd4ae9a2e3ad84ed32b878b4868405bb6f1",
+  "checkpointSha256": "fe95423c388cdb0ed2ce9638983468d6d730bf2fe7900229207fac6b5f39126f",
+  "lineages": [
+    "S05W17|0",
+    "S05W18|0",
+    "S05W19|0",
+    "S05W20|0",
+    "S05W21|0",
+    "S05W22|0",
+    "S05W23|0",
+    "S05W24|0"
+  ],
+  "scripts": {
+    "PROTOCOL.md": "d2d7775a02aa597b7ec758052d5d9d877a961d97a493d618d7482724b18b0d3b",
+    "grid-pilot.ts": "d7d5470f2e813da97723d939f14c8a31b6752dd897e414379d4712d0f5138cd6",
+    "environment.ts": "b1d5e366c60e45809c3eb164c58b2b0133a05f07e7d1e7ca13d3ab0adda06944",
+    "controller.mjs": "54caab6d0665e5fbc8c5290355c508d62949964d0939b056d4f081133691e929",
+    "dataset.ts": "05db371934bf8cbdaf2dd06e07e8256de158e7d746e289813215a9bb3e70fa2c",
+    "audit.py": "968c692e1fb9e965353bf858a60a0bb423794422a01963b43821bdd6ebb34c63",
+    "calibrate.py": "3384596dd096018f6f3ae427145bc30449bd678ae72783ba4e8f2d54cbaf1daa",
+    "aggregate.py": "b7454b0c8f47c8e22d13d546b7d5637f43fead6599d81e545590aad660731b1a",
+    "run-stage.py": "148102f697968d52a67d9c64a08f15d5832ca2dd6ea0a7ceebfb35b252ddae08"
+  },
+  "support": {
+    "audit-support.py": "657d111ae91aa6c44840f134e9cc49b5b77c172f00d028f81514e166cc0f3aac",
+    "compare-replay.py": "3266f87d9a1de7d58e97f3defa237a9d9b649ffad3aab11a9db92aec21e792ba",
+    "common.ts": "d74a8c04dd79ba9108ef11579a7d30d72c197c78bd9695a0f90163c75a26fc85",
+    "prepare.mjs": "d079591e3ce771d342211877d6b7cc7d594ee695155bbe4fa5c63f89b7824ef0",
+    "adapter.mjs": "e94799abb159607a13c752b73b4c50e2ac042e63b5b2c64933cad26331c8692b",
+    "quota.mjs": "b85b11caa0bdd07dde31970e12b4279599186b86cce2c2359f8e79700a5763fa"
+  },
+  "developmentArtifacts": {
+    "warp_feedback_data/grid-pilot.jsonl": "458ae1300c490322371afdb34aa4b7d7013bd2c02a66032b560aa6720d39176e",
+    "warp_feedback_data/fixture/selection.json": "fc9e3ca249f6a4daa7e7b14b5264882a4e5398ea849954c056e06eb43429ad33",
+    "warp_feedback_data/fixture-v2/selection.json": "a87c8098a7662c0b9f8ccadbd2aa86d74cf312149c4e87f002b7c202980f819a",
+    "warp_feedback_data/fixture-v2/outcome.json": "8b3b0105fe80886b4a25f18876a05798b44750aae74e47852ad5aa1c5b4fc05c"
+  },
+  "developmentDisclosure": "Two feedback-update versions and their preliminary fixtures were inspected before registration; neither uses the future calibration or evaluation seeds.",
+  "candidateEta": [
+    0.1,
+    0.25,
+    0.5,
+    1.0
+  ],
+  "calibrationPairs": 4,
+  "evaluationPairs": 8,
+  "rounds": 36,
+  "calibrationMinFeedback": 0.02,
+  "minimumAdvantage": 0.03125
+}

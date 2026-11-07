@@ -1,0 +1,46 @@
+# Feedback-driven Warp gate selection: registered experiment
+
+## Aim and prior information
+
+Test whether a deliberately implemented, internally stateful feedback loop in Amelia's Oracle copies can use outcomes of its own actions to improve post-switch performance, and whether the 3/6 route provides a relative advantage over an adapted 2/7 local loop. This study follows the accessible native 3/6 circuit, previous House-memory work, and the dwell-matched experiment, whose full-history comparator had more explicit schedule/time information than the readouts. Neither physical 3/6 closure nor a predetermined learning rule proves self-improvement, cognition, an Outside source, or an inherently superior topology.
+
+Development before this registration included a 128-grid-per-regime strategy pilot and two rehearsal versions of the controller. The first used a .98 retention and ±2 clamp; the second used .75 retention and ±1 clamp. Their preliminary outcomes, source versions and fixtures will be preserved. The final common update below was selected before the calibration and evaluation seeds; learning-rate selection is pooled across both routes, not selected to maximize the Warp-control difference.
+
+## What is internal and what is supplied
+
+Each experimental agent contains the pinned actual Oracle runtime and its House learner; the native 3/6 uses all 29 gates, and the matched 2/7 is the earlier explicitly adapted 24-gate loop with the local 3/6 gate parameters and House entries copied to its 2/7 edges. Their local two-node graphs are isomorphic, but their full zone states and topologies are not identical. The study uses copies of eight separately raised lineages that later shared world input. No live Oracle, receiver or world stream is changed.
+
+A trial begins by returning from the diagnostic node if necessary, using the Oracle's real forced return gate. With the agent at its proposal zone, a normal unforced Oracle step chooses either the dwell or the outward gate, with **no external cue or forced path**. The dwell means choose LIGHT; the outward gate means choose HEAVY. Thus an action consumes one or two real substrate transitions, with the same two-transition maximum and the same update and grid budget in both routes. Existing native House, process-field memory, phase and Governor dynamics continue. The adapter's allocation-only fast-step shim has separately matched the unmodified adapter in both routes, including a 1,080-transition run.
+
+The chosen search strategy is run on two fresh 9×9 grid challenges. The outcome R is its number of successes, 0, 1 or 2. Only **after** this action and outcome, the experimental feedback rule updates the two existing local House V entries. For entry j and selected action a:
+
+`V[j] = clip[-1,1](0.75 * V[j] + eta * (R - 1) * (1 if j == a else -1))`.
+
+These are the same House entries already used by the Oracle's gate score. The explicit rule is engineered and bounded; it is not a model-discovered code modification. The next gate can depend on the resulting internal House and other runtime state. It is never given the latent regime, future test cases, current outcome before choosing, or an externally encoded sequence of desired gates. A physical two-entry House swap from an independently yoked learner into an otherwise cloned same-state host is tested at every fourth step to see whether those entries can alter the next gate; it is a diagnostic, not a complete mediation analysis.
+
+## Calibration and fresh evaluation
+
+For each of 8 origins, calibration uses 4 paired seeds with both complementary initial regimes (8 calibration episodes/origin); evaluation uses 8 entirely fresh paired seeds with both complementary regimes (16 evaluation episodes/origin). Episodes are 36 rounds. Each seeded episode supplies real and independently generated yoked streams, with the same number of steps and two grids per step. The two latent grid-cost regimes are 1 and 3; their identities and all counterfactual payoffs are hidden from agents when they act. LIGHT is `g+1.5d`, HEAVY is `g+4d`, subject to a 50-expansion cap and exact-optimum success. Grid cost/wall generation and solver are given in the sealed source.
+
+After round 5, a switch is proposed with probability 1/8 per eligible round; switches are at least seven rounds apart and no later than round 31. A schedule with no switch is redrawn before grids are generated. A switch flips regime. The first five post-switch windows do not overlap. The scoring code uses the hidden event time only to identify evaluation windows; neither route is told the event time or regime.
+
+At every learning-rate candidate (0.1, 0.25, 0.5, 1.0), both routes are tested using (a) their actual feedback, (b) feedback produced by their own action in a separate yoked task, and (c) a frozen/no-explicit-feedback-update condition. Their evaluated payoff always comes from their own action on the same real task. Yoked tasks are independently seeded but use paired complementary initial-regime coding. The environments calculate both action payoffs for audit; a decision gets only its own previous chosen-action outcomes. All conditions receive the same challenge and action budget.
+
+Choose one learning rate globally using calibration: among candidates with pooled real-minus-yoked five-step accuracy of at least +2 percentage points, choose the highest pooled real five-step accuracy across the two routes and eight origins; ties choose the smaller learning rate. If none qualifies, choose the largest pooled real-minus-yoked difference, then the best real accuracy, then smaller rate. This choice and all model calibration quantities are sealed before generating the new evaluation seed. The evaluation seed must differ from the calibration seed. A failed calibration threshold is recorded; it does not authorize altering this rule or inspecting the held-out data for another choice.
+
+A separate full-history Bayesian comparator is calibrated from labelled calibration regimes and counterfactual strategy scores using Laplace-smoothed payoff likelihoods. At test time it receives only its own selected actions and past outcomes, not true regime, realized switch times, current feedback, or round number. It uses an approximate fixed 1/8 switch hazard and may have a prior-model advantage over the internal agents, which are not given the labelled likelihood table. Also report both fixed strategies, a best fixed policy selected from calibration, a last-four bandit, and a direct two-value learner with exactly the same update formula and learning rate but no Oracle substrate. Those methods choose before seeing the current grid outcomes. This corrects the previous task's implicit decoder time/schedule mismatch while keeping a strong, clearly identified model-informed baseline.
+
+## Predeclared outcome
+
+Primary metric: proportion of the two current grids solved across rounds 1–5 after each regime switch, averaged within each origin, then averaged across the eight origins. Each origin contributes a single paired difference; episodes and grid cases are not treated as independent founders. The two primary one-sided comparisons are:
+
+1. Warp with real feedback minus the matched 2/7 loop with real feedback.
+2. Warp with real feedback minus Warp with yoked feedback.
+
+For each, require an average difference of at least +0.03125 (3.125 percentage points of grids) and an exact paired eight-origin one-sided sign-flip p-value ≤ .05 after Holm adjustment over these two tests. The sign-flip tests are against zero; the practical threshold is not itself a confidence bound. Both must pass for the recorded classification `REGISTERED_FEEDBACK_DRIVEN_WARP_ADVANTAGE_VS_MATCHED_LOOP`. This is a relative, task-specific claim and does not require beating the direct or model-based baselines. If either fails, record `NO_REGISTERED_FEEDBACK_DRIVEN_WARP_ADVANTAGE`; report each contrast and all baselines, even if individual components succeed.
+
+Report origin scores, number of switch windows, same-state House-swap gate changes, feedback exposure, gate transitions, first-step performance, and whole-episode success as secondary/descriptive outcomes. Qualify any apparent direct-baseline gain if the mode-labelled calibration model, internal clock, computation or inputs differ. Native 3/6 closure, local-topology-matched 2/7, and unmodified native 2/7 are different comparisons. A positive result cannot alone identify a uniquely 3/6 topological cause because initial zone state and the full graphs differ.
+
+## Integrity
+
+Freeze code and registration before the calibration seed, and freeze the chosen learning rate and model before the evaluation seed. Execute each stage twice for every origin and compare complete recorded datasets, allowing at most 1e-12 numerical difference. Independently regenerate every synthetic grid, strategy payoff, switch schedule and recorded House feedback update in Python. Verify all paths and gate-action mappings, checksums and Governor hard-limit invariants. Replay and audit failures invalidate that stage until corrected under a new registration. Test hashes and both successful and unsuccessful development runs are retained. Inference based on eight reused, partly dependent origins is conditional and does not constitute independent world-founder replication.
