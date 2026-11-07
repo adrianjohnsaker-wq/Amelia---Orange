@@ -1,0 +1,169 @@
+name: Oracle Warp multi-lineage rerun
+on:
+  push:
+    branches: [warp-oracle-multilineage-20261107]
+    paths: ['experiments/warp-breakdown/oracle-rerun/RUN']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout the Oracle code
+        uses: actions/checkout@v4
+        with:
+          ref: 6a8becd4ae9a2e3ad84ed32b878b4868405bb6f1
+          path: oracle-code
+      - name: Checkout the prospective Oracle state
+        uses: actions/checkout@v4
+        with:
+          ref: 361fcbda7c69609242f179a557f6adb6ff6a1596
+          path: oracle-snapshot
+      - name: Checkout historical starting state
+        uses: actions/checkout@v4
+        with:
+          ref: fecb487f29da86470584d4d67003606ed951bf00
+          path: oracle-before
+      - name: Checkout historical ending state
+        uses: actions/checkout@v4
+        with:
+          ref: 88b6ed11ea499ae66ab71de45bbe2e4d05535ddb
+          path: oracle-after
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify the registration and sources
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,subprocess
+          from pathlib import Path
+          p=Path('experiments/warp-breakdown/oracle-rerun');d=json.loads((p/'plan.json').read_bytes())
+          names={'scriptSha256':'study.ts','adapterSha256':'adapter.mjs','auditSha256':'audit.py','aggregatorSha256':'aggregate.py',
+                 'validateSha256':'validate.mjs','calibrateSha256':'calibrate.mjs','controlCalibrateSha256':'calibrate-control.mjs',
+                 'calibrationAuditSha256':'audit-calibration.py','exchangeSha256':'validation-exchanges.json',
+                 'nativeCalibrationSha256':'calibration-native-035.json','matchedCalibrationSha256':'calibration-matched-0054.json',
+                 'controlCalibrationSha256':'calibration-control-0054.json'}
+          for k,n in names.items():
+              if hashlib.sha256((p/n).read_bytes()).hexdigest()!=d[k]:raise SystemExit(k+' mismatch')
+          for k,f in [('checkpointSha256',Path('oracle-snapshot/state.json')),('beforeSha256',Path('oracle-before/state.json')),('afterSha256',Path('oracle-after/state.json')),('workflowSha256',Path('.github/workflows/oracle-warp-multilineage.yml'))]:
+              if hashlib.sha256(f.read_bytes()).hexdigest()!=d[k]:raise SystemExit(k+' mismatch')
+          for folder,key in [('oracle-code','oracleCodeCommit'),('oracle-snapshot','checkpointCommit')]:
+              if subprocess.check_output(['git','-C',folder,'rev-parse','HEAD'],text=True).strip()!=d[key]:raise SystemExit(key+' mismatch')
+          print('Registration, historical states and Oracle source verified')
+          PY
+      - name: Install pinned TypeScript runner
+        run: npm install --prefix "$RUNNER_TEMP/oracle-warp-deps" --save-exact tsx@4.23.15
+      - name: Replay the Oracle and recalibrate before the model run
+        env:
+          ORACLE_CODE_ROOT: ${{ github.workspace }}/oracle-code
+        run: |
+          set -eu
+          P=experiments/warp-breakdown/oracle-rerun
+          LOADER="$RUNNER_TEMP/oracle-warp-deps/node_modules/tsx/dist/loader.mjs"
+          node --import "$LOADER" "$P/validate.mjs" oracle-before/state.json oracle-after/state.json "$P/validation-exchanges.json" "$RUNNER_TEMP/validation.json"
+          ORACLE_CUE_WEIGHT=0.35 node --import "$LOADER" "$P/calibrate.mjs" oracle-snapshot/state.json "$RUNNER_TEMP/cal-native.json"
+          ORACLE_CUE_WEIGHT=0.054 node --import "$LOADER" "$P/calibrate.mjs" oracle-snapshot/state.json "$RUNNER_TEMP/cal-matched.json"
+          node --import "$LOADER" "$P/calibrate-control.mjs" oracle-snapshot/state.json "$RUNNER_TEMP/cal-control.json"
+          python3 "$P/audit-calibration.py" "$P/calibration-native-035.json" "$RUNNER_TEMP/cal-native.json"
+          python3 "$P/audit-calibration.py" "$P/calibration-matched-0054.json" "$RUNNER_TEMP/cal-matched.json"
+          python3 "$P/audit-calibration.py" "$P/calibration-control-0054.json" "$RUNNER_TEMP/cal-control.json"
+      - name: Save validation output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oracle-warp-validation
+          path: |
+            ${{ runner.temp }}/validation.json
+            ${{ runner.temp }}/cal-native.json
+            ${{ runner.temp }}/cal-matched.json
+            ${{ runner.temp }}/cal-control.json
+          if-no-files-found: ignore
+          retention-days: 90
+  study:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        history: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 6a8becd4ae9a2e3ad84ed32b878b4868405bb6f1
+          path: oracle-code
+      - uses: actions/checkout@v4
+        with:
+          ref: 361fcbda7c69609242f179a557f6adb6ff6a1596
+          path: oracle-snapshot
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned TypeScript runner
+        run: npm install --prefix "$RUNNER_TEMP/oracle-warp-deps" --save-exact tsx@4.23.15
+      - name: Run paired Oracle Warp history
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ORACLE_CODE_ROOT: ${{ github.workspace }}/oracle-code
+          WBD_MODEL_MODE: anthropic
+          WBD_HISTORY_ID: ${{ matrix.history }}
+        run: |
+          node --import "$RUNNER_TEMP/oracle-warp-deps/node_modules/tsx/dist/loader.mjs" \
+            experiments/warp-breakdown/oracle-rerun/study.ts \
+            oracle-snapshot/state.json experiments/warp-breakdown/oracle-rerun/plan.json oracle-warp-output
+      - name: Preserve dependency lock
+        if: always()
+        run: |
+          if [ -d oracle-warp-output ] && [ -f "$RUNNER_TEMP/oracle-warp-deps/package-lock.json" ]; then
+            cp "$RUNNER_TEMP/oracle-warp-deps/package-lock.json" oracle-warp-output/package-lock.json
+          fi
+      - name: Upload history
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oracle-warp-history-${{ matrix.history }}
+          path: oracle-warp-output/
+          if-no-files-found: ignore
+          retention-days: 90
+  aggregate:
+    needs: [validate, study]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: oracle-warp-history-*
+          path: oracle-warp-artifacts
+      - name: Audit and aggregate by world of origin
+        run: |
+          P=experiments/warp-breakdown/oracle-rerun
+          python3 "$P/aggregate.py" "$P/plan.json" "$P/study.ts" "$P/adapter.mjs" "$P/audit.py" \
+            oracle-warp-artifacts "$P/results"
+      - name: Save available outcomes on the study branch
+        if: always()
+        shell: bash
+        run: |
+          P=experiments/warp-breakdown/oracle-rerun/results
+          if [ ! -d "$P" ]; then exit 0; fi
+          git config user.name 'amelia-oracle-warp-study'
+          git config user.email 'amelia-oracle-warp-study@users.noreply.github.com'
+          git add "$P/"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Record Oracle Warp multi-lineage outcomes'
+          git push origin HEAD:refs/heads/warp-oracle-multilineage-20261107
+      - name: Upload aggregate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oracle-warp-aggregate
+          path: experiments/warp-breakdown/oracle-rerun/results/
+          if-no-files-found: ignore
+          retention-days: 90
