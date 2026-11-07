@@ -1,0 +1,2888 @@
+{
+  "schema": "amelia.oracle-house-prompt-factorial-summary/v1",
+  "planSha256": "2f793e4c3ee6b17c864065bed2ee6ae3e6c6e35fdf22ee488de494e07b64da15",
+  "historiesExpected": 16,
+  "historiesComplete": 16,
+  "missingHistories": [],
+  "problems": [],
+  "worldOriginLineages": 8,
+  "status": "COMPLETE",
+  "exploratory": true,
+  "breakdownHistories": 16,
+  "breakdownMinimum": 12,
+  "breakdownCalibrationMet": true,
+  "primaryContrasts": {
+    "route": {
+      "perLineageDifference": {
+        "S05W17|0": 0,
+        "S05W18|0": 0,
+        "S05W19|0": 0,
+        "S05W20|0": 0.1875,
+        "S05W21|0": 0,
+        "S05W22|0": 0,
+        "S05W23|0": 0,
+        "S05W24|0": 0
+      },
+      "meanDifference": 0.0234375,
+      "conditionalSignFlipP": 0.5,
+      "sides": "one_positive",
+      "extremeAssignments": 128,
+      "assignments": 256,
+      "meanDifferenceOutOf8": 0.0234375,
+      "meanFractionDifference": 0.0029296875,
+      "units": "held-out cases out of 8",
+      "holmAdjustedP": 1.0,
+      "practicalThresholdMet": false,
+      "holmThresholdMet": false,
+      "classification": "NO_CLEAR_SIGNAL_AT_REGISTERED_THRESHOLD"
+    },
+    "prompt": {
+      "perLineageDifference": {
+        "S05W17|0": 0,
+        "S05W18|0": 0,
+        "S05W19|0": 0.5,
+        "S05W20|0": 0.4375,
+        "S05W21|0": 0.625,
+        "S05W22|0": 0,
+        "S05W23|0": 0.5,
+        "S05W24|0": 0
+      },
+      "meanDifference": 0.2578125,
+      "conditionalSignFlipP": 0.0625,
+      "sides": "one_positive",
+      "extremeAssignments": 16,
+      "assignments": 256,
+      "meanDifferenceOutOf8": 0.2578125,
+      "meanFractionDifference": 0.0322265625,
+      "units": "held-out cases out of 8",
+      "holmAdjustedP": 0.1875,
+      "practicalThresholdMet": false,
+      "holmThresholdMet": false,
+      "classification": "NO_CLEAR_SIGNAL_AT_REGISTERED_THRESHOLD"
+    },
+    "house": {
+      "perLineageDifference": {
+        "S05W17|0": 0,
+        "S05W18|0": 0,
+        "S05W19|0": 0,
+        "S05W20|0": 0.1875,
+        "S05W21|0": 0,
+        "S05W22|0": 0,
+        "S05W23|0": 0,
+        "S05W24|0": 0
+      },
+      "meanDifference": 0.0234375,
+      "conditionalSignFlipP": 1.0,
+      "sides": "two",
+      "extremeAssignments": 256,
+      "assignments": 256,
+      "meanDifferenceOutOf8": 0.0234375,
+      "meanFractionDifference": 0.0029296875,
+      "units": "held-out cases out of 8",
+      "holmAdjustedP": 1.0,
+      "practicalThresholdMet": false,
+      "holmThresholdMet": false,
+      "classification": "NO_CLEAR_SIGNAL_AT_REGISTERED_THRESHOLD"
+    }
+  },
+  "secondaryContrasts": {
+    "interaction": {
+      "perLineageDifference": {
+        "S05W17|0": 0,
+        "S05W18|0": 0,
+        "S05W19|0": 0,
+        "S05W20|0": 0.375,
+        "S05W21|0": 0,
+        "S05W22|0": 0,
+        "S05W23|0": 0,
+        "S05W24|0": 0
+      },
+      "meanDifference": 0.046875,
+      "conditionalSignFlipP": 1.0,
+      "sides": "two",
+      "extremeAssignments": 256,
+      "assignments": 256,
+      "meanDifferenceOutOf8": 0.046875,
+      "meanFractionDifference": 0.005859375,
+      "units": "held-out cases out of 8"
+    },
+    "feedback": {
+      "perLineageDifference": {
+        "S05W17|0": 1.5,
+        "S05W18|0": 0,
+        "S05W19|0": 0.5,
+        "S05W20|0": 0.4375,
+        "S05W21|0": 0.375,
+        "S05W22|0": -1,
+        "S05W23|0": -0.5,
+        "S05W24|0": 0
+      },
+      "meanDifference": 0.1640625,
+      "conditionalSignFlipP": 0.65625,
+      "sides": "two",
+      "extremeAssignments": 168,
+      "assignments": 256,
+      "meanDifferenceOutOf8": 0.1640625,
+      "meanFractionDifference": 0.0205078125,
+      "units": "held-out cases out of 8"
+    },
+    "houseSearchSteps": {
+      "perLineageDifference": {
+        "S05W17|0": -2.5,
+        "S05W18|0": 0,
+        "S05W19|0": 0,
+        "S05W20|0": 0,
+        "S05W21|0": 0,
+        "S05W22|0": 0,
+        "S05W23|0": 0,
+        "S05W24|0": 0
+      },
+      "meanDifference": -0.3125,
+      "conditionalSignFlipP": 1.0,
+      "sides": "two",
+      "extremeAssignments": 256,
+      "assignments": 256,
+      "units": "search gate steps per arm"
+    },
+    "houseSearchDwells": {
+      "perLineageDifference": {
+        "S05W17|0": -2.5,
+        "S05W18|0": 0,
+        "S05W19|0": 0,
+        "S05W20|0": 0,
+        "S05W21|0": 0,
+        "S05W22|0": 0,
+        "S05W23|0": 0,
+        "S05W24|0": 0
+      },
+      "meanDifference": -0.3125,
+      "conditionalSignFlipP": 1.0,
+      "sides": "two",
+      "extremeAssignments": 256,
+      "assignments": 256,
+      "units": "search gate steps per arm"
+    },
+    "houseModelCalls": {
+      "perLineageDifference": {
+        "S05W17|0": 0,
+        "S05W18|0": 0,
+        "S05W19|0": 0,
+        "S05W20|0": 0,
+        "S05W21|0": 0,
+        "S05W22|0": 0,
+        "S05W23|0": 0,
+        "S05W24|0": 0
+      },
+      "meanDifference": 0,
+      "conditionalSignFlipP": 1.0,
+      "sides": "two",
+      "extremeAssignments": 256,
+      "assignments": 256,
+      "units": "model calls per arm"
+    }
+  },
+  "practicalFraction": 0.125,
+  "armSummaries": {
+    "control:warp_tape:native:unrelated": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "signalPivotalSteps": 0,
+      "meanHeldoutOutOf8": 4.75,
+      "meanPublicOutOf6": 3.5625
+    },
+    "warp:control_tape:permuted:correct": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "signalPivotalSteps": 0,
+      "meanHeldoutOutOf8": 4.625,
+      "meanPublicOutOf6": 3.5625
+    },
+    "control:control_tape:permuted:correct": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "signalPivotalSteps": 0,
+      "meanHeldoutOutOf8": 4.625,
+      "meanPublicOutOf6": 3.5625
+    },
+    "control:warp_tape:permuted:correct": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "signalPivotalSteps": 0,
+      "meanHeldoutOutOf8": 4.9375,
+      "meanPublicOutOf6": 3.75
+    },
+    "warp:control_tape:native:unrelated": {
+      "calls": 48,
+      "steps": 106,
+      "stalls": 0,
+      "signalPivotalSteps": 2,
+      "meanHeldoutOutOf8": 4.5625,
+      "meanPublicOutOf6": 3.4375
+    },
+    "warp:warp_tape:permuted:unrelated": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "signalPivotalSteps": 0,
+      "meanHeldoutOutOf8": 4.75,
+      "meanPublicOutOf6": 3.5625
+    },
+    "control:control_tape:native:correct": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "signalPivotalSteps": 0,
+      "meanHeldoutOutOf8": 4.625,
+      "meanPublicOutOf6": 3.5625
+    },
+    "control:warp_tape:native:correct": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "signalPivotalSteps": 0,
+      "meanHeldoutOutOf8": 4.9375,
+      "meanPublicOutOf6": 3.75
+    },
+    "control:control_tape:permuted:unrelated": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "signalPivotalSteps": 0,
+      "meanHeldoutOutOf8": 4.5625,
+      "meanPublicOutOf6": 3.4375
+    },
+    "control:warp_tape:permuted:unrelated": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "signalPivotalSteps": 0,
+      "meanHeldoutOutOf8": 4.6875,
+      "meanPublicOutOf6": 3.5
+    },
+    "warp:control_tape:permuted:unrelated": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "signalPivotalSteps": 0,
+      "meanHeldoutOutOf8": 4.5625,
+      "meanPublicOutOf6": 3.4375
+    },
+    "warp:control_tape:native:correct": {
+      "calls": 48,
+      "steps": 106,
+      "stalls": 0,
+      "signalPivotalSteps": 2,
+      "meanHeldoutOutOf8": 4.625,
+      "meanPublicOutOf6": 3.5625
+    },
+    "warp:warp_tape:native:correct": {
+      "calls": 48,
+      "steps": 106,
+      "stalls": 0,
+      "signalPivotalSteps": 2,
+      "meanHeldoutOutOf8": 5.125,
+      "meanPublicOutOf6": 3.75
+    },
+    "control:control_tape:native:unrelated": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "signalPivotalSteps": 0,
+      "meanHeldoutOutOf8": 4.5625,
+      "meanPublicOutOf6": 3.4375
+    },
+    "warp:warp_tape:permuted:correct": {
+      "calls": 48,
+      "steps": 96,
+      "stalls": 0,
+      "signalPivotalSteps": 0,
+      "meanHeldoutOutOf8": 4.9375,
+      "meanPublicOutOf6": 3.75
+    },
+    "warp:warp_tape:native:unrelated": {
+      "calls": 48,
+      "steps": 106,
+      "stalls": 0,
+      "signalPivotalSteps": 2,
+      "meanHeldoutOutOf8": 4.6875,
+      "meanPublicOutOf6": 3.5
+    }
+  },
+  "histories": [
+    {
+      "history": 1,
+      "lineage": "S05W17|0",
+      "arms": {
+        "control:warp_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 11,
+          "stall": false,
+          "searchSteps": 8,
+          "searchDwells": 5
+        },
+        "warp:warp_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:correct": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:correct": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:correct": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 11,
+          "stall": false,
+          "searchSteps": 8,
+          "searchDwells": 5
+        },
+        "warp:warp_tape:native:correct": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 11,
+          "stall": false,
+          "searchSteps": 8,
+          "searchDwells": 5
+        },
+        "control:control_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 11,
+          "stall": false,
+          "searchSteps": 8,
+          "searchDwells": 5
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "9bb33199832a498a07f2445555491181a5bc007e68656cffe85ac98fb4a5a58d",
+      "route": 0,
+      "prompt": 0,
+      "house": 0,
+      "interaction": 0,
+      "feedback": 0,
+      "houseSearchSteps": -2.5,
+      "houseSearchDwells": -2.5,
+      "houseModelCalls": 0
+    },
+    {
+      "history": 2,
+      "lineage": "S05W17|0",
+      "arms": {
+        "warp:warp_tape:native:unrelated": {
+          "heldout": 3,
+          "public": 2,
+          "calls": 3,
+          "steps": 11,
+          "stall": false,
+          "searchSteps": 8,
+          "searchDwells": 5
+        },
+        "warp:control_tape:native:correct": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 11,
+          "stall": false,
+          "searchSteps": 8,
+          "searchDwells": 5
+        },
+        "warp:warp_tape:native:correct": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 11,
+          "stall": false,
+          "searchSteps": 8,
+          "searchDwells": 5
+        },
+        "control:warp_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:unrelated": {
+          "heldout": 3,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:correct": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:unrelated": {
+          "heldout": 3,
+          "public": 2,
+          "calls": 3,
+          "steps": 11,
+          "stall": false,
+          "searchSteps": 8,
+          "searchDwells": 5
+        },
+        "warp:warp_tape:permuted:unrelated": {
+          "heldout": 3,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:unrelated": {
+          "heldout": 3,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:unrelated": {
+          "heldout": 3,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:correct": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:unrelated": {
+          "heldout": 3,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:unrelated": {
+          "heldout": 3,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "8ad791d64776e4407ee3c32656cfa2edcc819395c687637820f02861934dc946",
+      "route": 0,
+      "prompt": 0,
+      "house": 0,
+      "interaction": 0,
+      "feedback": 3,
+      "houseSearchSteps": -2.5,
+      "houseSearchDwells": -2.5,
+      "houseModelCalls": 0
+    },
+    {
+      "history": 3,
+      "lineage": "S05W18|0",
+      "arms": {
+        "control:control_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:correct": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:correct": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:correct": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:correct": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:correct": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:correct": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:correct": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:correct": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "4ea3940827b3cfe29989e365f6ce613856f6335885bb2728cbf138a97d8152bf",
+      "route": 0,
+      "prompt": 0,
+      "house": 0,
+      "interaction": 0,
+      "feedback": 0,
+      "houseSearchSteps": 0,
+      "houseSearchDwells": 0,
+      "houseModelCalls": 0
+    },
+    {
+      "history": 4,
+      "lineage": "S05W18|0",
+      "arms": {
+        "warp:control_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:correct": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:correct": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:correct": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:correct": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:correct": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:correct": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:correct": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:correct": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "a98276e68cc4b1b01face37b0ee301c02ccde939e4d9c3bc28c710eea745e218",
+      "route": 0,
+      "prompt": 0,
+      "house": 0,
+      "interaction": 0,
+      "feedback": 0,
+      "houseSearchSteps": 0,
+      "houseSearchDwells": 0,
+      "houseModelCalls": 0
+    },
+    {
+      "history": 5,
+      "lineage": "S05W19|0",
+      "arms": {
+        "control:control_tape:native:unrelated": {
+          "heldout": 2,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:correct": {
+          "heldout": 2,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:correct": {
+          "heldout": 2,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:correct": {
+          "heldout": 2,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:unrelated": {
+          "heldout": 2,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:correct": {
+          "heldout": 2,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:correct": {
+          "heldout": 2,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:unrelated": {
+          "heldout": 2,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:unrelated": {
+          "heldout": 2,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:correct": {
+          "heldout": 2,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:unrelated": {
+          "heldout": 2,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:unrelated": {
+          "heldout": 2,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:unrelated": {
+          "heldout": 2,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:unrelated": {
+          "heldout": 2,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:correct": {
+          "heldout": 2,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:correct": {
+          "heldout": 2,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "ebe29b7807ff100b35165409b824e653e848759372b8f6f26bdee605322ab48f",
+      "route": 0,
+      "prompt": 0,
+      "house": 0,
+      "interaction": 0,
+      "feedback": 0,
+      "houseSearchSteps": 0,
+      "houseSearchDwells": 0,
+      "houseModelCalls": 0
+    },
+    {
+      "history": 6,
+      "lineage": "S05W19|0",
+      "arms": {
+        "warp:warp_tape:native:correct": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:correct": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:correct": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:correct": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "93d099f4efdd2678176e5b3509a4c2c444d89f514c03110e40413ed7d3a016aa",
+      "route": 0,
+      "prompt": 1,
+      "house": 0,
+      "interaction": 0,
+      "feedback": 1,
+      "houseSearchSteps": 0,
+      "houseSearchDwells": 0,
+      "houseModelCalls": 0
+    },
+    {
+      "history": 7,
+      "lineage": "S05W20|0",
+      "arms": {
+        "warp:control_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:correct": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:correct": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:correct": {
+          "heldout": 8,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:correct": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:correct": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:correct": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:correct": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:correct": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "ca45223a5baf8d438ae7e81b531f6f8f972371e82972a98f15ffc094e2a654cb",
+      "route": 0.375,
+      "prompt": 0.375,
+      "house": 0.375,
+      "interaction": 0.75,
+      "feedback": 0.375,
+      "houseSearchSteps": 0,
+      "houseSearchDwells": 0,
+      "houseModelCalls": 0
+    },
+    {
+      "history": 8,
+      "lineage": "S05W20|0",
+      "arms": {
+        "control:control_tape:permuted:unrelated": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:correct": {
+          "heldout": 7,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:unrelated": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:correct": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:unrelated": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:unrelated": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:unrelated": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:correct": {
+          "heldout": 7,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:correct": {
+          "heldout": 7,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:correct": {
+          "heldout": 7,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:unrelated": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:unrelated": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:correct": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:unrelated": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "f61d08d6036db2ff0fc3a0ac3f245c33e52383c35e4bdd18dbdd6c2bf8a0d8f1",
+      "route": 0,
+      "prompt": 0.5,
+      "house": 0,
+      "interaction": 0,
+      "feedback": 0.5,
+      "houseSearchSteps": 0,
+      "houseSearchDwells": 0,
+      "houseModelCalls": 0
+    },
+    {
+      "history": 9,
+      "lineage": "S05W21|0",
+      "arms": {
+        "warp:warp_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:correct": {
+          "heldout": 4,
+          "public": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:correct": {
+          "heldout": 4,
+          "public": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:correct": {
+          "heldout": 4,
+          "public": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:correct": {
+          "heldout": 4,
+          "public": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 1,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "d2665d79ed02141d9ecbc538bd8d2aa442faaef3921307d2d63ed9cf96990034",
+      "route": 0,
+      "prompt": 0.25,
+      "house": 0,
+      "interaction": 0,
+      "feedback": -0.25,
+      "houseSearchSteps": 0,
+      "houseSearchDwells": 0,
+      "houseModelCalls": 0
+    },
+    {
+      "history": 10,
+      "lineage": "S05W21|0",
+      "arms": {
+        "warp:warp_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:correct": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:correct": {
+          "heldout": 4,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:correct": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:correct": {
+          "heldout": 4,
+          "public": 2,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "ce45b92d7d60198d933ae6797114a8110665b53dbed1f134a170d240409a1d39",
+      "route": 0,
+      "prompt": 1,
+      "house": 0,
+      "interaction": 0,
+      "feedback": 1,
+      "houseSearchSteps": 0,
+      "houseSearchDwells": 0,
+      "houseModelCalls": 0
+    },
+    {
+      "history": 11,
+      "lineage": "S05W22|0",
+      "arms": {
+        "warp:warp_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:correct": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:correct": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:correct": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:correct": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "06407712a815df1f62f4df6c45bfe4f066b7b84330d4eb66acc35ca7997efa02",
+      "route": 0,
+      "prompt": 0,
+      "house": 0,
+      "interaction": 0,
+      "feedback": 0,
+      "houseSearchSteps": 0,
+      "houseSearchDwells": 0,
+      "houseModelCalls": 0
+    },
+    {
+      "history": 12,
+      "lineage": "S05W22|0",
+      "arms": {
+        "warp:control_tape:permuted:unrelated": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:correct": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:unrelated": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:unrelated": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:unrelated": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:correct": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:unrelated": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:correct": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:unrelated": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:unrelated": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:correct": {
+          "heldout": 4,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:unrelated": {
+          "heldout": 6,
+          "public": 5,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "a5ba0e2a52f4a3de55af3bbceac6fb98206545777969c388a6a980f3f413acdd",
+      "route": 0,
+      "prompt": 0,
+      "house": 0,
+      "interaction": 0,
+      "feedback": -2,
+      "houseSearchSteps": 0,
+      "houseSearchDwells": 0,
+      "houseModelCalls": 0
+    },
+    {
+      "history": 13,
+      "lineage": "S05W23|0",
+      "arms": {
+        "warp:control_tape:native:unrelated": {
+          "heldout": 6,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:unrelated": {
+          "heldout": 8,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:correct": {
+          "heldout": 6,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:unrelated": {
+          "heldout": 6,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:unrelated": {
+          "heldout": 6,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:correct": {
+          "heldout": 6,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:unrelated": {
+          "heldout": 6,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:unrelated": {
+          "heldout": 8,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:correct": {
+          "heldout": 6,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:unrelated": {
+          "heldout": 8,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:unrelated": {
+          "heldout": 8,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:correct": {
+          "heldout": 6,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "e2f28b492ee6e85e0e1b656171479a106891e458ccafd3c2e11d4d338b3ab3f0",
+      "route": 0,
+      "prompt": 1,
+      "house": 0,
+      "interaction": 0,
+      "feedback": -1,
+      "houseSearchSteps": 0,
+      "houseSearchDwells": 0,
+      "houseModelCalls": 0
+    },
+    {
+      "history": 14,
+      "lineage": "S05W23|0",
+      "arms": {
+        "control:control_tape:permuted:correct": {
+          "heldout": 5,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:correct": {
+          "heldout": 5,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:correct": {
+          "heldout": 5,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:correct": {
+          "heldout": 5,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:correct": {
+          "heldout": 5,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:correct": {
+          "heldout": 5,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:correct": {
+          "heldout": 5,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:unrelated": {
+          "heldout": 5,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:unrelated": {
+          "heldout": 5,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:correct": {
+          "heldout": 5,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "272e323168baf2bc096d25b01dac8c2ced2752c6d6fa7f9f2f732759fcbb5881",
+      "route": 0,
+      "prompt": 0,
+      "house": 0,
+      "interaction": 0,
+      "feedback": 0,
+      "houseSearchSteps": 0,
+      "houseSearchDwells": 0,
+      "houseModelCalls": 0
+    },
+    {
+      "history": 15,
+      "lineage": "S05W24|0",
+      "arms": {
+        "warp:control_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:correct": {
+          "heldout": 4,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:correct": {
+          "heldout": 4,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:correct": {
+          "heldout": 4,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:correct": {
+          "heldout": 4,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:correct": {
+          "heldout": 4,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:unrelated": {
+          "heldout": 4,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:unrelated": {
+          "heldout": 4,
+          "public": 3,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "95894b23291ceb17bcb40fb33971ca386dc196d4f9cf22327cc7c3c4bf8ca268",
+      "route": 0,
+      "prompt": 0,
+      "house": 0,
+      "interaction": 0,
+      "feedback": 0,
+      "houseSearchSteps": 0,
+      "houseSearchDwells": 0,
+      "houseModelCalls": 0
+    },
+    {
+      "history": 16,
+      "lineage": "S05W24|0",
+      "arms": {
+        "control:warp_tape:permuted:unrelated": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:correct": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:unrelated": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:unrelated": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:unrelated": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:native:unrelated": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:control_tape:permuted:correct": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:correct": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "control:warp_tape:native:correct": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:correct": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:warp_tape:native:unrelated": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:permuted:unrelated": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        },
+        "warp:control_tape:native:unrelated": {
+          "heldout": 6,
+          "public": 4,
+          "calls": 3,
+          "steps": 6,
+          "stall": false,
+          "searchSteps": 3,
+          "searchDwells": 0
+        }
+      },
+      "breakdown": true,
+      "auditResultSha256": "b3c19f49523294f3e34b766cac56b44990d29771d9be3458d05c72008c68b4d8",
+      "route": 0,
+      "prompt": 0,
+      "house": 0,
+      "interaction": 0,
+      "feedback": 0,
+      "houseSearchSteps": 0,
+      "houseSearchDwells": 0,
+      "houseModelCalls": 0
+    }
+  ],
+  "totals": {
+    "modelCalls": 768,
+    "inputTokens": 170636,
+    "outputTokens": 17605,
+    "elapsedMs": 391387,
+    "stalls": 0,
+    "invalidFinalCandidates": 0,
+    "gateSteps": 1576,
+    "signalPivotalSteps": 8
+  },
+  "interpretation": "Two task histories for each of eight separately raised world-origin lineages, with later shared world input. Conditional sign flips require world-level sign exchangeability. The House intervention is a synthetic rearrangement and prompt tapes are fixed shadow readouts."
+}
