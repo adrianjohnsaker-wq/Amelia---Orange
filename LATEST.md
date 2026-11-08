@@ -1,14 +1,14 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-08T12:52:54.146Z
-- Cycle: 660 (42468877012-1-13)
+- Last cycle (UTC): 2026-11-08T13:07:55.335Z
+- Cycle: 661 (42468877012-1-14)
 - RSS items seen: 60; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: DECK_EXHAUSTED_POSITIVE; score 6
+- Subdecadence: DECK_EXHAUSTED_POSITIVE; score 5
 - Candidate: none (positive deck exhaustion)
 - Separate ingress records and trace links: 0
 - Catalogue entries added: 0
 - Governor recovery: 0 previously queued items admitted; queue now 0.
-- Native consolidations this cycle: 1; complete receipts in recovery-journal.jsonl.
+- Native consolidations this cycle: 0; complete receipts in recovery-journal.jsonl.
 - New offers: 1; attended 1, deferred 0, refused 0.
 - Source errors: none
 
