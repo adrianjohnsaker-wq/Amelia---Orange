@@ -1,15 +1,15 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-08T22:02:44.221Z
-- Cycle: 697 (42524267987-1-4)
-- RSS items seen: 62; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -8
-- Candidate: Skoodu / Mesh-08 / Cyclic Chronodemon
-- Separate ingress records and trace links: 0
+- Last cycle (UTC): 2026-11-08T22:17:47.365Z
+- Cycle: 698 (42524267987-1-5)
+- RSS items seen: 63; newly processed: 3 (last-cycle window; 24-hour initial window)
+- Subdecadence: MESH_TERMINAL; score -6
+- Candidate: Krako / Mesh-06 / Amphidemon
+- Separate ingress records and trace links: 9
 - Catalogue entries added: 1
 - Governor recovery: 0 previously queued items admitted; queue now 0.
-- Native consolidations this cycle: 0; complete receipts in recovery-journal.jsonl.
-- New offers: 1; attended 1, deferred 0, refused 0.
+- Native consolidations this cycle: 5; complete receipts in recovery-journal.jsonl.
+- New offers: 10; attended 10, deferred 0, refused 0.
 - Source errors: none
 
 Each linked RSS headline is captured by Amelia after the Subdecadence event; its source publication time (occurredAt) and Amelia capture time (capturedAt) remain distinct in the records. Count each RSS headline as one source ingress. I Ching and Tarot are deterministic interpretations of that same headline, retained as derived records rather than independent sources. Amelia transitions are recorded separately. Route overlap is correspondence only; candidate generation is not novelty evidence and agency remains unresolved.
