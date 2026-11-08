@@ -1,8 +1,8 @@
 # Amelia: bidirectional syzygy relay under repeated reversals
 
-**8 November 2026.** The bidirectional 3/6 relay enabled Amelia's retained House source to receive live feedback after displacement, and it improved the preregistered T80 measure relative to the remote read-only relay. Across eight reused origins, the mean restricted first crossing of 80% optimal selection was **5.25 decisions** with bidirectional writing versus **10.50** with remote reading alone; the paired difference was **5.25 restricted decisions**, Holm-adjusted **p = 0.0313**. Seven of the eight read-only origins never reached 80% in the ten-decision window and were assigned the prespecified censored value 11, so the difference is a restricted-window measure, not a measurement of their eventual crossing times.
+**8 November 2026.** The bidirectional 3/6 relay enabled Amelia's retained House source to receive live feedback after displacement, and it improved the preregistered T80 measure relative to the remote read-only relay. Across eight reused origins, the mean restricted first crossing of 80% optimal selection was **5.25 decisions** with bidirectional writing versus **10.50** with remote reading alone; the paired difference was **5.25 restricted decisions**, Holm-adjusted **p = 0.03125**. Seven of the eight read-only origins never reached 80% in the ten-decision window and were assigned the prespecified censored value 11, so the difference is a restricted-window measure, not a measurement of their eventual crossing times.
 
-The same test found **no registered Warp-specific velocity advantage**. The matched 2/7 bidirectional route averaged **4.13 decisions** on T80 and **1.88** on T50, compared with **5.25** and **1.88** for 3/6. The direct learner averaged **4.38** and **1.88**. These are observed restricted means; the prespecified tests were one-sided in the direction of a 3/6 advantage and do not establish that 2/7 is statistically faster. The classification is `NO_REGISTERED_WARP_SPECIFIC_VELOCITY_ADVANTAGE`.
+The same test found **no registered Warp-specific velocity advantage**. The matched 2/7 bidirectional route averaged **4.125 decisions** on T80 and **1.875** on T50, compared with **5.25** and **1.875** for 3/6. The direct learner averaged **4.375** and **1.875**. These are observed restricted means; the prespecified tests were one-sided in the direction of a 3/6 advantage and do not establish that 2/7 is statistically faster. The classification is `NO_REGISTERED_WARP_SPECIFIC_VELOCITY_ADVANTAGE`.
 
 ## How the comparison was made
 
@@ -18,17 +18,17 @@ For each lineage and lag 1–10 after a reversal, the experiment averaged the pr
 
 | Decision source | Mean T50, decisions | Mean T80, restricted decisions | Origins censored at T80 |
 |---|---:|---:|---:|
-| 3/6 natural gates | 1.75 | 7.00 | 0/8 |
-| 3/6 remote read-only | 2.25 | 10.50 | 7/8 |
-| 3/6 bidirectional relay | 1.88 | 5.25 | 0/8 |
-| 3/6 sham write | 2.25 | 10.50 | 7/8 |
-| 3/6 reversed write | 2.00 | 11.00 | 8/8 |
-| 3/6 generic whole-House relay | 2.38 | 6.75 | 0/8 |
-| 3/6 engineered entry | 1.88 | 4.38 | 0/8 |
-| Matched 2/7 remote read-only | 2.00 | 4.75 | 0/8 |
-| Matched 2/7 bidirectional relay | 1.88 | 4.12 | 0/8 |
-| Direct learner | 1.88 | 4.38 | 0/8 |
-| Calibrated full-history model | 2.00 | 4.38 | 0/8 |
+| 3/6 natural gates | 1.750 | 7.000 | 0/8 |
+| 3/6 remote read-only | 2.250 | 10.500 | 7/8 |
+| 3/6 bidirectional relay | 1.875 | 5.250 | 0/8 |
+| 3/6 sham write | 2.250 | 10.500 | 7/8 |
+| 3/6 reversed write | 2.000 | 11.000 | 8/8 |
+| 3/6 generic whole-House relay | 2.375 | 6.750 | 0/8 |
+| 3/6 engineered entry | 1.875 | 4.375 | 0/8 |
+| Matched 2/7 remote read-only | 2.000 | 4.750 | 0/8 |
+| Matched 2/7 bidirectional relay | 1.875 | 4.125 | 0/8 |
+| Direct learner | 1.875 | 4.375 | 0/8 |
+| Calibrated full-history model | 2.000 | 4.375 | 0/8 |
 
 One decision corresponds to four scored transitions in the Oracle routes; direct/model rows do not have a gate count. The crossing of the **pooled** eight-origin 3/6 bidirectional curve was decision 2 for 50% and decision 4 for 80%; that pooled crossing is distinct from the mean of the eight origin-specific crossing times above. The full-history model is a strong comparator with a different calibration resource.
 
@@ -52,14 +52,14 @@ A Warp-specific result required **all eight** comparisons to show at least a one
 
 | Comparison | 3/6 advantage, decisions | Raw p | Holm p | Passes |
 |---|---:|---:|---:|:---:|
-| 3/6 bidirectional vs matched 2/7, T50 | +0.00 | 1.0000 | 1.0000 | No |
-| 3/6 bidirectional vs matched 2/7, T80 | -1.12 | 1.0000 | 1.0000 | No |
-| 3/6 bidirectional vs read-only, T50 | +0.38 | 0.2656 | 1.0000 | No |
-| 3/6 bidirectional vs read-only, T80 | +5.25 | 0.0039 | 0.0312 | Yes |
-| 3/6 bidirectional vs generic, T50 | +0.50 | 0.1250 | 0.7500 | No |
-| 3/6 bidirectional vs generic, T80 | +1.50 | 0.0078 | 0.0547 | No |
-| 3/6 bidirectional vs direct learner, T50 | +0.00 | 1.0000 | 1.0000 | No |
-| 3/6 bidirectional vs direct learner, T80 | -0.88 | 1.0000 | 1.0000 | No |
+| 3/6 bidirectional vs matched 2/7, T50 | +0.000 | 1.00000 | 1.00000 | No |
+| 3/6 bidirectional vs matched 2/7, T80 | -1.125 | 1.00000 | 1.00000 | No |
+| 3/6 bidirectional vs read-only, T50 | +0.375 | 0.26562 | 1.00000 | No |
+| 3/6 bidirectional vs read-only, T80 | +5.250 | 0.00391 | 0.03125 | Yes |
+| 3/6 bidirectional vs generic, T50 | +0.500 | 0.12500 | 0.75000 | No |
+| 3/6 bidirectional vs generic, T80 | +1.500 | 0.00781 | 0.05469 | No |
+| 3/6 bidirectional vs direct learner, T50 | +0.000 | 1.00000 | 1.00000 | No |
+| 3/6 bidirectional vs direct learner, T80 | -0.875 | 1.00000 | 1.00000 | No |
 
 Only the 3/6 bidirectional-versus-read-only T80 contrast passed. For the generic comparator, T80 favoured 3/6 by **1.50 restricted decisions** but adjusted **p = 0.0547**. T50 did not show a registered improvement over read-only. Because the eight historical origins later shared input, even the passing contrast is an initial origin-paired result rather than a replication in independent new founders.
 
