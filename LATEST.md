@@ -1,10 +1,10 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-08T03:28:13.808Z
-- Cycle: 622 (42420570744-1-21)
+- Last cycle (UTC): 2026-11-08T03:43:14.010Z
+- Cycle: 623 (42420570744-1-22)
 - RSS items seen: 60; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score 0
-- Candidate: Lurgo / Mesh-00 / Amphidemon
+- Subdecadence: MESH_TERMINAL; score -10
+- Candidate: Tokhatto / Mesh-10 / Amphidemon
 - Separate ingress records and trace links: 0
 - Catalogue entries added: 1
 - Governor recovery: 0 previously queued items admitted; queue now 0.
