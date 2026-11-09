@@ -57,7 +57,8 @@ jobs:
           if [ ! -e ledger/a1/assigned.json ]; then git -C live fetch -q --unshallow origin +refs/heads/world-live:refs/remotes/origin/world-live; fi
           ls -la code/node_modules /tmp/tsx/node_modules | head; ls /tmp/tsx/node_modules/tsx | head -3
           (cd code && node --import tsx -e 'console.log("tsx ok")') || true
-          (cd code && PYTHONDONTWRITEBYTECODE=1 python3 -I experiments/agentic/a1/epoch_a1.py ag1 ../live ../ledger) || true
+          (cd code && PYTHONDONTWRITEBYTECODE=1 strace -f -qq -e trace=unlink,unlinkat,rmdir,rename,renameat,renameat2 -o /tmp/st.txt python3 -I experiments/agentic/a1/epoch_a1.py ag1 ../live ../ledger) || true
+          grep -v ENOENT /tmp/st.txt | grep -i 'tsx\|/tmp' | head -40; wc -l /tmp/st.txt
           ls -la code/node_modules /tmp/tsx/node_modules 2>&1 | head; ls /tmp/a1-ag1; (cd code && node --import tsx -e 'console.log("tsx ok after")') || true; cat ledger/a1/BACKFILL.json 2>/dev/null | head -3; exit 0
           cd ledger && git config user.name 'github-actions[bot]' && git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A && git commit -qm "AG-1/RC-1 live epoch $(date -u +%Y-%m-%dT%H:%M:%SZ)" || exit 0
