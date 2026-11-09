@@ -32,6 +32,7 @@ jobs:
         with: { node-version: '22' }
       - name: one epoch
         shell: bash
+        env: { TMPDIR: '${{ runner.temp }}' }
         run: |
           set -euo pipefail
           if [ ! -e code/experiments/agentic/seal/receipt.json ]; then echo 'not sealed yet'; exit 0; fi
