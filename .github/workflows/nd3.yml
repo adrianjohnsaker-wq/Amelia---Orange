@@ -1,0 +1,69 @@
+# ND-3 (experiments/synthetic-pointer/nd3/REGISTRATION.md). seal.trigger: one RFC3161 token over the registration,
+# code and calibration, fixing the world data start time. run.trigger: the registered world run on the first 12,000
+# world-stream data first seen after the seal. Runs only on this branch; writes only experiments/synthetic-pointer/nd3/.
+name: ND-3
+on:
+  push:
+    branches: [nr3-field-ingress-20261109]
+    paths: ['experiments/synthetic-pointer/nd3/seal.trigger', 'experiments/synthetic-pointer/nd3/run.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: nd3
+  cancel-in-progress: false
+jobs:
+  nd3:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: seal (once) or run
+        shell: bash
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        run: |
+          set -euo pipefail
+          P=experiments/synthetic-pointer/nd3
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          cat > /tmp/files.json <<'J'
+          ["experiments/synthetic-pointer/nd3/REGISTRATION.md", "experiments/synthetic-pointer/nd3/run_world.sh", "experiments/synthetic-pointer/nd3/prepare_world.py", "experiments/synthetic-pointer/ndb/REGISTRATION.md", "experiments/synthetic-pointer/ndb/run.ts", "experiments/synthetic-pointer/ndb/order.ts", "experiments/synthetic-pointer/ndb/analysis.py", "experiments/synthetic-pointer/ndb/calibrate.sh", "experiments/synthetic-pointer/ndb/stream3.py", "experiments/synthetic-pointer/ndb/results/CALIBRATION.json", "experiments/synthetic-pointer/ndb/results/RESULTS_2026-11-09.md", "experiments/synthetic-pointer/nd1/ndRuntime.ts", "experiments/synthetic-pointer/nd1/run.ts", "experiments/synthetic-pointer/nd1/REGISTRATION.md", "experiments/synthetic-pointer/nd1/results/RESULTS_2026-11-09.md", "experiments/synthetic-pointer/nd2/motif.py", "experiments/synthetic-pointer/nr1/nrRuntime.ts", "experiments/synthetic-pointer/nr1/graphs.ts", "experiments/synthetic-pointer/nr1/analysis.py", "experiments/synthetic-pointer/nr2/order_analysis.py", "experiments/synthetic-pointer/sxi1r/analysis.py", "experiments/synthetic-pointer/sxi1r/touch.ts", "experiments/synthetic-pointer/observer.ts", ".github/workflows/nd3.yml"]
+          J
+          if git diff --name-only HEAD~1 HEAD | grep -qx "$P/seal.trigger" && [ ! -e $P/seal/receipt.json ]; then
+            python - <<'PY'
+          import datetime,hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          P=pathlib.Path('experiments/synthetic-pointer/nd3'); sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          files=json.load(open('/tmp/files.json')); t=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+          b={'schema':'ND3_REGISTRATION_V1','worldDataFirstSeenAtOrAfter':t,'N':12000,
+             'orderTestCalibrated':json.load(open('experiments/synthetic-pointer/ndb/results/CALIBRATION.json'))['passes'],'sourceSHA256':[{'path':f,'sha256':sha(f)} for f in files]}
+          (P/'seal').mkdir(exist_ok=True); (P/'seal/ND3_BUNDLE.json').write_text(json.dumps(b,sort_keys=True,indent=2)+'\n')
+          imprint=sha(P/'seal/ND3_BUNDLE.json'); Sealer().seal(P/'seal',imprint)
+          assert Sealer().verify(P/'seal',imprint)['status']=='PASS'; print('ND3_SEALED',t,imprint)
+          PY
+            git add $P/seal; MSG='ND-3 registration sealed (RFC3161)'
+          else
+            python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          P=pathlib.Path('experiments/synthetic-pointer/nd3'); sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          b=json.loads((P/'seal/ND3_BUNDLE.json').read_text())
+          assert Sealer().verify(P/'seal',sha(P/'seal/ND3_BUNDLE.json'))['status']=='PASS'
+          for x in b['sourceSHA256']: assert sha(x['path'])==x['sha256'],x['path']
+          pathlib.Path('/tmp/since').write_text(b['worldDataFirstSeenAtOrAfter']); print('ND3_SEAL_AND_SOURCES_VERIFIED',b['worldDataFirstSeenAtOrAfter'])
+          PY
+            git fetch -q --depth 1 origin world-live && git worktree add -q /tmp/live FETCH_HEAD
+            if ! python3 $P/prepare_world.py /tmp/live "$(cat /tmp/since)" 12000 /tmp/world.json; then echo 'ND3_WORLD_DATA_NOT_READY'; exit 0; fi
+            mkdir -p /tmp/tsx && (cd /tmp/tsx && npm init -y >/dev/null && npm i -s tsx@4.23.15) && ln -s /tmp/tsx/node_modules node_modules
+            sh $P/run_world.sh /tmp/world.json $P/result
+            cp /tmp/world.json $P/result/world.json; rm -f node_modules
+            git add $P/result; MSG='ND-3 world result'
+          fi
+          git commit -qm "$MSG"
+          for i in 1 2 3 4; do git pull -q --rebase origin nr3-field-ingress-20261109 && git push -q origin HEAD:nr3-field-ingress-20261109 && break; sleep $((2**i)); done
