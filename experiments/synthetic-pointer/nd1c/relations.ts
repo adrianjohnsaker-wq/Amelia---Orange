@@ -7,5 +7,5 @@ const all = JSON.parse(readFileSync(STREAM, 'utf8')).zones as number[]; const ru
 for (let u = 0; u < 12; u++) { const input = all.slice(u * 1000, (u + 1) * 1000);
   for (const graph of ['CANONICAL', 'RELABEL', 'REWIRED'] as const) {
     runs.push({ unit: u, graph, mode: 'HYBRID', input, ...walkC(input, graph, 'C', u, cfg) });
-    runs.push({ unit: u, graph, mode: 'EXIT', input, ...walkC(input, graph, 'EXIT', u, cfg) });
+    runs.push({ unit: u, graph, mode: 'EXIT', input, ...walkC(input, graph, 'EXIT', u, cfg) }); } }
 writeFileSync(OUT, JSON.stringify({ label: LABEL, cfg, runs }));
