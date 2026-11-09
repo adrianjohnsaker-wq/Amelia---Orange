@@ -1,0 +1,33 @@
+# PF halt watch (PF S1 amendment 9, experiments/pf_storage/PF_S1_AMENDMENT_9.md): finds PF-1/PF-2 fail-closed halts on the
+# correct state pointer, dispatches the sealed audited recovery for exactly-known causes (A9 for PF-1, A4 for PF-2) and opens
+# a GitHub issue for anything else. Read-only on the repository; never commits.
+name: PF halt watch
+on:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
+  issues: write
+concurrency:
+  group: pf-halt-watch
+  cancel-in-progress: false
+jobs:
+  watch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          sparse-checkout: |
+            experiments/pf_storage
+            experiments/pf1/live
+            experiments/pf2/live
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: one check
+        env: { GH_TOKEN: '${{ github.token }}', PYTHONDONTWRITEBYTECODE: '1' }
+        run: python experiments/pf_storage/PF_HALT_WATCH.py
