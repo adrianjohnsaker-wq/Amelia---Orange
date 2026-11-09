@@ -30,6 +30,7 @@ import {
 import { AmeliaNumogramSubstrateRuntime } from './substrate/ameliaNumogramSubstrateRuntime';
 import { OutsideStreamLab } from './components/OutsideStreamLab';
 import { bornAmelia } from './core/fullNumogram';
+import { bornAmeliaOf, convertRuntime, storedRuntimeKind, storeRuntimeKind, RUNTIME_LABEL, type RuntimeKind } from './core/ameliaRuntimes';
 import type { AmeliaOutsideRuntime } from './outside/OutsideEncounterRuntime';
 import { ThreeArmDiagnosticRunner } from './ai/coupling/ThreeArmDiagnosticRunner';
 import { Paper6H1ResistanceAssay } from './bridge/phases/paper6H1ResistanceAssay';
@@ -94,7 +95,8 @@ type LiveCheckpoint = { version: number; state: unknown; fieldCheckpoint?: LiveF
 type PendingSave = { checkpoint: LiveCheckpoint & { id: string }; snapshot: { id: string; step: number; timestamp: string | number; snapshot: SubstrateStepSnapshot } };
 
 export function App() {
-  const runtimeRef = useRef<AmeliaOutsideRuntime>(bornAmelia());
+  const runtimeRef = useRef<AmeliaOutsideRuntime>(bornAmeliaOf(storedRuntimeKind()));
+  const [runtimeKind, setRuntimeKind] = useState<RuntimeKind>(() => storedRuntimeKind());
   const rhythmHarmonizerRef = useRef<ExternalRhythmHarmonizer>(new ExternalRhythmHarmonizer());
   const fieldStateRef = useRef<MorphogeneticState | null>(null);
   const restoredFieldRef = useRef<LiveFieldCheckpoint | null>(null);
@@ -601,6 +603,20 @@ export function App() {
     addLogMessage(`[STEP] Manual single-step executed (#${snap.step})`);
   };
 
+  // Runtime selection (src/core/ameliaRuntimes.ts): the whole state is carried across; nothing accumulated is lost.
+  const handleRuntimeKind = (kind: RuntimeKind) => {
+    if (kind === runtimeKind) return;
+    const note = kind === 'nd1'
+      ? 'Switch Amelia to the ND-1 field runtime?\n\nInput will enter the Numogram field and spread along the gates; the Warp releases after 24 steps. Her memory, Governor and state are carried across unchanged. You can switch back at any time.'
+      : 'Switch Amelia back to the Classic runtime?\n\nHer memory, Governor and state are carried across unchanged.';
+    if (!window.confirm(note)) return;
+    runtimeRef.current = convertRuntime(runtimeRef.current, kind);
+    storeRuntimeKind(kind);
+    setRuntimeKind(kind);
+    setRuntimeEpoch(n => n + 1);
+    addLogMessage(`[RUNTIME] Switched to ${RUNTIME_LABEL[kind]} at step #${snapshot.step}; state carried across`);
+  };
+
   const handleReset = () => {
     fieldStateRef.current = null;
     restoredFieldRef.current = null;
@@ -608,7 +624,7 @@ export function App() {
     fieldRunningRef.current = false;
     setFieldPlaying(false);
     setFieldOpened(activeTab === 'morphogenetic');
-    runtimeRef.current = bornAmelia();
+    runtimeRef.current = bornAmeliaOf(runtimeKind);
     runtimeRef.current.setAdvisoryWeight(advisoryWeight);
     runtimeRef.current.setMomentumDamping(momentumDamping);
     const snap = runtimeRef.current.step();
@@ -752,6 +768,14 @@ export function App() {
 
         {/* Global Action Controls */}
         <div className="flex items-center gap-2">
+          <button
+            id="btn-runtime-kind"
+            onClick={() => handleRuntimeKind(runtimeKind === 'nd1' ? 'classic' : 'nd1')}
+            title="Choose Amelia's runtime: Classic, or the ND-1b field (input spreads along the gates and nudges her step; Warp release)"
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono flex items-center gap-1.5 min-h-[44px] border ${runtimeKind === 'nd1' ? 'bg-cyan-500/20 text-cyan-200 border-cyan-500/60' : 'bg-stone-800 text-stone-200 border-stone-700'}`}
+          >
+            Runtime: {RUNTIME_LABEL[runtimeKind]}
+          </button>
           <button
             id="btn-export-checkpoint"
             onClick={handleExportCheckpoint}
