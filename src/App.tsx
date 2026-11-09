@@ -472,7 +472,7 @@ export function App() {
           <button
             id="btn-runtime-kind"
             onClick={() => handleRuntimeKind(runtimeKind === 'nd1' ? 'classic' : 'nd1')}
-            title="Choose Amelia's runtime: Classic, or the ND-1 field (input spreads along the gates; Warp release)"
+            title="Choose Amelia's runtime: Classic, or the ND-1b field (input spreads along the gates and nudges her step; Warp release)"
             className={`px-3 py-1.5 rounded-lg text-xs font-mono flex items-center gap-1.5 min-h-[44px] border ${runtimeKind === 'nd1' ? 'bg-cyan-500/20 text-cyan-200 border-cyan-500/60' : 'bg-stone-800 text-stone-200 border-stone-700'}`}
           >
             Runtime: {RUNTIME_LABEL[runtimeKind]}

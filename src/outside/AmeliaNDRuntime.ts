@@ -1,5 +1,6 @@
 /**
- * AmeliaNDRuntime — the ND-1 Numogram dynamics with the WT-1 Warp release, as a runtime the app can select.
+ * AmeliaNDRuntime — the ND-1b hybrid: ND-1 Numogram dynamics, the classic exit nudge, and the WT-1 Warp release, as a runtime
+ * the app can select.
  *
  * Research basis (branch nr3-field-ingress-20261109, experiments/synthetic-pointer/):
  *   NR-3  — the classic zone field (TraitEvolution) is an autonomous oscillator: influx is erased within a step or two, and
@@ -7,14 +8,17 @@
  *   WT-1  — the Warp {3, 6} has no exit gate; without a line of flight Amelia is held in 3 <-> 6 whenever little is admitted.
  *           The classic app runtime has no line of flight at all.
  *   ND-1  — input-driven activation spreading along the gates, with gradient-following passage, carries the Numogram's
- *           relations (6/6 tests on a held-out stream; current read three times as strongly).
+ *           relations (6/6 tests on a held-out stream; current read three times as strongly) but blurs exact order (ND-2).
+ *   ND-1b — the hybrid (influx AND the classic exit nudge) keeps both: relations 6/6, outside order detected at 5% and 10%
+ *           with 0/10 false alarms, motif read back 49-68%.
  *
  * What is the same as the classic runtime (AmeliaOutsideRuntime): the Governor gates every encounter (ATTEND / DEFER /
  * REFUSE) with the same rule and the same 32-place deferral queue; memory, PFM events, the deformation tensor, snapshots and
  * the Governor audit are unchanged.
  * What differs:
  *   - influx: an ATTENDED encounter raises each zone's activation by ETA * w_z * (1 - a_z) (w = its attention vector scaled
- *     to max 1); a text input signal raises its digest zone by ETA * (1 - a). Neither adds an exit bonus any more.
+ *     to max 1); a text input signal raises its digest zone by ETA * (1 - a). Both ALSO keep the classic exit nudge
+ *     (attention vector * 0.9; input zone + 0.35): the ND-1b hybrid.
  *   - field: a <- (1 - D) a + D W^T a along open gates (weight flux * (1 - resistance)), decay LAMBDA, weak own oscillation
  *     OMEGA; TraitEvolution's activation targets, syzygetic averaging and torque are not applied.
  *   - passage: her gate score reads (activation - slowly adapting baseline) * FIELD_WEIGHT instead of activation * 0.2.
@@ -138,7 +142,8 @@ export class AmeliaNDRuntime extends AmeliaOutsideRuntime {
       for (const gate of gates.filter(g => g.isOpen && g.source === from)) {
         const target = gate.target, z = zones[target];
         const score = gate.flux * (1 - gate.resistance) + (memReadout.biasVector[target] || 0) * 0.4
-          + (z.activation - this.ndBase[target]) * ND1.FIELD_WEIGHT + Math.cos(z.phaseAngle) * 0.1;
+          + (z.activation - this.ndBase[target]) * ND1.FIELD_WEIGHT + Math.cos(z.phaseAngle) * 0.1
+          + (inputZone === target ? 0.35 : 0) + (attended?.attentionVector[target] ?? 0) * 0.9;   // ND-1b: the classic exit nudge kept
         if (score > best) { best = score; to = target; }
       }
     }
@@ -148,7 +153,7 @@ export class AmeliaNDRuntime extends AmeliaOutsideRuntime {
     const fluxDelta = Number(Math.max(0.005, Math.min(0.18, Math.abs(targetZone.activation - sourceZone.activation) * 0.12 + 0.025)).toFixed(6));
     const phaseCoherence = Number(Math.max(0.05, Math.min(1, (1 + Math.cos(targetZone.phaseAngle - sourceZone.phaseAngle)) / 2)).toFixed(6));
     const eventBody = { step: s.stepCount, from, to, fluxDelta, phaseCoherence, inputDigest: inputDigest ?? null, inputZone: inputZone ?? null,
-      encounters: encounterDecisions, runtime: 'nd1', warpRelease: released };
+      encounters: encounterDecisions, runtime: 'nd1b', warpRelease: released };
     const eventDigest = canonicalSha256(JSON.stringify(eventBody));
     s.memory.append({ blockIndex: s.stepCount, depth: s.stepCount, targetZone: to, fluxDelta, phaseCoherence, strainRelaxation: 0.025,
       eventDigest, timestamp: s.stepCount, kind: 'STEP' as const, fromZone: from, inputDigest, inputZone, encounters: encounterDecisions } as never);
