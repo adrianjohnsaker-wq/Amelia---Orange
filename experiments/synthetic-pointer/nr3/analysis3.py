@@ -53,4 +53,24 @@ def stage2(kappa, lag, f):
                       'descriptive_area_canonicalMinusRelabel_lags2to8': desc}, indent=1))
 if __name__ == '__main__':
     if sys.argv[1] == 'stage1': stage1(sys.argv[2], sys.argv[3:])
-    else: stage2(float(sys.argv[2]), int(sys.argv[3]), sys.argv[4])
+    elif sys.argv[1] == 'stage2': stage2(float(sys.argv[2]), int(sys.argv[3]), sys.argv[4])
+
+# ---- NR-3 amendment 1 (REGISTRATION.md): COUPLED readout ------------------------------------------------------------
+def stage2c(kappa, lag, f_coupled, f_main):
+    """T3: COUPLED/path reading at (kappa*, L*), 6 tests vs RELABEL and REWIRED, Holm. T4: area (L 2..8, CANONICAL -
+    RELABEL, summed over syzygy/current/gate) COUPLED/path minus EXIT/path, paired sign-flip, two-sided."""
+    C = json.load(open(f_coupled)); M_ = json.load(open(f_main)); GC = get(C); GM = get(M_); units = sorted({r['unit'] for r in C['runs']}); tag = C['label']
+    T3 = {f'{rel}_CANONICALvs{c}': [e(GC[('CANONICAL', 'COUPLED', kappa, u)], 'path', rel, lag, f'{tag}|{u}|C') - e(GC[(c, 'COUPLED', kappa, u)], 'path', rel, lag, f'{tag}|{u}|{c}')
+                                     for u in units] for rel in RELS for c in ('RELABEL', 'REWIRED')}
+    P = {k: A.signflip2(d) for k, d in T3.items()}; ok, t3 = True, {}
+    for i, (k, p) in enumerate(sorted(P.items(), key=lambda x: x[1])):
+        ok = ok and p <= 0.05 / (len(P) - i); t3[k] = {'p': p, 'meanD': round(sum(T3[k]) / len(units), 5), 'positiveUnits': sum(x > 0 for x in T3[k]), 'supported': ok}
+    def area(G, mode, k, u, t):
+        return sum(e(G[('CANONICAL', mode, k, u)], 'path', rel, L, f'{t}|{u}|C') - e(G[('RELABEL', mode, k, u)], 'path', rel, L, f'{t}|{u}|R') for rel in RELS for L in range(2, 9))
+    d4 = [area(GC, 'COUPLED', kappa, u, tag) - area(GM, 'EXIT', 0, u, M_['label']) for u in units]; p4 = A.signflip2(d4)
+    import collections
+    occ = {g: dict(collections.Counter(z for u in units for z in GC[(g, 'COUPLED', kappa, u)]['path']).most_common(5)) for g in ('CANONICAL', 'RELABEL', 'REWIRED')}
+    print(json.dumps({'kappa': kappa, 'lag': lag, 'T3_coupledReading': t3,
+                      'T4_coupledMinusExit_area': {'d': [round(x, 4) for x in d4], 'p': p4, 'meanD': round(sum(d4) / len(d4), 5), 'supported': p4 <= 0.05},
+                      'descriptive': {'zoneOccupancyTop5': occ, 'flights': {g: sum(GC[(g, 'COUPLED', kappa, u)]['flights'] for u in units) for g in ('CANONICAL', 'RELABEL', 'REWIRED')}}}, indent=1))
+if __name__ == '__main__' and sys.argv[1] == 'stage2c': stage2c(float(sys.argv[2]), int(sys.argv[3]), sys.argv[4], sys.argv[5])

@@ -54,3 +54,27 @@ An architectural review (9 Nov) argued that the Outside should deform the Numogr
 - **T2 negative.** Today's architecture carries the reading better.
 - **Neither.** No difference is detected at this size.
 - **What none of these can show.** The effect of an outside origin. This test is about the medium.
+
+## Amendment 1 (9 Nov 2026, before any stage-2 data): the COUPLED arm
+**Why.** The development smoke test showed *why* her passage ignores field ingress.
+1. **The Warp has no exit on the canonical Numogram.** The only gates out of 3 and 6 are 3→6, 3→3 and 6→3. The line of flight is the only way out, and it fires **only on an attended observation**. Under FIELD ingress there are none, so after entering the Warp (step 24 in the smoke test) she never left. Under EXIT she left 18–37 times. On REWIRED, where the Warp has exits, she left 84–92 times.
+2. **The field barely enters her choice.** Zone activation has weight 0.2 in her gate score.
+
+The same mechanism plausibly explains the tablet's long 3 ↔ 6 runs, where the Governor defers almost every offer and so few observations are attended.
+
+**The arm (`coupledRuntime.ts`, `run3b.ts`).** COUPLED is FIELD influx plus two switches in a copy of the NR-1 runtime:
+- **`fieldWeight` = 2.0**, replacing 0.2. That is the scale of the calibrated receiver, β = 2.
+- **`fieldFlight`.** After Θ = 24 steps in the Warp, a line of flight goes to the field's most-activated zone outside {3, 5, 6}, without waiting for an attended observation.
+
+With both switches off, the runtime reproduces NRRuntime exactly (`equivalence3.ts`: 3 × 2,000 steps, identical, checked before this amendment).
+
+**Disclosure.** COUPLED was smoke-tested on the same unregistered development stream before this amendment.
+- **She responds now.** Her passage differs across κ and between CANONICAL and RELABEL, and field flights take her out of the Warp.
+- **A new dwell.** She now spends about 60–80% of steps in zone 1, which has a 1→1 gate.
+- **No parameter was tuned after seeing this.** The 2.0 weight and Θ = 24 were fixed in advance by the β and Θ conventions.
+
+**Tests** (stage 2, at stage 1's κ* and L*; the run on h03 uses `run3b.ts`):
+- **T3.** The COUPLED/`path` reading: the 6 tests of T1, Holm at α = 0.05.
+- **T4.** The area of the COUPLED/`path` reading, minus the EXIT/`path` area, paired sign-flip at α = 0.05.
+
+**Descriptive.** Zone occupancy and flights per arm; COUPLED profiles on the stage-1 streams at κ*.
