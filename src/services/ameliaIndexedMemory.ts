@@ -4,13 +4,20 @@ export type AmeliaMemoryStore =
   | 'processMemory'
   | 'canalizationRuns'
   | 'paper6Assays'
-  | 'snapshots';
+  | 'snapshots'
+  | 'researchRuns';
 
 const DB_NAME = 'amelia-orange-memory';
-const DB_VERSION = 1;
+// Version 2 adds the researchRuns store. The upgrade only creates missing stores,
+// so every existing record (runtime checkpoint, dialogue, snapshots) is kept.
+const DB_VERSION = 2;
 const STORE_NAMES: AmeliaMemoryStore[] = [
-  'runtime', 'dialogue', 'processMemory', 'canalizationRuns', 'paper6Assays', 'snapshots',
+  'runtime', 'dialogue', 'processMemory', 'canalizationRuns', 'paper6Assays', 'snapshots', 'researchRuns',
 ];
+/** Stores this build can hold; cloud rows for any other store are skipped, not fatal. */
+export function isKnownMemoryStore(store: unknown): store is AmeliaMemoryStore {
+  return typeof store === 'string' && (STORE_NAMES as string[]).includes(store);
+}
 
 type StoredRecord = { id: string; [key: string]: unknown };
 

@@ -1,4 +1,4 @@
-import { AmeliaIndexedMemory, AmeliaMemoryStore } from './ameliaIndexedMemory';
+import { AmeliaIndexedMemory, AmeliaMemoryStore, isKnownMemoryStore } from './ameliaIndexedMemory';
 import { chooseLiveCheckpoint } from './checkpointReconciliation';
 import { MAIN_MEMORY_TABLE,cloudMemoryTable,selectCloudArchive,
   type CloudMemoryRow,type CloudMemoryTable } from './cloudRecordNamespace';
@@ -7,7 +7,7 @@ const SUPABASE_URL = 'https://rcgmtdponfljpribggsq.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_3v_kyheXh9ODr0qQl1cXdg_5kPbHQIm';
 const SESSION_KEY = 'amelia_supabase_session_v1';
 const OWNER_KEY = 'amelia_supabase_memory_owner_v1';
-const STORES: AmeliaMemoryStore[] = ['runtime', 'dialogue', 'processMemory', 'canalizationRuns', 'paper6Assays', 'snapshots'];
+const STORES: AmeliaMemoryStore[] = ['runtime', 'dialogue', 'processMemory', 'canalizationRuns', 'paper6Assays', 'snapshots', 'researchRuns'];
 const RESEARCH_MODE = import.meta.env.VITE_AMELIA_RESEARCH_NAMESPACE === '1';
 
 export interface AmeliaCloudSession {
@@ -256,7 +256,13 @@ export class AmeliaSupabaseMemory {
     const mainRows = needsMain ? await this.fetchCloudRows(session, MAIN_MEMORY_TABLE) : RESEARCH_MODE ? [] : ownRows;
     const selected = selectCloudArchive(mainRows, RESEARCH_MODE ? ownRows : [], RESEARCH_MODE);
     const remoteByKey = new Map<string, CloudRow>();
-    for (const row of selected.rows) remoteByKey.set(row.store + '::' + row.record_id, row);
+    let skipped = 0;
+    for (const row of selected.rows) {
+      // A record kind written by a newer build must not stop this build's synchronization.
+      if (!isKnownMemoryStore(row.store)) { skipped++; continue; }
+      remoteByKey.set(row.store + '::' + row.record_id, row);
+    }
+    if (skipped && typeof console !== 'undefined') console.warn(`Skipped ${skipped} cloud record(s) of a kind this build does not store.`);
     const localByKey = new Map<string, { store: AmeliaMemoryStore; payload: Record<string, unknown> }>();
     for (const store of STORES) {
       for (const record of localArchive[store] as Array<Record<string, unknown>>) {

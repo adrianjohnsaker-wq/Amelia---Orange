@@ -39,6 +39,10 @@ interface LocalMemoryHubProps {
   onCloudStatusChange?: (connected: boolean, error?: string) => void;
 }
 
+type ResearchRunRecord = { id: string; test?: string; ranAt?: string; summary?: string;
+  checkpoint?: { revision?: number; runtimeStep?: number; alteredByRun?: boolean };
+  results?: Array<{ test?: string; claim?: string; sites?: string; supported?: boolean }> };
+
 export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
   currentSnapshot,
   onRestoreSnapshot,
@@ -59,7 +63,15 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [autoSync, setAutoSync] = useState<boolean>(true);
   const [lastSyncTime, setLastSyncTime] = useState<string>('Just now');
-  const [activeSubTab, setActiveSubTab] = useState<'process' | 'canalization' | 'paper6'>('process');
+  const [activeSubTab, setActiveSubTab] = useState<'process' | 'canalization' | 'paper6' | 'research'>('process');
+  const [researchRuns, setResearchRuns] = useState<ResearchRunRecord[]>([]);
+  useEffect(() => {
+    const load = () => { AmeliaIndexedMemory.list<ResearchRunRecord>('researchRuns', 200)
+      .then(rows => setResearchRuns([...rows].sort((a, b) => String(b.ranAt ?? '').localeCompare(String(a.ranAt ?? '')))))
+      .catch(() => setResearchRuns([])); };
+    load();
+    return AmeliaIndexedMemory.subscribe('researchRuns', load);
+  }, []);
   const [cloudSession, setCloudSession] = useState<AmeliaCloudSession | null>(null);
   const [cloudEmail, setCloudEmail] = useState('');
   const [cloudPassword, setCloudPassword] = useState('');
@@ -449,6 +461,17 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
           <Flame className="w-4 h-4" />
           Paper 6 Canary Assays ({p6Assays.length > 0 ? p6Assays.length : allP6Results.length})
         </button>
+        <button
+          onClick={() => setActiveSubTab('research')}
+          className={`pb-2.5 px-2 border-b-2 flex items-center gap-1.5 transition-colors ${
+            activeSubTab === 'research'
+              ? 'border-sky-500 text-sky-300'
+              : 'border-transparent text-stone-400 hover:text-stone-200'
+          }`}
+        >
+          <Database className="w-4 h-4" />
+          Research Runs ({researchRuns.length})
+        </button>
       </div>
 
       {/* SUBTAB 1: PROCESS MEMORY */}
@@ -520,6 +543,35 @@ export const LocalMemoryHub: React.FC<LocalMemoryHubProps> = ({
               </table>
             </div>
           )}
+        </div>
+      )}
+
+      {/* SUBTAB: RESEARCH RUN HISTORY (written by runs on the research copy; never alters her checkpoint) */}
+      {activeSubTab === 'research' && (
+        <div className="p-6 rounded-2xl bg-stone-900/60 border border-stone-800 space-y-4">
+          <h3 className="text-sm font-bold text-stone-200 font-mono flex items-center gap-2">
+            <Database className="w-4 h-4 text-sky-400" />
+            Research run history (store: <code className="text-sky-300">researchRuns</code>)
+          </h3>
+          {researchRuns.length === 0 ? (
+            <p className="text-xs text-stone-400 font-mono">No research runs recorded for this Amelia yet.</p>
+          ) : researchRuns.map(run => (
+            <div key={run.id} className="p-4 rounded-xl bg-stone-950/60 border border-stone-800/80 space-y-2">
+              <div className="text-xs font-mono text-stone-200">{String(run.test ?? run.id)}</div>
+              <div className="text-[11px] font-mono text-stone-500">
+                {String(run.ranAt ?? '')} · checkpoint revision {String(run.checkpoint?.revision ?? '?')}, step {String(run.checkpoint?.runtimeStep ?? '?')}
+                {run.checkpoint?.alteredByRun === false ? ' · checkpoint not altered' : ''}
+              </div>
+              {Array.isArray(run.results) && (
+                <ul className="text-[11px] font-mono text-stone-300 space-y-0.5">
+                  {run.results.map((r, i) => (
+                    <li key={i}>{String(r.test)}: {String(r.claim)} — {String(r.sites)} — {r.supported ? 'supported' : 'not supported'}</li>
+                  ))}
+                </ul>
+              )}
+              {run.summary && <p className="text-[11px] text-stone-400 leading-relaxed">{String(run.summary)}</p>}
+            </div>
+          ))}
         </div>
       )}
 

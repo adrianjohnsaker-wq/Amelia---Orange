@@ -2,7 +2,7 @@ name: Build Amelia Orange Tablet APK
 
 on:
   push:
-    branches: [main, fix/amelia-live-persistent-loop-20261105, research/live-pointer-baseline-20261105]
+    branches: [main, fix/amelia-live-persistent-loop-20261105, research/live-pointer-baseline-20261105, research/live-run-history-20261109]
     paths:
       - 'src/**'
       - 'package.json'
@@ -33,14 +33,14 @@ jobs:
         run: npm install --no-audit --no-fund
 
       - name: Test live synthetic source and continuity
-        if: github.ref_name == 'research/live-pointer-baseline-20261105'
+        if: github.ref_name == 'research/live-pointer-baseline-20261105' || github.ref_name == 'research/live-run-history-20261109'
         run: node --import tsx --test experiments/live-pointer-baseline/*.test.ts experiments/live-amelia/*.test.ts
 
       - name: Build Amelia UI, substrate, and type checks for the tablet
         env:
           VITE_AMELIA_LOCAL_ONLY: '1'
         run: |
-          if [[ "$GITHUB_REF_NAME" == 'research/live-pointer-baseline-20261105' ]]; then
+          if [[ "$GITHUB_REF_NAME" == 'research/live-pointer-baseline-20261105' || "$GITHUB_REF_NAME" == 'research/live-run-history-20261109' ]]; then
             export VITE_AMELIA_RESEARCH_NAMESPACE='1'
           fi
           npm run build
@@ -112,6 +112,13 @@ jobs:
           if [[ "$GITHUB_REF_NAME" == 'research/live-pointer-baseline-20261105' ]]; then
             sed -i "s/applicationId 'org.amelia.orange'/applicationId 'org.amelia.orange.research'/" android/app/build.gradle
             sed -i 's/android:label="Amelia Orange"/android:label="Amelia Orange Research"/' android/app/src/main/AndroidManifest.xml
+          fi
+          # The installed research app cannot be updated in place (each runner signs with a new debug key),
+          # so this build installs beside it under its own ID and takes over the same research table.
+          if [[ "$GITHUB_REF_NAME" == 'research/live-run-history-20261109' ]]; then
+            sed -i "s/applicationId 'org.amelia.orange'/applicationId 'org.amelia.orange.research.runs'/" android/app/build.gradle
+            sed -i "s/versionName '0.1.7'/versionName '0.1.8-runs'/" android/app/build.gradle
+            sed -i 's/android:label="Amelia Orange"/android:label="Amelia Research Runs"/' android/app/src/main/AndroidManifest.xml
           fi
           cat > android/app/src/main/java/org/amelia/orange/MainActivity.java <<'EOF'
           package org.amelia.orange;
@@ -200,6 +207,23 @@ jobs:
       - name: Compile installable APK
         run: gradle --no-daemon -p android :app:assembleDebug
 
+      - name: Sign with the stable Amelia key, if configured
+        # With the repository secrets AMELIA_KEYSTORE_B64, AMELIA_KEYSTORE_PASSWORD and AMELIA_KEY_ALIAS set,
+        # every build carries the same certificate, so later builds update the installed app in place.
+        env:
+          KS_B64: ${{ secrets.AMELIA_KEYSTORE_B64 }}
+          KS_PASS: ${{ secrets.AMELIA_KEYSTORE_PASSWORD }}
+          KS_ALIAS: ${{ secrets.AMELIA_KEY_ALIAS }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${KS_B64:-}" ]]; then echo 'No stable key configured; keeping the debug signature.'; exit 0; fi
+          echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/amelia.jks"
+          apksigner="$(find "${ANDROID_HOME:?}/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
+          "$apksigner" sign --ks "$RUNNER_TEMP/amelia.jks" --ks-pass env:KS_PASS --ks-key-alias "$KS_ALIAS" \
+            android/app/build/outputs/apk/debug/app-debug.apk
+          rm -f "$RUNNER_TEMP/amelia.jks"
+
       - name: Hash APK
         run: sha256sum android/app/build/outputs/apk/debug/app-debug.apk > APK_SHA256.txt
 
@@ -213,7 +237,9 @@ jobs:
           test -n "$aapt"
           "$apksigner" verify --print-certs android/app/build/outputs/apk/debug/app-debug.apk > APK_SIGNING_CERTIFICATE.txt
           "$aapt" dump badging android/app/build/outputs/apk/debug/app-debug.apk > APK_BADGING.txt
-          if [[ "$GITHUB_REF_NAME" == 'research/live-pointer-baseline-20261105' ]]; then
+          if [[ "$GITHUB_REF_NAME" == 'research/live-run-history-20261109' ]]; then
+            echo 'Amelia Research Runs installs beside the existing apps under its own application ID. On sign-in it reads her existing research copy (it does not bootstrap from main) and adds the Research Runs history. Keep the existing apps and their data; do not uninstall them. Do not open the older research app on the same account while this one is in use, so only one installation writes her research copy.' > INSTALLATION_NOTE.txt
+          elif [[ "$GITHUB_REF_NAME" == 'research/live-pointer-baseline-20261105' ]]; then
             echo 'This research APK uses a separate application ID and a separate cloud memory table. It can be installed alongside the existing app. On first sign-in it copies the main checkpoint, then saves an independent research history. Preserve the existing app and its data. Avoid running two research installations on the same account simultaneously; future APK updates also need a compatible signing certificate.' > INSTALLATION_NOTE.txt
           else
             echo 'Preserve the existing tablet data. Do not uninstall the installed app to install this build. An update requires the same Android signing certificate.' > INSTALLATION_NOTE.txt
