@@ -32,6 +32,9 @@ jobs:
         with: { node-version: '22' }
       - name: one epoch
         shell: bash
+        # tsx deletes $TMPDIR/tsx as its 'old cache directory'; keep TMPDIR off /tmp so the loader installed at /tmp/tsx survives
+        # the A1 runner's second replay (the sealed single-replay runner never noticed)
+        env: { TMPDIR: '${{ runner.temp }}' }
         run: |
           set -euo pipefail
           if [ ! -e code/experiments/agentic/seal/receipt.json ]; then echo 'not sealed yet'; exit 0; fi
