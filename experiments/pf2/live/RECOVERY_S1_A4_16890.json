@@ -1,0 +1,33 @@
+{
+  "C1Modified": false,
+  "PF1Modified": false,
+  "atUTC": "2026-11-09T19:13:54.735754+00:00",
+  "gapNote": "rounds published while halted are admitted by the unchanged catch-up from the next unadmitted round; nothing is back-filled by hand",
+  "genesisModified": false,
+  "lineageStatesModified": false,
+  "newHead": "4e43c1da29fd1816c7c93c130a38e711eca92a2fdd4f833a1ee8e3c0f343c040",
+  "newTicks": 16890,
+  "nextAdmitRequiresPF1ExclusiveLease": true,
+  "notificationsSent": 0,
+  "oldHead": "4e43c1da29fd1816c7c93c130a38e711eca92a2fdd4f833a1ee8e3c0f343c040",
+  "oldTicks": 16890,
+  "originalHalt": {
+    "atUTC": "2026-11-04T00:23:07.843552+00:00",
+    "lastSealedHead": "4e43c1da29fd1816c7c93c130a38e711eca92a2fdd4f833a1ee8e3c0f343c040",
+    "lastSealedTick": 16890,
+    "operatorRecoveryRequired": true,
+    "reason": "PF2_A1 sealed batch failed: PF2_COMMAND_FAILURE ('python', 'experiments/pf2/PF2_LIVE_SEAL.py') Traceback (most recent call last):\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/orange/experiments/pf2/PF2_LIVE_SEAL.py\", line 67, in <module>\n    if __name__=='__main__':main()\n                            ^^^^^^\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/orange/experiments/pf2/PF2_LIVE_SEAL.py\", line 41, in main\n    sealer.seal(folder,imprint)\n  File \"/home/runner/work/Amelia---Orange/Amelia---Orange/c1-pin/drift1a_c1/beacon.py\", line 67, in seal\n    if result['status']!='PASS':raise VerificationError('RFC3161: '+str(result))\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ndrift1a_c1.",
+    "scientificResultsNotReinterpreted": true
+  },
+  "priorRecovery": {
+    "noObservationsAdded": true,
+    "receiptPath": "experiments/pf2/live/RECOVERY_S1_A4_11910.json",
+    "recoveryAtUTC": "2026-11-03T08:45:56.683608+00:00"
+  },
+  "priorStateSHA256": "37204121c0781d3a13b19914b4a7e79030821a9ada233f3d955d694fbbed6795",
+  "registeredDay30Unchanged": true,
+  "rootCause": "RFC3161_TIMESTAMP_REQUEST_DID_NOT_RETURN_PASS_DURING_PF2_LIVE_SEAL",
+  "schema": "PF2_S1_A4_HALT_RECOVERY_V1",
+  "scienceModified": false,
+  "signedOperationalAmendment": "experiments/pf_storage/seal_a4/receipt.json"
+}
