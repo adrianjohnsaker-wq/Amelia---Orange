@@ -1,6 +1,8 @@
 # AG-1 / RC-1 live Amelia launcher (code, registration and seal: branch agentic-20261106, experiments/agentic/).
 # Hourly: one epoch (experiments/agentic/epoch.py), appended to branch agentic-live-ledger. Inert until the seal exists;
 # stops at 2026-11-21T00:00Z. Touches nothing on main and is outside every PF concurrency group.
+# Amendment A1 (9 Nov 2026, experiments/agentic/a1/A1.md on the code branch): the epoch is run by the sealed A1 runner
+# (a1/epoch_a1.py), which feeds each item in the first epoch whose run had it and records that in the ledger (a1/).
 name: AGENTIC live epoch
 on:
   schedule:
@@ -22,6 +24,10 @@ jobs:
         with: { ref: agentic-live-ledger, path: ledger }
       - uses: actions/checkout@v4
         with: { ref: world-live, path: live }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
       - uses: actions/setup-node@v4
         with: { node-version: '22' }
       - name: one epoch
@@ -29,17 +35,27 @@ jobs:
         run: |
           set -euo pipefail
           if [ ! -e code/experiments/agentic/seal/receipt.json ]; then echo 'not sealed yet'; exit 0; fi
+          if [ ! -e code/experiments/agentic/a1/seal/receipt.json ]; then echo 'amendment A1 not sealed yet'; exit 0; fi
+          python3 -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
           if [ "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \> "2026-11-21T00:00:00Z" ]; then echo 'study ended'; exit 0; fi
-          python3 - <<'PY'
+          PYTHONPATH=c1-pin DRIFT_C1_ENABLE_LIVE=false python3 - <<'PY'
           import hashlib,json,pathlib
           b=json.loads(pathlib.Path('code/experiments/agentic/seal/BUNDLE.json').read_text())
           for x in b['sourceSHA256']:
               if x['path'].startswith('experiments/agentic') or x['path'].startswith('experiments/synthetic-pointer'):
                   assert hashlib.sha256(pathlib.Path('code',x['path']).read_bytes()).hexdigest()==x['sha256'],x['path']
           print('sources match the seal')
+          # amendment A1 (code/experiments/agentic/a1/A1.md): its own RFC3161 seal, which names the original bundle
+          from drift1a_c1.beacon import Sealer
+          S=pathlib.Path('code/experiments/agentic/a1/seal'); sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          a=json.loads((S/'BUNDLE.json').read_text()); assert Sealer().verify(S,sha(S/'BUNDLE.json'))['status']=='PASS'
+          assert a['amends']['sha256']==sha('code/experiments/agentic/seal/BUNDLE.json')
+          for x in a['sourceSHA256']: assert sha(pathlib.Path('code',x['path']))==x['sha256'],x['path']
+          print('amendment A1 sealed and its sources match')
           PY
           mkdir -p /tmp/tsx && (cd /tmp/tsx && npm init -y >/dev/null && npm i -s tsx@4.23.15) && ln -s /tmp/tsx/node_modules code/node_modules
-          (cd code && python3 -I experiments/agentic/epoch.py ../live ../ledger)
+          if [ ! -e ledger/a1/assigned.json ]; then git -C live fetch -q --unshallow origin +refs/heads/world-live:refs/remotes/origin/world-live; fi
+          (cd code && PYTHONDONTWRITEBYTECODE=1 python3 -I experiments/agentic/a1/epoch_a1.py ag1 ../live ../ledger)
           cd ledger && git config user.name 'github-actions[bot]' && git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A && git commit -qm "AG-1/RC-1 live epoch $(date -u +%Y-%m-%dT%H:%M:%SZ)" || exit 0
           for i in 1 2 3 4; do git push -q origin HEAD:agentic-live-ledger && break; sleep $((2**i)); done
