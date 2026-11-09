@@ -1,0 +1,70 @@
+# AG-1/RC-1 amendment A1 (experiments/agentic/a1/A1.md).
+# experiments/agentic/a1/seal.trigger: one RFC3161 token over the amendment's files and the original seal's bundle.
+# experiments/agentic/a1/analyse.trigger: the AG-1/RC-1 final analysis under A1 after the stop time.
+# Runs only on this branch; writes only experiments/agentic/a1.
+name: AGENTIC amendment A1
+on:
+  push:
+    branches: [agentic-20261106]
+    paths: ['experiments/agentic/a1/seal.trigger', 'experiments/agentic/a1/analyse.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: agentic-seal
+  cancel-in-progress: false
+jobs:
+  go:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: seal A1, or the A1 final analysis
+        shell: bash
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          changed=$(git diff --name-only HEAD~1 HEAD)
+          A=experiments/agentic/a1
+          if echo "$changed" | grep -qx "$A/seal.trigger" && [ ! -e $A/seal/receipt.json ]; then
+            python - <<'PY'
+          import datetime,hashlib,json,pathlib,subprocess
+          from drift1a_c1.beacon import Sealer
+          A=pathlib.Path('experiments/agentic/a1'); S=A/'seal'; sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          orig=pathlib.Path('experiments/agentic/seal'); assert Sealer().verify(orig,sha(orig/'BUNDLE.json'))['status']=='PASS'
+          files=sorted(subprocess.run(['git','ls-files',str(A),'.github/workflows/agentic-a1.yml'],capture_output=True,text=True,check=True).stdout.split())
+          files=[f for f in files if '/seal/' not in f and '/result' not in f and not f.endswith('.trigger')]
+          t=datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+          b={'schema':'AGENTIC_AMENDMENT_A1_V1','sealedAt':t,'appliesFromFirstRunAfter':t,'amends':{'bundle':'experiments/agentic/seal/BUNDLE.json','sha256':sha(orig/'BUNDLE.json')},
+             'sourceSHA256':[{'path':f,'sha256':sha(f)} for f in files]}
+          S.mkdir(exist_ok=True); (S/'BUNDLE.json').write_text(json.dumps(b,sort_keys=True,indent=2)+'\n')
+          imprint=sha(S/'BUNDLE.json'); Sealer().seal(S,imprint); assert Sealer().verify(S,imprint)['status']=='PASS'; print('A1_SEALED',t,imprint)
+          PY
+            git add $A/seal; MSG='AG-1/RC-1 amendment A1 sealed (RFC3161)'
+          else
+            python - <<'PY'
+          import hashlib,json,pathlib
+          from drift1a_c1.beacon import Sealer
+          sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          for S in (pathlib.Path('experiments/agentic/seal'),pathlib.Path('experiments/agentic/a1/seal')):
+              b=json.loads((S/'BUNDLE.json').read_text()); assert Sealer().verify(S,sha(S/'BUNDLE.json'))['status']=='PASS'
+              for x in b['sourceSHA256']: assert sha(x['path'])==x['sha256'],x['path']
+          print('SEALS_AND_SOURCES_VERIFIED')
+          PY
+            mkdir -p /tmp/tsx && (cd /tmp/tsx && npm init -y >/dev/null && npm i -s tsx@4.23.15) && ln -s /tmp/tsx/node_modules node_modules
+            git fetch -q origin world-live && git worktree add -q /tmp/live FETCH_HEAD
+            git fetch -q origin agentic-live-ledger && git worktree add -q /tmp/ledger FETCH_HEAD
+            python3 -I $A/analyse_a1.py ag1 /tmp/live /tmp/ledger 2026-11-21T00:00:00Z /tmp/agres
+            mkdir -p $A/result && cp /tmp/agres/RESULT.json /tmp/agres/log.json $A/result/
+            rm -f node_modules; git add $A/result; MSG='AG-1/RC-1 final analysis (amendment A1)'
+          fi
+          git commit -qm "$MSG"
+          for i in 1 2 3 4; do git pull -q --rebase origin agentic-20261106 && git push -q origin HEAD:agentic-20261106 && break; sleep $((2**i)); done
