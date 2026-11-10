@@ -56,6 +56,7 @@ jobs:
             git -C "$repo_dir" add state.json ledger.json LATEST.md || return 1
             if [ "$branch_name" = 'outside-live-ledger' ]; then
               git -C "$repo_dir" add recovery-journal.jsonl || return 1
+              if [ -f "$repo_dir/outside-inbox.json" ]; then git -C "$repo_dir" add outside-inbox.json || return 1; fi
             fi
             if [ "$repo_dir" = "${{ github.workspace }}/watchtower-live" ]; then
               git -C "$repo_dir" add atlas.json || return 1
