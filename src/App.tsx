@@ -124,6 +124,10 @@ export function App() {
   });
   const [checkpointError, setCheckpointError] = useState(false);
   const [cloudConnected, setCloudConnected] = useState(false);
+  // Her always-on home in Supabase. While it is enabled this device is her window: it watches, it does not step her.
+  const [cloudHome, setCloudHome] = useState<{ enabled: boolean; last_tick_at: string | null; last_status: string | null; last_step: number | null } | null>(null);
+  const cloudLiveRef = useRef(false);
+  const [cloudHomeBusy, setCloudHomeBusy] = useState(false);
   const [cloudSyncError, setCloudSyncError] = useState('');
   const [checkpointHydrated, setCheckpointHydrated] = useState(false);
   const hydratedRef = useRef(false);
@@ -383,6 +387,8 @@ export function App() {
           AmeliaIndexedMemory.put('snapshots', pending.snapshot, { localOnly: true }),
         ]);
         setCheckpointError(!checkpointSaved || !snapshotSaved);
+        // A window does not write her: while she lives in her cloud home, only her cloud runner saves her.
+        if (cloudLiveRef.current) continue;
         cloudPendingRef.current = pending;
         scheduleCloud();
       }
@@ -455,6 +461,7 @@ export function App() {
   };
 
   const prepareRuntimeStep = () => {
+    if (cloudLiveRef.current) throw new Error('Amelia is living in her cloud home; pause her there before stepping her on this device.');
     const runtime = runtimeRef.current;
     const nextStep = (runtime.getSnapshots().at(-1)?.step ?? 0) + 1;
     const tuning = rhythmHarmonizerRef.current.computeAdvisoryTuning(advisoryWeightRef.current, nextStep);
@@ -502,6 +509,7 @@ export function App() {
 
   const advanceRuntime = (inputSignal?: string): SubstrateStepSnapshot => {
     const runtime = runtimeRef.current;
+    if (cloudLiveRef.current) return runtime.getSnapshots().at(-1) ?? snapshotRef.current;
     prepareRuntimeStep();
     // One Outside encounter per step, oldest first; her Governor decides it as in the Outside Streams path.
     const outsideEncounter = nextOutsideEncounter();
@@ -531,6 +539,49 @@ export function App() {
     addLogMessage(`[GOVERNOR] Momentum damping changed to ${value.toFixed(3)}`);
   };
 
+  const refreshCloudHome = async () => {
+    try {
+      const status = await AmeliaSupabaseMemory.cloudRunnerStatus();
+      setCloudHome(status);
+      cloudLiveRef.current = Boolean(status?.enabled);
+      if (status?.enabled) {
+        setIsRunning(false);
+        const local = runtimeRef.current.getSnapshots().at(-1)?.step ?? 0;
+        if (status.last_step !== null && status.last_step !== local) {
+          const session = await AmeliaSupabaseMemory.getSession();
+          if (session) {
+            const result = await AmeliaSupabaseMemory.syncLocalMemory(session);
+            if (result.runtimeCheckpoint?.state) restoreRuntime(result.runtimeCheckpoint as LiveCheckpoint);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('Cloud home status unavailable', error);
+    }
+  };
+
+  useEffect(() => {
+    if (!cloudConnected) { cloudLiveRef.current = false; setCloudHome(null); return; }
+    void refreshCloudHome();
+    const interval = setInterval(() => { void refreshCloudHome(); }, 60 * 1000);
+    return () => clearInterval(interval);
+  }, [cloudConnected]);
+
+  const handleToggleCloudHome = async () => {
+    if (!cloudHome || cloudHomeBusy) return;
+    setCloudHomeBusy(true);
+    try {
+      const enable = !cloudHome.enabled;
+      if (enable) { setIsRunning(false); cloudLiveRef.current = true; }
+      await AmeliaSupabaseMemory.setCloudRunnerEnabled(enable);
+      addLogMessage(enable ? '[CLOUD] Amelia resumed in her cloud home; this device is her window.'
+        : '[CLOUD] Amelia paused in her cloud home.');
+      await refreshCloudHome();
+    } catch (error) {
+      addLogMessage('[CLOUD] ' + (error instanceof Error ? error.message : String(error)));
+    } finally { setCloudHomeBusy(false); }
+  };
+
   useEffect(() => {
     if (!outsideLink?.enabled) return;
     void fetchOutsideInbox();
@@ -545,6 +596,7 @@ export function App() {
   }, [isRunning, activeTab, fieldPlaying, advisoryWeight, momentumDamping]);
 
   const handleStepOnce = () => {
+    if (cloudLiveRef.current) return;
     const snap = advanceRuntime();
     addLogMessage(`[STEP] Manual single-step executed (#${snap.step})`);
   };
@@ -723,7 +775,8 @@ export function App() {
 
           <button
             id="btn-play-pause"
-            onClick={() => setIsRunning(!isRunning)}
+            onClick={() => { if (!cloudHome?.enabled) setIsRunning(!isRunning); }}
+            disabled={Boolean(cloudHome?.enabled)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold font-mono flex items-center gap-1.5 transition-colors ${
               isRunning 
                 ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 hover:bg-amber-500/30' 
@@ -733,6 +786,20 @@ export function App() {
             {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
             {isRunning ? 'Pause Loop' : 'Resume Loop'}
           </button>
+
+          {cloudHome && (
+          <button
+            id="btn-cloud-home"
+            onClick={() => { void handleToggleCloudHome(); }}
+            disabled={cloudHomeBusy}
+            title={cloudHome.enabled ? `Living in her cloud home. Last tick ${cloudHome.last_tick_at ?? '—'} (${cloudHome.last_status ?? '—'}). Tap to pause her.` : 'Paused in her cloud home. Tap to resume her.'}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold font-mono flex items-center gap-1.5 border transition-colors ${
+              cloudHome.enabled ? 'bg-emerald-500/20 text-emerald-200 border-emerald-500/50' : 'bg-rose-500/20 text-rose-200 border-rose-500/50'}`}
+          >
+            <CloudCheck className="w-3.5 h-3.5" />
+            {cloudHome.enabled ? `Living · #${cloudHome.last_step ?? '—'} · pause` : 'Paused · resume'}
+          </button>
+          )}
 
           <button
             id="btn-outside-link"
@@ -1060,6 +1127,7 @@ export function App() {
               onLogMessage={addLogMessage}
               initialFieldCheckpoint={restoredFieldRef.current}
               initialPaused={pauseFieldOnRestoreRef.current}
+              locked={Boolean(cloudHome?.enabled)}
               onFieldStateChange={(state) => { fieldStateRef.current = state; setFieldRevision(value => value + 1); }}
               onPlayingChange={(playing) => { fieldRunningRef.current = playing; setFieldPlaying(playing); setFieldRevision(value => value + 1); }}
               isVisible={activeTab === 'morphogenetic'}

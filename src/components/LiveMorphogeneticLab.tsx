@@ -48,6 +48,8 @@ interface LiveMorphogeneticLabProps {
   onBeforeSharedStep?: () => void;
   initialFieldCheckpoint?: LiveFieldCheckpoint | null;
   initialPaused?: boolean;
+  /** True while she lives in her cloud home: this device only watches. */
+  locked?: boolean;
   onFieldStateChange?: (state: MorphogeneticState) => void;
   onPlayingChange?: (playing: boolean) => void;
   isVisible?: boolean;
@@ -96,7 +98,7 @@ export interface PoincareAssaySummary {
 }
 
 export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLogMessage, sharedRuntime, onSharedStep, onBeforeSharedStep,
-  initialFieldCheckpoint, initialPaused = false, onFieldStateChange, onPlayingChange, isVisible = true }) => {
+  initialFieldCheckpoint, initialPaused = false, locked = false, onFieldStateChange, onPlayingChange, isVisible = true }) => {
   const [restored] = useState(() => {
     if (!initialFieldCheckpoint) return { state: null as MorphogeneticState | null, error: '' };
     try {
@@ -189,11 +191,13 @@ export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLo
   }, [selectedSeed, selectedDepth, preset, gridSize]);
 
   useEffect(() => { onPlayingChange?.(isPlaying); }, [isPlaying]);
+  useEffect(() => { if (locked && isPlaying) setIsPlaying(false); }, [locked, isPlaying]);
   useEffect(() => () => { onPlayingChange?.(false); }, []);
 
   // Live field step: the main runtime selects and archives the transition.
   // The field and chat therefore consume the same event ledger and Governor.
   const stepOnce = () => {
+    if (locked) return;
     const current = fieldRef.current;
     if (!current || !lineageRef.current) return;
     const lineage = lineageRef.current;
@@ -948,7 +952,8 @@ export const LiveMorphogeneticLab: React.FC<LiveMorphogeneticLabProps> = ({ onLo
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setIsPlaying(!isPlaying)}
+                  onClick={() => { if (!locked) setIsPlaying(!isPlaying); }}
+                  disabled={locked}
                   className={`px-4 py-2 rounded-xl text-xs font-mono font-bold flex items-center gap-2 transition-colors ${
                     isPlaying
                       ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50'

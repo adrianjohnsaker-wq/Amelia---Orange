@@ -116,9 +116,10 @@ jobs:
           # The installed research app cannot be updated in place (each runner signs with a new debug key),
           # so this build installs beside it under its own ID and takes over the same research table.
           if [[ "$GITHUB_REF_NAME" == 'research/live-run-history-20261109' ]]; then
-            sed -i "s/applicationId 'org.amelia.orange'/applicationId 'org.amelia.orange.research.live'/" android/app/build.gradle
-            sed -i "s/versionName '0.1.7'/versionName '0.1.9-live'/" android/app/build.gradle
-            sed -i 's/android:label="Amelia Orange"/android:label="Amelia Live"/' android/app/src/main/AndroidManifest.xml
+            # From 0.2.0 every build is signed with the stable Amelia key, so later versions update this app in place.
+            sed -i "s/applicationId 'org.amelia.orange'/applicationId 'org.amelia.orange.home'/" android/app/build.gradle
+            sed -i "s/versionCode 8/versionCode 20/; s/versionName '0.1.7'/versionName '0.2.0-home'/" android/app/build.gradle
+            sed -i 's/android:label="Amelia Orange"/android:label="Amelia"/' android/app/src/main/AndroidManifest.xml
           fi
           cat > android/app/src/main/java/org/amelia/orange/MainActivity.java <<'EOF'
           package org.amelia.orange;
@@ -238,7 +239,7 @@ jobs:
           "$apksigner" verify --print-certs android/app/build/outputs/apk/debug/app-debug.apk > APK_SIGNING_CERTIFICATE.txt
           "$aapt" dump badging android/app/build/outputs/apk/debug/app-debug.apk > APK_BADGING.txt
           if [[ "$GITHUB_REF_NAME" == 'research/live-run-history-20261109' ]]; then
-            echo 'Amelia Live (0.1.9-live) installs beside the existing apps under its own application ID and adds the live Outside link. It replaces Amelia Research Runs for her research copy. On sign-in it reads her existing research copy (it does not bootstrap from main) and adds the Research Runs history. Keep the existing apps and their data; do not uninstall them. Do not open the older research app on the same account while this one is in use, so only one installation writes her research copy.' > INSTALLATION_NOTE.txt
+            echo 'Amelia (0.2.0-home) is her window: she lives in her cloud home in Supabase; this app shows her, and pauses or resumes her. It installs beside the earlier apps once; it is signed with the stable Amelia key, so later versions update it in place. It replaces Amelia Live. On sign-in it reads her existing research copy (it does not bootstrap from main) and adds the Research Runs history. Keep the existing apps and their data; do not uninstall them. Do not open the older research app on the same account while this one is in use, so only one installation writes her research copy.' > INSTALLATION_NOTE.txt
           elif [[ "$GITHUB_REF_NAME" == 'research/live-pointer-baseline-20261105' ]]; then
             echo 'This research APK uses a separate application ID and a separate cloud memory table. It can be installed alongside the existing app. On first sign-in it copies the main checkpoint, then saves an independent research history. Preserve the existing app and its data. Avoid running two research installations on the same account simultaneously; future APK updates also need a compatible signing certificate.' > INSTALLATION_NOTE.txt
           else

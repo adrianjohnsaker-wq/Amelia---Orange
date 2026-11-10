@@ -235,6 +235,22 @@ export class AmeliaSupabaseMemory {
     if (!response.ok) throw new Error('Supabase memory delete failed (' + response.status + ').');
   }
 
+  /** Her always-on home in Supabase: status, and the owner's pause/resume switch. */
+  static async cloudRunnerStatus(): Promise<{ enabled: boolean; steps_per_tick: number; last_tick_at: string | null;
+    last_status: string | null; last_step: number | null } | null> {
+    const session = await this.getSession();
+    if (!session) return null;
+    const rows = await requestJson('/rest/v1/rpc/amelia_runner_status', { method: 'POST', body: '{}' }, session.access_token);
+    return Array.isArray(rows) && rows.length ? rows[0] : null;
+  }
+
+  static async setCloudRunnerEnabled(enabled: boolean): Promise<boolean> {
+    const session = await this.getSession();
+    if (!session) throw new Error('Sign in to pause or resume Amelia.');
+    return Boolean(await requestJson('/rest/v1/rpc/amelia_runner_set_enabled', { method: 'POST',
+      body: JSON.stringify({ p_enabled: enabled }) }, session.access_token));
+  }
+
   static async syncLocalMemory(session: AmeliaCloudSession): Promise<{
     runtimeCheckpoint: Record<string, unknown> | null;
     uploaded: number;

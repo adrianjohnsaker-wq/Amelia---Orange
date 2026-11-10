@@ -20180,7 +20180,7 @@ function ameliaTick(record, inbox, steps, nowIso) {
   }
   const state = rt.exportState();
   const toStep = rt.getSnapshots().at(-1)?.step ?? state.stepCount;
-  const fieldCheckpoint = field ? captureLiveField(field, true) : record.fieldCheckpoint;
+  const fieldCheckpoint = field ? captureLiveField(field, false) : record.fieldCheckpoint;
   const next = {
     ...record,
     state,
@@ -20189,7 +20189,7 @@ function ameliaTick(record, inbox, steps, nowIso) {
     writerId: CLOUD_WRITER_ID,
     revision: (Number(record.revision) || 0) + 1,
     updatedAt: nowIso,
-    runtimeRunning: true,
+    runtimeRunning: false,
     cloudRunner: { schema: "amelia.cloud-runner/v1", lastTickAt: nowIso, stepsPerTick: steps }
   };
   return {

@@ -70,9 +70,9 @@ export function ameliaTick(record: Record<string, any>, inbox: OutsideInboxEntry
   }
   const state: any = rt.exportState();
   const toStep = (rt.getSnapshots().at(-1)?.step ?? state.stepCount) as number;
-  const fieldCheckpoint = field ? captureLiveField(field, true) : record.fieldCheckpoint;
+  const fieldCheckpoint = field ? captureLiveField(field, false) : record.fieldCheckpoint;
   const next = { ...record, state, fieldCheckpoint, pauseFieldOnRestore: false, writerId: CLOUD_WRITER_ID, revision: (Number(record.revision) || 0) + 1,
-    updatedAt: nowIso, runtimeRunning: true, cloudRunner: { schema: 'amelia.cloud-runner/v1', lastTickAt: nowIso, stepsPerTick: steps } };
+    updatedAt: nowIso, runtimeRunning: false, cloudRunner: { schema: 'amelia.cloud-runner/v1', lastTickAt: nowIso, stepsPerTick: steps } };
   return { record: next, fromStep, toStep, zones, delivered, admittedThisTick, fieldFrom, fieldTo: field ? field.stepCount : null,
     tension: state.governorState?.deformationTension, queue: state.deferredEncounters?.length ?? 0, admissionRule: state.admissionRule ?? 'fixed-0.72' };
 }
