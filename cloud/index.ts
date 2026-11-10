@@ -45,6 +45,7 @@ Deno.serve(async (req) => {
     const written = upd.ok ? (await upd.json()).length : 0;
     const status = !upd.ok ? 'write-error ' + upd.status : written === 1 ? 'ok' : 'conflict-skipped';
     await log({ status, from_step: t.fromStep, to_step: t.toStep, zones: t.zones, delivered: t.delivered,
+      field_from: t.fieldFrom, field_to: t.fieldTo,
       admitted: t.admittedThisTick, tension: t.tension, queue: t.queue, admission_rule: t.admissionRule,
       inbox_entries: inbox?.length ?? null, inbox_error: inboxError, started_at: started });
     await rest('amelia_cloud_runner?id=eq.amelia', { method: 'PATCH', headers: { Prefer: 'return=minimal' },

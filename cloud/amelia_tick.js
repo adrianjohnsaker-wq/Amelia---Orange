@@ -19296,6 +19296,828 @@ function readOutsideLink(value) {
   return { schema: "amelia.outside-link/v1", enabled: v.enabled, since: String(v.since) };
 }
 
+// src/substrate/canonicalAmeliaRuntimeImpl.ts
+var SEALED_NUMOGRAM_TOPOLOGY_PROOF = {
+  kind: "N0",
+  topologyDigest: canonicalSha256(JSON.stringify({
+    zones: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+    syzygies: [[0, 9], [1, 8], [2, 7], [3, 6], [4, 5]],
+    currents: { Abyss: [0, 9], Plex: [1, 4, 8], Lemur: [2, 5, 7], Barker: [3, 6] }
+  })),
+  directedEdgeDigest: canonicalSha256(JSON.stringify(CANONICAL_GATES.map((g) => ({ s: g.source, t: g.target, f: g.flux, r: g.resistance }))))
+};
+var SELECT_EXIT_ALGORITHM_SOURCE = `
+function canonicalSelectExit(currentZone, openGates, memoryBias, phaseAngles, seed) {
+  // Pure topology-constrained exit selection weighted by PFM constitutive bias
+  const candidateGates = openGates.filter(g => g.source === currentZone || g.target === currentZone);
+  if (candidateGates.length === 0) return currentZone;
+  let maxWeight = -Infinity;
+  let chosen = currentZone;
+  for (const gate of candidateGates) {
+    const nextZone = gate.source === currentZone ? gate.target : gate.source;
+    const bias = memoryBias[nextZone] || 0;
+    const phaseAlignment = Math.cos(phaseAngles[nextZone] || 0);
+    const weight = gate.flux * (1 - gate.resistance) + bias * 0.4 + phaseAlignment * 0.2;
+    if (weight > maxWeight) {
+      maxWeight = weight;
+      chosen = nextZone;
+    }
+  }
+  return chosen;
+}
+`.trim();
+var UPDATE_PCM_ALGORITHM_SOURCE = `
+function canonicalUpdatePCM(memorySystem, stepEvent) {
+  memorySystem.append(stepEvent);
+  return memorySystem.exportHistoryDigest();
+}
+`.trim();
+var CANONICAL_RUNTIME_IDENTITY = {
+  dynamicsAreCanonical: true,
+  runtimeIdentityDigest: canonicalSha256("AMELIA_CANONICAL_NUMOGRAM_RUNTIME_CORE_V1_STABLE"),
+  runtimeSourceDigest: canonicalSha256("AmeliaQabbalaInterface:TraitEvolution:IntegratedMemorySystem:CognitiveGovernor"),
+  sourceMapDigest: canonicalSha256("NUMOGRAM_N0_DIRECTED_GRAPH_MAPPING_SHA256_CANONICAL"),
+  selectExitImplementationDigest: canonicalSha256(SELECT_EXIT_ALGORITHM_SOURCE),
+  updatePCMImplementationDigest: canonicalSha256(UPDATE_PCM_ALGORITHM_SOURCE)
+};
+
+class CanonicalAmeliaLineageInstance {
+  lineageId;
+  seed;
+  eventIndex = 0;
+  currentZone = 0;
+  zoneVisitCounts = new Array(10).fill(0);
+  qabbala;
+  memory;
+  governor;
+  traitEvolution;
+  deformationTensor = Array.from({ length: 10 }, (_, r) => Array.from({ length: 10 }, (_2, c) => r === c ? 0.25 : 0.05));
+  constructor(lineageId, seed) {
+    this.lineageId = lineageId;
+    this.seed = seed;
+    this.qabbala = new AmeliaQabbalaInterface;
+    this.memory = new IntegratedMemorySystem;
+    this.governor = new CognitiveGovernor(0.88, 0.72);
+    this.traitEvolution = new TraitEvolution;
+    this.zoneVisitCounts[0] = 1;
+  }
+  hydrateDeepPFMHistory(totalEvents = 256) {
+    this.memory.reset();
+    let pseudoState = this.seed * 1664525 + 1013904223 >>> 0;
+    const nextRand = () => {
+      pseudoState = pseudoState * 1664525 + 1013904223 >>> 0;
+      return pseudoState / 4294967296;
+    };
+    for (let i = 0;i < totalEvents; i++) {
+      const targetZone = (i % 10 + (i % 2 === 0 ? 0 : 5)) % 10;
+      const fluxDelta = 0.05 + nextRand() * 0.15;
+      const phaseCoherence = 0.65 + nextRand() * 0.3;
+      const strainRelaxation = 0.02 + nextRand() * 0.03;
+      const record = {
+        blockIndex: i,
+        depth: i,
+        targetZone,
+        fluxDelta: Number(fluxDelta.toFixed(4)),
+        phaseCoherence: Number(phaseCoherence.toFixed(4)),
+        strainRelaxation: Number(strainRelaxation.toFixed(4)),
+        seed: this.seed,
+        eventDigest: canonicalSha256(`ev:${this.lineageId}:${i}:${targetZone}:${fluxDelta}:${phaseCoherence}`),
+        timestamp: 1700000000000 + i * 1000
+      };
+      this.memory.append(record);
+      for (let r = 0;r < 10; r++) {
+        for (let c = 0;c < 10; c++) {
+          const coupling = r === targetZone || c === targetZone ? fluxDelta * 0.1 : 0;
+          this.deformationTensor[r][c] = Math.min(1, this.deformationTensor[r][c] * 0.995 + coupling);
+        }
+      }
+    }
+    this.eventIndex = totalEvents;
+  }
+  getObservation() {
+    const memReadout = this.memory.readMemoryBias();
+    const pfmHead = this.memory.exportHistoryDigest();
+    const strainDigest = canonicalSha256(JSON.stringify({
+      biasVector: memReadout.biasVector,
+      strainHistory: this.memory.exportState().zoneStrainHistory,
+      hysteresis: memReadout.hysteresisTension,
+      eventsCount: memReadout.historyLength
+    }));
+    const totalVisits = Math.max(1, this.zoneVisitCounts.reduce((a, b) => a + b, 0));
+    const occupancy = this.zoneVisitCounts.map((v) => v / totalVisits);
+    const occSum = occupancy.reduce((a, b) => a + b, 0);
+    const normalizedOccupancy = occupancy.map((o) => o / occSum);
+    const zones = this.qabbala.getZones();
+    const phaseKind = zones[this.currentZone]?.current || "Abyss";
+    const presentStateProjectionDigest = canonicalSha256(JSON.stringify({
+      currentZone: this.currentZone,
+      zoneOccupancy: normalizedOccupancy.map((v) => Number(v.toFixed(6))),
+      phaseKind,
+      eventIndex: this.eventIndex,
+      activeGateStateDigest: canonicalSha256(JSON.stringify(this.qabbala.getGates().filter((g) => g.isOpen).map((g) => g.id)))
+    }));
+    const checkpointDigest = canonicalSha256(JSON.stringify({
+      lineageId: this.lineageId,
+      seed: this.seed,
+      eventIndex: this.eventIndex,
+      currentZone: this.currentZone,
+      presentProjection: presentStateProjectionDigest,
+      pfmHead,
+      strainDigest
+    }));
+    const canonicalStateDigest = canonicalSha256(JSON.stringify({
+      checkpointDigest,
+      deformationTensor: this.deformationTensor,
+      governor: this.governor.getTelemetry()
+    }));
+    return {
+      lineageId: this.lineageId,
+      checkpointDigest,
+      canonicalStateDigest,
+      presentStateProjectionDigest,
+      pfmHeadDigest: pfmHead,
+      constitutiveStrainHistoryDigest: strainDigest,
+      deformationTensor: this.deformationTensor,
+      zoneOccupancy: normalizedOccupancy,
+      currentZone: this.currentZone,
+      phaseKind,
+      selectionKernelDigest: CANONICAL_RUNTIME_IDENTITY.selectExitImplementationDigest,
+      topology: SEALED_NUMOGRAM_TOPOLOGY_PROOF,
+      runtimeIdentityDigest: CANONICAL_RUNTIME_IDENTITY.runtimeIdentityDigest,
+      eventIndex: this.eventIndex
+    };
+  }
+  exportSnapshot() {
+    return {
+      lineageId: this.lineageId,
+      seed: this.seed,
+      eventIndex: this.eventIndex,
+      currentZone: this.currentZone,
+      zoneOccupancy: [...this.zoneVisitCounts],
+      qabbalaState: JSON.parse(JSON.stringify(this.qabbala.getZones())),
+      gateState: JSON.parse(JSON.stringify(this.qabbala.getGates())),
+      memoryState: this.memory.exportState(),
+      governorState: this.governor.exportState(),
+      deformationTensor: JSON.parse(JSON.stringify(this.deformationTensor))
+    };
+  }
+  restoreSnapshot(snap) {
+    this.eventIndex = snap.eventIndex;
+    this.currentZone = snap.currentZone;
+    this.zoneVisitCounts = [...snap.zoneOccupancy];
+    this.qabbala.setZones(snap.qabbalaState);
+    this.qabbala.setGates(snap.gateState);
+    this.memory.importState(snap.memoryState);
+    this.governor.importState(snap.governorState);
+    this.deformationTensor = JSON.parse(JSON.stringify(snap.deformationTensor));
+  }
+}
+
+// src/substrate/AmeliaMorphogeneticSubstrate.ts
+class DeterministicRNG {
+  state;
+  constructor(seed) {
+    this.state = seed >>> 0;
+  }
+  next() {
+    this.state = this.state + 1831565813 >>> 0;
+    let t = Math.imul(this.state ^ this.state >>> 15, 1 | this.state);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  }
+  nextGaussian() {
+    const u1 = Math.max(0.000000000001, this.next());
+    const u2 = this.next();
+    return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+  }
+  getState() {
+    return this.state;
+  }
+}
+function sortJson(v) {
+  if (v === null || typeof v !== "object")
+    return v;
+  if (Array.isArray(v))
+    return v.map(sortJson);
+  const r = v;
+  const out = {};
+  for (const k of Object.keys(r).sort())
+    out[k] = sortJson(r[k]);
+  return out;
+}
+function canonicalJson(v) {
+  return JSON.stringify(sortJson(v));
+}
+function digestObject(o) {
+  return canonicalSha256(canonicalJson(o));
+}
+function calcEntropy(cells, N) {
+  const bins = 32;
+  const counts = new Float64Array(bins);
+  for (let i = 0;i < N; i++) {
+    const binIdx = Math.min(bins - 1, Math.max(0, Math.floor(cells[i].B * bins)));
+    counts[binIdx]++;
+  }
+  let H = 0;
+  for (let i = 0;i < bins; i++) {
+    const p = counts[i] / N;
+    if (p > 0) {
+      H -= p * Math.log2(p);
+    }
+  }
+  return H / Math.log2(bins);
+}
+function laplace(field, x, y, W, H) {
+  const c = y * W + x;
+  const l = y * W + (x - 1 + W) % W;
+  const r = y * W + (x + 1) % W;
+  const u = (y - 1 + H) % H * W + x;
+  const d = (y + 1) % H * W + x;
+  const ul = (y - 1 + H) % H * W + (x - 1 + W) % W;
+  const ur = (y - 1 + H) % H * W + (x + 1) % W;
+  const dl = (y + 1) % H * W + (x - 1 + W) % W;
+  const dr = (y + 1) % H * W + (x + 1) % W;
+  return -field[c] + 0.2 * (field[l] + field[r] + field[u] + field[d]) + 0.05 * (field[ul] + field[ur] + field[dl] + field[dr]);
+}
+function stepGrayScott(state) {
+  const { width: W, height: H, cells, F, K, Da, Db, landianAcc, seed, stepCount } = state;
+  const N = W * H;
+  const rng = new DeterministicRNG(seed + stepCount * 997);
+  const Af = new Float64Array(N);
+  const Bf = new Float64Array(N);
+  for (let i = 0;i < N; i++) {
+    Af[i] = cells[i].A;
+    Bf[i] = cells[i].B;
+  }
+  const newCells = new Array(N);
+  for (let i = 0;i < N; i++) {
+    const x = i % W;
+    const y = Math.floor(i / W);
+    const a = Af[i];
+    const b = Bf[i];
+    const ab2 = a * b * b;
+    const noise = rng.nextGaussian() * landianAcc;
+    const nextA = Math.max(0, Math.min(1, a + Da * laplace(Af, x, y, W, H) - ab2 + F * (1 - a) + noise));
+    const nextB = Math.max(0, Math.min(1, b + Db * laplace(Bf, x, y, W, H) + ab2 - (K + F) * b));
+    newCells[i] = {
+      ...cells[i],
+      A: nextA,
+      B: nextB
+    };
+  }
+  const nextStep = stepCount + 1;
+  const nextEntropy = calcEntropy(newCells, N);
+  let nextGovZone = "MORPHOGENETIC_ZONE";
+  if (nextEntropy < 0.15)
+    nextGovZone = "CARROLL_COLLAPSE";
+  else if (nextEntropy > 0.85)
+    nextGovZone = "LANDIAN_FLASHOVER";
+  return {
+    ...state,
+    cells: newCells,
+    stepCount: nextStep,
+    entropy: nextEntropy,
+    govZone: nextGovZone,
+    stateDigest: digestObject({
+      width: W,
+      height: H,
+      seed,
+      preset: state.preset,
+      stepCount: nextStep,
+      entropy: Number(nextEntropy.toFixed(6))
+    })
+  };
+}
+function stepAmeliaSubstrate(state) {
+  const { width: W, height: H, cells, nativeRuntime, lineageInstance } = state;
+  const N = W * H;
+  if (!nativeRuntime) {
+    throw new Error("[AmeliaSubstrate:Fatal] Missing native Numogram substrate runtime instance.");
+  }
+  const snapshot = nativeRuntime.step();
+  const memReadout = nativeRuntime.getMemory().readMemoryBias();
+  const rawTensor = [...memReadout.biasVector];
+  let deformationTensor10 = undefined;
+  let pfmHeadDigest = "";
+  let strainHistoryDigest = "";
+  let eventIndex = state.stepCount;
+  if (lineageInstance) {
+    const obs = lineageInstance.getObservation();
+    deformationTensor10 = obs.deformationTensor;
+    pfmHeadDigest = obs.pfmHeadDigest;
+    strainHistoryDigest = obs.constitutiveStrainHistoryDigest;
+    eventIndex = obs.eventIndex;
+  }
+  const tensor00 = deformationTensor10 ? deformationTensor10[0][0] : rawTensor[0];
+  const tensor99 = deformationTensor10 ? deformationTensor10[9][9] : rawTensor[9];
+  const tensorCross09 = deformationTensor10 ? deformationTensor10[0][9] : 0.05;
+  const zone0Strain = snapshot.zones[0]?.deformationStress ?? rawTensor[0] ?? 0.1;
+  const zone9Strain = snapshot.zones[9]?.deformationStress ?? rawTensor[9] ?? 0.1;
+  const dynamicCouplingA = 0.3 * (1 - (0.5 * zone0Strain + 0.5 * tensor00));
+  const dynamicCouplingB = 0.3 * (0.5 * zone9Strain + 0.3 * tensor99 + 0.2 * tensorCross09);
+  const fieldCouplingDigest = canonicalSha256(JSON.stringify({
+    tensor00,
+    tensor99,
+    tensorCross09,
+    dynamicCouplingA,
+    dynamicCouplingB,
+    rawTensor
+  }));
+  const sampleCount = Math.min(16, N);
+  const stride = Math.max(1, Math.floor(N / sampleCount));
+  const sampledIndices = [];
+  for (let k = 0;k < sampleCount; k++) {
+    const idx = (k * stride + state.stepCount % stride) % N;
+    sampledIndices.push(idx);
+    const cell = cells[idx];
+    cell.A = Math.max(0, Math.min(1, 0.7 * cell.A + dynamicCouplingA));
+    cell.B = Math.max(0, Math.min(1, 0.7 * cell.B + dynamicCouplingB));
+    cell.pfmDeformationTensor = [...rawTensor];
+    if (deformationTensor10) {
+      cell.deformationMatrix = JSON.parse(JSON.stringify(deformationTensor10));
+    }
+    cell.zone = memReadout.dominantDeformedZone;
+  }
+  const tensorAudit = {
+    step: state.stepCount,
+    runtimeStep: snapshot.step,
+    sampledIndices,
+    meanHysteresisTension: memReadout.hysteresisTension,
+    meanPhaseCoherence: memReadout.meanPhaseCoherence,
+    dominantDeformedZone: memReadout.dominantDeformedZone,
+    tensorDigest: canonicalSha256(JSON.stringify(rawTensor)),
+    pfmHeadDigest: pfmHeadDigest || undefined,
+    strainHistoryDigest: strainHistoryDigest || undefined,
+    fieldCouplingDigest,
+    eventIndex
+  };
+  const newAuditLog = [...state.pfmTensorAuditLog, tensorAudit];
+  if (newAuditLog.length > 128)
+    newAuditLog.shift();
+  const stateWithTensor = {
+    ...state,
+    pfmTensorAuditLog: newAuditLog
+  };
+  return stepGrayScott(stateWithTensor);
+}
+class MorphogeneticTelemetryUnit {
+  previousBField = null;
+  auditSubstrate(state, activationThreshold = 0.1) {
+    const W = state.width;
+    const H = state.height;
+    const N = W * H;
+    const currentB = new Float64Array(N);
+    for (let i = 0;i < N; i++)
+      currentB[i] = state.cells[i].B;
+    let totalMutationDelta = 0;
+    if (this.previousBField && this.previousBField.length === N) {
+      for (let i = 0;i < N; i++) {
+        totalMutationDelta += Math.abs(currentB[i] - this.previousBField[i]);
+      }
+    }
+    this.previousBField = currentB;
+    const parent = new Int32Array(N);
+    for (let i = 0;i < N; i++)
+      parent[i] = i;
+    const find = (i) => {
+      let root = i;
+      while (root !== parent[root])
+        root = parent[root];
+      let curr = i;
+      while (curr !== root) {
+        const nxt = parent[curr];
+        parent[curr] = root;
+        curr = nxt;
+      }
+      return root;
+    };
+    const union = (i, j) => {
+      const ri = find(i);
+      const rj = find(j);
+      if (ri !== rj)
+        parent[ri] = rj;
+    };
+    const activeMask = new Uint8Array(N);
+    let totalActiveCells = 0;
+    for (let i = 0;i < N; i++) {
+      if (currentB[i] >= activationThreshold) {
+        activeMask[i] = 1;
+        totalActiveCells++;
+      }
+    }
+    for (let y = 0;y < H; y++) {
+      for (let x = 0;x < W; x++) {
+        const idx = y * W + x;
+        if (!activeMask[idx])
+          continue;
+        const neighbors = [
+          y * W + (x + 1) % W,
+          (y + 1) % H * W + x,
+          (y + 1) % H * W + (x + 1) % W,
+          (y + 1) % H * W + (x - 1 + W) % W
+        ];
+        for (const nIdx of neighbors) {
+          if (activeMask[nIdx])
+            union(idx, nIdx);
+        }
+      }
+    }
+    const clusterMap = new Map;
+    for (let i = 0;i < N; i++) {
+      if (!activeMask[i])
+        continue;
+      const root = find(i);
+      if (!clusterMap.has(root))
+        clusterMap.set(root, []);
+      clusterMap.get(root).push(i);
+    }
+    const profiles = [];
+    let maxPatternSize = 0;
+    let combinedSizeSum = 0;
+    for (const [, cellIndices] of clusterMap) {
+      const size = cellIndices.length;
+      if (size < 4)
+        continue;
+      combinedSizeSum += size;
+      if (size > maxPatternSize)
+        maxPatternSize = size;
+      let sumX = 0, sumY = 0, sumA = 0, sumB = 0;
+      let minX = W, minY = H, maxX = -1, maxY = -1;
+      const sigs = [];
+      for (const idx of cellIndices) {
+        const cx = idx % W;
+        const cy = Math.floor(idx / W);
+        sumX += cx;
+        sumY += cy;
+        sumA += state.cells[idx].A;
+        sumB += state.cells[idx].B;
+        if (cx < minX)
+          minX = cx;
+        if (cx > maxX)
+          maxX = cx;
+        if (cy < minY)
+          minY = cy;
+        if (cy > maxY)
+          maxY = cy;
+        sigs.push(`${cx - minX}:${cy - minY}`);
+      }
+      sigs.sort();
+      const patternId = canonicalSha256(sigs.join("|")).slice(0, 12);
+      profiles.push({
+        id: patternId,
+        spatialMass: size,
+        centroid: { x: sumX / size, y: sumY / size },
+        meanIdentityA: sumA / size,
+        meanDifferenceB: sumB / size,
+        spatialBBox: { minX, minY, maxX, maxY }
+      });
+    }
+    return {
+      totalActiveCells,
+      distinctPatternCount: profiles.length,
+      meanPatternSize: profiles.length > 0 ? combinedSizeSum / profiles.length : 0,
+      maxPatternSize,
+      systemMutationDelta: totalMutationDelta / N,
+      patterns: profiles,
+      telemetryDigest: canonicalSha256(JSON.stringify({ c: profiles.length, m: totalMutationDelta, s: state.stepCount }))
+    };
+  }
+}
+
+class MorphogeneticLineageRegistry {
+  masterRegistry = new Map;
+  activeSignaturesInLast = new Set;
+  signatureLifespans = new Map;
+  globalDiscoveryCounter = 0;
+  recurrentHitCounter = 0;
+  registerStep(stepCount, auditMetrics) {
+    const novelDiscoveries = [];
+    const recurrentPatterns = [];
+    const currentStepSigs = new Set;
+    let currentCycleNoveltyCount = 0;
+    for (const pattern of auditMetrics.patterns) {
+      const pid2 = pattern.id;
+      currentStepSigs.add(pid2);
+      if (!this.signatureLifespans.has(pid2)) {
+        this.signatureLifespans.set(pid2, { birthStep: stepCount, totalStepsSeen: 1 });
+      } else {
+        this.signatureLifespans.get(pid2).totalStepsSeen++;
+      }
+      if (!this.masterRegistry.has(pid2)) {
+        this.globalDiscoveryCounter++;
+        currentCycleNoveltyCount++;
+        const log = {
+          patternId: pid2,
+          stepDiscovered: stepCount,
+          initialSpatialMass: pattern.spatialMass,
+          initialResonanceB: pattern.meanDifferenceB,
+          chronologicalIndex: this.globalDiscoveryCounter
+        };
+        this.masterRegistry.set(pid2, log);
+        novelDiscoveries.push(log);
+      } else if (!this.activeSignaturesInLast.has(pid2)) {
+        this.recurrentHitCounter++;
+        recurrentPatterns.push({
+          patternId: pid2,
+          originalStep: this.masterRegistry.get(pid2).stepDiscovered
+        });
+      }
+    }
+    const totalActiveForms = auditMetrics.patterns.length;
+    let longestLivingSignature = null;
+    let maxDuration = -1;
+    for (const [pid2, lc] of this.signatureLifespans) {
+      if (lc.totalStepsSeen > maxDuration) {
+        maxDuration = lc.totalStepsSeen;
+        longestLivingSignature = pid2;
+      }
+    }
+    this.activeSignaturesInLast = currentStepSigs;
+    return {
+      novelDiscoveries,
+      recurrentPatterns,
+      summary: {
+        totalUniquePatternsDiscovered: this.globalDiscoveryCounter,
+        currentCycleNoveltyCount,
+        recurrentPatternHits: this.recurrentHitCounter,
+        noveltyRatio: totalActiveForms > 0 ? currentCycleNoveltyCount / totalActiveForms : 0,
+        longestLivingSignature: longestLivingSignature ? `${longestLivingSignature} (${maxDuration} steps)` : null
+      }
+    };
+  }
+  clear() {
+    this.masterRegistry.clear();
+    this.activeSignaturesInLast.clear();
+    this.signatureLifespans.clear();
+    this.globalDiscoveryCounter = 0;
+    this.recurrentHitCounter = 0;
+  }
+}
+var _telemetry = new MorphogeneticTelemetryUnit;
+var _registry = new MorphogeneticLineageRegistry;
+var CANONICAL_MEANING = `
+AMELIA MORPHOGENETIC SUBSTRATE — Canonical Meaning & Hypothesis Layer
+
+Hypothesis & Architecture:
+  A = metabolic-integration (Zone-0) = static identity (even parity base)
+  B = ring-stratum (Zone-9) = active difference activator (odd parity)
+
+Noise: Box-Muller Gaussian injection into A — the Outside destabilises
+the identity field from within.
+
+Governor:
+  entropy < 0.15 → CARROLL COLLAPSE: freeze
+  entropy > 0.85 → LANDIAN FLASHOVER: melt
+  middle          → MORPHOGENETIC ZONE: active morphogenesis
+
+Operational Protocol:
+  Strict fail-closed runtime coupling with sealed receipts for SHAM,
+  A-FIELD, and B-FIELD pulses. Ingressional claims require empirical
+  contrast against matched controls under an exact Zone-9/Zone-0 mapping.
+`.trim();
+
+// src/outside/LiveFieldLoop.ts
+var NEGATIVE_ZERO = "$amelia_negative_zero";
+function canonicalValue(value, inArray = false) {
+  if (typeof value === "number") {
+    if (!Number.isFinite(value))
+      throw new Error("Non-finite live field checkpoint value");
+    return Object.is(value, -0) ? { [NEGATIVE_ZERO]: true } : value;
+  }
+  if (value === null || typeof value === "string" || typeof value === "boolean")
+    return value;
+  if (value === undefined && inArray)
+    return null;
+  if (Array.isArray(value))
+    return value.map((v) => canonicalValue(v, true));
+  if (value && typeof value === "object") {
+    if (Object.prototype.hasOwnProperty.call(value, NEGATIVE_ZERO))
+      throw new Error("Reserved live field checkpoint key");
+    const out = {};
+    for (const key of Object.keys(value).sort())
+      if (value[key] !== undefined)
+        out[key] = canonicalValue(value[key]);
+    return out;
+  }
+  throw new Error("Unsupported live field checkpoint value");
+}
+function encodePayload(value) {
+  return JSON.stringify(canonicalValue(value)).replace(/[^\x00-\x7f]/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`);
+}
+function decodePayload(value) {
+  return JSON.parse(value, (_key, item) => item && typeof item === "object" && !Array.isArray(item) && Object.keys(item).length === 1 && item[NEGATIVE_ZERO] === true ? -0 : item);
+}
+function currentRuntimeStep(runtime) {
+  return runtime.getSnapshots().at(-1)?.step ?? Number(runtime.exportState().stepCount);
+}
+function observeLiveField(state) {
+  const { width, height, cells, stepCount } = state;
+  if (!Number.isInteger(width) || width < 10 || !Number.isInteger(height) || height < 1 || cells.length !== width * height)
+    throw new Error("Invalid live field dimensions");
+  const sums = Array(10).fill(0), counts = Array(10).fill(0);
+  for (let i = 0;i < cells.length; i++) {
+    const { A, B } = cells[i];
+    if (!Number.isFinite(A) || !Number.isFinite(B) || A < 0 || A > 1 || B < 0 || B > 1)
+      throw new Error("Invalid live field cell");
+    const zone = Math.floor(10 * (i % width) / width);
+    sums[zone] += B;
+    counts[zone]++;
+  }
+  const regionMeans = sums.map((sum, i) => sum / counts[i]);
+  const total = regionMeans.reduce((a, b) => a + b, 0);
+  const attentionVector = total > 0.000000000001 ? regionMeans.map((v) => v / total) : null;
+  const sourceDigest = canonicalSha256(JSON.stringify({
+    schema: "amelia.live-field-observation/v1",
+    bodyStep: stepCount,
+    width,
+    height,
+    seed: state.seed,
+    preset: state.preset,
+    cells: cells.map(({ A, B }) => [A, B]),
+    regionMeans
+  }));
+  return { bodyStep: stepCount, regionMap: "ten-vertical-bands/v1", regionMeans, attentionVector, sourceDigest };
+}
+function syntheticSourceOfferDigest(offer) {
+  return canonicalSha256(JSON.stringify({
+    schema: offer.schema,
+    bodyDigest: offer.bodyDigest,
+    sourceId: offer.sourceId,
+    sourceStep: offer.sourceStep,
+    sourceStateDigest: offer.sourceStateDigest,
+    attentionVector: offer.attentionVector
+  }));
+}
+function advanceLiveField(state, mapping = "live") {
+  const runtime = state.nativeRuntime;
+  if (!(runtime instanceof AmeliaOutsideRuntime) || !state.lineageInstance)
+    throw new Error("Live field requires the shared Amelia runtime and lineage");
+  const observation = observeLiveField(state);
+  const runtimeStep = currentRuntimeStep(runtime);
+  let attentionVector = observation.attentionVector;
+  let sourceDigest = observation.sourceDigest;
+  let eventId = `field:${runtimeStep + 1}:${observation.bodyStep}:${sourceDigest.slice(0, 16)}`;
+  let sourceContext;
+  if (typeof mapping === "object" && "source" in mapping) {
+    const source = mapping.source;
+    const v = source?.attentionVector;
+    if (!source || source.schema !== "amelia.synthetic-source-offer/v1" || source.bodyDigest !== observation.sourceDigest || !/^[a-z0-9._-]{1,64}$/.test(source.sourceId) || !Number.isSafeInteger(source.sourceStep) || source.sourceStep < 1 || !/^[a-f0-9]{64}$/.test(source.sourceStateDigest) || !Array.isArray(v) || v.length !== 10 || v.some((x) => !Number.isFinite(x) || x < 0 || x > 1) || Math.abs(v.reduce((a, b) => a + b, 0) - 1) > 0.000000001)
+      throw new Error("Invalid or stale synthetic source offer");
+    attentionVector = [...v];
+    sourceDigest = syntheticSourceOfferDigest(source);
+    eventId = `source:${runtimeStep + 1}:${observation.bodyStep}:${sourceDigest.slice(0, 16)}`;
+    if (source.recordContext) {
+      if (!observation.attentionVector)
+        throw new Error("Cannot record source context without a body observation");
+      sourceContext = {
+        schema: "amelia.live-source-context/v1",
+        bodyDigest: observation.sourceDigest,
+        sourceId: source.sourceId,
+        sourceStep: source.sourceStep,
+        sourceStateDigest: source.sourceStateDigest,
+        pointerVector: [...observation.attentionVector],
+        regionMeans: [...observation.regionMeans]
+      };
+    }
+  } else if (typeof mapping === "object" && "permutation" in mapping) {
+    if (!Array.isArray(mapping.permutation) || mapping.permutation.length !== 10 || new Set(mapping.permutation).size !== 10 || mapping.permutation.some((i) => !Number.isInteger(i) || i < 0 || i > 9))
+      throw new Error("Invalid experimental field-zone permutation");
+    if (attentionVector)
+      attentionVector = mapping.permutation.map((i) => attentionVector[i]);
+  } else if (mapping === "uniform" && attentionVector) {
+    attentionVector = Array(10).fill(0.1);
+  } else if (mapping !== "live" && mapping !== "uniform")
+    throw new Error("Invalid experimental field mapping");
+  const encounter = attentionVector ? {
+    eventId,
+    channel: "SYNTHETIC_FIELD",
+    sourceDigest,
+    attentionVector,
+    ...sourceContext ? { sourceContext } : {}
+  } : undefined;
+  let stepped = false;
+  const proxied = new Proxy(runtime, {
+    get(target, property) {
+      if (property === "step")
+        return (input) => {
+          if (stepped)
+            throw new Error("A field step attempted to advance the runtime twice");
+          stepped = true;
+          return target.step(input, encounter);
+        };
+      const value = Reflect.get(target, property, target);
+      return typeof value === "function" ? value.bind(target) : value;
+    }
+  });
+  const next = stepAmeliaSubstrate({ ...state, nativeRuntime: proxied });
+  if (!stepped || currentRuntimeStep(runtime) !== runtimeStep + 1 || next.stepCount !== state.stepCount + 1)
+    throw new Error("Live field/runtime step mismatch");
+  next.nativeRuntime = runtime;
+  const lineage = next.lineageInstance;
+  const chosen = runtime.getCurrentZone();
+  lineage.memory.importState(runtime.getMemory().exportState());
+  lineage.eventIndex = runtime.getMemory().getEvents().length;
+  lineage.currentZone = chosen;
+  lineage.zoneVisitCounts[chosen]++;
+  for (let r = 0;r < 10; r++)
+    for (let c = 0;c < 10; c++) {
+      lineage.deformationTensor[r][c] = r === chosen || c === chosen ? Math.min(1, lineage.deformationTensor[r][c] * 0.992 + 0.012) : lineage.deformationTensor[r][c] * 0.998;
+    }
+  const snapshot = runtime.getSnapshots().at(-1);
+  if (!snapshot || snapshot.step !== runtimeStep + 1)
+    throw new Error("Missing live runtime snapshot");
+  return { state: next, observation, snapshot };
+}
+function captureLiveField(state, running) {
+  if (!state.lineageInstance)
+    throw new Error("Cannot save a live field without its lineage");
+  const { nativeRuntime, lineageInstance, ...body } = state;
+  const runtimeStep = currentRuntimeStep(nativeRuntime);
+  const payload = encodePayload({
+    schema: "amelia.live-field/v1",
+    body,
+    lineage: { snapshot: lineageInstance.exportSnapshot(), traitHistory: lineageInstance.traitEvolution.exportState() },
+    runtimeStep,
+    running
+  });
+  return { schema: "amelia.live-field/v1", payload, runtimeStep, running, checksum: canonicalSha256(payload) };
+}
+function restoreLiveField(saved, runtime) {
+  if (!saved || saved.schema !== "amelia.live-field/v1" || typeof saved.payload !== "string" || typeof saved.checksum !== "string")
+    throw new Error("Invalid live field checkpoint");
+  if (canonicalSha256(saved.payload) !== saved.checksum)
+    throw new Error("Live field checkpoint checksum mismatch");
+  const decoded = decodePayload(saved.payload);
+  if (decoded.schema !== saved.schema || decoded.running !== saved.running || decoded.runtimeStep !== saved.runtimeStep)
+    throw new Error("Live field checkpoint metadata mismatch");
+  const body = decoded.body, snap = decoded.lineage?.snapshot;
+  if (!body || !snap || !Number.isInteger(body.width) || body.width < 10 || !Number.isInteger(body.height) || body.height < 1 || !Array.isArray(body.cells) || body.cells.length !== body.width * body.height || !Number.isInteger(body.stepCount) || !Number.isFinite(saved.runtimeStep) || typeof saved.running !== "boolean")
+    throw new Error("Invalid saved live field");
+  const lineage = new CanonicalAmeliaLineageInstance(snap.lineageId, snap.seed);
+  lineage.restoreSnapshot(snap);
+  lineage.traitEvolution.importState(decoded.lineage.traitHistory);
+  const field = body;
+  const restored = { ...field, nativeRuntime: runtime, lineageInstance: lineage };
+  const session = restored.syntheticSourceSession;
+  if (session && (session.schema !== "amelia.live-synthetic-source/v1" || typeof session.enabled !== "boolean" || !session.sourceState || !Number.isSafeInteger(session.sourceState.step) || session.sourceState.step < 0 || !Number.isFinite(session.sourceState.smoothedCentroid) || session.sourceState.smoothedCentroid < 0 || session.sourceState.smoothedCentroid > 1 || ![0, 1].includes(session.sourceState.address)))
+    throw new Error("Invalid saved synthetic source session");
+  observeLiveField(restored);
+  return restored;
+}
+
+// src/outside/AdaptiveSyntheticSource.ts
+var WEIGHTS = [0.235, 0.185, 0.145, 0.115, 0.095, 0.075, 0.055, 0.045, 0.03, 0.02];
+var SHUFFLE = [3, 8, 1, 6, 4, 9, 0, 5, 2, 7];
+function targetProfile(address) {
+  return address === 0 ? [...WEIGHTS] : [...WEIGHTS].reverse();
+}
+function respondToBody(observation, previous, arm) {
+  const vector = observation.attentionVector;
+  if (!vector || vector.length !== 10 || vector.some((v) => !Number.isFinite(v) || v < 0) || Math.abs(vector.reduce((a, b) => a + b, 0) - 1) > 0.000000001)
+    throw Error("Source requires a current normalized body observation");
+  if (!Number.isSafeInteger(previous.step) || previous.step < 0 || !Number.isFinite(previous.smoothedCentroid) || ![0, 1].includes(previous.address) || !["live", "shuffled", "uniform"].includes(arm))
+    throw Error("Invalid source state or arm");
+  const pointer = vector.reduce((sum, v, i) => sum + v * i / 9, 0);
+  const smoothedCentroid = 0.65 * previous.smoothedCentroid + 0.35 * pointer;
+  const address = smoothedCentroid >= 0.5 ? 1 : 0;
+  const after = { step: previous.step + 1, smoothedCentroid, address };
+  const profile = targetProfile(address);
+  const attentionVector = arm === "uniform" ? Array(10).fill(0.1) : arm === "shuffled" ? SHUFFLE.map((i) => profile[i]) : profile;
+  const sourceStateDigest = canonicalSha256(JSON.stringify({ schema: "amelia.adaptive-source-state/v1", arm, ...after }));
+  const offer = {
+    schema: "amelia.synthetic-source-offer/v1",
+    bodyDigest: observation.sourceDigest,
+    sourceId: `${arm}-pattern-v1`,
+    sourceStep: after.step,
+    sourceStateDigest,
+    attentionVector
+  };
+  return { pointer, before: { ...previous }, after, targetProfile: profile, offer };
+}
+
+// src/outside/LiveSyntheticSourceSession.ts
+function getLiveSourceSession(field) {
+  const s = field.syntheticSourceSession;
+  if (!s)
+    return null;
+  if (s.schema !== "amelia.live-synthetic-source/v1" || typeof s.enabled !== "boolean" || !s.sourceState || !Number.isSafeInteger(s.sourceState.step) || s.sourceState.step < 0 || !Number.isFinite(s.sourceState.smoothedCentroid) || s.sourceState.smoothedCentroid < 0 || s.sourceState.smoothedCentroid > 1 || ![0, 1].includes(s.sourceState.address))
+    throw Error("Invalid saved synthetic source session");
+  return s;
+}
+function advanceWithLiveSource(field) {
+  const session = getLiveSourceSession(field);
+  if (!session?.enabled)
+    return { ...advanceLiveField(field), sourceReading: null, currentSourceDecision: null };
+  const reading = respondToBody(observeLiveField(field), session.sourceState, "live");
+  const offer = { ...reading.offer, recordContext: true };
+  const result = advanceLiveField(field, { source: offer });
+  const currentSourceDecision = result.snapshot.encounterDecisions?.find((x) => x.sourceDigest === syntheticSourceOfferDigest(offer)) ?? null;
+  if (!currentSourceDecision)
+    throw Error("The Governor did not record the current source offer");
+  const next = { ...result.state, syntheticSourceSession: { ...session, sourceState: reading.after } };
+  return { ...result, state: next, sourceReading: reading, currentSourceDecision };
+}
+
 // src/cloud/ameliaTick.ts
 var CLOUD_WRITER_ID = "amelia-cloud-runner-v1";
 function ameliaTick(record, inbox, steps, nowIso) {
@@ -19316,36 +20138,54 @@ function ameliaTick(record, inbox, steps, nowIso) {
   const seen = seenEncounterIds(record.state);
   const fromStep = rt.getSnapshots().at(-1)?.step ?? Number(record.state.stepCount);
   let zones = "";
+  let field = record.fieldCheckpoint ? restoreLiveField(record.fieldCheckpoint, rt) : null;
+  const fieldFrom = field ? field.stepCount : null;
+  const prepare = () => {
+    rt.setAdvisoryWeight(harm.computeAdvisoryTuning(advisory, (rt.getSnapshots().at(-1)?.step ?? 0) + 1));
+    rt.setMomentumDamping(damping);
+  };
   const delivered = [];
   let admittedThisTick = 0;
   for (let i = 0;i < steps; i++) {
-    rt.setAdvisoryWeight(harm.computeAdvisoryTuning(advisory, (rt.getSnapshots().at(-1)?.step ?? 0) + 1));
-    rt.setMomentumDamping(damping);
-    let encounter;
     if (link?.enabled && inbox?.length) {
       const next = pendingOutside(inbox, seen, link.since)[0];
       if (next) {
-        encounter = toEncounter(next);
+        const encounter = toEncounter(next);
         seen.add(next.eventId);
+        prepare();
+        const snap = rt.step(undefined, encounter);
+        zones += String(rt.getCurrentZone());
+        for (const d of snap.encounterDecisions ?? [])
+          if (d.disposition === "ATTEND")
+            admittedThisTick++;
+        delivered.push({
+          eventId: encounter.eventId,
+          channel: encounter.channel,
+          disposition: snap.encounterDecisions?.find((d) => d.eventId === encounter.eventId)?.disposition ?? "NONE"
+        });
       }
     }
-    const snap = rt.step(undefined, encounter);
+    prepare();
+    let snap;
+    if (field) {
+      const r = advanceWithLiveSource(field);
+      field = r.state;
+      snap = r.snapshot;
+    } else
+      snap = rt.step();
     zones += String(rt.getCurrentZone());
     for (const d of snap.encounterDecisions ?? [])
-      if (d.disposition === "ATTEND")
+      if (d.disposition === "ATTEND" && !String(d.eventId).startsWith("field:") && !String(d.eventId).startsWith("source:"))
         admittedThisTick++;
-    if (encounter)
-      delivered.push({
-        eventId: encounter.eventId,
-        channel: encounter.channel,
-        disposition: snap.encounterDecisions?.find((d) => d.eventId === encounter.eventId)?.disposition ?? "NONE"
-      });
   }
   const state = rt.exportState();
   const toStep = rt.getSnapshots().at(-1)?.step ?? state.stepCount;
+  const fieldCheckpoint = field ? captureLiveField(field, true) : record.fieldCheckpoint;
   const next = {
     ...record,
     state,
+    fieldCheckpoint,
+    pauseFieldOnRestore: false,
     writerId: CLOUD_WRITER_ID,
     revision: (Number(record.revision) || 0) + 1,
     updatedAt: nowIso,
@@ -19359,6 +20199,8 @@ function ameliaTick(record, inbox, steps, nowIso) {
     zones,
     delivered,
     admittedThisTick,
+    fieldFrom,
+    fieldTo: field ? field.stepCount : null,
     tension: state.governorState?.deformationTension,
     queue: state.deferredEncounters?.length ?? 0,
     admissionRule: state.admissionRule ?? "fixed-0.72"
