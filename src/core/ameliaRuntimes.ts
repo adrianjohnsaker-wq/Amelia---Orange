@@ -10,7 +10,7 @@ import { AmeliaNDRuntime } from '../outside/AmeliaNDRuntime';
 
 export type RuntimeKind = 'classic' | 'nd1';
 export const RUNTIME_KIND_KEY = 'amelia_runtime_kind_v1';
-export const RUNTIME_LABEL: Record<RuntimeKind, string> = { classic: 'Classic', nd1: 'ND-1b field' };
+export const RUNTIME_LABEL: Record<RuntimeKind, string> = { classic: 'Classic', nd1: 'ND-1b flow' };
 
 export function bornAmeliaOf(kind: RuntimeKind): AmeliaOutsideRuntime {
   return withFullNumogram(kind === 'nd1' ? new AmeliaNDRuntime() : new AmeliaOutsideRuntime()) as AmeliaOutsideRuntime;
