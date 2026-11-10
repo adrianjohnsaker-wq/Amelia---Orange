@@ -1,1 +1,1 @@
-AG-1/RC-1 live ledger (amendment A1): 15 epochs; latest 2026-11-10T17:20:27Z: round 33842620, X=7, SHAM, zPre=7, fed 905
+AG-1/RC-1 live ledger (amendment A1): 16 epochs; latest 2026-11-10T22:35:20Z: round 33848918, X=4, SHAM, zPre=1, fed 468
