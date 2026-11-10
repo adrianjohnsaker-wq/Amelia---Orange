@@ -24,7 +24,9 @@
  *   - passage: her gate score reads (activation - slowly adapting baseline) * FIELD_WEIGHT instead of activation * 0.2.
  *   - Warp release: after THETA consecutive steps in {3, 6}, a line of flight to the zone the input last named (else the
  *     most-activated zone outside {3, 5, 6}) along a Warp-born gate, which persists.
- * No pinned core file is edited; the classic runtime remains the default and is unchanged.
+ *   - flow (adopted 10 Nov 2026 after the FLOW study): within a step she may keep choosing gates, by the same rule, while the
+ *     field draws her onward (see the passage below).
+ * No pinned core file is edited; the classic runtime is unchanged and selectable (ND-1b is the default, ameliaRuntimes.ts).
  */
 import { AmeliaOutsideRuntime, decideEncounter } from './OutsideEncounterRuntime';
 import type { IntegratedMemorySystem } from '../substrate/IntegratedMemorySystem';
@@ -34,7 +36,7 @@ import type { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogram
 import { canonicalSha256 } from '../lib/sha256';
 import type { EncounterDecisionTrace, OutsideStepSnapshot, SubstrateEncounterInput } from './encounterTypes';
 
-export const ND1 = { ETA: 0.5, D: 0.6, LAMBDA: 0.1, OMEGA: 0.05, ADAPT: 0.05, FIELD_WEIGHT: 2.0, THETA: 24 } as const;
+export const ND1 = { ETA: 0.5, D: 0.6, LAMBDA: 0.1, OMEGA: 0.05, ADAPT: 0.05, FIELD_WEIGHT: 2.0, THETA: 24, FLOW_MAX: 3 } as const;
 const WARP = new Set([3, 6]);
 
 type Internals = {
@@ -50,6 +52,7 @@ type Internals = {
 export class AmeliaNDRuntime extends AmeliaOutsideRuntime {
   public readonly runtimeKind = 'nd1' as const;
   private ndBase: number[] = Array(10).fill(0);
+  public flowHops = 0;
   private warpIntensity = 0;
   private lastNamed = -1;
   private flights = 0;
@@ -127,6 +130,12 @@ export class AmeliaNDRuntime extends AmeliaOutsideRuntime {
 
     // 4. Passage: gradient-following gate choice; Warp release after THETA steps in {3, 6}.
     const from = s.currentZone;
+    const scoreOf = (gate: NumogramGate) => {
+      const target = gate.target, z = zones[target];
+      return gate.flux * (1 - gate.resistance) + (memReadout.biasVector[target] || 0) * 0.4
+        + (z.activation - this.ndBase[target]) * ND1.FIELD_WEIGHT + Math.cos(z.phaseAngle) * 0.1
+        + (inputZone === target ? 0.35 : 0) + (attended?.attentionVector[target] ?? 0) * 0.9;   // ND-1b: the classic exit nudge kept
+    };
     let to: ZoneId = from, released: { to: number } | null = null;
     if (WARP.has(from) && this.warpIntensity >= ND1.THETA) {
       let c = this.lastNamed;
@@ -140,11 +149,31 @@ export class AmeliaNDRuntime extends AmeliaOutsideRuntime {
     } else {
       let best = -Infinity;
       for (const gate of gates.filter(g => g.isOpen && g.source === from)) {
-        const target = gate.target, z = zones[target];
-        const score = gate.flux * (1 - gate.resistance) + (memReadout.biasVector[target] || 0) * 0.4
-          + (z.activation - this.ndBase[target]) * ND1.FIELD_WEIGHT + Math.cos(z.phaseAngle) * 0.1
-          + (inputZone === target ? 0.35 : 0) + (attended?.attentionVector[target] ?? 0) * 0.9;   // ND-1b: the classic exit nudge kept
-        if (score > best) { best = score; to = target; }
+        const score = scoreOf(gate);
+        if (score > best) { best = score; to = gate.target; }
+      }
+    }
+    // Flow (FLOW study, experiments/synthetic-pointer/flow, adopted 10 Nov 2026): within this step she may keep moving by
+    // the same choice rule. At each hop she weighs the open gates from where she now stands and continues only if her
+    // preferred zone shows a larger field change (activation - baseline) than where she stands: she flows toward where the
+    // arriving number draws the field and settles where it is strongest. Never inside the Warp (its exit is the line of
+    // flight), never back along this step's route, at most FLOW_MAX further hops. Each hop is recorded in her memory.
+    const route: number[] = [to];
+    {
+      const change = (z: number) => zones[z as ZoneId].activation - this.ndBase[z];
+      let cur: number = to;
+      for (let k = 0; k < ND1.FLOW_MAX; k++) {
+        if (WARP.has(cur)) break;
+        let nb = -Infinity, nxt = -1;
+        for (const g of gates) if (g.isOpen && g.source === cur) { const sc = scoreOf(g); if (sc > nb) { nb = sc; nxt = g.target; } }
+        if (nxt < 0 || nxt === cur || nxt === from || route.includes(nxt) || !(change(nxt) > change(cur))) break;
+        cur = nxt; route.push(nxt);
+      }
+      if (route.length > 1) {
+        for (const hop of route.slice(0, -1)) s.memory.append({ blockIndex: s.stepCount, depth: s.stepCount, targetZone: hop as ZoneId,
+          fluxDelta: 0.025, phaseCoherence: 0.5, strainRelaxation: 0.025, eventDigest: canonicalSha256(`flow|${s.stepCount}|${hop}`),
+          timestamp: s.stepCount, kind: 'STEP' as const, fromZone: from, inputDigest, inputZone, encounters: [] } as never);
+        to = cur as ZoneId; this.flowHops += route.length - 1;
       }
     }
     this.warpIntensity = WARP.has(to) && !released ? this.warpIntensity + 1 : 0;
@@ -153,7 +182,7 @@ export class AmeliaNDRuntime extends AmeliaOutsideRuntime {
     const fluxDelta = Number(Math.max(0.005, Math.min(0.18, Math.abs(targetZone.activation - sourceZone.activation) * 0.12 + 0.025)).toFixed(6));
     const phaseCoherence = Number(Math.max(0.05, Math.min(1, (1 + Math.cos(targetZone.phaseAngle - sourceZone.phaseAngle)) / 2)).toFixed(6));
     const eventBody = { step: s.stepCount, from, to, fluxDelta, phaseCoherence, inputDigest: inputDigest ?? null, inputZone: inputZone ?? null,
-      encounters: encounterDecisions, runtime: 'nd1b', warpRelease: released };
+      encounters: encounterDecisions, runtime: 'nd1b', warpRelease: released, ...(route.length > 1 ? { route } : {}) };
     const eventDigest = canonicalSha256(JSON.stringify(eventBody));
     s.memory.append({ blockIndex: s.stepCount, depth: s.stepCount, targetZone: to, fluxDelta, phaseCoherence, strainRelaxation: 0.025,
       eventDigest, timestamp: s.stepCount, kind: 'STEP' as const, fromZone: from, inputDigest, inputZone, encounters: encounterDecisions } as never);
