@@ -72,6 +72,10 @@ import type { LiveFieldCheckpoint } from './outside/LiveFieldLoop';
 import type { MorphogeneticState } from './substrate/AmeliaMorphogeneticSubstrate';
 import { captureLiveControls, readLiveControls } from './app/liveControlsCheckpoint';
 import type { LiveControlsCheckpoint } from './app/liveControlsCheckpoint';
+import { OUTSIDE_INBOX_URL, parseOutsideInbox, pendingOutside, readOutsideLink, seenEncounterIds, toEncounter } from './outside/OutsideInbox';
+import type { OutsideInboxEntry, OutsideLinkSettings } from './outside/OutsideInbox';
+const OUTSIDE_LINK_KEY = 'amelia_outside_link_v1';
+const OUTSIDE_POLL_MS = 5 * 60 * 1000;
 
 const LOCAL_CHECKPOINT_KEY = 'amelia_pfm_shared_runtime_v2';
 const WRITER_ID_KEY = 'amelia_checkpoint_writer_v1';
@@ -86,7 +90,7 @@ function localCheckpointWriter(): string {
 }
 type LiveCheckpoint = { version: number; state: unknown; fieldCheckpoint?: LiveFieldCheckpoint | null;
   updatedAt?: string; writerId?: string; revision?: number; runtimeRunning?: boolean;
-  controls?: LiveControlsCheckpoint; pauseFieldOnRestore?: boolean };
+  controls?: LiveControlsCheckpoint; pauseFieldOnRestore?: boolean; outsideLink?: OutsideLinkSettings };
 type PendingSave = { checkpoint: LiveCheckpoint & { id: string }; snapshot: { id: string; step: number; timestamp: string | number; snapshot: SubstrateStepSnapshot } };
 
 export function App() {
@@ -139,6 +143,13 @@ export function App() {
   const [activeTab, setActiveTab] = useState<TabType>('dialogue');
   const tabletLocalMode = import.meta.env.VITE_AMELIA_LOCAL_ONLY === '1';
   const snapshotRef = useRef(snapshot);
+  // The live Outside link: encounters from the continuous receiver, delivered through her native path.
+  const outsideLinkRef = useRef<OutsideLinkSettings | null>((() => {
+    try { return readOutsideLink(JSON.parse(localStorage.getItem(OUTSIDE_LINK_KEY) || 'null')); } catch { return null; }
+  })());
+  const outsideInboxRef = useRef<OutsideInboxEntry[]>([]);
+  const [outsideLink, setOutsideLinkState] = useState<OutsideLinkSettings | null>(outsideLinkRef.current);
+  const [outsideStatus, setOutsideStatus] = useState({ pending: 0, delivered: 0, lastFetch: '', error: '' });
   snapshotRef.current = snapshot;
   
   // Assay controls
@@ -231,6 +242,8 @@ export function App() {
     setFieldPlaying(fieldRunningRef.current);
     if (retainedField) setFieldOpened(true);
     runtimeRef.current.importState(checkpoint.state as any);
+    const savedLink = readOutsideLink(checkpoint.outsideLink);
+    if (savedLink) applyOutsideLink(savedLink);
     const restoredGovernor = runtimeRef.current.getGovernor();
     const controls = savedControls ?? readLiveControls(undefined, {
       advisoryWeight: restoredGovernor.advisoryWeight, momentumDamping: restoredGovernor.momentumDampingFactor,
@@ -384,7 +397,8 @@ export function App() {
         writerId: writerIdRef.current, revision: ++checkpointRevisionRef.current, runtimeRunning: runtimeRunningRef.current,
         pauseFieldOnRestore: pauseFieldOnRestoreRef.current && !fieldStateRef.current,
         controls: captureLiveControls(advisoryWeightRef.current, momentumDampingRef.current,
-          rhythmHarmonizerRef.current.getRhythms(), controlsProvenanceRef.current) };
+          rhythmHarmonizerRef.current.getRhythms(), controlsProvenanceRef.current),
+        ...(outsideLinkRef.current ? { outsideLink: outsideLinkRef.current } : {}) };
       // Synchronous cache is best effort; do not overwrite an older good cache if it exceeds quota.
       try { localStorage.setItem(LOCAL_CHECKPOINT_KEY, JSON.stringify(record)); }
       catch (error) { console.warn('Legacy local checkpoint cache unavailable', error); }
@@ -448,10 +462,55 @@ export function App() {
     runtime.setMomentumDamping(momentumDampingRef.current);
   };
 
+  function applyOutsideLink(link: OutsideLinkSettings | null) {
+    outsideLinkRef.current = link;
+    setOutsideLinkState(link);
+    try { link ? localStorage.setItem(OUTSIDE_LINK_KEY, JSON.stringify(link)) : localStorage.removeItem(OUTSIDE_LINK_KEY); } catch { /* best effort */ }
+  }
+
+  const fetchOutsideInbox = async () => {
+    try {
+      const response = await fetch(OUTSIDE_INBOX_URL + '?t=' + Date.now(), { cache: 'no-store' });
+      if (!response.ok) throw new Error('Outside inbox HTTP ' + response.status);
+      outsideInboxRef.current = parseOutsideInbox(await response.json());
+      const link = outsideLinkRef.current;
+      const pending = link ? pendingOutside(outsideInboxRef.current, seenEncounterIds(runtimeRef.current.exportState() as any), link.since).length : 0;
+      setOutsideStatus(prev => ({ ...prev, pending, lastFetch: new Date().toLocaleTimeString(), error: '' }));
+    } catch (error) {
+      setOutsideStatus(prev => ({ ...prev, error: error instanceof Error ? error.message : String(error) }));
+    }
+  };
+
+  const handleToggleOutsideLink = () => {
+    const current = outsideLinkRef.current;
+    const next: OutsideLinkSettings = current?.enabled
+      ? { ...current, enabled: false }
+      : { schema: 'amelia.outside-link/v1', enabled: true, since: current?.since ?? new Date().toISOString() };
+    applyOutsideLink(next);
+    addLogMessage(next.enabled ? `[OUTSIDE] Live link on; receiving encounters captured since ${next.since}`
+      : '[OUTSIDE] Live link off; encounters already queued remain under Governor control');
+    if (next.enabled) void fetchOutsideInbox();
+  };
+
+  const nextOutsideEncounter = () => {
+    const link = outsideLinkRef.current;
+    if (!link?.enabled || outsideInboxRef.current.length === 0) return undefined;
+    const pending = pendingOutside(outsideInboxRef.current, seenEncounterIds(runtimeRef.current.exportState() as any), link.since);
+    setOutsideStatus(prev => ({ ...prev, pending: Math.max(0, pending.length - 1) }));
+    return pending.length ? toEncounter(pending[0]) : undefined;
+  };
+
   const advanceRuntime = (inputSignal?: string): SubstrateStepSnapshot => {
     const runtime = runtimeRef.current;
     prepareRuntimeStep();
-    const snap = runtime.step(inputSignal);
+    // One Outside encounter per step, oldest first; her Governor decides it as in the Outside Streams path.
+    const outsideEncounter = nextOutsideEncounter();
+    const snap = runtime.step(inputSignal, outsideEncounter);
+    if (outsideEncounter) {
+      const decision = (snap as any).encounterDecisions?.find((d: any) => d.eventId === outsideEncounter.eventId);
+      setOutsideStatus(prev => ({ ...prev, delivered: prev.delivered + 1 }));
+      addLogMessage(`[OUTSIDE] ${outsideEncounter.channel} ${outsideEncounter.eventId} → ${decision?.disposition ?? 'recorded'}`);
+    }
     publishSnapshot(snap);
     return snap;
   };
@@ -471,6 +530,13 @@ export function App() {
     setSnapshot(prev => ({ ...prev, governor: runtimeRef.current.getGovernor() }));
     addLogMessage(`[GOVERNOR] Momentum damping changed to ${value.toFixed(3)}`);
   };
+
+  useEffect(() => {
+    if (!outsideLink?.enabled) return;
+    void fetchOutsideInbox();
+    const interval = setInterval(() => { void fetchOutsideInbox(); }, OUTSIDE_POLL_MS);
+    return () => clearInterval(interval);
+  }, [outsideLink?.enabled]);
 
   useEffect(() => {
     if (!isRunning || activeTab === 'morphogenetic' || fieldPlaying) return;
@@ -666,6 +732,19 @@ export function App() {
           >
             {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
             {isRunning ? 'Pause Loop' : 'Resume Loop'}
+          </button>
+
+          <button
+            id="btn-outside-link"
+            onClick={handleToggleOutsideLink}
+            title={outsideLink?.enabled ? `Receiving since ${outsideLink.since}. Last fetch ${outsideStatus.lastFetch || '—'}. Delivered ${outsideStatus.delivered}.${outsideStatus.error ? ' Error: ' + outsideStatus.error : ''}` : 'Connect the live Outside receiver'}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold font-mono flex items-center gap-1.5 border transition-colors ${
+              outsideLink?.enabled ? 'bg-cyan-500/20 text-cyan-200 border-cyan-500/50' : 'bg-stone-800 text-stone-300 border-stone-700 hover:bg-stone-700'}`}
+          >
+            <Radio className="w-3.5 h-3.5 text-cyan-400" />
+            {outsideLink?.enabled
+              ? `Outside on · ${outsideStatus.error ? 'offline' : outsideStatus.pending + ' waiting · ' + outsideStatus.delivered + ' delivered'}`
+              : 'Outside off'}
           </button>
 
           <button
