@@ -55,6 +55,9 @@ jobs:
             if [ "$repo_dir" = "${{ github.workspace }}/watchtower-live" ]; then
               git -C "$repo_dir" add atlas.json || return 1
             fi
+            if [ -f "$repo_dir/outside-inbox.json" ]; then
+              git -C "$repo_dir" add outside-inbox.json || return 1
+            fi
             if git -C "$repo_dir" diff --cached --quiet; then
               echo "No changes for $branch_name."
               return 0

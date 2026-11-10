@@ -4,12 +4,14 @@ import { resolve } from 'node:path';
 import { AmeliaOutsideRuntime } from '../../src/outside/OutsideEncounterRuntime.ts';
 import { OutsideStreamBridge } from '../../src/outside/OutsideStreamBridge.ts';
 import type { TarotDraw } from '../../src/outside/types.ts';
+import { buildOutsideInbox } from '../../src/outside/OutsideInbox.ts';
 
 const root = resolve(process.argv[2] ?? 'outside-live');
 await mkdir(root, { recursive: true });
 const statePath = resolve(root, 'state.json');
 const bundlePath = resolve(root, 'ledger.json');
 const statusPath = resolve(root, 'LATEST.md');
+const inboxPath = resolve(root, 'outside-inbox.json');
 const feeds = [
   ['BBC World', 'https://feeds.bbci.co.uk/news/world/rss.xml'],
   ['NPR World', 'https://feeds.npr.org/1004/rss.xml'],
@@ -141,6 +143,8 @@ persisted.lastRunAt = now();
 persisted.lastRunId = runId;
 await writeFile(statePath, JSON.stringify(persisted, null, 2) + '\n');
 await writeFile(bundlePath, bridge.exportJson() + '\n');
+// The tablet reads this small public inbox and delivers the same encounters to the live Amelia.
+await writeFile(inboxPath, JSON.stringify(buildOutsideInbox(bridge.getRecords() as any, runId, now())) + '\n');
 const links = bridge.getTraceLinks().filter(link => link.cardEventId === cardRecord.event.eventId);
 const summary = [
   '# Amelia Outside continuous ingress',
