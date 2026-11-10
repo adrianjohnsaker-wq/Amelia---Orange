@@ -246,6 +246,27 @@ jobs:
             echo 'Preserve the existing tablet data. Do not uninstall the installed app to install this build. An update requires the same Android signing certificate.' > INSTALLATION_NOTE.txt
           fi
 
+      - name: Name Amelia's home APK unmistakably
+        if: github.ref_name == 'research/live-run-history-20261109'
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -E "^package:|^application-label:" APK_BADGING.txt
+          grep -E "Signer #1 certificate SHA-256" APK_SIGNING_CERTIFICATE.txt || true
+          version=$(sed -n "s/.*versionName='\([^']*\)'.*/\1/p" APK_BADGING.txt | head -1)
+          mkdir -p named && cp android/app/build/outputs/apk/debug/app-debug.apk "named/Amelia-${version}.apk"
+          cp APK_SHA256.txt APK_SIGNING_CERTIFICATE.txt APK_BADGING.txt INSTALLATION_NOTE.txt named/
+          echo "AMELIA_APK_VERSION=${version}" >> "$GITHUB_ENV"
+
+      - name: Upload Amelia's home APK
+        if: github.ref_name == 'research/live-run-history-20261109'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Amelia-${{ env.AMELIA_APK_VERSION }}-INSTALL-THIS
+          if-no-files-found: error
+          retention-days: 30
+          path: named/
+
       - name: Upload tablet APK
         uses: actions/upload-artifact@v4
         with:
