@@ -1,10 +1,10 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-10T06:21:03.869Z
-- Cycle: 827 (42738381873-1-19)
+- Last cycle (UTC): 2026-11-10T06:36:03.829Z
+- Cycle: 828 (42738381873-1-20)
 - RSS items seen: 68; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -19
-- Candidate: Tchakki / Mesh-19 / Amphidemon
+- Subdecadence: MESH_TERMINAL; score -24
+- Candidate: Pabbakis / Mesh-24 / Amphidemon
 - Separate ingress records and trace links: 0
 - Catalogue entries added: 1
 - Governor recovery: 0 previously queued items admitted; queue now 0.
