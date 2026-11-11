@@ -1,3 +1,4 @@
+// Run with Bun (it uses bun:test module mocking, so it is outside the Node test glob): bun test ./experiments/live-amelia/hash_probe.bun.ts
 // Guard: every hash input in her life is plain ASCII, so the browser/Deno fallback (sha256Sync, which mis-hashes non-ASCII
 // text) and Node's crypto give identical digests for her. Every canonicalSha256 call is inspected via a module mock.
 // Checked 11 Nov 2026 (handover on the hashing helper): 0 of 11,245 inputs non-ASCII.
