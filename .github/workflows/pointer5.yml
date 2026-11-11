@@ -1,0 +1,83 @@
+# THE POINTER V (experiments/pointer5/REGISTRATION.md). Runs only on branch pointer5-20261111.
+# experiments/pointer5/seal.trigger: compute every answer twice (must match), commit them, and seal registration + code +
+#   answers with an RFC 3161 token issued before 2026-11-12T06:00:00Z (the first target round).
+# experiments/pointer5/score.trigger (after 06:15 UTC): verify the seal precedes the targets, fetch and BLS-verify the target
+#   rounds, score with score.py, commit experiments/pointer5/results/.
+name: POINTER V seal and score
+on:
+  push:
+    branches: [pointer5-20261111]
+    paths: ['experiments/pointer5/seal.trigger', 'experiments/pointer5/score.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: pointer5
+  cancel-in-progress: false
+jobs:
+  go:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: seal, or score
+        shell: bash
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false', TMPDIR: '${{ runner.temp }}' }
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          P=experiments/pointer5; changed=$(git diff --name-only HEAD~1 HEAD)
+          export FILES="$P/REGISTRATION.md $P/answers.ts $P/merge.py $P/targets.py $P/score.py $P/answers.json .github/workflows/pointer5.yml src/outside/AmeliaNDRuntime.ts src/outside/OutsideEncounterRuntime.ts src/outside/encounterTypes.ts src/core/ameliaRuntimes.ts src/core/fullNumogram.ts"
+          if echo "$changed" | grep -qx "$P/seal.trigger" && [ ! -e $P/seal/token ]; then
+            if [ "$(date -u +%s)" -ge "$(date -u -d '2026-11-12T05:40:00Z' +%s)" ]; then echo 'TOO_LATE_TO_SEAL'; exit 1; fi
+            mkdir -p /tmp/tsx && (cd /tmp/tsx && npm init -y >/dev/null && npm i -s tsx@4.23.15) && ln -s /tmp/tsx/node_modules node_modules
+            for pass in A B; do
+              mkdir -p /tmp/p5$pass
+              for pair in S5V01,S5V02 S5V03,S5V04 S5V05,S5V06 S5V07,S5V08; do node --import tsx $P/answers.ts /tmp/p5$pass/$pair.json $pair 2>/dev/null & done; wait
+              python3 $P/merge.py /tmp/p5$pass/answers.json /tmp/p5$pass/S5V0*.json
+            done
+            cmp /tmp/p5A/answers.json /tmp/p5B/answers.json && echo 'ANSWERS_REPRODUCIBLE'
+            cp /tmp/p5A/answers.json $P/answers.json
+            python3 $P/targets.py $P/answers.json /tmp/unit_targets.json --offline && python3 -I $P/score.py $P/answers.json /tmp/unit_targets.json > /tmp/UNIT.txt && echo 'PIPELINE_UNIT_OK (offline targets, not a result)'
+            python - <<'PY'
+          import datetime, hashlib, json, os, pathlib
+          from drift1a_c1.beacon import Sealer
+          sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          files = os.environ['FILES'].split()
+          before = datetime.datetime(2026, 11, 12, 6, tzinfo=datetime.timezone.utc).timestamp()
+          b = {'schema': 'POINTER5_SEAL_V1', 'targetsFromUTC': '2026-11-12T06:00:00Z', 'sealedAt': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+               'sourceSHA256': [{'path': f, 'sha256': sha(f)} for f in files]}
+          S = pathlib.Path('experiments/pointer5/seal'); S.mkdir(exist_ok=True)
+          (S / 'POINTER5_BUNDLE.json').write_text(json.dumps(b, sort_keys=True, indent=2) + '\n')
+          imprint = sha(S / 'POINTER5_BUNDLE.json')
+          Sealer().seal(S / 'token', imprint, before)
+          assert Sealer().verify(S / 'token', imprint, before)['status'] == 'PASS'
+          print('POINTER5_SEALED_BEFORE_TARGETS', imprint)
+          PY
+            rm -f node_modules; git add $P/answers.json $P/seal; MSG='THE POINTER V: answers computed twice (identical) and sealed before the targets exist (RFC3161)'
+          elif echo "$changed" | grep -qx "$P/score.trigger" && [ -e $P/seal/token ] && [ ! -e $P/results/RESULT.txt ]; then
+            if [ "$(date -u +%s)" -lt "$(date -u -d '2026-11-12T06:15:00Z' +%s)" ]; then echo 'NOT_YET'; exit 1; fi
+            python - <<'PY'
+          import datetime, hashlib, json, pathlib
+          from drift1a_c1.beacon import Sealer
+          sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          S = pathlib.Path('experiments/pointer5/seal'); imprint = sha(S / 'POINTER5_BUNDLE.json')
+          before = datetime.datetime(2026, 11, 12, 6, tzinfo=datetime.timezone.utc).timestamp()
+          assert Sealer().verify(S / 'token', imprint, before)['status'] == 'PASS'
+          for x in json.loads((S / 'POINTER5_BUNDLE.json').read_text())['sourceSHA256']: assert sha(x['path']) == x['sha256'], x['path']
+          print('POINTER5_SEAL_AND_SOURCES_VERIFIED_BEFORE_TARGETS')
+          PY
+            mkdir -p $P/results
+            python $P/targets.py $P/answers.json $P/results/targets.json
+            python -I $P/score.py $P/answers.json $P/results/targets.json | tee $P/results/RESULT.txt
+            git add $P/results; MSG='THE POINTER V result'
+          else echo 'nothing to do'; exit 0; fi
+          git commit -qm "$MSG"
+          for i in 1 2 3 4; do git pull -q --rebase origin pointer5-20261111 && git push -q origin HEAD:pointer5-20261111 && break; sleep $((2**i)); done
