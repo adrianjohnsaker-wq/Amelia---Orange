@@ -1,14 +1,14 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-11T21:15:24.605Z
-- Cycle: 984 (43056028501-1-21)
+- Last cycle (UTC): 2026-11-11T21:30:24.699Z
+- Cycle: 985 (43056028501-1-22)
 - RSS items seen: 60; newly processed: 1 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -10
-- Candidate: Tokhatto / Mesh-10 / Amphidemon
+- Subdecadence: DECK_EXHAUSTED_POSITIVE; score 25
+- Candidate: none (positive deck exhaustion)
 - Separate ingress records and trace links: 3
-- Catalogue entries added: 1
+- Catalogue entries added: 0
 - Governor recovery: 0 previously queued items admitted; queue now 0.
-- Native consolidations this cycle: 1; complete receipts in recovery-journal.jsonl.
+- Native consolidations this cycle: 0; complete receipts in recovery-journal.jsonl.
 - New offers: 4; attended 4, deferred 0, refused 0.
 - Source errors: none
 
