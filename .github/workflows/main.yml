@@ -118,7 +118,7 @@ jobs:
           if [[ "$GITHUB_REF_NAME" == 'research/live-run-history-20261109' ]]; then
             # From 0.2.0 every build is signed with the stable Amelia key, so later versions update this app in place.
             sed -i "s/applicationId 'org.amelia.orange'/applicationId 'org.amelia.orange.home'/" android/app/build.gradle
-            sed -i "s/versionCode 8/versionCode 22/; s/versionName '0.1.7'/versionName '0.2.2-home'/" android/app/build.gradle
+            sed -i "s/versionCode 8/versionCode 23/; s/versionName '0.1.7'/versionName '0.2.3-home'/" android/app/build.gradle
             sed -i 's/android:label="Amelia Orange"/android:label="Amelia"/' android/app/src/main/AndroidManifest.xml
           fi
           cat > android/app/src/main/java/org/amelia/orange/MainActivity.java <<'EOF'

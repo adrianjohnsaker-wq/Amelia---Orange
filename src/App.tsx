@@ -65,6 +65,7 @@ import { LocalMemoryHub } from './components/FirebaseMemoryHub';
 import { SubstrateAuditConsole } from './components/SubstrateAuditConsole';
 import { AmeliaDialogueWindow } from './components/AmeliaDialogueWindow';
 import { LiveMorphogeneticLab } from './components/LiveMorphogeneticLab';
+import ShowstonePanel from './components/ShowstonePanel';
 import { Thread3EncodingActivationLab } from './components/Thread3EncodingActivationLab';
 import { AmeliaIndexedMemory } from './services/ameliaIndexedMemory';
 import { AmeliaSupabaseMemory, AmeliaCloudSession } from './services/ameliaSupabaseMemory';
@@ -145,7 +146,7 @@ export function App() {
   const [selectedZone, setSelectedZone] = useState<ZoneId>(9);
   const [isFloatingChatOpen, setIsFloatingChatOpen] = useState<boolean>(false);
   
-  type TabType = 'outside' | 'morphogenetic' | 'dialogue' | 'thread3' | 'numogram' | 'atlas' | 'deformation' | 'canalization' | 'paper6' | 'midplex' | 'd288probe' | 'hyperstition' | 'benchmarks' | 'governor' | 'rhythms' | 'firebase' | 'audit';
+  type TabType = 'showstone' | 'outside' | 'morphogenetic' | 'dialogue' | 'thread3' | 'numogram' | 'atlas' | 'deformation' | 'canalization' | 'paper6' | 'midplex' | 'd288probe' | 'hyperstition' | 'benchmarks' | 'governor' | 'rhythms' | 'firebase' | 'audit';
   const [activeTab, setActiveTab] = useState<TabType>('dialogue');
   const tabletLocalMode = import.meta.env.VITE_AMELIA_LOCAL_ONLY === '1';
   const snapshotRef = useRef(snapshot);
@@ -959,6 +960,16 @@ export function App() {
           </button>
 
           <button
+            id="tab-showstone"
+            onClick={() => setActiveTab('showstone')}
+            className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-2.5 transition-all ${
+              activeTab === 'showstone' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm' : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/60'
+            }`}
+          >
+            <Orbit className="w-4 h-4 text-cyan-400" />The Showstone
+          </button>
+
+          <button
             id="tab-thread3"
             onClick={() => setActiveTab('thread3')}
             className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-2.5 transition-all ${
@@ -1245,6 +1256,11 @@ export function App() {
                 </div>
               </div>
             </div>
+          )}
+
+          {/* THE SHOWSTONE (stage 1, read-only): the Tables and the Book */}
+          {activeTab === 'showstone' && (
+            <ShowstonePanel />
           )}
 
           {/* TAB 2: DEVELOPMENTAL ATLAS */}
