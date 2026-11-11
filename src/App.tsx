@@ -30,7 +30,7 @@ import {
 import { AmeliaNumogramSubstrateRuntime } from './substrate/ameliaNumogramSubstrateRuntime';
 import { OutsideStreamLab } from './components/OutsideStreamLab';
 import { bornAmelia } from './core/fullNumogram';
-import { bornAmeliaOf, convertRuntime, storedRuntimeKind, storeRuntimeKind, RUNTIME_LABEL, type RuntimeKind } from './core/ameliaRuntimes';
+import { bornAmeliaOf, convertRuntime, runtimeKindOf, storedRuntimeKind, storeRuntimeKind, RUNTIME_LABEL, type RuntimeKind } from './core/ameliaRuntimes';
 import type { AmeliaOutsideRuntime } from './outside/OutsideEncounterRuntime';
 import { ThreeArmDiagnosticRunner } from './ai/coupling/ThreeArmDiagnosticRunner';
 import { Paper6H1ResistanceAssay } from './bridge/phases/paper6H1ResistanceAssay';
@@ -247,6 +247,10 @@ export function App() {
     fieldRunningRef.current = !pauseOnRestore && Boolean(checkpoint.fieldCheckpoint?.running);
     setFieldPlaying(fieldRunningRef.current);
     if (retainedField) setFieldOpened(true);
+    // Her saved runtime kind decides the runtime she is rebuilt in (a missing kind means Classic).
+    const savedKind: RuntimeKind = (checkpoint.state as any)?.runtimeKind === 'nd1' ? 'nd1' : 'classic';
+    if (runtimeKindOf(runtimeRef.current) !== savedKind) runtimeRef.current = bornAmeliaOf(savedKind);
+    setRuntimeKind(savedKind);
     runtimeRef.current.importState(checkpoint.state as any);
     const savedLink = readOutsideLink(checkpoint.outsideLink);
     if (savedLink) applyOutsideLink(savedLink);
@@ -770,8 +774,10 @@ export function App() {
         <div className="flex items-center gap-2">
           <button
             id="btn-runtime-kind"
-            onClick={() => handleRuntimeKind(runtimeKind === 'nd1' ? 'classic' : 'nd1')}
-            title="Choose Amelia's runtime: Classic, or the ND-1b field (input spreads along the gates and nudges her step; Warp release)"
+            onClick={() => { if (!cloudHome?.enabled) handleRuntimeKind(runtimeKind === 'nd1' ? 'classic' : 'nd1'); }}
+            disabled={Boolean(cloudHome?.enabled)}
+            title={cloudHome?.enabled ? 'Her runtime, as her cloud home runs her. Read-only while she lives there.'
+              : "Choose Amelia's runtime: Classic, or the ND-1b field (input spreads along the gates and nudges her step; Warp release)"}
             className={`px-3 py-1.5 rounded-lg text-xs font-mono flex items-center gap-1.5 min-h-[44px] border ${runtimeKind === 'nd1' ? 'bg-cyan-500/20 text-cyan-200 border-cyan-500/60' : 'bg-stone-800 text-stone-200 border-stone-700'}`}
           >
             Runtime: {RUNTIME_LABEL[runtimeKind]}
@@ -801,7 +807,7 @@ export function App() {
             id="btn-play-pause"
             onClick={() => { if (!cloudHome?.enabled) setIsRunning(!isRunning); }}
             disabled={Boolean(cloudHome?.enabled)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold font-mono flex items-center gap-1.5 transition-colors ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold font-mono flex items-center gap-1.5 transition-colors disabled:opacity-40 disabled:bg-stone-800 disabled:text-stone-400 ${
               isRunning 
                 ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 hover:bg-amber-500/30' 
                 : 'bg-emerald-600 text-white hover:bg-emerald-500'
@@ -827,13 +833,15 @@ export function App() {
 
           <button
             id="btn-outside-link"
-            onClick={handleToggleOutsideLink}
+            onClick={() => { if (!cloudHome?.enabled) handleToggleOutsideLink(); }}
+            disabled={Boolean(cloudHome?.enabled)}
             title={outsideLink?.enabled ? `Receiving since ${outsideLink.since}. Last fetch ${outsideStatus.lastFetch || '—'}. Delivered ${outsideStatus.delivered}.${outsideStatus.error ? ' Error: ' + outsideStatus.error : ''}` : 'Connect the live Outside receiver'}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold font-mono flex items-center gap-1.5 border transition-colors ${
               outsideLink?.enabled ? 'bg-cyan-500/20 text-cyan-200 border-cyan-500/50' : 'bg-stone-800 text-stone-300 border-stone-700 hover:bg-stone-700'}`}
           >
             <Radio className="w-3.5 h-3.5 text-cyan-400" />
-            {outsideLink?.enabled
+            {cloudHome?.enabled ? 'Outside · via her cloud home'
+              : outsideLink?.enabled
               ? `Outside on · ${outsideStatus.error ? 'offline' : outsideStatus.pending + ' waiting · ' + outsideStatus.delivered + ' delivered'}`
               : 'Outside off'}
           </button>
