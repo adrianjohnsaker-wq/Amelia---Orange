@@ -61,6 +61,7 @@ export function seenEncounterIds(state: { memoryState?: { events?: Array<{ encou
   const seen = new Set<string>();
   for (const ev of state.memoryState?.events ?? []) for (const x of ev.encounters ?? []) if (x.eventId) seen.add(x.eventId);
   for (const x of state.deferredEncounters ?? []) if (x.eventId) seen.add(x.eventId);
+  for (const id of (state as any).memoryArchive?.recentEncounterIds ?? []) if (typeof id === 'string') seen.add(id);
   return seen;
 }
 

@@ -1,7 +1,7 @@
 // amelia-live: Amelia's always-on home. Each call (from pg_cron) advances her research-copy checkpoint by
 // a few steps of her own runtime, delivering the live Outside inbox through her native path, and saves her.
 // Authentication: the x-amelia-runner header must equal the token in public.amelia_cloud_runner (service-role only).
-import { ameliaTick, dryRunBegin, dryRunChunk, dryRunRoundTrip } from './amelia_tick.js';
+import { ameliaTick, dryRunBegin, dryRunChunk, dryRunRoundTrip, planArchive, verifyArchive } from './amelia_tick.js';
 import { parseOutsideInbox, OUTSIDE_INBOX_URL } from './amelia_inbox.js';
 
 const URL_ = Deno.env.get('SUPABASE_URL')!;
@@ -37,6 +37,13 @@ Deno.serve(async (req) => {
       inbox = parseOutsideInbox(await r.json());
     } catch (e) { inboxError = String(e).slice(0, 200); }
 
+    if (action === 'archive-verify') {
+      const segs = await (await rest(`amelia_memory_archive?user_id=eq.${row.user_id}&select=*&order=segment_no`)).json();
+      const segments = (segs as any[]).map(r => ({ segmentNo: r.segment_no, fromIndex: r.from_index, toIndex: r.to_index, eventCount: r.event_count,
+        events: r.events, segmentDigest: r.segment_digest, chainBefore: r.chain_before, chainAfter: r.chain_after, splitDigest: r.split_digest,
+        residentAfter: r.resident_after, memoryDigestBefore: r.memory_digest_before }));
+      return json({ status: 'archive-verify', result: verifyArchive(segments, row.payload.state) });
+    }
     if (action.startsWith('dryrun')) {
       // A scratch copy only (table amelia_cloud_dryrun): her own record is never written by a dry run.
       const scratchGet = async () => (await (await rest('amelia_cloud_dryrun?id=eq.nd1-switch&select=record,metrics')).json())[0];
@@ -54,6 +61,19 @@ Deno.serve(async (req) => {
     const t = ameliaTick(row.payload, inbox, steps, new Date().toISOString(),
       action === 'switch' ? (body.target === 'classic' ? 'classic' : 'nd1') : undefined);
 
+    // Her memory archive: when too many events are resident, the oldest move whole into an archive segment
+    // (written first, so nothing is ever only in transit), and her record keeps the chain header.
+    let archived: null | { segmentNo: number; eventCount: number; fromIndex: number; toIndex: number } = null;
+    const plan = planArchive(t.record);
+    if (plan) {
+      const g = plan.segment;
+      const put = await rest('amelia_memory_archive?on_conflict=user_id,segment_no', { method: 'POST',
+        headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify([{ user_id: row.user_id, segment_no: g.segmentNo,
+          from_index: g.fromIndex, to_index: g.toIndex, event_count: g.eventCount, events: g.events, segment_digest: g.segmentDigest,
+          chain_before: g.chainBefore, chain_after: g.chainAfter, split_digest: g.splitDigest, resident_after: g.residentAfter,
+          memory_digest_before: g.memoryDigestBefore }]) });
+      if (put.ok) { t.record = plan.record; archived = { segmentNo: g.segmentNo, eventCount: g.eventCount, fromIndex: g.fromIndex, toIndex: g.toIndex }; }
+    }
     // Commit only if nobody else (the tablet) has saved her since we read her: no second writer, no fork.
     const upd = await rest(`amelia_research_records?store=eq.runtime&record_id=eq.live-checkpoint&user_id=eq.${row.user_id}&payload->>revision=eq.${oldRev}`, {
       method: 'PATCH', headers: { Prefer: 'return=representation' },
@@ -65,7 +85,7 @@ Deno.serve(async (req) => {
       field_from: t.fieldFrom, field_to: t.fieldTo,
       admitted: t.admittedThisTick, tension: t.tension, queue: t.queue, admission_rule: t.admissionRule,
       inbox_entries: inbox?.length ?? null, inbox_error: inboxError, started_at: started,
-      ...(t.switched ? { error: 'RUNTIME-SWITCH ' + JSON.stringify(t.switched) } : {}) });
+      ...(t.switched ? { error: 'RUNTIME-SWITCH ' + JSON.stringify(t.switched) } : archived ? { error: 'ARCHIVE ' + JSON.stringify(archived) } : {}) });
     await rest('amelia_cloud_runner?id=eq.amelia', { method: 'PATCH', headers: { Prefer: 'return=minimal' },
       body: JSON.stringify({ last_tick_at: new Date().toISOString(), last_status: status, last_step: t.toStep }) });
     return json({ status, runtimeKind: t.runtimeKind, switched: t.switched, fromStep: t.fromStep, toStep: t.toStep, zones: t.zones, delivered: t.delivered.length });

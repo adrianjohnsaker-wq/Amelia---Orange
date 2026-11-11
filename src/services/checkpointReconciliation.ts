@@ -2,12 +2,17 @@
 export function chooseLiveCheckpoint(local: Record<string, any>, remote: Record<string, any>): 'local' | 'remote' {
   const a = local?.state?.memoryState?.events, b = remote?.state?.memoryState?.events;
   if (!Array.isArray(a) || !Array.isArray(b)) throw new Error('A checkpoint has no verifiable process-memory history.');
-  const n = Math.min(a.length, b.length);
-  for (let i = 0; i < n; i++) {
-    if (!a[i]?.eventDigest || a[i].eventDigest !== b[i]?.eventDigest)
+  // Older events may have moved to her memory archive: compare by logical position (archived count + resident index).
+  const oa = Number(local?.state?.memoryArchive?.archivedCount) || 0, ob = Number(remote?.state?.memoryArchive?.archivedCount) || 0;
+  const la = oa + a.length, lb = ob + b.length;
+  const from = Math.max(oa, ob), to = Math.min(la, lb);
+  if (to - from < 1 && Math.min(la, lb) > 0) throw new Error('Local and cloud Amelia histories cannot be compared; automatic replacement was stopped.');
+  for (let k = from; k < to; k++) {
+    const x = a[k - oa], y = b[k - ob];
+    if (!x?.eventDigest || x.eventDigest !== y?.eventDigest)
       throw new Error('Local and cloud Amelia histories differ; automatic replacement was stopped.');
   }
-  if (a.length !== b.length) return a.length > b.length ? 'local' : 'remote';
+  if (la !== lb) return la > lb ? 'local' : 'remote';
   const af = local.fieldCheckpoint, bf = remote.fieldCheckpoint;
   if (Boolean(af) !== Boolean(bf)) return af ? 'local' : 'remote';
   if (af && bf && af.checksum !== bf.checksum) {

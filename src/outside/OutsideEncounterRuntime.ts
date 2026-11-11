@@ -102,6 +102,9 @@ export class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
   private deferredEncounters: SubstrateEncounterInput[] = [];
   private admissionRule: AdmissionRule = 'fixed-0.72';
   private tensionHistory: number[] = [];
+  /** Header of her memory archive (older events moved out of the resident record, digest chain kept); carried as is. */
+  private memoryArchive: Record<string, unknown> | null = null;
+  public getMemoryArchive(): Record<string, unknown> | null { return this.memoryArchive; }
 
   public setAdmissionRule(rule: AdmissionRule): void { this.admissionRule = rule; }
   public getAdmissionRule(): AdmissionRule { return this.admissionRule; }
@@ -278,6 +281,7 @@ export class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
     const { snapshots, memoryConsumptionLog, ...rest } = super.exportState();
     return { ...rest, deferredEncounters: JSON.parse(JSON.stringify(this.deferredEncounters)),
       ...(this.admissionRule !== 'fixed-0.72' || this.tensionHistory.length ? { admissionRule: this.admissionRule, tensionHistory: [...this.tensionHistory] } : {}),
+      ...(this.memoryArchive ? { memoryArchive: JSON.parse(JSON.stringify(this.memoryArchive)) } : {}),
       snapshots, memoryConsumptionLog };
   }
 
@@ -285,6 +289,7 @@ export class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
     super.importState(state);
     if (state && Array.isArray(state.deferredEncounters)) this.deferredEncounters = JSON.parse(JSON.stringify(state.deferredEncounters));
     if (state?.admissionRule === 'relative-v1' || state?.admissionRule === 'fixed-0.72') this.admissionRule = state.admissionRule;
+    if (state?.memoryArchive && typeof state.memoryArchive === 'object') this.memoryArchive = JSON.parse(JSON.stringify(state.memoryArchive));
     if (Array.isArray(state?.tensionHistory)) this.tensionHistory = (state.tensionHistory as unknown[])
       .filter((v): v is number => typeof v === 'number' && Number.isFinite(v)).slice(-RELATIVE_WINDOW);
   }

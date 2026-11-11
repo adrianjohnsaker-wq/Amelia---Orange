@@ -18968,6 +18968,10 @@ class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
   deferredEncounters = [];
   admissionRule = "fixed-0.72";
   tensionHistory = [];
+  memoryArchive = null;
+  getMemoryArchive() {
+    return this.memoryArchive;
+  }
   setAdmissionRule(rule) {
     this.admissionRule = rule;
   }
@@ -19139,6 +19143,7 @@ class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
       ...rest,
       deferredEncounters: JSON.parse(JSON.stringify(this.deferredEncounters)),
       ...this.admissionRule !== "fixed-0.72" || this.tensionHistory.length ? { admissionRule: this.admissionRule, tensionHistory: [...this.tensionHistory] } : {},
+      ...this.memoryArchive ? { memoryArchive: JSON.parse(JSON.stringify(this.memoryArchive)) } : {},
       snapshots,
       memoryConsumptionLog
     };
@@ -19149,6 +19154,8 @@ class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
       this.deferredEncounters = JSON.parse(JSON.stringify(state.deferredEncounters));
     if (state?.admissionRule === "relative-v1" || state?.admissionRule === "fixed-0.72")
       this.admissionRule = state.admissionRule;
+    if (state?.memoryArchive && typeof state.memoryArchive === "object")
+      this.memoryArchive = JSON.parse(JSON.stringify(state.memoryArchive));
     if (Array.isArray(state?.tensionHistory))
       this.tensionHistory = state.tensionHistory.filter((v) => typeof v === "number" && Number.isFinite(v)).slice(-RELATIVE_WINDOW);
   }
@@ -19548,6 +19555,9 @@ function seenEncounterIds(state) {
   for (const x of state.deferredEncounters ?? [])
     if (x.eventId)
       seen.add(x.eventId);
+  for (const id of state.memoryArchive?.recentEncounterIds ?? [])
+    if (typeof id === "string")
+      seen.add(id);
   return seen;
 }
 function pendingOutside(entries, seen, since) {
@@ -20646,11 +20656,133 @@ function dryRunRoundTrip(scratch, inbox, n = 300, every = 5) {
   const a = A.getMemory().getEvents().at(-1), b = B.getMemory().getEvents().at(-1);
   return { roundTrip: same && a.eventDigest === b.eventDigest, steps: n, kind: runtimeKindOf(A) };
 }
+// src/cloud/memoryArchive.ts
+var ARCHIVE_SCHEMA = "amelia.memory-archive/v1";
+var ARCHIVE_GENESIS = canonicalSha256("amelia.memory-archive/v1:genesis");
+var ARCHIVE_THRESHOLD = 1500;
+var ARCHIVE_KEEP = 1000;
+var RECENT_IDS = 5000;
+var digestsOf = (events) => events.map((e) => String(e?.eventDigest ?? ""));
+var segmentDigestOf = (events) => canonicalSha256(JSON.stringify(digestsOf(events)));
+var fullHistoryDigestOf = (digests) => canonicalSha256(JSON.stringify(digests));
+function headerOf(state) {
+  const h = state?.memoryArchive;
+  return h?.schema === ARCHIVE_SCHEMA ? h : {
+    schema: ARCHIVE_SCHEMA,
+    archivedCount: 0,
+    segments: 0,
+    chainDigest: ARCHIVE_GENESIS,
+    lastFullHistoryDigest: null,
+    recentEncounterIds: []
+  };
+}
+function planArchive(record, threshold = ARCHIVE_THRESHOLD, keep = ARCHIVE_KEEP) {
+  const events = record?.state?.memoryState?.events ?? [];
+  if (events.length <= threshold)
+    return null;
+  const header = headerOf(record.state);
+  const cut = events.length - keep;
+  const moved = events.slice(0, cut), resident = events.slice(cut);
+  const segmentDigest = segmentDigestOf(moved);
+  const chainAfter = canonicalSha256(header.chainDigest + segmentDigest);
+  const splitDigest = canonicalSha256(header.chainDigest + JSON.stringify(digestsOf(events)));
+  const memoryDigestBefore = header.archivedCount === 0 ? fullHistoryDigestOf(digestsOf(events)) : null;
+  const movedIds = [];
+  for (const e of moved)
+    for (const x of e?.encounters ?? [])
+      if (x?.eventId)
+        movedIds.push(String(x.eventId));
+  const segment = {
+    segmentNo: header.segments + 1,
+    fromIndex: header.archivedCount,
+    toIndex: header.archivedCount + cut - 1,
+    eventCount: cut,
+    events: moved,
+    segmentDigest,
+    chainBefore: header.chainDigest,
+    chainAfter,
+    splitDigest,
+    residentAfter: resident.length,
+    memoryDigestBefore
+  };
+  const nextHeader = {
+    schema: ARCHIVE_SCHEMA,
+    archivedCount: header.archivedCount + cut,
+    segments: segment.segmentNo,
+    chainDigest: chainAfter,
+    lastFullHistoryDigest: null,
+    recentEncounterIds: [...new Set([...header.recentEncounterIds, ...movedIds])].slice(-RECENT_IDS)
+  };
+  const state = { ...record.state, memoryState: { ...record.state.memoryState, events: resident }, memoryArchive: nextHeader };
+  return { segment, record: { ...record, state } };
+}
+function verifyArchive(segments, state) {
+  const header = headerOf(state);
+  const sorted = [...segments].sort((a, b) => a.segmentNo - b.segmentNo);
+  let chain = ARCHIVE_GENESIS, next = 0, ok = true;
+  const problems = [];
+  const H = [];
+  for (const s of sorted) {
+    if (s.fromIndex !== next) {
+      ok = false;
+      problems.push(`segment ${s.segmentNo} starts at ${s.fromIndex}, expected ${next}`);
+    }
+    if (s.events.length !== s.eventCount) {
+      ok = false;
+      problems.push(`segment ${s.segmentNo} holds ${s.events.length} of ${s.eventCount} events`);
+    }
+    if (segmentDigestOf(s.events) !== s.segmentDigest) {
+      ok = false;
+      problems.push(`segment ${s.segmentNo} digest mismatch`);
+    }
+    if (s.chainBefore !== chain) {
+      ok = false;
+      problems.push(`segment ${s.segmentNo} chain break`);
+    }
+    chain = canonicalSha256(chain + s.segmentDigest);
+    if (chain !== s.chainAfter) {
+      ok = false;
+      problems.push(`segment ${s.segmentNo} chainAfter mismatch`);
+    }
+    H.push(...digestsOf(s.events));
+    next = s.toIndex + 1;
+  }
+  if (next !== header.archivedCount) {
+    ok = false;
+    problems.push(`archived ${next} events, header says ${header.archivedCount}`);
+  }
+  if (chain !== header.chainDigest) {
+    ok = false;
+    problems.push("header chain digest mismatch");
+  }
+  H.push(...digestsOf(state?.memoryState?.events ?? []));
+  for (const s of sorted) {
+    const residentBefore = H.slice(s.fromIndex, s.toIndex + 1 + s.residentAfter);
+    if (residentBefore.length !== s.eventCount + s.residentAfter) {
+      ok = false;
+      problems.push(`segment ${s.segmentNo}: history too short to rebuild the split`);
+      continue;
+    }
+    if (canonicalSha256(s.chainBefore + JSON.stringify(residentBefore)) !== s.splitDigest) {
+      ok = false;
+      problems.push(`segment ${s.segmentNo}: split digest does not reproduce`);
+    }
+    if (s.memoryDigestBefore && fullHistoryDigestOf(H.slice(0, s.toIndex + 1 + s.residentAfter)) !== s.memoryDigestBefore) {
+      ok = false;
+      problems.push(`segment ${s.segmentNo}: her memory digest before the first split does not reproduce`);
+    }
+  }
+  return { ok, problems, segments: sorted.length, archivedCount: next, totalEvents: H.length, chainDigest: chain };
+}
 export {
+  ARCHIVE_KEEP,
+  ARCHIVE_THRESHOLD,
   CLOUD_WRITER_ID,
   ameliaTick,
   dryRunBegin,
   dryRunChunk,
   dryRunRoundTrip,
-  savedKind
+  planArchive,
+  savedKind,
+  verifyArchive
 };

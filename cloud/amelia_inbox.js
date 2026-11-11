@@ -40,6 +40,9 @@ function seenEncounterIds(state) {
   for (const x of state.deferredEncounters ?? [])
     if (x.eventId)
       seen.add(x.eventId);
+  for (const id of state.memoryArchive?.recentEncounterIds ?? [])
+    if (typeof id === "string")
+      seen.add(id);
   return seen;
 }
 function pendingOutside(entries, seen, since) {
