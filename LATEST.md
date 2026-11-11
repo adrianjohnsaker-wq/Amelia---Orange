@@ -1,14 +1,14 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-11T07:50:11.707Z
-- Cycle: 930 (42961523811-1-13)
+- Last cycle (UTC): 2026-11-11T08:05:12.071Z
+- Cycle: 931 (42961523811-1-14)
 - RSS items seen: 73; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: DECK_EXHAUSTED_POSITIVE; score 1
-- Candidate: none (positive deck exhaustion)
+- Subdecadence: MESH_TERMINAL; score -5
+- Candidate: Ixidod / Mesh-05 / Amphidemon
 - Separate ingress records and trace links: 0
-- Catalogue entries added: 0
+- Catalogue entries added: 1
 - Governor recovery: 0 previously queued items admitted; queue now 0.
-- Native consolidations this cycle: 1; complete receipts in recovery-journal.jsonl.
+- Native consolidations this cycle: 0; complete receipts in recovery-journal.jsonl.
 - New offers: 1; attended 1, deferred 0, refused 0.
 - Source errors: none
 
