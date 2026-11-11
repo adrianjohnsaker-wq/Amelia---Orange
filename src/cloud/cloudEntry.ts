@@ -1,2 +1,2 @@
 export { ameliaTick, savedKind, CLOUD_WRITER_ID } from './ameliaTick';
-export { ameliaDryRun } from './ameliaDryRun';
+export { dryRunBegin, dryRunChunk, dryRunRoundTrip } from './ameliaDryRun';

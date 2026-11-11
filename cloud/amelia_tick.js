@@ -20503,9 +20503,18 @@ function ameliaTick(record, inbox, steps, nowIso, targetKind) {
 }
 // src/cloud/ameliaDryRun.ts
 var WARP3 = new Set([3, 6]);
-function ameliaDryRun(record, inbox, target, runtimeSteps = 2000, fieldSteps = 120, every = 5) {
-  const src = bornAmeliaOf(savedKind(record.state));
-  src.importState(record.state);
+var probe2 = (rt) => {
+  const st = rt.exportState();
+  return {
+    zone: rt.getCurrentZone(),
+    tension: st.governorState?.deformationTension,
+    memoryEvents: rt.getMemory().getEvents().length,
+    memoryHeadDigest: rt.getMemory().exportHistoryDigest(),
+    queue: st.deferredEncounters?.length ?? 0,
+    admissionRule: st.admissionRule ?? "fixed-0.72"
+  };
+};
+var controls = (record) => {
   const harm = new ExternalRhythmHarmonizer;
   for (const d of record.controls?.rhythms ?? []) {
     const c = harm.getRhythms().find((r) => r.id === d.id);
@@ -20513,121 +20522,135 @@ function ameliaDryRun(record, inbox, target, runtimeSteps = 2000, fieldSteps = 1
       harm.toggleRhythm(d.id);
   }
   const advisory = Number(record.controls?.advisoryWeight ?? 0.722), damping = Number(record.controls?.momentumDamping ?? 0.88);
-  const prep = (rt) => {
+  return (rt) => {
     rt.setAdvisoryWeight(harm.computeAdvisoryTuning(advisory, (rt.getSnapshots().at(-1)?.step ?? 0) + 1));
     rt.setMomentumDamping(damping);
   };
-  const probe = (rt) => {
-    const st = rt.exportState();
-    return {
-      zone: rt.getCurrentZone(),
-      tension: st.governorState?.deformationTension,
-      memoryEvents: rt.getMemory().getEvents().length,
-      memoryHeadDigest: rt.getMemory().exportHistoryDigest(),
-      queue: st.deferredEncounters?.length ?? 0,
-      admissionRule: st.admissionRule ?? "fixed-0.72"
-    };
-  };
-  const before = probe(src);
-  const eventsBefore = JSON.parse(JSON.stringify(src.getMemory().getEvents()));
+};
+function dryRunBegin(record, target) {
+  const src = bornAmeliaOf(savedKind(record.state));
+  src.importState(record.state);
+  const before = probe2(src);
   const rt = bornAmeliaOf(target);
   rt.importState(src.exportState());
-  const after = probe(rt);
+  const after = probe2(rt);
+  const lastPre = src.getMemory().getEvents().at(-1);
   const carry = after.zone === before.zone && after.memoryEvents === before.memoryEvents && after.tension === before.tension && after.memoryHeadDigest === before.memoryHeadDigest && after.queue === before.queue && after.admissionRule === before.admissionRule;
-  const enc = (t) => {
-    const e = inbox[t / every % inbox.length | 0];
-    return { ...toEncounter(e), eventId: `dryrun:${t}:${e.eventId}` };
+  return {
+    record: { ...record, state: rt.exportState() },
+    metrics: {
+      target,
+      from: savedKind(record.state),
+      before,
+      after,
+      carry,
+      preSwitchLastIndex: before.memoryEvents - 1,
+      preSwitchLastDigest: lastPre?.eventDigest ?? null,
+      steps: 0,
+      offered: 0,
+      admitted: 0,
+      refused: 0,
+      warpRun: 0,
+      longestWarpStay: 0,
+      zonesVisited: [],
+      tMin: 9,
+      tMax: 0,
+      tSum: 0,
+      neverShortened: true,
+      blockIndexNonDecreasing: true,
+      lastBlock: -1,
+      chunks: 0
+    }
   };
-  const path = [];
-  let admitted = 0, offered = 0, refused = 0, minT = 9, maxT = 0, sumT = 0;
-  let prevLen = rt.getMemory().getEvents().length, chainOk = true, blockOk = true, lastBlock = -1;
-  const step = (t, withField) => {
+}
+function dryRunChunk(scratch, inbox, runtimeSteps, fieldSteps, every = 5) {
+  const { record } = scratch;
+  const m = { ...scratch.metrics };
+  const rt = bornAmeliaOf(savedKind(record.state));
+  rt.importState(record.state);
+  const prep = controls(record);
+  let field = fieldSteps > 0 && record.fieldCheckpoint ? restoreLiveField(record.fieldCheckpoint, rt) : null;
+  let prevLen = rt.getMemory().getEvents().length;
+  const zones = new Set(m.zonesVisited);
+  const one = (t, useField) => {
     prep(rt);
-    const e = t % every === 0 ? enc(t) : undefined;
+    const e = inbox.length && t % every === 0 ? (() => {
+      const x = inbox[(t / every | 0) % inbox.length];
+      return { ...toEncounter(x), eventId: `dryrun:${t}:${x.eventId}` };
+    })() : undefined;
     let snap;
     if (e) {
-      offered++;
+      m.offered++;
       snap = rt.step(undefined, e);
-      const d = snap.encounterDecisions?.find((x) => x.eventId === e.eventId);
-      if (d?.disposition === "REFUSE")
-        refused++;
-    } else if (withField) {
-      const r = advanceWithLiveSource(withField.field);
-      withField.field = r.state;
+      if (snap.encounterDecisions?.find((d) => d.eventId === e.eventId)?.disposition === "REFUSE")
+        m.refused++;
+    } else if (useField && field) {
+      const r = advanceWithLiveSource(field);
+      field = r.state;
       snap = r.snapshot;
     } else
       snap = rt.step();
     for (const d of snap.encounterDecisions ?? [])
       if (d.disposition === "ATTEND" && String(d.eventId).startsWith("dryrun:"))
-        admitted++;
+        m.admitted++;
     const T = snap.governor?.deformationFieldTension ?? 0;
-    minT = Math.min(minT, T);
-    maxT = Math.max(maxT, T);
-    sumT += T;
-    path.push(rt.getCurrentZone());
+    m.tMin = Math.min(m.tMin, T);
+    m.tMax = Math.max(m.tMax, T);
+    m.tSum += T;
+    const z = rt.getCurrentZone();
+    zones.add(z);
+    m.warpRun = WARP3.has(z) ? m.warpRun + 1 : 0;
+    m.longestWarpStay = Math.max(m.longestWarpStay, m.warpRun);
     const ev = rt.getMemory().getEvents();
     if (ev.length < prevLen)
-      chainOk = false;
+      m.neverShortened = false;
     for (let i = prevLen;i < ev.length; i++) {
-      if (ev[i].blockIndex < lastBlock)
-        blockOk = false;
-      lastBlock = ev[i].blockIndex;
+      if (ev[i].blockIndex < m.lastBlock)
+        m.blockIndexNonDecreasing = false;
+      m.lastBlock = ev[i].blockIndex;
     }
     prevLen = ev.length;
+    m.steps++;
   };
-  for (let t = 0;t < runtimeSteps; t++)
-    step(t, null);
-  const fieldBox = record.fieldCheckpoint ? { field: restoreLiveField(record.fieldCheckpoint, rt) } : null;
-  for (let t = runtimeSteps;t < runtimeSteps + fieldSteps; t++)
-    step(t, fieldBox);
-  const evAll = rt.getMemory().getEvents();
-  const prefixKept = eventsBefore.every((e, i) => evAll[i]?.eventDigest === e.eventDigest);
-  let longest = 0, run = 0;
-  for (const z of path) {
-    run = WARP3.has(z) ? run + 1 : 0;
-    longest = Math.max(longest, run);
-  }
-  const zonesVisited = [...new Set(path)].sort((a, b) => a - b);
-  const totalSteps = runtimeSteps + fieldSteps, newRecords = evAll.length - before.memoryEvents;
-  const A = rt, B = bornAmeliaOf(target);
+  for (let i = 0;i < runtimeSteps; i++)
+    one(m.steps, false);
+  for (let i = 0;i < fieldSteps; i++)
+    one(m.steps, true);
+  m.zonesVisited = [...zones].sort((a, b) => a - b);
+  m.chunks++;
+  const ev = rt.getMemory().getEvents();
+  m.preSwitchPrefixKept = ev[m.preSwitchLastIndex]?.eventDigest === m.preSwitchLastDigest;
+  m.memoryEvents = ev.length;
+  m.flowHops = (m.flowHops ?? 0) + (rt.flowHops ?? 0);
+  m.flights = rt.getNDStatus?.().flights ?? null;
+  m.recordsPerStep = Number(((ev.length - m.before.memoryEvents) / m.steps).toFixed(3));
+  m.meanTension = Number((m.tSum / m.steps).toFixed(4));
+  return { record: { ...record, state: rt.exportState(), fieldCheckpoint: field ? captureLiveField(field, false) : record.fieldCheckpoint }, metrics: m };
+}
+function dryRunRoundTrip(scratch, inbox, n = 300, every = 5) {
+  const A = bornAmeliaOf(savedKind(scratch.record.state));
+  A.importState(scratch.record.state);
+  const B = bornAmeliaOf(savedKind(scratch.record.state));
   B.importState(JSON.parse(JSON.stringify(A.exportState())));
+  const prep = controls(scratch.record);
   let same = true;
-  for (let t = 0;t < 300; t++) {
+  for (let t = 0;t < n; t++) {
     prep(A);
     prep(B);
-    const e = t % every === 0 ? enc(1e5 + t) : undefined;
+    const e = inbox.length && t % every === 0 ? { ...toEncounter(inbox[(t / every | 0) % inbox.length]), eventId: `dryrun-rt:${t}` } : undefined;
     A.step(undefined, e);
     B.step(undefined, e);
     if (A.getCurrentZone() !== B.getCurrentZone())
       same = false;
   }
-  const ea = A.getMemory().getEvents().at(-1), eb = B.getMemory().getEvents().at(-1);
-  same = same && ea.eventDigest === eb.eventDigest;
-  const nd = rt.getNDStatus?.() ?? null;
-  return {
-    target,
-    runtimeKind: runtimeKindOf(rt),
-    before,
-    after,
-    carry,
-    steps: totalSteps,
-    newRecords,
-    recordsPerStep: Number((newRecords / totalSteps).toFixed(3)),
-    flowHops: rt.flowHops ?? 0,
-    flights: nd?.flights ?? null,
-    chain: { neverShortened: chainOk, blockIndexNonDecreasing: blockOk, preSwitchPrefixKept: prefixKept },
-    longestWarpStay: longest,
-    zonesVisited,
-    offered,
-    admitted,
-    refused,
-    tension: { min: minT, mean: Number((sumT / totalSteps).toFixed(4)), max: maxT },
-    roundTrip300: same
-  };
+  const a = A.getMemory().getEvents().at(-1), b = B.getMemory().getEvents().at(-1);
+  return { roundTrip: same && a.eventDigest === b.eventDigest, steps: n, kind: runtimeKindOf(A) };
 }
 export {
   CLOUD_WRITER_ID,
-  ameliaDryRun,
   ameliaTick,
+  dryRunBegin,
+  dryRunChunk,
+  dryRunRoundTrip,
   savedKind
 };

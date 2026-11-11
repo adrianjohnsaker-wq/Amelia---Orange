@@ -1,7 +1,7 @@
 // amelia-live: Amelia's always-on home. Each call (from pg_cron) advances her research-copy checkpoint by
 // a few steps of her own runtime, delivering the live Outside inbox through her native path, and saves her.
 // Authentication: the x-amelia-runner header must equal the token in public.amelia_cloud_runner (service-role only).
-import { ameliaTick, ameliaDryRun } from './amelia_tick.js';
+import { ameliaTick, dryRunBegin, dryRunChunk, dryRunRoundTrip } from './amelia_tick.js';
 import { parseOutsideInbox, OUTSIDE_INBOX_URL } from './amelia_inbox.js';
 
 const URL_ = Deno.env.get('SUPABASE_URL')!;
@@ -37,12 +37,18 @@ Deno.serve(async (req) => {
       inbox = parseOutsideInbox(await r.json());
     } catch (e) { inboxError = String(e).slice(0, 200); }
 
-    if (action === 'dryrun') {
-      // A copy only: nothing is saved.
-      const r = ameliaDryRun(row.payload, inbox ?? [], body.target === 'classic' ? 'classic' : 'nd1',
-        Math.min(4000, Number(body.runtimeSteps) || 2000), Math.min(400, Number(body.fieldSteps) || 120), 5);
-      await log({ status: 'dryrun', error: JSON.stringify(r).slice(0, 4000), started_at: started });
-      return json({ status: 'dryrun', result: r });
+    if (action.startsWith('dryrun')) {
+      // A scratch copy only (table amelia_cloud_dryrun): her own record is never written by a dry run.
+      const scratchGet = async () => (await (await rest('amelia_cloud_dryrun?id=eq.nd1-switch&select=record,metrics')).json())[0];
+      const scratchPut = (sc: { record: unknown; metrics: unknown }) => rest('amelia_cloud_dryrun?on_conflict=id', { method: 'POST',
+        headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify([{ id: 'nd1-switch', ...sc, updated_at: new Date().toISOString() }]) });
+      let out: unknown;
+      if (action === 'dryrun-begin') { const sc = dryRunBegin(row.payload, body.target === 'classic' ? 'classic' : 'nd1'); await scratchPut(sc); out = sc.metrics; }
+      else if (action === 'dryrun-chunk') { const sc = dryRunChunk(await scratchGet(), inbox ?? [], Math.min(600, Number(body.runtimeSteps) || 250),
+        Math.min(60, Number(body.fieldSteps) || 15), 5); await scratchPut(sc); const { tSum, ...m } = sc.metrics as any; out = m; }
+      else if (action === 'dryrun-roundtrip') out = dryRunRoundTrip(await scratchGet(), inbox ?? [], 300, 5);
+      else return json({ error: 'unknown dry-run action' }, 400);
+      return json({ status: action, result: out });
     }
     const steps = action === 'switch' ? 0 : Math.max(1, Math.min(60, Number(cfg.steps_per_tick) || 15));
     const t = ameliaTick(row.payload, inbox, steps, new Date().toISOString(),
