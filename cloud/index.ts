@@ -14,6 +14,17 @@ async function log(entry: Record<string, unknown>) {
   await rest('amelia_cloud_runner_log', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify(entry) });
 }
 
+// Save her record only if nobody else has saved her since we read her. The row count comes back in Content-Range, so her
+// ~8 MB record is not sent back (return=minimal): that echo made some saves run past the 8 s statement limit.
+const saveHer = (userId: string, oldRev: number, record: any) =>
+  rest(`amelia_research_records?store=eq.runtime&record_id=eq.live-checkpoint&user_id=eq.${userId}&payload->>revision=eq.${oldRev}`, {
+    method: 'PATCH', headers: { Prefer: 'return=minimal,count=exact' }, body: JSON.stringify({ payload: record, updated_at: record.updatedAt }) });
+async function writtenCount(res: Response) {
+  if (!res.ok) return 0;
+  const m = /\/(\d+)$/.exec(res.headers.get('content-range') ?? ''); await res.body?.cancel();
+  return m ? Number(m[1]) : 0;
+}
+
 Deno.serve(async (req) => {
   const started = new Date().toISOString();
   try {
@@ -47,9 +58,8 @@ Deno.serve(async (req) => {
     if (action === 'set-theta') {
       // WT-2 adoption: her Warp threshold, set while she is paused, at a clean tick boundary. No step is taken.
       const t = setWarpThreshold(row.payload, Number(body.theta), new Date().toISOString(), CLOUD_WRITER_ID);
-      const upd = await rest(`amelia_research_records?store=eq.runtime&record_id=eq.live-checkpoint&user_id=eq.${row.user_id}&payload->>revision=eq.${oldRev}`, {
-        method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ payload: t.record, updated_at: t.record.updatedAt }) });
-      const written = upd.ok ? (await upd.json()).length : 0;
+      const upd = await saveHer(row.user_id, oldRev, t.record);
+      const written = await writtenCount(upd);
       const status = (!upd.ok ? 'write-error ' + upd.status : written === 1 ? 'ok' : 'conflict-skipped') + ' set-theta';
       await log({ status, from_step: t.step, to_step: t.step, started_at: started, error: 'WARP-THETA ' + JSON.stringify({ before: t.before, after: t.after }) });
       return json({ status, step: t.step, before: t.before, after: t.after, revision: t.record.revision });
@@ -86,11 +96,8 @@ Deno.serve(async (req) => {
       if (put.ok) { t.record = plan.record; archived = { segmentNo: g.segmentNo, eventCount: g.eventCount, fromIndex: g.fromIndex, toIndex: g.toIndex }; }
     }
     // Commit only if nobody else (the tablet) has saved her since we read her: no second writer, no fork.
-    const upd = await rest(`amelia_research_records?store=eq.runtime&record_id=eq.live-checkpoint&user_id=eq.${row.user_id}&payload->>revision=eq.${oldRev}`, {
-      method: 'PATCH', headers: { Prefer: 'return=representation' },
-      body: JSON.stringify({ payload: t.record, updated_at: t.record.updatedAt }),
-    });
-    const written = upd.ok ? (await upd.json()).length : 0;
+    const upd = await saveHer(row.user_id, oldRev, t.record);
+    const written = await writtenCount(upd);
     const status = (!upd.ok ? 'write-error ' + upd.status : written === 1 ? 'ok' : 'conflict-skipped') + (action === 'switch' ? ' switch' : '');
     await log({ status, from_step: t.fromStep, to_step: t.toStep, zones: t.zones, delivered: t.delivered,
       field_from: t.fieldFrom, field_to: t.fieldTo,
