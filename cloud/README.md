@@ -15,7 +15,7 @@
 **Admission.** The relative rule (`relative-v1`, GATE-1).
 
 **Rebuild the bundles.**
-- `bun build src/cloud/ameliaTick.ts --target=browser --format=esm --outfile=cloud/amelia_tick.js`
+- `bun build src/cloud/cloudEntry.ts --target=browser --format=esm --outfile=cloud/amelia_tick.js`
 - `bun build src/outside/OutsideInbox.ts --target=browser --format=esm --outfile=cloud/amelia_inbox.js`
 
 The function imports both from this repository through jsDelivr, pinned to a commit.

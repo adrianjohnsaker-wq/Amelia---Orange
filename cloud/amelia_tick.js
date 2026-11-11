@@ -19236,8 +19236,17 @@ class AmeliaNDRuntime extends AmeliaOutsideRuntime {
   warpIntensity = 0;
   lastNamed = -1;
   flights = 0;
+  theta = ND1.THETA;
+  getWarpTheta() {
+    return this.theta;
+  }
+  setWarpTheta(n) {
+    if (!Number.isInteger(n) || n < 1 || n > 1000)
+      throw new Error("Invalid Warp threshold");
+    this.theta = n;
+  }
   getNDStatus() {
-    return { warpIntensity: this.warpIntensity, lastNamed: this.lastNamed, flights: this.flights, baseline: [...this.ndBase] };
+    return { theta: this.theta, warpIntensity: this.warpIntensity, lastNamed: this.lastNamed, flights: this.flights, baseline: [...this.ndBase] };
   }
   influx(zones, weights) {
     const mx = Math.max(0, ...weights);
@@ -19305,7 +19314,7 @@ class AmeliaNDRuntime extends AmeliaOutsideRuntime {
       return gate.flux * (1 - gate.resistance) + (memReadout.biasVector[target] || 0) * 0.4 + (z.activation - this.ndBase[target]) * ND1.FIELD_WEIGHT + Math.cos(z.phaseAngle) * 0.1 + (inputZone === target ? 0.35 : 0) + (attended?.attentionVector[target] ?? 0) * 0.9;
     };
     let to = from, released = null;
-    if (WARP2.has(from) && this.warpIntensity >= ND1.THETA) {
+    if (WARP2.has(from) && this.warpIntensity >= this.theta) {
       let c = this.lastNamed;
       if (c < 0) {
         let b = -Infinity;
@@ -19463,11 +19472,12 @@ class AmeliaNDRuntime extends AmeliaOutsideRuntime {
     return snapshot;
   }
   exportState() {
-    return { ...super.exportState(), runtimeKind: "nd1", nd1: { baseline: [...this.ndBase], warpIntensity: this.warpIntensity, lastNamed: this.lastNamed, flights: this.flights } };
+    return { ...super.exportState(), runtimeKind: "nd1", nd1: { baseline: [...this.ndBase], warpIntensity: this.warpIntensity, lastNamed: this.lastNamed, flights: this.flights, theta: this.theta } };
   }
   importState(state) {
     super.importState(state);
     const n = state?.nd1;
+    this.theta = Number.isInteger(n?.theta) && n.theta >= 1 ? n.theta : ND1.THETA;
     if (n) {
       if (Array.isArray(n.baseline) && n.baseline.length === 10)
         this.ndBase = n.baseline.map(Number);
@@ -20537,12 +20547,14 @@ var controls = (record) => {
     rt.setMomentumDamping(damping);
   };
 };
-function dryRunBegin(record, target) {
+function dryRunBegin(record, target, theta) {
   const src = bornAmeliaOf(savedKind(record.state));
   src.importState(record.state);
   const before = probe2(src);
   const rt = bornAmeliaOf(target);
   rt.importState(src.exportState());
+  if (theta !== undefined)
+    rt.setWarpTheta(theta);
   const after = probe2(rt);
   const lastPre = src.getMemory().getEvents().at(-1);
   const carry = after.zone === before.zone && after.memoryEvents === before.memoryEvents && after.tension === before.tension && after.memoryHeadDigest === before.memoryHeadDigest && after.queue === before.queue && after.admissionRule === before.admissionRule;
@@ -20550,6 +20562,8 @@ function dryRunBegin(record, target) {
     record: { ...record, state: rt.exportState() },
     metrics: {
       target,
+      theta: rt.getWarpTheta?.() ?? null,
+      flightsBefore: rt.getNDStatus?.().flights ?? null,
       from: savedKind(record.state),
       before,
       after,
@@ -20655,6 +20669,39 @@ function dryRunRoundTrip(scratch, inbox, n = 300, every = 5) {
   }
   const a = A.getMemory().getEvents().at(-1), b = B.getMemory().getEvents().at(-1);
   return { roundTrip: same && a.eventDigest === b.eventDigest, steps: n, kind: runtimeKindOf(A) };
+}
+// src/cloud/warpTheta.ts
+var probe3 = (rt) => {
+  const st = rt.exportState();
+  return {
+    zone: rt.getCurrentZone(),
+    tension: st.governorState?.deformationTension,
+    memoryEvents: rt.getMemory().getEvents().length,
+    lastEventDigest: rt.getMemory().getEvents().at(-1)?.eventDigest ?? null,
+    queue: st.deferredEncounters?.length ?? 0,
+    admissionRule: st.admissionRule ?? "fixed-0.72",
+    warpIntensity: st.nd1?.warpIntensity ?? null,
+    flights: st.nd1?.flights ?? null,
+    theta: typeof rt.getWarpTheta === "function" ? rt.getWarpTheta() : null
+  };
+};
+function setWarpThreshold(record, theta, nowIso, writerId) {
+  if (!Number.isInteger(theta) || theta < 1 || theta > 1000)
+    throw new Error("Invalid Warp threshold");
+  const before = bornAmeliaOf(savedKind(record.state));
+  before.importState(record.state);
+  if (runtimeKindOf(before) !== "nd1")
+    throw new Error("The Warp threshold is a setting of the ND-1b runtime; she is not on it");
+  const b = probe3(before);
+  const state = { ...record.state, nd1: { ...record.state.nd1 ?? {}, theta } };
+  const after = bornAmeliaOf("nd1");
+  after.importState(state);
+  const a = probe3(after);
+  const carried = ["zone", "tension", "memoryEvents", "lastEventDigest", "queue", "admissionRule", "warpIntensity", "flights"].every((k) => a[k] === b[k]);
+  if (!carried || a.theta !== theta)
+    throw new Error("Warp threshold change did not carry her state across: " + JSON.stringify({ b, a }));
+  const next = { ...record, state, writerId, revision: (Number(record.revision) || 0) + 1, updatedAt: nowIso };
+  return { record: next, before: b, after: a, step: before.getSnapshots().at(-1)?.step ?? Number(record.state.stepCount) };
 }
 // src/cloud/memoryArchive.ts
 var ARCHIVE_SCHEMA = "amelia.memory-archive/v1";
@@ -20784,5 +20831,6 @@ export {
   dryRunRoundTrip,
   planArchive,
   savedKind,
+  setWarpThreshold,
   verifyArchive
 };

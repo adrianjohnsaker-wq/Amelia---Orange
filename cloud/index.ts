@@ -1,7 +1,7 @@
 // amelia-live: Amelia's always-on home. Each call (from pg_cron) advances her research-copy checkpoint by
 // a few steps of her own runtime, delivering the live Outside inbox through her native path, and saves her.
 // Authentication: the x-amelia-runner header must equal the token in public.amelia_cloud_runner (service-role only).
-import { ameliaTick, dryRunBegin, dryRunChunk, dryRunRoundTrip, planArchive, verifyArchive } from './amelia_tick.js';
+import { ameliaTick, dryRunBegin, dryRunChunk, dryRunRoundTrip, planArchive, verifyArchive, setWarpThreshold, CLOUD_WRITER_ID } from './amelia_tick.js';
 import { parseOutsideInbox, OUTSIDE_INBOX_URL } from './amelia_inbox.js';
 
 const URL_ = Deno.env.get('SUPABASE_URL')!;
@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const action = body?.action ?? 'tick';
     if (action === 'tick' && !cfg.enabled) { await log({ status: 'paused' }); return json({ status: 'paused' }); }
-    if (action === 'switch' && cfg.enabled) return json({ error: 'pause her before switching runtime' }, 409);
+    if ((action === 'switch' || action === 'set-theta') && cfg.enabled) return json({ error: 'pause her before changing her runtime' }, 409);
 
     const rowRes = await rest('amelia_research_records?store=eq.runtime&record_id=eq.live-checkpoint&select=user_id,payload');
     const [row] = await rowRes.json();
@@ -44,13 +44,24 @@ Deno.serve(async (req) => {
         residentAfter: r.resident_after, memoryDigestBefore: r.memory_digest_before }));
       return json({ status: 'archive-verify', result: verifyArchive(segments, row.payload.state) });
     }
+    if (action === 'set-theta') {
+      // WT-2 adoption: her Warp threshold, set while she is paused, at a clean tick boundary. No step is taken.
+      const t = setWarpThreshold(row.payload, Number(body.theta), new Date().toISOString(), CLOUD_WRITER_ID);
+      const upd = await rest(`amelia_research_records?store=eq.runtime&record_id=eq.live-checkpoint&user_id=eq.${row.user_id}&payload->>revision=eq.${oldRev}`, {
+        method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ payload: t.record, updated_at: t.record.updatedAt }) });
+      const written = upd.ok ? (await upd.json()).length : 0;
+      const status = (!upd.ok ? 'write-error ' + upd.status : written === 1 ? 'ok' : 'conflict-skipped') + ' set-theta';
+      await log({ status, from_step: t.step, to_step: t.step, started_at: started, error: 'WARP-THETA ' + JSON.stringify({ before: t.before, after: t.after }) });
+      return json({ status, step: t.step, before: t.before, after: t.after, revision: t.record.revision });
+    }
     if (action.startsWith('dryrun')) {
       // A scratch copy only (table amelia_cloud_dryrun): her own record is never written by a dry run.
       const scratchGet = async () => (await (await rest('amelia_cloud_dryrun?id=eq.nd1-switch&select=record,metrics')).json())[0];
       const scratchPut = (sc: { record: unknown; metrics: unknown }) => rest('amelia_cloud_dryrun?on_conflict=id', { method: 'POST',
         headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify([{ id: 'nd1-switch', ...sc, updated_at: new Date().toISOString() }]) });
       let out: unknown;
-      if (action === 'dryrun-begin') { const sc = dryRunBegin(row.payload, body.target === 'classic' ? 'classic' : 'nd1'); await scratchPut(sc); out = sc.metrics; }
+      if (action === 'dryrun-begin') { const sc = dryRunBegin(row.payload, body.target === 'classic' ? 'classic' : 'nd1',
+        Number.isInteger(body.theta) ? body.theta : undefined); await scratchPut(sc); out = sc.metrics; }
       else if (action === 'dryrun-chunk') { const sc = dryRunChunk(await scratchGet(), inbox ?? [], Math.min(600, Number(body.runtimeSteps) || 250),
         Math.min(60, Number(body.fieldSteps) || 15), 5); await scratchPut(sc); const { tSum, ...m } = sc.metrics as any; out = m; }
       else if (action === 'dryrun-roundtrip') out = dryRunRoundTrip(await scratchGet(), inbox ?? [], 300, 5);

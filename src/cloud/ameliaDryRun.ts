@@ -23,16 +23,17 @@ const controls = (record: any) => {
 };
 
 /** Begin: convert a copy of her record; record what must carry across. */
-export function dryRunBegin(record: Record<string, any>, target: RuntimeKind) {
+export function dryRunBegin(record: Record<string, any>, target: RuntimeKind, theta?: number) {
   const src = bornAmeliaOf(savedKind(record.state)); src.importState(record.state);
   const before = probe(src);
   const rt = bornAmeliaOf(target); rt.importState(src.exportState());
+  if (theta !== undefined) (rt as any).setWarpTheta(theta);   // WT-2 adoption dry run
   const after = probe(rt);
   const lastPre: any = (src.getMemory().getEvents() as any[]).at(-1);
   const carry = after.zone === before.zone && after.memoryEvents === before.memoryEvents && after.tension === before.tension
     && after.memoryHeadDigest === before.memoryHeadDigest && after.queue === before.queue && after.admissionRule === before.admissionRule;
   return { record: { ...record, state: rt.exportState() },
-    metrics: { target, from: savedKind(record.state), before, after, carry, preSwitchLastIndex: before.memoryEvents - 1,
+    metrics: { target, theta: (rt as any).getWarpTheta?.() ?? null, flightsBefore: (rt as any).getNDStatus?.().flights ?? null, from: savedKind(record.state), before, after, carry, preSwitchLastIndex: before.memoryEvents - 1,
       preSwitchLastDigest: lastPre?.eventDigest ?? null, steps: 0, offered: 0, admitted: 0, refused: 0, warpRun: 0, longestWarpStay: 0,
       zonesVisited: [] as number[], tMin: 9, tMax: 0, tSum: 0, neverShortened: true, blockIndexNonDecreasing: true,
       lastBlock: -1, chunks: 0 } };
