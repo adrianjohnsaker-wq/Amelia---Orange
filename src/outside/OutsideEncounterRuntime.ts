@@ -81,12 +81,93 @@ type RuntimeInternals = {
   currentObjective: string; suppressRelaySteering: boolean;
 };
 
+/** Admission rules. 'fixed-0.72' is the original. 'relative-v1' (operator's choice, 10 Nov 2026) also admits an
+ * encounter when the Governor's tension is below its own mean over the previous 48 steps: calmer than usual for her. */
+export type AdmissionRule = 'fixed-0.72' | 'relative-v1';
+export const RELATIVE_WINDOW = 48;
+export function decideEncounterRelative(governor: CognitiveGovernor, input: SubstrateEncounterInput, history: number[]):
+  { disposition: EncounterDisposition; reason: string } {
+  const base = decideEncounter(governor, input);
+  if (base.disposition !== 'DEFER' || !base.reason.startsWith('Field tension exceeds')) return base;
+  if (history.length < RELATIVE_WINDOW) return base;
+  const window = history.slice(-RELATIVE_WINDOW);
+  const mean = window.reduce((a, b) => a + b, 0) / window.length;
+  const tension = governor.getTelemetry().deformationFieldTension;
+  if (tension < mean) return { disposition: 'ATTEND',
+    reason: `Governor tension ${tension.toFixed(4)} is below its own mean over the last ${RELATIVE_WINDOW} steps (${mean.toFixed(4)}); encounter admitted.` };
+  return base;
+}
+
 export class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
   private deferredEncounters: SubstrateEncounterInput[] = [];
+  private admissionRule: AdmissionRule = 'fixed-0.72';
+  private tensionHistory: number[] = [];
+
+  public setAdmissionRule(rule: AdmissionRule): void { this.admissionRule = rule; }
+  public getAdmissionRule(): AdmissionRule { return this.admissionRule; }
+  private decide(governor: CognitiveGovernor, input: SubstrateEncounterInput) {
+    return this.admissionRule === 'relative-v1'
+      ? decideEncounterRelative(governor, input, this.tensionHistory) : decideEncounter(governor, input);
+  }
 
   constructor() {
     super();
     (this as unknown as RuntimeInternals).memory = new OutsideEncounterMemory();
+  }
+
+  /** The Governor's gate and its deferral queue, shared by every runtime built on this one (Classic and ND-1b):
+   * the head of the queue is re-offered first, then the new encounter; the admission rule is this runtime's
+   * (fixed-0.72 or relative-v1); only the latest field observation is kept waiting; the queue holds 32. */
+  protected gateEncounters(governor: CognitiveGovernor, encounter?: SubstrateEncounterInput):
+    { attended: SubstrateEncounterInput | undefined; encounterDecisions: EncounterDecisionTrace[] } {
+    const encounterDecisions: EncounterDecisionTrace[] = [];
+    let attended: SubstrateEncounterInput | undefined;
+    if (this.deferredEncounters.length > 0) {
+      const pending = this.deferredEncounters[0];
+      const decision = this.decide(governor, pending);
+      if (decision.disposition === 'ATTEND') {
+        attended = this.deferredEncounters.shift();
+        encounterDecisions.push({ ...pending, disposition: 'ATTEND',
+          reason: 'Previously deferred encounter admitted after Governor recovery.', applied: true });
+      } else {
+        encounterDecisions.push({ ...pending, ...decision, applied: false });
+      }
+    }
+    if (encounter) {
+      let decision = this.decide(governor, encounter);
+      if (decision.disposition === 'ATTEND' && attended) {
+        decision = { disposition: 'DEFER',
+          reason: 'An earlier deferred encounter was attended on this step; this encounter remains queued.' };
+      }
+      if (decision.disposition === 'ATTEND') attended = encounter;
+      else if (decision.disposition === 'DEFER') {
+        // The body is sampled on every field step. Preserve every decision in
+        // PFM, but keep only its latest pending observation in the shared
+        // queue so a sustained lock cannot crowd out other channels.
+        const fieldIndex = encounter.channel === 'SYNTHETIC_FIELD'
+          ? this.deferredEncounters.findIndex(item => item.channel === 'SYNTHETIC_FIELD') : -1;
+        if (fieldIndex >= 0) {
+          this.deferredEncounters[fieldIndex] = encounter;
+          this.deferredEncounters = this.deferredEncounters.filter((item, i) =>
+            item.channel !== 'SYNTHETIC_FIELD' || i === fieldIndex);
+          decision = { disposition: 'DEFER', reason: decision.reason +
+            ' Latest field observation replaces the older pending field observation; both decisions remain in PFM.' };
+        } else if (this.deferredEncounters.length < 32) {
+          this.deferredEncounters.push(encounter);
+        } else {
+          decision = { disposition: 'REFUSE',
+            reason: 'Governor deferral queue is full; encounter retained in PFM but not queued.' };
+        }
+      }
+      encounterDecisions.push({ ...encounter, ...decision, applied: decision.disposition === 'ATTEND' });
+    }
+    return { attended, encounterDecisions };
+  }
+
+  /** Record the Governor's tension after a step, for the relative admission rule. */
+  protected recordTension(governor: CognitiveGovernor): void {
+    this.tensionHistory.push(governor.getTelemetry().deformationFieldTension);
+    if (this.tensionHistory.length > RELATIVE_WINDOW) this.tensionHistory.shift();
   }
 
   public override step(inputSignal?: string, encounter?: SubstrateEncounterInput): OutsideStepSnapshot {
@@ -107,34 +188,7 @@ export class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
     const auditReport = s.governorKernel.auditSubstrateStep(zones, memReadout.hysteresisTension, s.suppressRelaySteering);
 
     // 4. The Governor gates channel attention before open Numogram exits are scored.
-    const encounterDecisions: EncounterDecisionTrace[] = [];
-    let attended: SubstrateEncounterInput | undefined;
-    if (this.deferredEncounters.length > 0) {
-      const pending = this.deferredEncounters[0];
-      const decision = decideEncounter(s.governorKernel, pending);
-      if (decision.disposition === 'ATTEND') {
-        attended = this.deferredEncounters.shift();
-        encounterDecisions.push({ ...pending, disposition: 'ATTEND',
-          reason: 'Previously deferred encounter admitted after Governor recovery.', applied: true });
-      } else {
-        encounterDecisions.push({ ...pending, ...decision, applied: false });
-      }
-    }
-    if (encounter) {
-      let decision = decideEncounter(s.governorKernel, encounter);
-      if (decision.disposition === 'ATTEND' && attended) {
-        decision = { disposition: 'DEFER',
-          reason: 'An earlier deferred encounter was attended on this step; this encounter remains queued.' };
-      }
-      if (decision.disposition === 'ATTEND') attended = encounter;
-      else if (decision.disposition === 'DEFER' && this.deferredEncounters.length < 32) {
-        this.deferredEncounters.push(encounter);
-      } else if (decision.disposition === 'DEFER') {
-        decision = { disposition: 'REFUSE',
-          reason: 'Governor deferral queue is full; encounter retained in PFM but not queued.' };
-      }
-      encounterDecisions.push({ ...encounter, ...decision, applied: decision.disposition === 'ATTEND' });
-    }
+    const { attended, encounterDecisions } = this.gateEncounters(s.governorKernel, encounter);
 
     // A signal can bias only an extant outgoing gate. Attention cannot invent a passage.
     const from = s.currentZone;
@@ -211,6 +265,8 @@ export class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
     };
     if (s.snapshots.length >= 128) s.snapshots.shift();
     s.snapshots.push(snapshot);
+    // The relative rule compares each decision with the tension of the steps before it.
+    this.recordTension(s.governorKernel);
     return snapshot;
   }
 
@@ -220,11 +276,16 @@ export class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
 
   public override exportState(): Record<string, unknown> {
     const { snapshots, memoryConsumptionLog, ...rest } = super.exportState();
-    return { ...rest, deferredEncounters: JSON.parse(JSON.stringify(this.deferredEncounters)), snapshots, memoryConsumptionLog };
+    return { ...rest, deferredEncounters: JSON.parse(JSON.stringify(this.deferredEncounters)),
+      ...(this.admissionRule !== 'fixed-0.72' || this.tensionHistory.length ? { admissionRule: this.admissionRule, tensionHistory: [...this.tensionHistory] } : {}),
+      snapshots, memoryConsumptionLog };
   }
 
   public override importState(state: Record<string, unknown>): void {
     super.importState(state);
     if (state && Array.isArray(state.deferredEncounters)) this.deferredEncounters = JSON.parse(JSON.stringify(state.deferredEncounters));
+    if (state?.admissionRule === 'relative-v1' || state?.admissionRule === 'fixed-0.72') this.admissionRule = state.admissionRule;
+    if (Array.isArray(state?.tensionHistory)) this.tensionHistory = (state.tensionHistory as unknown[])
+      .filter((v): v is number => typeof v === 'number' && Number.isFinite(v)).slice(-RELATIVE_WINDOW);
   }
 }
