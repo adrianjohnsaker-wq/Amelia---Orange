@@ -28,7 +28,7 @@
  *     field draws her onward (see the passage below).
  * No pinned core file is edited; the classic runtime is unchanged and selectable (ND-1b is the default, ameliaRuntimes.ts).
  */
-import { AmeliaOutsideRuntime, decideEncounter } from './OutsideEncounterRuntime';
+import { AmeliaOutsideRuntime } from './OutsideEncounterRuntime';
 import type { IntegratedMemorySystem } from '../substrate/IntegratedMemorySystem';
 import type { CognitiveGovernor } from '../governance/CognitiveGovernor';
 import type { NumogramGate, NumogramZone, ZoneId } from '../types/amelia';
@@ -95,28 +95,9 @@ export class AmeliaNDRuntime extends AmeliaOutsideRuntime {
     const zones = s.qabbala.getZones();
     const gates = s.qabbala.getGates();
 
-    // 1. Governor gating, exactly as the classic runtime (same rule, same queue).
-    const auditBefore = s.governorKernel.getTelemetry();
-    void auditBefore;
-    const encounterDecisions: EncounterDecisionTrace[] = [];
-    let attended: SubstrateEncounterInput | undefined;
-    const queue = s.deferredEncounters ?? (s.deferredEncounters = []);
-    if (queue.length > 0) {
-      const pending = queue[0];
-      const decision = decideEncounter(s.governorKernel, pending);
-      if (decision.disposition === 'ATTEND') {
-        attended = queue.shift();
-        encounterDecisions.push({ ...pending, disposition: 'ATTEND', reason: 'Previously deferred encounter admitted after Governor recovery.', applied: true });
-      } else encounterDecisions.push({ ...pending, ...decision, applied: false });
-    }
-    if (encounter) {
-      let decision = decideEncounter(s.governorKernel, encounter);
-      if (decision.disposition === 'ATTEND' && attended) decision = { disposition: 'DEFER', reason: 'An earlier deferred encounter was attended on this step; this encounter remains queued.' };
-      if (decision.disposition === 'ATTEND') attended = encounter;
-      else if (decision.disposition === 'DEFER' && queue.length < 32) queue.push(encounter);
-      else if (decision.disposition === 'DEFER') decision = { disposition: 'REFUSE', reason: 'Governor deferral queue is full; encounter retained in PFM but not queued.' };
-      encounterDecisions.push({ ...encounter, ...decision, applied: decision.disposition === 'ATTEND' });
-    }
+    // 1. Governor gating through the shared gate (same queue as the classic runtime, this runtime's admission rule:
+    //    on her cloud home the relative rule chosen in GATE-1; only the latest field observation is kept waiting).
+    const { attended, encounterDecisions } = this.gateEncounters(s.governorKernel, encounter);
 
     // 2. Influx: what is admitted (and a text signal) enters the field, not her exit scores.
     const inputDigest = inputSignal?.trim() ? canonicalSha256(inputSignal.trim()) : undefined;
@@ -209,6 +190,7 @@ export class AmeliaNDRuntime extends AmeliaOutsideRuntime {
     };
     if (s.snapshots.length >= 128) s.snapshots.shift();
     s.snapshots.push(snapshot);
+    this.recordTension(s.governorKernel);
     return snapshot;
   }
 

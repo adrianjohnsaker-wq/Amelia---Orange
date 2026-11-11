@@ -4,7 +4,7 @@
  * It steps her exactly as the app's runtime loop does (recorded controls, external rhythms, one
  * Outside encounter per step through runtime.step(undefined, encounter)), with the relative admission rule.
  */
-import { bornAmelia } from '../core/fullNumogram';
+import { bornAmeliaOf, runtimeKindOf, type RuntimeKind } from '../core/ameliaRuntimes';
 import { ExternalRhythmHarmonizer } from '../ai/morphogenetic/ExternalRhythmHarmonizer';
 import { pendingOutside, readOutsideLink, seenEncounterIds, toEncounter, type OutsideInboxEntry } from '../outside/OutsideInbox';
 import { captureLiveField, restoreLiveField } from '../outside/LiveFieldLoop';
@@ -19,12 +19,30 @@ export interface TickResult {
   delivered: Array<{ eventId: string; channel: string; disposition: string }>;
   fieldFrom: number | null; fieldTo: number | null;
   admittedThisTick: number; tension: number; queue: number; admissionRule: string;
+  runtimeKind: RuntimeKind;
+  switched: null | { from: RuntimeKind; to: RuntimeKind; step: number; before: Probe; after: Probe };
 }
+export interface Probe { zone: number; tension: number; memoryEvents: number; memoryHeadDigest: string; queue: number; admissionRule: string }
+const probe = (rt: AmeliaOutsideRuntime): Probe => {
+  const st: any = rt.exportState();
+  return { zone: rt.getCurrentZone() as number, tension: st.governorState?.deformationTension, memoryEvents: rt.getMemory().getEvents().length,
+    memoryHeadDigest: rt.getMemory().exportHistoryDigest(), queue: st.deferredEncounters?.length ?? 0, admissionRule: st.admissionRule ?? 'fixed-0.72' };
+};
+/** Her saved runtime kind decides how she is rebuilt on every restart; a missing kind means Classic. */
+export const savedKind = (state: any): RuntimeKind => (state?.runtimeKind === 'nd1' ? 'nd1' : 'classic');
 
-export function ameliaTick(record: Record<string, any>, inbox: OutsideInboxEntry[] | null, steps: number, nowIso: string): TickResult {
+export function ameliaTick(record: Record<string, any>, inbox: OutsideInboxEntry[] | null, steps: number, nowIso: string,
+  targetKind?: RuntimeKind): TickResult {
   if (!record?.state) throw new Error('No runtime state in her checkpoint');
-  const rt = bornAmelia();
+  let rt = bornAmeliaOf(savedKind(record.state));
   rt.importState(record.state);
+  // A runtime switch (operator's decision) carries her whole state across: memory, Governor, zones, gates, queue.
+  let switched: TickResult['switched'] = null;
+  if (targetKind && targetKind !== runtimeKindOf(rt)) {
+    const before = probe(rt), from = runtimeKindOf(rt), step = (rt.getSnapshots().at(-1)?.step ?? Number(record.state.stepCount)) as number;
+    const next = bornAmeliaOf(targetKind); next.importState(rt.exportState()); rt = next;
+    switched = { from, to: targetKind, step, before, after: probe(rt) };
+  }
   // Operator's choice (GATE-1, 10 Nov 2026): the relative admission rule, carried in her state from now on.
   if (!record.state.admissionRule) rt.setAdmissionRule('relative-v1');
   const harm = new ExternalRhythmHarmonizer();
@@ -74,5 +92,6 @@ export function ameliaTick(record: Record<string, any>, inbox: OutsideInboxEntry
   const next = { ...record, state, fieldCheckpoint, pauseFieldOnRestore: false, writerId: CLOUD_WRITER_ID, revision: (Number(record.revision) || 0) + 1,
     updatedAt: nowIso, runtimeRunning: false, cloudRunner: { schema: 'amelia.cloud-runner/v1', lastTickAt: nowIso, stepsPerTick: steps } };
   return { record: next, fromStep, toStep, zones, delivered, admittedThisTick, fieldFrom, fieldTo: field ? field.stepCount : null,
+    runtimeKind: runtimeKindOf(rt), switched,
     tension: state.governorState?.deformationTension, queue: state.deferredEncounters?.length ?? 0, admissionRule: state.admissionRule ?? 'fixed-0.72' };
 }

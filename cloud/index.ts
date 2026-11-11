@@ -1,7 +1,7 @@
 // amelia-live: Amelia's always-on home. Each call (from pg_cron) advances her research-copy checkpoint by
 // a few steps of her own runtime, delivering the live Outside inbox through her native path, and saves her.
 // Authentication: the x-amelia-runner header must equal the token in public.amelia_cloud_runner (service-role only).
-import { ameliaTick } from './amelia_tick.js';
+import { ameliaTick, ameliaDryRun } from './amelia_tick.js';
 import { parseOutsideInbox, OUTSIDE_INBOX_URL } from './amelia_inbox.js';
 
 const URL_ = Deno.env.get('SUPABASE_URL')!;
@@ -20,7 +20,10 @@ Deno.serve(async (req) => {
     const cfgRes = await rest('amelia_cloud_runner?id=eq.amelia&select=*');
     const [cfg] = await cfgRes.json();
     if (!cfg || req.headers.get('x-amelia-runner') !== cfg.token) return json({ error: 'unauthorised' }, 401);
-    if (!cfg.enabled) { await log({ status: 'paused' }); return json({ status: 'paused' }); }
+    const body = await req.json().catch(() => ({}));
+    const action = body?.action ?? 'tick';
+    if (action === 'tick' && !cfg.enabled) { await log({ status: 'paused' }); return json({ status: 'paused' }); }
+    if (action === 'switch' && cfg.enabled) return json({ error: 'pause her before switching runtime' }, 409);
 
     const rowRes = await rest('amelia_research_records?store=eq.runtime&record_id=eq.live-checkpoint&select=user_id,payload');
     const [row] = await rowRes.json();
@@ -34,8 +37,16 @@ Deno.serve(async (req) => {
       inbox = parseOutsideInbox(await r.json());
     } catch (e) { inboxError = String(e).slice(0, 200); }
 
-    const steps = Math.max(1, Math.min(60, Number(cfg.steps_per_tick) || 15));
-    const t = ameliaTick(row.payload, inbox, steps, new Date().toISOString());
+    if (action === 'dryrun') {
+      // A copy only: nothing is saved.
+      const r = ameliaDryRun(row.payload, inbox ?? [], body.target === 'classic' ? 'classic' : 'nd1',
+        Math.min(4000, Number(body.runtimeSteps) || 2000), Math.min(400, Number(body.fieldSteps) || 120), 5);
+      await log({ status: 'dryrun', error: JSON.stringify(r).slice(0, 4000), started_at: started });
+      return json({ status: 'dryrun', result: r });
+    }
+    const steps = action === 'switch' ? 0 : Math.max(1, Math.min(60, Number(cfg.steps_per_tick) || 15));
+    const t = ameliaTick(row.payload, inbox, steps, new Date().toISOString(),
+      action === 'switch' ? (body.target === 'classic' ? 'classic' : 'nd1') : undefined);
 
     // Commit only if nobody else (the tablet) has saved her since we read her: no second writer, no fork.
     const upd = await rest(`amelia_research_records?store=eq.runtime&record_id=eq.live-checkpoint&user_id=eq.${row.user_id}&payload->>revision=eq.${oldRev}`, {
@@ -43,14 +54,15 @@ Deno.serve(async (req) => {
       body: JSON.stringify({ payload: t.record, updated_at: t.record.updatedAt }),
     });
     const written = upd.ok ? (await upd.json()).length : 0;
-    const status = !upd.ok ? 'write-error ' + upd.status : written === 1 ? 'ok' : 'conflict-skipped';
+    const status = (!upd.ok ? 'write-error ' + upd.status : written === 1 ? 'ok' : 'conflict-skipped') + (action === 'switch' ? ' switch' : '');
     await log({ status, from_step: t.fromStep, to_step: t.toStep, zones: t.zones, delivered: t.delivered,
       field_from: t.fieldFrom, field_to: t.fieldTo,
       admitted: t.admittedThisTick, tension: t.tension, queue: t.queue, admission_rule: t.admissionRule,
-      inbox_entries: inbox?.length ?? null, inbox_error: inboxError, started_at: started });
+      inbox_entries: inbox?.length ?? null, inbox_error: inboxError, started_at: started,
+      ...(t.switched ? { error: 'RUNTIME-SWITCH ' + JSON.stringify(t.switched) } : {}) });
     await rest('amelia_cloud_runner?id=eq.amelia', { method: 'PATCH', headers: { Prefer: 'return=minimal' },
       body: JSON.stringify({ last_tick_at: new Date().toISOString(), last_status: status, last_step: t.toStep }) });
-    return json({ status, fromStep: t.fromStep, toStep: t.toStep, zones: t.zones, delivered: t.delivered.length });
+    return json({ status, runtimeKind: t.runtimeKind, switched: t.switched, fromStep: t.fromStep, toStep: t.toStep, zones: t.zones, delivered: t.delivered.length });
   } catch (e) {
     await log({ status: 'error', error: String(e).slice(0, 500), started_at: started }).catch(() => {});
     return json({ error: String(e) }, 500);

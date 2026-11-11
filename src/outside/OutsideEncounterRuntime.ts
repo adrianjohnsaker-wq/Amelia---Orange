@@ -115,29 +115,16 @@ export class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
     (this as unknown as RuntimeInternals).memory = new OutsideEncounterMemory();
   }
 
-  public override step(inputSignal?: string, encounter?: SubstrateEncounterInput): OutsideStepSnapshot {
-    const s = this as unknown as RuntimeInternals;
-    s.stepCount++;
-    const govTel = s.governorKernel.getTelemetry();
-
-    // 1. Read constitutive memory bias from IntegratedMemorySystem
-    const memReadout = s.memory.readMemoryBias();
-    const zones = s.qabbala.getZones();
-    const gates = s.qabbala.getGates();
-
-    // 2. Step morphogenetic trait evolution across gates & syzygies
-    s.traitEvolution.evolveStep(zones, gates, govTel.momentumDampingFactor, govTel.advisoryWeight,
-      memReadout.biasVector, s.suppressRelaySteering);
-
-    // 3. Audit step with CognitiveGovernor
-    const auditReport = s.governorKernel.auditSubstrateStep(zones, memReadout.hysteresisTension, s.suppressRelaySteering);
-
-    // 4. The Governor gates channel attention before open Numogram exits are scored.
+  /** The Governor's gate and its deferral queue, shared by every runtime built on this one (Classic and ND-1b):
+   * the head of the queue is re-offered first, then the new encounter; the admission rule is this runtime's
+   * (fixed-0.72 or relative-v1); only the latest field observation is kept waiting; the queue holds 32. */
+  protected gateEncounters(governor: CognitiveGovernor, encounter?: SubstrateEncounterInput):
+    { attended: SubstrateEncounterInput | undefined; encounterDecisions: EncounterDecisionTrace[] } {
     const encounterDecisions: EncounterDecisionTrace[] = [];
     let attended: SubstrateEncounterInput | undefined;
     if (this.deferredEncounters.length > 0) {
       const pending = this.deferredEncounters[0];
-      const decision = this.decide(s.governorKernel, pending);
+      const decision = this.decide(governor, pending);
       if (decision.disposition === 'ATTEND') {
         attended = this.deferredEncounters.shift();
         encounterDecisions.push({ ...pending, disposition: 'ATTEND',
@@ -147,7 +134,7 @@ export class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
       }
     }
     if (encounter) {
-      let decision = this.decide(s.governorKernel, encounter);
+      let decision = this.decide(governor, encounter);
       if (decision.disposition === 'ATTEND' && attended) {
         decision = { disposition: 'DEFER',
           reason: 'An earlier deferred encounter was attended on this step; this encounter remains queued.' };
@@ -174,6 +161,34 @@ export class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
       }
       encounterDecisions.push({ ...encounter, ...decision, applied: decision.disposition === 'ATTEND' });
     }
+    return { attended, encounterDecisions };
+  }
+
+  /** Record the Governor's tension after a step, for the relative admission rule. */
+  protected recordTension(governor: CognitiveGovernor): void {
+    this.tensionHistory.push(governor.getTelemetry().deformationFieldTension);
+    if (this.tensionHistory.length > RELATIVE_WINDOW) this.tensionHistory.shift();
+  }
+
+  public override step(inputSignal?: string, encounter?: SubstrateEncounterInput): OutsideStepSnapshot {
+    const s = this as unknown as RuntimeInternals;
+    s.stepCount++;
+    const govTel = s.governorKernel.getTelemetry();
+
+    // 1. Read constitutive memory bias from IntegratedMemorySystem
+    const memReadout = s.memory.readMemoryBias();
+    const zones = s.qabbala.getZones();
+    const gates = s.qabbala.getGates();
+
+    // 2. Step morphogenetic trait evolution across gates & syzygies
+    s.traitEvolution.evolveStep(zones, gates, govTel.momentumDampingFactor, govTel.advisoryWeight,
+      memReadout.biasVector, s.suppressRelaySteering);
+
+    // 3. Audit step with CognitiveGovernor
+    const auditReport = s.governorKernel.auditSubstrateStep(zones, memReadout.hysteresisTension, s.suppressRelaySteering);
+
+    // 4. The Governor gates channel attention before open Numogram exits are scored.
+    const { attended, encounterDecisions } = this.gateEncounters(s.governorKernel, encounter);
 
     // A signal can bias only an extant outgoing gate. Attention cannot invent a passage.
     const from = s.currentZone;
@@ -251,8 +266,7 @@ export class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
     if (s.snapshots.length >= 128) s.snapshots.shift();
     s.snapshots.push(snapshot);
     // The relative rule compares each decision with the tension of the steps before it.
-    this.tensionHistory.push(s.governorKernel.getTelemetry().deformationFieldTension);
-    if (this.tensionHistory.length > RELATIVE_WINDOW) this.tensionHistory.shift();
+    this.recordTension(s.governorKernel);
     return snapshot;
   }
 

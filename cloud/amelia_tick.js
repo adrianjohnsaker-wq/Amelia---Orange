@@ -18981,20 +18981,12 @@ class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
     super();
     this.memory = new OutsideEncounterMemory;
   }
-  step(inputSignal, encounter) {
-    const s = this;
-    s.stepCount++;
-    const govTel = s.governorKernel.getTelemetry();
-    const memReadout = s.memory.readMemoryBias();
-    const zones = s.qabbala.getZones();
-    const gates = s.qabbala.getGates();
-    s.traitEvolution.evolveStep(zones, gates, govTel.momentumDampingFactor, govTel.advisoryWeight, memReadout.biasVector, s.suppressRelaySteering);
-    const auditReport = s.governorKernel.auditSubstrateStep(zones, memReadout.hysteresisTension, s.suppressRelaySteering);
+  gateEncounters(governor, encounter) {
     const encounterDecisions = [];
     let attended;
     if (this.deferredEncounters.length > 0) {
       const pending = this.deferredEncounters[0];
-      const decision = this.decide(s.governorKernel, pending);
+      const decision = this.decide(governor, pending);
       if (decision.disposition === "ATTEND") {
         attended = this.deferredEncounters.shift();
         encounterDecisions.push({
@@ -19008,7 +19000,7 @@ class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
       }
     }
     if (encounter) {
-      let decision = this.decide(s.governorKernel, encounter);
+      let decision = this.decide(governor, encounter);
       if (decision.disposition === "ATTEND" && attended) {
         decision = {
           disposition: "DEFER",
@@ -19034,6 +19026,23 @@ class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
       }
       encounterDecisions.push({ ...encounter, ...decision, applied: decision.disposition === "ATTEND" });
     }
+    return { attended, encounterDecisions };
+  }
+  recordTension(governor) {
+    this.tensionHistory.push(governor.getTelemetry().deformationFieldTension);
+    if (this.tensionHistory.length > RELATIVE_WINDOW)
+      this.tensionHistory.shift();
+  }
+  step(inputSignal, encounter) {
+    const s = this;
+    s.stepCount++;
+    const govTel = s.governorKernel.getTelemetry();
+    const memReadout = s.memory.readMemoryBias();
+    const zones = s.qabbala.getZones();
+    const gates = s.qabbala.getGates();
+    s.traitEvolution.evolveStep(zones, gates, govTel.momentumDampingFactor, govTel.advisoryWeight, memReadout.biasVector, s.suppressRelaySteering);
+    const auditReport = s.governorKernel.auditSubstrateStep(zones, memReadout.hysteresisTension, s.suppressRelaySteering);
+    const { attended, encounterDecisions } = this.gateEncounters(s.governorKernel, encounter);
     const from = s.currentZone;
     const inputDigest = inputSignal?.trim() ? canonicalSha256(inputSignal.trim()) : undefined;
     const inputZone = inputDigest ? parseInt(inputDigest.slice(0, 2), 16) % 10 : undefined;
@@ -19118,9 +19127,7 @@ class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
     if (s.snapshots.length >= 128)
       s.snapshots.shift();
     s.snapshots.push(snapshot);
-    this.tensionHistory.push(s.governorKernel.getTelemetry().deformationFieldTension);
-    if (this.tensionHistory.length > RELATIVE_WINDOW)
-      this.tensionHistory.shift();
+    this.recordTension(s.governorKernel);
     return snapshot;
   }
   getSnapshots() {
@@ -19210,7 +19217,273 @@ function withFullNumogram(runtime) {
   });
   return runtime;
 }
-var bornAmelia = () => withFullNumogram(new AmeliaOutsideRuntime);
+
+// src/outside/AmeliaNDRuntime.ts
+var ND1 = { ETA: 0.5, D: 0.6, LAMBDA: 0.1, OMEGA: 0.05, ADAPT: 0.05, FIELD_WEIGHT: 2, THETA: 24, FLOW_MAX: 3 };
+var WARP2 = new Set([3, 6]);
+
+class AmeliaNDRuntime extends AmeliaOutsideRuntime {
+  runtimeKind = "nd1";
+  ndBase = Array(10).fill(0);
+  flowHops = 0;
+  warpIntensity = 0;
+  lastNamed = -1;
+  flights = 0;
+  getNDStatus() {
+    return { warpIntensity: this.warpIntensity, lastNamed: this.lastNamed, flights: this.flights, baseline: [...this.ndBase] };
+  }
+  influx(zones, weights) {
+    const mx = Math.max(0, ...weights);
+    if (mx <= 0)
+      return;
+    let named = -1, best = 0;
+    for (let i = 0;i <= 9; i++) {
+      const w = Math.max(0, weights[i] ?? 0) / mx;
+      if (w <= 0)
+        continue;
+      const z = zones[i];
+      z.activation = z.activation + ND1.ETA * w * (1 - z.activation);
+      if (!WARP2.has(i) && i !== 5 && w > best) {
+        best = w;
+        named = i;
+      }
+    }
+    if (named >= 0)
+      this.lastNamed = named;
+  }
+  field(zones, gates) {
+    const a = Array.from({ length: 10 }, (_, i) => zones[i].activation), next = a.map((x) => x * (1 - ND1.D));
+    for (let i = 0;i <= 9; i++) {
+      const out = gates.filter((g) => g.isOpen && g.source === i);
+      const tot = out.reduce((x, g) => x + g.flux * (1 - g.resistance), 0);
+      if (tot <= 0) {
+        next[i] += ND1.D * a[i];
+        continue;
+      }
+      for (const g of out)
+        next[g.target] += ND1.D * a[i] * (g.flux * (1 - g.resistance)) / tot;
+    }
+    for (let i = 0;i <= 9; i++) {
+      const z = zones[i];
+      z.phaseAngle = (z.phaseAngle + 0.12 + i * 0.035 * (1 + z.conductivity * 0.2)) % (Math.PI * 2);
+      let v = next[i] * (1 - ND1.LAMBDA);
+      v = v + ND1.OMEGA * (0.3 + 0.35 * Math.sin(z.phaseAngle) - v);
+      z.activation = Math.max(0, Math.min(1, v));
+      z.deformationStress = Math.min(1, Math.abs(z.activation - zones[z.syzygyPair].activation) * 0.8);
+      z.polarCharge = Number((Math.cos(z.phaseAngle) * z.activation).toFixed(3));
+    }
+  }
+  step(inputSignal, encounter) {
+    const s = this;
+    s.stepCount++;
+    const govTel = s.governorKernel.getTelemetry();
+    const memReadout = s.memory.readMemoryBias();
+    const zones = s.qabbala.getZones();
+    const gates = s.qabbala.getGates();
+    const { attended, encounterDecisions } = this.gateEncounters(s.governorKernel, encounter);
+    const inputDigest = inputSignal?.trim() ? canonicalSha256(inputSignal.trim()) : undefined;
+    const inputZone = inputDigest ? parseInt(inputDigest.slice(0, 2), 16) % 10 : undefined;
+    if (attended)
+      this.influx(zones, attended.attentionVector);
+    if (inputZone !== undefined) {
+      const w = Array(10).fill(0);
+      w[inputZone] = 1;
+      this.influx(zones, w);
+    }
+    this.field(zones, gates);
+    const auditReport = s.governorKernel.auditSubstrateStep(zones, memReadout.hysteresisTension, s.suppressRelaySteering);
+    const from = s.currentZone;
+    const scoreOf = (gate) => {
+      const target = gate.target, z = zones[target];
+      return gate.flux * (1 - gate.resistance) + (memReadout.biasVector[target] || 0) * 0.4 + (z.activation - this.ndBase[target]) * ND1.FIELD_WEIGHT + Math.cos(z.phaseAngle) * 0.1 + (inputZone === target ? 0.35 : 0) + (attended?.attentionVector[target] ?? 0) * 0.9;
+    };
+    let to = from, released = null;
+    if (WARP2.has(from) && this.warpIntensity >= ND1.THETA) {
+      let c = this.lastNamed;
+      if (c < 0) {
+        let b = -Infinity;
+        for (let z = 0;z <= 9; z++) {
+          if (WARP2.has(z) || z === 5)
+            continue;
+          if (zones[z].activation > b) {
+            b = zones[z].activation;
+            c = z;
+          }
+        }
+      }
+      if (!gates.some((g) => g.source === from && g.target === c)) {
+        const mean = (f) => gates.reduce((x, g) => x + g[f], 0) / gates.length;
+        gates.push({
+          id: `warpborn-${from}-${c}`,
+          source: from,
+          target: c,
+          label: `ND-1 Warp-born ${from}->${c}`,
+          flux: mean("flux"),
+          permeability: mean("permeability"),
+          isOpen: true,
+          resistance: mean("resistance")
+        });
+      }
+      to = c;
+      released = { to: c };
+      this.flights++;
+    } else {
+      let best = -Infinity;
+      for (const gate of gates.filter((g) => g.isOpen && g.source === from)) {
+        const score = scoreOf(gate);
+        if (score > best) {
+          best = score;
+          to = gate.target;
+        }
+      }
+    }
+    const route = [to];
+    {
+      const change = (z) => zones[z].activation - this.ndBase[z];
+      let cur = to;
+      for (let k = 0;k < ND1.FLOW_MAX; k++) {
+        if (WARP2.has(cur))
+          break;
+        let nb = -Infinity, nxt = -1;
+        for (const g of gates)
+          if (g.isOpen && g.source === cur) {
+            const sc = scoreOf(g);
+            if (sc > nb) {
+              nb = sc;
+              nxt = g.target;
+            }
+          }
+        if (nxt < 0 || nxt === cur || nxt === from || route.includes(nxt) || !(change(nxt) > change(cur)))
+          break;
+        cur = nxt;
+        route.push(nxt);
+      }
+      if (route.length > 1) {
+        for (const hop of route.slice(0, -1))
+          s.memory.append({
+            blockIndex: s.stepCount,
+            depth: s.stepCount,
+            targetZone: hop,
+            fluxDelta: 0.025,
+            phaseCoherence: 0.5,
+            strainRelaxation: 0.025,
+            eventDigest: canonicalSha256(`flow|${s.stepCount}|${hop}`),
+            timestamp: s.stepCount,
+            kind: "STEP",
+            fromZone: from,
+            inputDigest,
+            inputZone,
+            encounters: []
+          });
+        to = cur;
+        this.flowHops += route.length - 1;
+      }
+    }
+    this.warpIntensity = WARP2.has(to) && !released ? this.warpIntensity + 1 : 0;
+    const targetZone = zones[to], sourceZone = zones[from];
+    const fluxDelta = Number(Math.max(0.005, Math.min(0.18, Math.abs(targetZone.activation - sourceZone.activation) * 0.12 + 0.025)).toFixed(6));
+    const phaseCoherence = Number(Math.max(0.05, Math.min(1, (1 + Math.cos(targetZone.phaseAngle - sourceZone.phaseAngle)) / 2)).toFixed(6));
+    const eventBody = {
+      step: s.stepCount,
+      from,
+      to,
+      fluxDelta,
+      phaseCoherence,
+      inputDigest: inputDigest ?? null,
+      inputZone: inputZone ?? null,
+      encounters: encounterDecisions,
+      runtime: "nd1b",
+      warpRelease: released,
+      ...route.length > 1 ? { route } : {}
+    };
+    const eventDigest = canonicalSha256(JSON.stringify(eventBody));
+    s.memory.append({
+      blockIndex: s.stepCount,
+      depth: s.stepCount,
+      targetZone: to,
+      fluxDelta,
+      phaseCoherence,
+      strainRelaxation: 0.025,
+      eventDigest,
+      timestamp: s.stepCount,
+      kind: "STEP",
+      fromZone: from,
+      inputDigest,
+      inputZone,
+      encounters: encounterDecisions
+    });
+    s.currentZone = to;
+    s.lastTransition = { from, to, digest: eventDigest };
+    for (let i = 0;i <= 9; i++)
+      this.ndBase[i] += ND1.ADAPT * (zones[i].activation - this.ndBase[i]);
+    for (let i = 0;i <= 9; i++) {
+      const z = zones[i];
+      s.deformationTensor[i] = s.deformationTensor[i] * 0.95 + (z.deformationStress + memReadout.biasVector[i]) * 0.05;
+    }
+    const syzygyCoherence = s.qabbala.computeSyzygyCoherence();
+    const activeSyzygies = ["0::9 Abyssal", "1::8 Murmur", "2::7 SubCrypt", "3::6 BarkerLoop", "4::5 Centroid"].filter((_, idx) => idx % 2 === 0 ? syzygyCoherence > 0.55 : syzygyCoherence > 0.65);
+    if (s.memoryConsumptionLog.length >= 128)
+      s.memoryConsumptionLog.shift();
+    s.memoryConsumptionLog.push({
+      step: s.stepCount,
+      memoryHistoryLength: memReadout.historyLength,
+      memoryHysteresisTension: memReadout.hysteresisTension,
+      dominantDeformedZone: memReadout.dominantDeformedZone,
+      appliedBiasVector: [...memReadout.biasVector],
+      guidanceAdvisoryWeight: govTel.advisoryWeight,
+      guidanceSuppressed: govTel.advisoryWeight === 0
+    });
+    const clonedZones = {};
+    for (let i = 0;i <= 9; i++)
+      clonedZones[i] = { ...zones[i] };
+    const snapshot = {
+      step: s.stepCount,
+      timestamp: Date.now(),
+      zones: clonedZones,
+      governor: auditReport.telemetry,
+      activeSyzygies,
+      deformationVector: [...s.deformationTensor],
+      selectedObjective: s.currentObjective,
+      lastTransition: { ...s.lastTransition },
+      encounterDecisions: JSON.parse(JSON.stringify(encounterDecisions)),
+      memoryHistoryLength: s.memory.getEvents().length,
+      memoryHeadDigest: s.memory.exportHistoryDigest()
+    };
+    if (s.snapshots.length >= 128)
+      s.snapshots.shift();
+    s.snapshots.push(snapshot);
+    this.recordTension(s.governorKernel);
+    return snapshot;
+  }
+  exportState() {
+    return { ...super.exportState(), runtimeKind: "nd1", nd1: { baseline: [...this.ndBase], warpIntensity: this.warpIntensity, lastNamed: this.lastNamed, flights: this.flights } };
+  }
+  importState(state) {
+    super.importState(state);
+    const n = state?.nd1;
+    if (n) {
+      if (Array.isArray(n.baseline) && n.baseline.length === 10)
+        this.ndBase = n.baseline.map(Number);
+      if (typeof n.warpIntensity === "number")
+        this.warpIntensity = n.warpIntensity;
+      if (typeof n.lastNamed === "number")
+        this.lastNamed = n.lastNamed;
+      if (typeof n.flights === "number")
+        this.flights = n.flights;
+    } else {
+      const zones = this.qabbala.getZones();
+      this.ndBase = Array.from({ length: 10 }, (_, i) => zones[i].activation);
+    }
+  }
+}
+
+// src/core/ameliaRuntimes.ts
+function bornAmeliaOf(kind) {
+  return withFullNumogram(kind === "nd1" ? new AmeliaNDRuntime : new AmeliaOutsideRuntime);
+}
+function runtimeKindOf(rt) {
+  return rt instanceof AmeliaNDRuntime ? "nd1" : "classic";
+}
 
 // src/ai/morphogenetic/ExternalRhythmHarmonizer.ts
 class ExternalRhythmHarmonizer {
@@ -20120,11 +20393,31 @@ function advanceWithLiveSource(field) {
 
 // src/cloud/ameliaTick.ts
 var CLOUD_WRITER_ID = "amelia-cloud-runner-v1";
-function ameliaTick(record, inbox, steps, nowIso) {
+var probe = (rt) => {
+  const st = rt.exportState();
+  return {
+    zone: rt.getCurrentZone(),
+    tension: st.governorState?.deformationTension,
+    memoryEvents: rt.getMemory().getEvents().length,
+    memoryHeadDigest: rt.getMemory().exportHistoryDigest(),
+    queue: st.deferredEncounters?.length ?? 0,
+    admissionRule: st.admissionRule ?? "fixed-0.72"
+  };
+};
+var savedKind = (state) => state?.runtimeKind === "nd1" ? "nd1" : "classic";
+function ameliaTick(record, inbox, steps, nowIso, targetKind) {
   if (!record?.state)
     throw new Error("No runtime state in her checkpoint");
-  const rt = bornAmelia();
+  let rt = bornAmeliaOf(savedKind(record.state));
   rt.importState(record.state);
+  let switched = null;
+  if (targetKind && targetKind !== runtimeKindOf(rt)) {
+    const before = probe(rt), from = runtimeKindOf(rt), step = rt.getSnapshots().at(-1)?.step ?? Number(record.state.stepCount);
+    const next = bornAmeliaOf(targetKind);
+    next.importState(rt.exportState());
+    rt = next;
+    switched = { from, to: targetKind, step, before, after: probe(rt) };
+  }
   if (!record.state.admissionRule)
     rt.setAdmissionRule("relative-v1");
   const harm = new ExternalRhythmHarmonizer;
@@ -20201,12 +20494,140 @@ function ameliaTick(record, inbox, steps, nowIso) {
     admittedThisTick,
     fieldFrom,
     fieldTo: field ? field.stepCount : null,
+    runtimeKind: runtimeKindOf(rt),
+    switched,
     tension: state.governorState?.deformationTension,
     queue: state.deferredEncounters?.length ?? 0,
     admissionRule: state.admissionRule ?? "fixed-0.72"
   };
 }
+// src/cloud/ameliaDryRun.ts
+var WARP3 = new Set([3, 6]);
+function ameliaDryRun(record, inbox, target, runtimeSteps = 2000, fieldSteps = 120, every = 5) {
+  const src = bornAmeliaOf(savedKind(record.state));
+  src.importState(record.state);
+  const harm = new ExternalRhythmHarmonizer;
+  for (const d of record.controls?.rhythms ?? []) {
+    const c = harm.getRhythms().find((r) => r.id === d.id);
+    if (c && c.active !== d.active)
+      harm.toggleRhythm(d.id);
+  }
+  const advisory = Number(record.controls?.advisoryWeight ?? 0.722), damping = Number(record.controls?.momentumDamping ?? 0.88);
+  const prep = (rt) => {
+    rt.setAdvisoryWeight(harm.computeAdvisoryTuning(advisory, (rt.getSnapshots().at(-1)?.step ?? 0) + 1));
+    rt.setMomentumDamping(damping);
+  };
+  const probe = (rt) => {
+    const st = rt.exportState();
+    return {
+      zone: rt.getCurrentZone(),
+      tension: st.governorState?.deformationTension,
+      memoryEvents: rt.getMemory().getEvents().length,
+      memoryHeadDigest: rt.getMemory().exportHistoryDigest(),
+      queue: st.deferredEncounters?.length ?? 0,
+      admissionRule: st.admissionRule ?? "fixed-0.72"
+    };
+  };
+  const before = probe(src);
+  const eventsBefore = JSON.parse(JSON.stringify(src.getMemory().getEvents()));
+  const rt = bornAmeliaOf(target);
+  rt.importState(src.exportState());
+  const after = probe(rt);
+  const carry = after.zone === before.zone && after.memoryEvents === before.memoryEvents && after.tension === before.tension && after.memoryHeadDigest === before.memoryHeadDigest && after.queue === before.queue && after.admissionRule === before.admissionRule;
+  const enc = (t) => {
+    const e = inbox[t / every % inbox.length | 0];
+    return { ...toEncounter(e), eventId: `dryrun:${t}:${e.eventId}` };
+  };
+  const path = [];
+  let admitted = 0, offered = 0, refused = 0, minT = 9, maxT = 0, sumT = 0;
+  let prevLen = rt.getMemory().getEvents().length, chainOk = true, blockOk = true, lastBlock = -1;
+  const step = (t, withField) => {
+    prep(rt);
+    const e = t % every === 0 ? enc(t) : undefined;
+    let snap;
+    if (e) {
+      offered++;
+      snap = rt.step(undefined, e);
+      const d = snap.encounterDecisions?.find((x) => x.eventId === e.eventId);
+      if (d?.disposition === "REFUSE")
+        refused++;
+    } else if (withField) {
+      const r = advanceWithLiveSource(withField.field);
+      withField.field = r.state;
+      snap = r.snapshot;
+    } else
+      snap = rt.step();
+    for (const d of snap.encounterDecisions ?? [])
+      if (d.disposition === "ATTEND" && String(d.eventId).startsWith("dryrun:"))
+        admitted++;
+    const T = snap.governor?.deformationFieldTension ?? 0;
+    minT = Math.min(minT, T);
+    maxT = Math.max(maxT, T);
+    sumT += T;
+    path.push(rt.getCurrentZone());
+    const ev = rt.getMemory().getEvents();
+    if (ev.length < prevLen)
+      chainOk = false;
+    for (let i = prevLen;i < ev.length; i++) {
+      if (ev[i].blockIndex < lastBlock)
+        blockOk = false;
+      lastBlock = ev[i].blockIndex;
+    }
+    prevLen = ev.length;
+  };
+  for (let t = 0;t < runtimeSteps; t++)
+    step(t, null);
+  const fieldBox = record.fieldCheckpoint ? { field: restoreLiveField(record.fieldCheckpoint, rt) } : null;
+  for (let t = runtimeSteps;t < runtimeSteps + fieldSteps; t++)
+    step(t, fieldBox);
+  const evAll = rt.getMemory().getEvents();
+  const prefixKept = eventsBefore.every((e, i) => evAll[i]?.eventDigest === e.eventDigest);
+  let longest = 0, run = 0;
+  for (const z of path) {
+    run = WARP3.has(z) ? run + 1 : 0;
+    longest = Math.max(longest, run);
+  }
+  const zonesVisited = [...new Set(path)].sort((a, b) => a - b);
+  const totalSteps = runtimeSteps + fieldSteps, newRecords = evAll.length - before.memoryEvents;
+  const A = rt, B = bornAmeliaOf(target);
+  B.importState(JSON.parse(JSON.stringify(A.exportState())));
+  let same = true;
+  for (let t = 0;t < 300; t++) {
+    prep(A);
+    prep(B);
+    const e = t % every === 0 ? enc(1e5 + t) : undefined;
+    A.step(undefined, e);
+    B.step(undefined, e);
+    if (A.getCurrentZone() !== B.getCurrentZone())
+      same = false;
+  }
+  const ea = A.getMemory().getEvents().at(-1), eb = B.getMemory().getEvents().at(-1);
+  same = same && ea.eventDigest === eb.eventDigest;
+  const nd = rt.getNDStatus?.() ?? null;
+  return {
+    target,
+    runtimeKind: runtimeKindOf(rt),
+    before,
+    after,
+    carry,
+    steps: totalSteps,
+    newRecords,
+    recordsPerStep: Number((newRecords / totalSteps).toFixed(3)),
+    flowHops: rt.flowHops ?? 0,
+    flights: nd?.flights ?? null,
+    chain: { neverShortened: chainOk, blockIndexNonDecreasing: blockOk, preSwitchPrefixKept: prefixKept },
+    longestWarpStay: longest,
+    zonesVisited,
+    offered,
+    admitted,
+    refused,
+    tension: { min: minT, mean: Number((sumT / totalSteps).toFixed(4)), max: maxT },
+    roundTrip300: same
+  };
+}
 export {
   CLOUD_WRITER_ID,
-  ameliaTick
+  ameliaDryRun,
+  ameliaTick,
+  savedKind
 };
