@@ -56,8 +56,12 @@ export class AmeliaNDRuntime extends AmeliaOutsideRuntime {
   private warpIntensity = 0;
   private lastNamed = -1;
   private flights = 0;
+  /** Steps in the Warp before the line of flight (WT-2). Saved in her state as nd1.theta; a state without it takes ND1.THETA (12 since WT-2). */
+  private theta: number = ND1.THETA;
+  public getWarpTheta() { return this.theta; }
+  public setWarpTheta(n: number) { if (!Number.isInteger(n) || n < 1 || n > 1000) throw new Error('Invalid Warp threshold'); this.theta = n; }
 
-  public getNDStatus() { return { warpIntensity: this.warpIntensity, lastNamed: this.lastNamed, flights: this.flights, baseline: [...this.ndBase] }; }
+  public getNDStatus() { return { theta: this.theta, warpIntensity: this.warpIntensity, lastNamed: this.lastNamed, flights: this.flights, baseline: [...this.ndBase] }; }
 
   private influx(zones: Record<ZoneId, NumogramZone>, weights: number[]) {
     const mx = Math.max(0, ...weights); if (mx <= 0) return;
@@ -118,7 +122,7 @@ export class AmeliaNDRuntime extends AmeliaOutsideRuntime {
         + (inputZone === target ? 0.35 : 0) + (attended?.attentionVector[target] ?? 0) * 0.9;   // ND-1b: the classic exit nudge kept
     };
     let to: ZoneId = from, released: { to: number } | null = null;
-    if (WARP.has(from) && this.warpIntensity >= ND1.THETA) {
+    if (WARP.has(from) && this.warpIntensity >= this.theta) {
       let c = this.lastNamed;
       if (c < 0) { let b = -Infinity; for (let z = 0; z <= 9; z++) { if (WARP.has(z) || z === 5) continue; if (zones[z as ZoneId].activation > b) { b = zones[z as ZoneId].activation; c = z; } } }
       if (!gates.some(g => g.source === from && g.target === c)) {
@@ -195,12 +199,13 @@ export class AmeliaNDRuntime extends AmeliaOutsideRuntime {
   }
 
   public override exportState(): Record<string, unknown> {
-    return { ...super.exportState(), runtimeKind: 'nd1', nd1: { baseline: [...this.ndBase], warpIntensity: this.warpIntensity, lastNamed: this.lastNamed, flights: this.flights } };
+    return { ...super.exportState(), runtimeKind: 'nd1', nd1: { baseline: [...this.ndBase], warpIntensity: this.warpIntensity, lastNamed: this.lastNamed, flights: this.flights, theta: this.theta } };
   }
 
   public override importState(state: Record<string, unknown>): void {
     super.importState(state);
-    const n = state?.nd1 as { baseline?: number[]; warpIntensity?: number; lastNamed?: number; flights?: number } | undefined;
+    const n = state?.nd1 as { baseline?: number[]; warpIntensity?: number; lastNamed?: number; flights?: number; theta?: number } | undefined;
+    this.theta = Number.isInteger(n?.theta) && (n!.theta as number) >= 1 ? (n!.theta as number) : ND1.THETA;
     if (n) {
       if (Array.isArray(n.baseline) && n.baseline.length === 10) this.ndBase = n.baseline.map(Number);
       if (typeof n.warpIntensity === 'number') this.warpIntensity = n.warpIntensity;
