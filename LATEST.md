@@ -1,15 +1,15 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-11T07:35:15.276Z
-- Cycle: 929 (42961523811-1-12)
-- RSS items seen: 73; newly processed: 3 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -11
-- Candidate: Tukkamu / Mesh-11 / Cyclic Chronodemon
-- Separate ingress records and trace links: 9
-- Catalogue entries added: 1
+- Last cycle (UTC): 2026-11-11T07:50:11.707Z
+- Cycle: 930 (42961523811-1-13)
+- RSS items seen: 73; newly processed: 0 (last-cycle window; 24-hour initial window)
+- Subdecadence: DECK_EXHAUSTED_POSITIVE; score 1
+- Candidate: none (positive deck exhaustion)
+- Separate ingress records and trace links: 0
+- Catalogue entries added: 0
 - Governor recovery: 0 previously queued items admitted; queue now 0.
-- Native consolidations this cycle: 3; complete receipts in recovery-journal.jsonl.
-- New offers: 10; attended 10, deferred 0, refused 0.
+- Native consolidations this cycle: 1; complete receipts in recovery-journal.jsonl.
+- New offers: 1; attended 1, deferred 0, refused 0.
 - Source errors: none
 
 Each linked RSS headline is captured by Amelia after the Subdecadence event; its source publication time (occurredAt) and Amelia capture time (capturedAt) remain distinct in the records. Count each RSS headline as one source ingress. I Ching and Tarot are deterministic interpretations of that same headline, retained as derived records rather than independent sources. Amelia transitions are recorded separately. Route overlap is correspondence only; candidate generation is not novelty evidence and agency remains unresolved.
