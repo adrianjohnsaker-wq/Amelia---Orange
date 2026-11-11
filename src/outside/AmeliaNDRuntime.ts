@@ -36,7 +36,7 @@ import type { AmeliaNumogramSubstrateRuntime } from '../substrate/ameliaNumogram
 import { canonicalSha256 } from '../lib/sha256';
 import type { EncounterDecisionTrace, OutsideStepSnapshot, SubstrateEncounterInput } from './encounterTypes';
 
-export const ND1 = { ETA: 0.5, D: 0.6, LAMBDA: 0.1, OMEGA: 0.05, ADAPT: 0.05, FIELD_WEIGHT: 2.0, THETA: 24, FLOW_MAX: 3 } as const;
+export const ND1 = { ETA: 0.5, D: 0.6, LAMBDA: 0.1, OMEGA: 0.05, ADAPT: 0.05, FIELD_WEIGHT: 2.0, THETA: 12, FLOW_MAX: 3 } as const;   // THETA 12: WT-2 (11 Nov 2026), adopted; was 24
 const WARP = new Set([3, 6]);
 
 type Internals = {

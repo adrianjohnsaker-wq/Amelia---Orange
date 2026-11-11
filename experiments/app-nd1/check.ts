@@ -2,6 +2,7 @@
 //   node --import tsx experiments/app-nd1/check.ts
 import { createHash } from 'node:crypto';
 import { bornAmeliaOf, convertRuntime, runtimeKindOf } from '../../src/core/ameliaRuntimes';
+import { ND1 } from '../../src/outside/AmeliaNDRuntime';
 let fail = 0; const ok = (c: boolean, m: string) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fail++; };
 const enc = (t: number, c: number) => { const v = Array(10).fill(0); v[c] = 1; return { eventId: `chk:${t}`, channel: 'LINGUISTIC', sourceDigest: createHash('sha256').update(String(t)).digest('hex'), attentionVector: v } as any; };
 let x = 7; const rnd = () => (x = (x * 1103515245 + 12345) % 2147483648) / 2147483648;
@@ -19,7 +20,7 @@ for (const every of [1, 10]) {
   console.log(`-- an encounter offered every ${every} step(s): attended classic ${C.attended}, nd1 ${N.attended}`);
   ok(runtimeKindOf(C.rt) === 'classic' && runtimeKindOf(N.rt) === 'nd1', 'runtime kinds');
   console.log(`   longest unbroken Warp stay: classic ${longestWarp(C.path)}, nd1 ${longestWarp(N.path)}`);
-  ok(longestWarp(N.path) <= 26, 'ND-1 always leaves the Warp within THETA (+2) steps');
+  ok(longestWarp(N.path) <= ND1.THETA + 2, `ND-1 always leaves the Warp within THETA (+2) = ${ND1.THETA + 2} steps`);
   ok(N.path.every(z => Number.isInteger(z) && z >= 0 && z <= 9), 'ND-1 path valid for 4,000 steps');
   const g = (c: number) => { const n = c * (c + 1) / 2; return n === 0 ? 0 : 1 + (n - 1) % 9; }, cur = (c: number) => Math.abs(2 * c - 9);
   console.log(`   lag-2 hit rate (gate / current), classic ${lag2(C.path, g).toFixed(3)} / ${lag2(C.path, cur).toFixed(3)}, nd1 ${lag2(N.path, g).toFixed(3)} / ${lag2(N.path, cur).toFixed(3)}`);
