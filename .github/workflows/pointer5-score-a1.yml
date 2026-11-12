@@ -1,0 +1,49 @@
+# THE POINTER V scoring under amendment 1 (experiments/pointer5/AMENDMENT_1.md). Branch pointer5-20261111 only.
+# Verifies the RFC 3161 seal precedes the targets and every sealed source is unchanged, fetches and BLS-verifies the target
+# rounds with the sealed targets.py, scores with score_a1.py (THE POINTER IV's amended scorer), commits results/.
+name: POINTER V score (amendment 1)
+on:
+  push:
+    branches: [pointer5-20261111]
+    paths: ['experiments/pointer5/score_a1.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: pointer5
+  cancel-in-progress: false
+jobs:
+  score:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: verify, fetch targets, score
+        shell: bash
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          P=experiments/pointer5
+          if [ -e $P/results/RESULT.txt ]; then echo 'already scored'; exit 0; fi
+          if [ "$(date -u +%s)" -lt "$(date -u -d '2026-11-12T06:15:00Z' +%s)" ]; then echo 'NOT_YET'; exit 1; fi
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import datetime, hashlib, json, pathlib
+          from drift1a_c1.beacon import Sealer
+          sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          S = pathlib.Path('experiments/pointer5/seal'); imprint = sha(S / 'POINTER5_BUNDLE.json')
+          before = datetime.datetime(2026, 11, 12, 6, tzinfo=datetime.timezone.utc).timestamp()
+          assert Sealer().verify(S / 'token', imprint, before)['status'] == 'PASS'
+          for x in json.loads((S / 'POINTER5_BUNDLE.json').read_text())['sourceSHA256']: assert sha(x['path']) == x['sha256'], x['path']
+          print('POINTER5_SEAL_AND_SOURCES_VERIFIED_BEFORE_TARGETS')
+          PY
+          diff $P/score.py $P/score_a1.py || true
+          mkdir -p $P/results
+          python $P/targets.py $P/answers.json $P/results/targets.json
+          python -I $P/score_a1.py $P/answers.json $P/results/targets.json | tee $P/results/RESULT.txt
+          git add $P/results; git commit -qm 'THE POINTER V result (scored under amendment 1)'
+          for i in 1 2 3 4; do git pull -q --rebase origin pointer5-20261111 && git push -q origin HEAD:pointer5-20261111 && break; sleep $((2**i)); done
