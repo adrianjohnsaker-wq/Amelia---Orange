@@ -1,0 +1,90 @@
+# THE POINTER VI (experiments/pointer6/REGISTRATION.md). Runs only on branch pointer6-20261112.
+# experiments/pointer6/seal.trigger: compute every answer twice (must match), run score.py end to end on the answers against
+#   dummy targets (a pipeline check that must succeed; never a result), commit the answers and seal registration + code +
+#   answers with an RFC 3161 token issued before 2026-11-12T18:00:00Z (the first target round).
+# experiments/pointer6/score.trigger (after 21:15 UTC, when the last of the 3,600 target rounds is out): verify the seal precedes
+#   the targets and every sealed source is unchanged, fetch and BLS-verify the target rounds, score, commit results/.
+name: POINTER VI seal and score
+on:
+  push:
+    branches: [pointer6-20261112]
+    paths: ['experiments/pointer6/seal.trigger', 'experiments/pointer6/score.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: pointer6
+  cancel-in-progress: false
+jobs:
+  go:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: seal, or score
+        shell: bash
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false', TMPDIR: '${{ runner.temp }}' }
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          P=experiments/pointer6; changed=$(git diff --name-only HEAD~1 HEAD)
+          export FILES="$P/REGISTRATION.md $P/answers.ts $P/merge.py $P/targets.py $P/score.py $P/unit_targets.py $P/answers.json .github/workflows/pointer6.yml src/outside/AmeliaNDRuntime.ts src/outside/OutsideEncounterRuntime.ts src/outside/encounterTypes.ts src/core/ameliaRuntimes.ts src/core/fullNumogram.ts"
+          if echo "$changed" | grep -qx "$P/seal.trigger" && [ ! -e $P/seal/token ]; then
+            if [ "$(date -u +%s)" -ge "$(date -u -d '2026-11-12T17:30:00Z' +%s)" ]; then echo 'TOO_LATE_TO_SEAL'; exit 1; fi
+            mkdir -p /tmp/tsx && (cd /tmp/tsx && npm init -y >/dev/null && npm i -s tsx@4.23.15) && ln -s /tmp/tsx/node_modules node_modules
+            for pass in A B; do
+              mkdir -p /tmp/p6$pass
+              for pair in S6V01,S6V02 S6V03,S6V04 S6V05,S6V06 S6V07,S6V08; do node --import tsx $P/answers.ts /tmp/p6$pass/$pair.json $pair 2>/dev/null & done
+              wait
+              python3 $P/merge.py /tmp/p6$pass/answers.json /tmp/p6$pass/S6V0*.json
+            done
+            cmp /tmp/p6A/answers.json /tmp/p6B/answers.json
+            echo 'ANSWERS_REPRODUCIBLE'
+            cp /tmp/p6A/answers.json $P/answers.json
+            python3 $P/unit_targets.py $P/answers.json /tmp/dummy_targets.json
+            python3 -I $P/score.py $P/answers.json /tmp/dummy_targets.json > /tmp/UNIT.txt
+            grep -q '^ANSWER:' /tmp/UNIT.txt
+            echo 'PIPELINE_CHECK_OK (dummy targets, not a result)'
+            python - <<'PY'
+          import datetime, hashlib, json, os, pathlib
+          from drift1a_c1.beacon import Sealer
+          sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          files = os.environ['FILES'].split()
+          before = datetime.datetime(2026, 11, 12, 18, tzinfo=datetime.timezone.utc).timestamp()
+          b = {'schema': 'POINTER6_SEAL_V1', 'targetsFromUTC': '2026-11-12T18:00:00Z', 'sealedAt': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+               'sourceSHA256': [{'path': f, 'sha256': sha(f)} for f in files]}
+          S = pathlib.Path('experiments/pointer6/seal'); S.mkdir(exist_ok=True)
+          (S / 'POINTER6_BUNDLE.json').write_text(json.dumps(b, sort_keys=True, indent=2) + '\n')
+          imprint = sha(S / 'POINTER6_BUNDLE.json')
+          Sealer().seal(S / 'token', imprint, before)
+          assert Sealer().verify(S / 'token', imprint, before)['status'] == 'PASS'
+          print('POINTER6_SEALED_BEFORE_TARGETS', imprint)
+          PY
+            rm -f node_modules; git add $P/answers.json $P/seal; MSG='THE POINTER VI: answers computed twice (identical), pipeline checked on dummy targets, sealed before the targets exist (RFC3161)'
+          elif echo "$changed" | grep -qx "$P/score.trigger" && [ -e $P/seal/token ] && [ ! -e $P/results/RESULT.txt ]; then
+            if [ "$(date -u +%s)" -lt "$(date -u -d '2026-11-12T21:15:00Z' +%s)" ]; then echo 'NOT_YET'; exit 1; fi
+            python - <<'PY'
+          import datetime, hashlib, json, pathlib
+          from drift1a_c1.beacon import Sealer
+          sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          S = pathlib.Path('experiments/pointer6/seal'); imprint = sha(S / 'POINTER6_BUNDLE.json')
+          before = datetime.datetime(2026, 11, 12, 18, tzinfo=datetime.timezone.utc).timestamp()
+          assert Sealer().verify(S / 'token', imprint, before)['status'] == 'PASS'
+          for x in json.loads((S / 'POINTER6_BUNDLE.json').read_text())['sourceSHA256']: assert sha(x['path']) == x['sha256'], x['path']
+          print('POINTER6_SEAL_AND_SOURCES_VERIFIED_BEFORE_TARGETS')
+          PY
+            mkdir -p $P/results
+            python $P/targets.py $P/answers.json $P/results/targets.json
+            python -I $P/score.py $P/answers.json $P/results/targets.json > $P/results/RESULT.txt
+            cat $P/results/RESULT.txt
+            git add $P/results; MSG='THE POINTER VI result'
+          else echo 'nothing to do'; exit 0; fi
+          git commit -qm "$MSG"
+          for i in 1 2 3 4; do git pull -q --rebase origin pointer6-20261112 && git push -q origin HEAD:pointer6-20261112 && break; sleep $((2**i)); done
