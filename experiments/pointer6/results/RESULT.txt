@@ -1,0 +1,42 @@
+THE POINTER VI: 72 travellers x 50 trials per arm
+
+(arm, measure): discovery observed/max p | replication observed/max p
+   ANCHORED     G1   57281/115200 p=9.701e-01 | 57645/115200 p=3.966e-01
+   ANCHORED     G2   5274/88200 p=9.926e-01 | 5608/88200 p=1.678e-01
+   ANCHORED     R    952/1800 p=9.515e-01 | 945/1800 p=8.763e-01
+   BUBBAMU      G1   57799/115200 p=1.211e-01 | 57816/115200 p=1.021e-01
+   BUBBAMU      G2   5591/88200 p=2.123e-01 | 5587/88200 p=2.234e-01
+   BUBBAMU      R    986/1800 p=5.558e-01 | 966/1800 p=6.123e-01
+   FAMILY_IN    G1   57515/115200 p=6.928e-01 | 57492/115200 p=7.387e-01
+   FAMILY_IN    G2   5497/88200 p=5.550e-01 | 5357/88200 p=9.430e-01
+   FAMILY_IN    R    952/1800 p=8.642e-01 | 965/1800 p=6.919e-01
+   FAMILY_OUT   G1   57373/115200 p=9.100e-01 | 57527/115200 p=6.675e-01
+   FAMILY_OUT   G2   5434/88200 p=7.853e-01 | 5518/88200 p=4.727e-01
+   FAMILY_OUT   R    965/1800 p=6.784e-01 | 955/1800 p=7.186e-01
+   NO_CONTACT   G1   57165/115200 p=9.949e-01 | 57745/115200 p=1.973e-01
+   NO_CONTACT   G2   5282/88200 p=9.907e-01 | 5565/88200 p=2.925e-01
+   NO_CONTACT   R    850/1800 p=9.864e-01 | 876/1800 p=8.331e-01
+   TRI_CADENCE  G1   57449/115200 p=8.140e-01 | 57676/115200 p=3.282e-01
+   TRI_CADENCE  G2   5531/88200 p=4.206e-01 | 5574/88200 p=2.624e-01
+   TRI_CADENCE  R    845/1800 p=9.271e-01 | 868/1800 p=6.442e-01
+
+Holm across the 15 addressed (arm, measure) pairs, alpha 0.05 (p = the larger of the two halves):
+   BUBBAMU      G1   p=1.211e-01  threshold 0.0033  fail
+   BUBBAMU      G2   p=2.234e-01  threshold 0.0036  fail
+   TRI_CADENCE  G2   p=4.206e-01  threshold 0.0038  fail
+   BUBBAMU      R    p=6.123e-01  threshold 0.0042  fail
+   FAMILY_OUT   R    p=7.186e-01  threshold 0.0045  fail
+   FAMILY_IN    G1   p=7.387e-01  threshold 0.0050  fail
+   FAMILY_OUT   G2   p=7.853e-01  threshold 0.0056  fail
+   TRI_CADENCE  G1   p=8.140e-01  threshold 0.0063  fail
+   FAMILY_IN    R    p=8.642e-01  threshold 0.0071  fail
+   FAMILY_OUT   G1   p=9.100e-01  threshold 0.0083  fail
+   TRI_CADENCE  R    p=9.271e-01  threshold 0.0100  fail
+   FAMILY_IN    G2   p=9.430e-01  threshold 0.0125  fail
+   ANCHORED     R    p=9.515e-01  threshold 0.0167  fail
+   ANCHORED     G1   p=9.701e-01  threshold 0.0250  fail
+   ANCHORED     G2   p=9.926e-01  threshold 0.0500  fail
+
+Interference (reported): FAMILY_IN vs FAMILY_OUT per-trial grid matches: 1583+ / 1553-  two-sided p=6.046e-01
+
+ANSWER: NO INFORMATION BEYOND CHANCE in any arm or medium
