@@ -27,7 +27,7 @@
   - **T24** is the same copy after `setWarpThreshold(24)`. Its state is compared with T12's, and only `nd1.theta` may differ.
 - **Copies.**
   - All 24 runs, and the determinism repeat, start from the same starting copy.
-  - Scratch copies archive older events with her live rule (more than 1,500 resident, keeping 1,000). The segments are kept with the scratch run and are not written to her archive. This leaves her movement unchanged, as `memory_archive_body.test.ts` shows.
+  - Scratch copies archive older events with her live rule (more than 1,500 resident, keeping 1,000). Each segment's digests (segment digest, chain digest, event count) are kept with the run's measures. The moved events are discarded with the scratch copy and are never written to her archive. This leaves her movement unchanged, as `memory_archive_body.test.ts` shows.
 - **Determinism.** Before any study run, unit 1 at T12 is run twice in full, and the two runs must be identical step for step: zone path, per-step tension, final memory head digest and final body checksum. If they differ, the source of the variation is recorded and nothing proceeds.
 
 ## A0.5 Measures (per run, over all runtime steps unless stated)
