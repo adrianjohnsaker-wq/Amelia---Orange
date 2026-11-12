@@ -50,7 +50,7 @@ def main(answers_path, targets_path):
         dist = [0] * 10
         for r in runs:
             for a in r["answers"][c]: dist[a] += 1
-        print(f"   {c:10} {k}/{n} = {k / n:.4f}  [{lo:.4f}, {hi:.4f}]  answers by zone {dist}  deaths {sum(r['deaths'][c] for r in runs)}")
+        print(f"   {c:10} {k}/{n} = {k / n:.4f}  [{lo:.4f}, {hi:.4f}]  answers by zone {dist}  deaths {sum(r.get('deaths', {}).get(c, 0) for r in runs)}")
     def half(c, disc):
         ws = {r["world"] for r in runs if (r["world"] in DISCOVERY) == disc}; k, n = rate(c, ws); return k, n, tail(n, k)
     def paired(a, b):

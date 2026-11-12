@@ -22,3 +22,17 @@ worlds changed, as in `score.py`.
 - scores with `score_a1.py`.
 
 The sealed `score.py` and the sealed workflow are left as they were.
+
+## Addendum (12 Nov 2026, 07:05 UTC, before any result was seen)
+**What happened.** The first run under this amendment (run 43171374589) verified the seal and every sealed source, and fetched
+and verified the target rounds (Quicknet 33886612–33886727). It then stopped in the reporting line for the first condition, with
+`KeyError: 'deaths'`, before that line or any test result was printed.
+
+**Why.** THE POINTER IV's travellers recorded deaths. Her current runtime has no death mechanic, so `answers.json` has no
+`deaths` field. The registration already says none are expected.
+
+**The fix.** `score_a1.py` reports a missing deaths count as 0. That is reporting only; no test or rule changes.
+
+**A flaw in my own checking.** The seal run's pipeline test with offline targets had also failed silently: its failure was
+masked inside a `&&` chain. Before this rerun, `score_a1.py` was run end to end on the sealed answers against dummy targets
+(not the real ones), and it completed.
