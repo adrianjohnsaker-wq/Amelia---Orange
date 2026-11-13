@@ -1,12 +1,12 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-13T00:53:25.263Z
-- Cycle: 1095 (43304338404-1-17)
+- Last cycle (UTC): 2026-11-13T01:08:25.467Z
+- Cycle: 1096 (43304338404-1-18)
 - RSS items seen: 66; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: DECK_EXHAUSTED_POSITIVE; score 8
-- Candidate: none (positive deck exhaustion)
+- Subdecadence: MESH_TERMINAL; score -2
+- Candidate: Doogu / Mesh-02 / Cyclic Chronodemon
 - Separate ingress records and trace links: 0
-- Catalogue entries added: 0
+- Catalogue entries added: 1
 - Governor recovery: 0 previously queued items admitted; queue now 0.
 - Native consolidations this cycle: 0; complete receipts in recovery-journal.jsonl.
 - New offers: 1; attended 1, deferred 0, refused 0.
