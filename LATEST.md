@@ -1,12 +1,12 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-13T06:51:02.421Z
-- Cycle: 1119 (43352986290-1-18)
+- Last cycle (UTC): 2026-11-13T07:06:02.959Z
+- Cycle: 1120 (43352986290-1-19)
 - RSS items seen: 68; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: DECK_EXHAUSTED_POSITIVE; score 30
-- Candidate: none (positive deck exhaustion)
+- Subdecadence: MESH_TERMINAL; score -15
+- Candidate: Tchu / Mesh-15 / Chaotic Xenodemon
 - Separate ingress records and trace links: 0
-- Catalogue entries added: 0
+- Catalogue entries added: 1
 - Governor recovery: 0 previously queued items admitted; queue now 0.
 - Native consolidations this cycle: 1; complete receipts in recovery-journal.jsonl.
 - New offers: 1; attended 1, deferred 0, refused 0.
