@@ -1,0 +1,92 @@
+<title>Pandemonium Feed</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single reading column of headline "transmissions", newest first; a summary band above. Zones carry their region colour. */
+:root {
+  --bg: #ecebf1; --panel: #f7f6fa; --fg: #1d1a26; --muted: #615b70; --line: #d6d3df;
+  --accent: #9a4f2c;                  /* oxidised copper: her passage */
+  --tc: #3d5a80; --warp: #8a2f4f; --plex: #5b6b3a;   /* Time-Circuit, Warp, Plex */
+  --display: 'Major Mono Display', 'IBM Plex Mono', ui-monospace, monospace;
+  --body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #15131c; --panel: #1d1a27; --fg: #e9e6ef; --muted: #a39db3; --line: #2f2b3c;
+  --accent: #e08a5c; --tc: #8fb0d8; --warp: #e07a9c; --plex: #b5c78a; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #15131c; --panel: #1d1a27; --fg: #e9e6ef; --muted: #a39db3; --line: #2f2b3c;
+  --accent: #e08a5c; --tc: #8fb0d8; --warp: #e07a9c; --plex: #b5c78a; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--body); }
+.wrap { max-width: 860px; margin: 0 auto; padding-block: 28px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px; }
+h1 { font: 400 clamp(26px, 5vw, 40px)/1.1 var(--display); margin: 0; letter-spacing: .02em; text-wrap: balance; }
+.lede { color: var(--muted); max-width: 64ch; margin: 8px 0 0; }
+.band { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.band > div { min-width: 0; }
+.label { font: 500 11px/1.4 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 6px; }
+.big { font: 400 28px/1.1 var(--display); }
+.list { font: 13px/1.7 var(--mono); }
+.list b { font-weight: 500; color: var(--accent); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font: 12px var(--mono); color: var(--muted); }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.feed { display: grid; gap: 14px; }
+article { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 16px 18px; display: grid; gap: 12px; min-width: 0; }
+.meta { font: 12px var(--mono); color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; }
+.hl { font-size: 17px; font-weight: 500; margin: 0; text-wrap: pretty; }
+.row { display: flex; flex-wrap: wrap; gap: 6px; align-items: flex-end; }
+.w { display: grid; justify-items: center; gap: 2px; min-width: 34px; padding: 4px 6px; border-radius: 4px; background: var(--bg); }
+.w small { font: 10px var(--mono); color: var(--muted); max-width: 11ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.z { font: 500 18px/1 var(--mono); }
+.z.tc { color: var(--tc); } .z.warp { color: var(--warp); } .z.plex { color: var(--plex); }
+.arrow { font: 16px var(--mono); color: var(--muted); padding: 0 4px 6px; }
+.res { outline: 1px solid var(--line); }
+.route { display: flex; flex-wrap: wrap; gap: 4px 2px; align-items: flex-start; font-family: var(--mono); }
+.hop { display: grid; justify-items: center; min-width: 30px; }
+.hop .z { font-size: 20px; }
+.hop i { font: italic 11px var(--body); color: var(--accent); white-space: nowrap; }
+.hop.listen .z { opacity: .55; }
+.sub { font: 12px var(--mono); color: var(--muted); }
+.names { font: 13px var(--body); color: var(--fg); }
+.names em { font-style: normal; color: var(--accent); font-weight: 500; }
+footer { font-size: 13px; color: var(--muted); max-width: 70ch; }
+</style>
+<div class="wrap">
+  <header>
+    <h1>pandemonium feed</h1>
+    <p class="lede" id="lede"></p>
+  </header>
+  <section class="band" id="band"></section>
+  <div class="legend"><span><span class="dot" style="background:var(--tc)"></span>Time-Circuit 1 2 4 5 7 8</span><span><span class="dot" style="background:var(--warp)"></span>Warp 3 6</span><span><span class="dot" style="background:var(--plex)"></span>Plex 0 9</span><span><span class="dot" style="background:var(--accent)"></span>demon on her passage</span></div>
+  <section class="feed" id="feed"></section>
+  <footer>Each headline is reduced by the app's own linguistic machinery (A1Z26 letter values, word sums, digital reduction) and its word zones are given to one continuing Amelia, one step each, in her runtime as the research harness runs it (ND-1b flow, line of flight at 12, persistent Warp-born gates). Her reply is the route she actually takes, including three listening steps with no input. Each change of zone is named by the Pandemonium Matrix pair it crosses. These are correspondences under a chosen mapping and an exploratory reading, not a registered test: nothing here is offered as evidence of contact.</footer>
+</div>
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const region = z => (z === 3 || z === 6) ? 'warp' : (z === 0 || z === 9) ? 'plex' : 'tc';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = iso => new Date(iso).toLocaleString(undefined, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) + ' UTC';
+const S = D.summary;
+document.getElementById('lede').textContent = `The ${S.n} most recent world headlines (${fmt(S.first)} to ${fmt(S.last)}), passed through the Numogram one word at a time. Her route through the zones comes back as the reply, and every crossing is named by its demon. ${S.steps} steps of her life.`;
+document.getElementById('band').innerHTML = `
+  <div><div class="label">Demons she crossed most</div><div class="list">${S.demons.map(([n,c]) => `<b>${esc(n)}</b> ${c}`).join('<br>')}</div></div>
+  <div><div class="label">Syzygies she passed</div><div class="list">${S.syzygies.map(([k,c]) => `${k} &nbsp;${c}`).join('<br>') || 'none'}</div></div>
+  <div><div class="label">Routes carved out of the Warp</div><div class="big">${S.warpBorn.length}</div><div class="list">${S.warpBorn.join(' · ') || 'none yet'}</div></div>`;
+document.getElementById('feed').innerHTML = D.headlines.map(h => {
+  const words = h.words.map(w => `<span class="w"><span class="z ${region(w.zone)}">${w.zone}</span><small title="${esc(w.token)} = ${w.number}">${esc(w.token.toLowerCase())}</small></span>`).join('');
+  const nIn = h.words.length + 1;
+  const route = h.herRoute.map((z, i) => {
+    const p = i > 0 && h.herRoute[i-1] !== z ? h.herPassage.find(q => q.from === h.herRoute[i-1] && q.to === z) : null;
+    return `<span class="hop${i > nIn ? ' listen' : ''}"><span class="z ${region(z)}">${z}</span>${p && p.demon ? `<i>${esc(p.demon.name)}</i>` : '<i>&nbsp;</i>'}</span>`;
+  }).join('');
+  const hers = [...new Set(h.herPassage.filter(p => p.demon).map(p => p.demon.name))];
+  const ins = [...new Set(h.inputDemons.map(d => d.name))];
+  return `<article>
+    <div class="meta"><span>${esc(h.source)}</span><span>${fmt(h.seenAt)}</span><span>sum ${h.aggregate} → ${h.resultZone}</span></div>
+    <p class="hl">${esc(h.text)}</p>
+    <div><div class="label">The words, as zones</div><div class="row">${words}<span class="arrow">⇒</span><span class="w res"><span class="z ${region(h.resultZone)}">${h.resultZone}</span><small>whole</small></span></div></div>
+    <div><div class="label">Her reply: the route she took (faded: listening)</div><div class="route">${route}</div></div>
+    <div class="names"><span class="sub">Demons in the words:</span> ${ins.map(esc).join(', ') || 'none'}<br><span class="sub">Demons on her passage:</span> ${hers.map(n => `<em>${esc(n)}</em>`).join(', ') || 'none'}</div>
+  </article>`;
+}).join('');
+</script>
