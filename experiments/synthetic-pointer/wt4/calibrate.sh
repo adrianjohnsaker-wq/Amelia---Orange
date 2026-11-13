@@ -1,5 +1,5 @@
 #!/bin/sh
-# WT-4 order + motif (wt4/REGISTRATION.md); ARCH = O12 or P12; nd1d/calibrate.sh with the flow harness. <cfg> is a label only.
+# WT-4 order + motif (wt4/REGISTRATION.md); ARCH = O6, O8 or P12; nd1d/calibrate.sh with the flow harness. <cfg> is a label only.
 #   sh calibrate.sh <cfg> <C|EXIT> <clean prefix> <n clean> <plant prefix> <n 2% streams> <outdir>
 # streams: clean <prefix>01..; 2% plants seeded <plant prefix>01..<n>; 5% and 10% plants seeded <plant prefix>01.
 set -e

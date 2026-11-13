@@ -1,16 +1,18 @@
 // WT-4 harness (REGISTRATION.md). ND-1b flow exactly as WT-2's T12 (wt2/run.ts): eta 0.5, D 0.6, field weight 2.0, ADAPT 0.05,
-// LAMBDA 0.1, Warp release at theta 12, flow on; the datum is influx AND the attended one-hot observation, IDENTITY receiver.
-// Arms: P12 = the persistent Warp-born gate (as she runs); O12 = the one-use line of flight (no edge kept).
+// LAMBDA 0.1, Warp release at theta (P12, O12: 12; O8: 8; O6: 6), flow on; the datum is influx AND the attended one-hot observation, IDENTITY receiver.
+// Arms: P12 = the persistent Warp-born gate at theta 12 (as she runs); O<n> = the one-use line of flight at theta n (no edge kept):
+// O6 and O8 are WT-4's registered arms; O12 was the disclosed smoke arm.
 // Optional warm-up: the same runtime first lives through `warm` (not recorded), so P12's Warp-born gates accumulate ("matured").
 import { createHash } from 'node:crypto';
 import { withFullNumogram } from '../../../src/core/fullNumogram';
 import { IDENTITY } from '../nr1/nrRuntime';
 import { WT4Runtime } from './wt4Runtime';
 import { graphFor, type GraphArm } from '../nr1/graphs';
-export type WArm = 'P12' | 'O12';
+export type WArm = 'P12' | 'O12' | 'O8' | 'O6';
+export const thetaOf = (a: WArm) => a === 'O6' ? 6 : a === 'O8' ? 8 : 12;
 export function walkW(zones: number[], graph: GraphArm, arm: WArm, unit: number, warm: number[] = []) {
   const rt: any = new WT4Runtime(); withFullNumogram(rt); rt.setSuppressRelaySteering(true); rt.rel = IDENTITY;
-  rt.nd = true; rt.fieldWeight = 2.0; rt.warpRelease = true; rt.D = 0.6; rt.flow = true; rt.theta = 12; rt.oneUse = arm === 'O12';
+  rt.nd = true; rt.fieldWeight = 2.0; rt.warpRelease = true; rt.D = 0.6; rt.flow = true; rt.theta = thetaOf(arm); rt.oneUse = arm !== 'P12';
   const { gates, perm } = graphFor(graph, unit); rt.getQabbala().setGates(gates);
   const nGates0 = rt.getQabbala().getGates().length;
   const feed = (z: number, tag: string, t: number) => {

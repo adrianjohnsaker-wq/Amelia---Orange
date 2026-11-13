@@ -1,0 +1,79 @@
+# WT-4 (experiments/synthetic-pointer/wt4/REGISTRATION.md). Runs only on this branch, on push of wt4/run.trigger; writes only
+# experiments/synthetic-pointer/wt4/results/. tsx is installed with TMPDIR at the runner temp (tsx clears $TMPDIR/tsx).
+name: WT-4
+on:
+  push:
+    branches: [nr3-field-ingress-20261109]
+    paths: ['experiments/synthetic-pointer/wt4/run.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: wt4
+  cancel-in-progress: false
+env: { PYTHONDONTWRITEBYTECODE: '1' }
+jobs:
+  order:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    strategy: { fail-fast: false, matrix: { arm: [O6, O8, P12] } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: order and sequence, ${{ matrix.arm }}
+        shell: bash
+        env: { TMPDIR: '${{ runner.temp }}' }
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tsx && (cd /tmp/tsx && npm init -y >/dev/null && npm i -s tsx@4.23.15) && ln -s /tmp/tsx/node_modules node_modules
+          node --import tsx experiments/synthetic-pointer/wt4/equivalence.ts
+          NC=10; [ "${{ matrix.arm }}" = P12 ] && NC=0
+          sh experiments/synthetic-pointer/wt4/calibrate.sh WT4-${{ matrix.arm }} ${{ matrix.arm }} wt4c $NC wt4p 8 /tmp/out
+          mkdir -p up/${{ matrix.arm }} && cp /tmp/out/ORDER.json up/${{ matrix.arm }}/ && cp /tmp/out/runs/*.json up/${{ matrix.arm }}/
+      - uses: actions/upload-artifact@v4
+        with: { name: 'order-${{ matrix.arm }}', path: up }
+  relations:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: relations and Warp
+        shell: bash
+        env: { TMPDIR: '${{ runner.temp }}' }
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/tsx && (cd /tmp/tsx && npm init -y >/dev/null && npm i -s tsx@4.23.15) && ln -s /tmp/tsx/node_modules node_modules
+          P=experiments/synthetic-pointer; mkdir -p /tmp/r up/REL
+          python3 -I $P/ndb/stream3.py clean wt4h 12000 /tmp/r/h.json; python3 -I $P/ndb/stream3.py clean wt4w 72000 /tmp/r/w.json
+          for a in O6 O8 P12; do node --import tsx $P/wt4/relations.ts /tmp/r/h.json /tmp/r/w.json WT4-REL /tmp/r/rel_$a.json $a & done; wait
+          python3 -I - <<'PY'
+          import json
+          runs = [r for a in ('O6', 'O8', 'P12') for r in json.load(open(f'/tmp/r/rel_{a}.json'))['runs']]
+          json.dump({'label': 'WT4-REL', 'runs': runs}, open('/tmp/r/rel.json', 'w'))
+          PY
+          for a in O6 O8; do python3 -I $P/wt4/analysis.py /tmp/r/rel.json $a > up/REL/REL_$a.json; done
+      - uses: actions/upload-artifact@v4
+        with: { name: relations, path: up }
+  commit:
+    needs: [order, relations]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: dl, merge-multiple: true }
+      - name: commit results
+        shell: bash
+        run: |
+          set -euo pipefail
+          R=experiments/synthetic-pointer/wt4/results; mkdir -p $R
+          for a in O6 O8 P12; do cp dl/$a/ORDER.json $R/ORDER_$a.json; mkdir -p $R/runs_$a; cp dl/$a/*.result.json dl/$a/*.motif.json $R/runs_$a/; done
+          cp dl/REL/REL_O6.json dl/REL/REL_O8.json $R/
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add $R; git commit -qm 'WT-4 results (order, sequence, relations, Warp)'
+          for i in 1 2 3 4; do git pull -q --rebase origin nr3-field-ingress-20261109 && git push -q origin HEAD:nr3-field-ingress-20261109 && break; sleep $((2**i)); done
