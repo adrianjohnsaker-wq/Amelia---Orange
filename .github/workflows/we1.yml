@@ -1,0 +1,72 @@
+# WE-1 (experiments/synthetic-pointer/we1/REGISTRATION.md). seal.trigger: earth edges from data first seen before now, then one
+# RFC3161 token over registration, code and edges, fixing the data start. run.trigger: the registered run on the first 12,000
+# world data first seen after the seal. Runs only on this branch; writes only experiments/synthetic-pointer/we1/.
+name: WE-1
+on:
+  push:
+    branches: [nr3-field-ingress-20261109]
+    paths: ['experiments/synthetic-pointer/we1/seal.trigger', 'experiments/synthetic-pointer/we1/run.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: we1
+  cancel-in-progress: false
+jobs:
+  we1:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: seal (once) or run
+        shell: bash
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false', TMPDIR: '${{ runner.temp }}' }
+        run: |
+          set -euo pipefail
+          P=experiments/synthetic-pointer/we1; S=experiments/synthetic-pointer
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          export FILES="$P/REGISTRATION.md $P/encode.py $P/raw.ts $P/ledger.py $P/calibration/EDGES.json $S/wt4/order.ts $S/wt4/run.ts $S/wt4/wt4Runtime.ts $S/nr2/order_analysis.py $S/nr1/graphs.ts $S/nr1/nrRuntime.ts $S/sxi1r/run_world.sh $S/sxi1r/touch.ts $S/sxi1r/fast.ts $S/sxi1r/analysis.py $S/sxi1r/calibration/CALIBRATION.json $S/sxi0c/run_arm.ts $S/sxi0c/repaired.ts $S/sxi0c/gate.sh $S/sxi0c/gate_check.py $S/observer.ts $S/pointer.ts $S/coordinator.ts $S/ledger.ts $S/canonical.ts src/core/fullNumogram.ts .github/workflows/we1.yml"
+          git fetch -q --depth 1 origin world-live && git worktree add -q /tmp/live FETCH_HEAD
+          if git diff --name-only HEAD~1 HEAD | grep -qx "$P/seal.trigger" && [ ! -e $P/seal/receipt.json ]; then
+            T=$(date -u +%Y-%m-%dT%H:%M:%SZ); mkdir -p $P/calibration
+            python3 -I $P/encode.py calibrate /tmp/live "$T" $P/calibration/EDGES.json
+            T=$T python - <<'PY'
+          import hashlib, json, os, pathlib
+          from drift1a_c1.beacon import Sealer
+          P = pathlib.Path('experiments/synthetic-pointer/we1'); sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          b = {'schema': 'WE1_REGISTRATION_V1', 'worldDataFirstSeenAtOrAfter': os.environ['T'], 'N': 12000, 'encoding': 'R60',
+               'sourceSHA256': [{'path': f, 'sha256': sha(f)} for f in os.environ['FILES'].split()]}
+          (P / 'seal').mkdir(exist_ok=True); (P / 'seal/WE1_BUNDLE.json').write_text(json.dumps(b, sort_keys=True, indent=2) + '\n')
+          imprint = sha(P / 'seal/WE1_BUNDLE.json'); Sealer().seal(P / 'seal', imprint)
+          assert Sealer().verify(P / 'seal', imprint)['status'] == 'PASS'; print('WE1_SEALED', os.environ['T'], imprint)
+          PY
+            git add $P/seal $P/calibration; MSG='WE-1 registration sealed (RFC3161); earth edges from data before the seal'
+          elif git diff --name-only HEAD~1 HEAD | grep -qx "$P/run.trigger" && [ -e $P/seal/receipt.json ] && [ ! -e $P/result/WE1_RESULT.json ]; then
+            python - <<'PY'
+          import hashlib, json, pathlib
+          from drift1a_c1.beacon import Sealer
+          P = pathlib.Path('experiments/synthetic-pointer/we1'); sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          b = json.loads((P / 'seal/WE1_BUNDLE.json').read_text())
+          assert Sealer().verify(P / 'seal', sha(P / 'seal/WE1_BUNDLE.json'))['status'] == 'PASS'
+          for x in b['sourceSHA256']: assert sha(x['path']) == x['sha256'], x['path']
+          pathlib.Path('/tmp/since').write_text(b['worldDataFirstSeenAtOrAfter']); print('WE1_SEAL_AND_SOURCES_VERIFIED', b['worldDataFirstSeenAtOrAfter'])
+          PY
+            if ! python3 -I $P/encode.py prepare /tmp/live "$(cat /tmp/since)" 12000 $P/calibration/EDGES.json /tmp/world.json; then echo 'WE1_WORLD_DATA_NOT_READY'; exit 0; fi
+            mkdir -p /tmp/tsx && (cd /tmp/tsx && npm init -y >/dev/null && npm i -s tsx@4.23.15) && ln -s /tmp/tsx/node_modules node_modules
+            mkdir -p /tmp/we1/order $P/result
+            node --import tsx $P/raw.ts /tmp/world.json WE1-WORLD /tmp/we1/raw.json
+            seq 0 11 | xargs -P 4 -I{} node --import tsx $S/wt4/order.ts /tmp/world.json {} 1000 49 WE1-WORLD P12 /tmp/we1/order/seg{}.json
+            sh $S/sxi1r/run_world.sh /tmp/world.json /tmp/we1/b1
+            python3 -I $P/ledger.py /tmp/we1/raw.json /tmp/we1/order /tmp/we1/b1/FINAL.json $P/result
+            cp /tmp/world.json $P/result/world.json; cp /tmp/we1/b1/FINAL.json $P/result/B1_FINAL.json; cp /tmp/we1/b1/EQUIVALENCE.json /tmp/we1/b1/gate.json $P/result/ 2>/dev/null || true
+            rm -f node_modules; git add $P/result; MSG='WE-1 world result'
+          else echo 'nothing to do'; exit 0; fi
+          git commit -qm "$MSG"
+          for i in 1 2 3 4; do git pull -q --rebase origin nr3-field-ingress-20261109 && git push -q origin HEAD:nr3-field-ingress-20261109 && break; sleep $((2**i)); done
