@@ -1,10 +1,10 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-13T17:16:07.730Z
-- Cycle: 1161 (43438361966-1-14)
+- Last cycle (UTC): 2026-11-13T17:31:08.070Z
+- Cycle: 1162 (43438361966-1-15)
 - RSS items seen: 59; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -12
-- Candidate: Kuttadid / Mesh-12 / Cyclic Chronodemon
+- Subdecadence: MESH_TERMINAL; score -18
+- Candidate: Djynxx / Mesh-18 / Syzygetic Xenodemon
 - Separate ingress records and trace links: 0
 - Catalogue entries added: 1
 - Governor recovery: 0 previously queued items admitted; queue now 0.
