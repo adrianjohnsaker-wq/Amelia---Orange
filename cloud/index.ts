@@ -1,8 +1,7 @@
 // amelia-live: Amelia's always-on home. Each call (from pg_cron) advances her research-copy checkpoint by
 // a few steps of her own runtime, delivering the live Outside inbox through her native path, and saves her.
 // Authentication: the x-amelia-runner header must equal the token in public.amelia_cloud_runner (service-role only).
-import { ameliaTick, dryRunBegin, dryRunChunk, dryRunRoundTrip, planArchive, verifyArchive, setWarpThreshold, CLOUD_WRITER_ID,
-  wt3lBegin, wt3lChunk, wt3lSummary, WT3L_TICKS_PER_RUN } from './amelia_tick.js';
+import { ameliaTick, dryRunBegin, dryRunChunk, dryRunRoundTrip, planArchive, verifyArchive, setWarpThreshold, CLOUD_WRITER_ID } from './amelia_tick.js';
 import { parseOutsideInbox, OUTSIDE_INBOX_URL } from './amelia_inbox.js';
 
 const URL_ = Deno.env.get('SUPABASE_URL')!;
@@ -36,37 +35,6 @@ Deno.serve(async (req) => {
     const action = body?.action ?? 'tick';
     if (action === 'tick' && !cfg.enabled) { await log({ status: 'paused' }); return json({ status: 'paused' }); }
     if ((action === 'switch' || action === 'set-theta') && cfg.enabled) return json({ error: 'pause her before changing her runtime' }, 409);
-
-    if (action === 'wt3l-chunk') {
-      // WT-3L (experiments/live-amelia/wt3l/): one chunk of one run, on a scratch copy. Her live record is not even read.
-      const runId = String(body.run ?? '');
-      const [run] = await (await rest(`amelia_wt3l_runs?id=eq.${encodeURIComponent(runId)}&select=*`)).json();
-      if (!run || run.status !== 'pending') return json({ error: 'no such pending run' }, 404);
-      try {
-        const [inp] = await (await rest(`amelia_wt3l_inputs?unit=eq.${run.unit}&select=ticks`)).json();
-        if (!inp) throw new Error('no inputs for unit ' + run.unit);
-        let scratch: any;
-        if (!run.record) {
-          const [st] = await (await rest('amelia_wt3l_runs?id=eq.start&select=record')).json();
-          if (!st?.record) throw new Error('no starting copy');
-          scratch = wt3lBegin(st.record, run.id, run.unit, run.arm, new Date().toISOString());
-        } else scratch = { record: run.record, metrics: run.metrics };
-        const t0 = performance.now();
-        const next = wt3lChunk(scratch, inp.ticks, Math.max(1, Math.min(24, Number(body.ticks) || 8)));
-        const ms = Math.round(performance.now() - t0);
-        const done = next.metrics.ticksDone >= WT3L_TICKS_PER_RUN;
-        const patch = { chunks: run.chunks + 1, busy_until: null, updated_at: new Date().toISOString(), error: null,
-          ...(done ? { status: 'done', record: null, metrics: { ...next.metrics, summary: wt3lSummary(next.metrics) } }
-                   : { record: next.record, metrics: next.metrics }) };
-        const upd = await rest(`amelia_wt3l_runs?id=eq.${encodeURIComponent(run.id)}&chunks=eq.${run.chunks}`, {
-          method: 'PATCH', headers: { Prefer: 'return=minimal,count=exact' }, body: JSON.stringify(patch) });
-        return json({ status: 'wt3l-chunk', run: run.id, ticksDone: next.metrics.ticksDone, done, ms, written: await writtenCount(upd) });
-      } catch (e) {
-        await rest(`amelia_wt3l_runs?id=eq.${encodeURIComponent(run.id)}`, { method: 'PATCH', headers: { Prefer: 'return=minimal' },
-          body: JSON.stringify({ status: 'failed', error: String(e).slice(0, 500), busy_until: null }) });
-        return json({ error: String(e) }, 500);
-      }
-    }
 
     const rowRes = await rest('amelia_research_records?store=eq.runtime&record_id=eq.live-checkpoint&select=user_id,payload');
     const [row] = await rowRes.json();
