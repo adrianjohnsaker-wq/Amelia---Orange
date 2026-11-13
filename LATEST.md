@@ -1,10 +1,10 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-13T07:06:02.959Z
-- Cycle: 1120 (43352986290-1-19)
+- Last cycle (UTC): 2026-11-13T07:21:02.332Z
+- Cycle: 1121 (43352986290-1-20)
 - RSS items seen: 68; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -15
-- Candidate: Tchu / Mesh-15 / Chaotic Xenodemon
+- Subdecadence: MESH_TERMINAL; score -9
+- Candidate: Skarkix / Mesh-09 / Amphidemon
 - Separate ingress records and trace links: 0
 - Catalogue entries added: 1
 - Governor recovery: 0 previously queued items admitted; queue now 0.
