@@ -22,11 +22,18 @@ export interface Wt3lMetrics {
   run: string; unit: number; arm: 'T12' | 'T24'; ticksDone: number;
   path: string; tensions: number[]; tickEndTensions: number[]; landings: number[];
   admitted: number; offered: number; flowHops: number; segments: Array<{ segmentNo: number; eventCount: number; segmentDigest: string; chainAfter: string }>;
+  /** Warp exits by way out (Amendment 1): a line of flight, a Warp-born gate, or a gate that existed before the run's step. */
+  exits?: { flight: number; warpborn: number; preexisting: number };
+  exitLog?: Array<{ step: number; from: number; to: number; via: 'flight' | 'warpborn' | 'preexisting'; gate: string | null }>;
+  warpbornAtStart?: number; warpbornGates?: string[];
   final?: { memoryHeadDigest: string; bodyChecksum: string; resident: number; archived: number; theta: number | null };
 }
 export type IdFn = (unit: number, pass: number, eventId: string) => string;
 export const wt3lId: IdFn = (unit, pass, eventId) => `wt3l:${unit}:${pass}:${eventId}`;
 
+const WARP = new Set([3, 6]);
+export const warpbornIds = (state: any): string[] =>
+  (state?.qabbalaGates ?? []).map((g: any) => String(g?.id ?? '')).filter((id: string) => id.startsWith('warpborn')).sort();
 const stripTheta = (state: any) => JSON.stringify({ ...state, nd1: { ...(state?.nd1 ?? {}), theta: undefined } });
 
 /** Start a run from the starting copy. T24 is the copy after setWarpThreshold(24); only nd1.theta may differ (A0.4). */
@@ -37,8 +44,10 @@ export function wt3lBegin(start: Record<string, any>, run: string, unit: number,
     record = setWarpThreshold(record, 24, nowIso, 'wt3l-scratch').record;
     if (stripTheta(record.state) !== stripTheta(start.state)) throw new Error('WT-3L: T24 differs from T12 in more than Θ');
   }
+  const warpborn = warpbornIds(record.state);
   const metrics: Wt3lMetrics = { run, unit, arm, ticksDone: 0, path: '', tensions: [], tickEndTensions: [], landings: [],
-    admitted: 0, offered: 0, flowHops: 0, segments: [] };
+    admitted: 0, offered: 0, flowHops: 0, segments: [], exits: { flight: 0, warpborn: 0, preexisting: 0 }, exitLog: [],
+    warpbornAtStart: warpborn.length, warpbornGates: warpborn };
   return { record, metrics };
 }
 
@@ -56,11 +65,26 @@ export function wt3lChunk(scratch: { record: Record<string, any>; metrics: Wt3lM
   const prepare = () => { rt.setAdvisoryWeight(harm.computeAdvisoryTuning(advisory, (rt.getSnapshots().at(-1)?.step ?? 0) + 1)); rt.setMomentumDamping(damping); };
   if (!record.fieldCheckpoint) throw new Error('WT-3L: her body is required');
   let field: any = restoreLiveField(record.fieldCheckpoint, rt as unknown as AmeliaOutsideRuntime);
+  m.exits = { flight: 0, warpborn: 0, preexisting: 0, ...(m.exits ?? {}) }; m.exitLog = [...(m.exitLog ?? [])];
+  // Read-only instruments (Amendment 1): her own flight counter, her memory and her gate table, read around each step.
+  const flights = () => Number((rt as any).getNDStatus?.().flights ?? 0);
+  const gateTable = () => ((rt as any).qabbala?.getGates?.() ?? []) as Array<{ id: string; source: number; target: number }>;
+  let before = { zone: rt.getCurrentZone() as number, flights: flights(), events: rt.getMemory().getEvents().length };
   const seen = (snap: any) => {
-    m.path += String(rt.getCurrentZone());
+    const zone = rt.getCurrentZone() as number;
+    m.path += String(zone);
     m.tensions.push(Number(snap?.governor?.deformationFieldTension ?? NaN));
-    if (snap?.warpRelease) m.landings.push(Number(snap.warpRelease.to));
     for (const d of snap?.encounterDecisions ?? []) if (d.disposition === 'ATTEND' && String(d.eventId).startsWith('wt3l')) m.admitted++;
+    const ev: any[] = rt.getMemory().getEvents() as any[], fl = flights();
+    const firstTarget = ev.length > before.events ? Number(ev[before.events]?.targetZone) : zone;   // the gate she left by
+    const isFlight = fl > before.flights;
+    if (isFlight) m.landings.push(firstTarget);
+    if (WARP.has(before.zone) && !WARP.has(firstTarget)) {
+      const gate = gateTable().find(g => g.source === before.zone && g.target === firstTarget)?.id ?? null;
+      const via = isFlight ? 'flight' : gate?.startsWith('warpborn') ? 'warpborn' : 'preexisting';
+      m.exits![via]++; m.exitLog!.push({ step: m.path.length, from: before.zone, to: firstTarget, via, gate });
+    }
+    before = { zone, flights: fl, events: ev.length };
   };
   const end = Math.min(WT3L_TICKS_PER_RUN, m.ticksDone + nTicks);
   for (let k = m.ticksDone; k < end; k++) {
@@ -88,6 +112,7 @@ export function wt3lChunk(scratch: { record: Record<string, any>; metrics: Wt3lM
   if (m.ticksDone >= WT3L_TICKS_PER_RUN) m.final = { memoryHeadDigest: rt.getMemory().exportHistoryDigest(),
     bodyChecksum: next.fieldCheckpoint.checksum, resident: next.state.memoryState.events.length,
     archived: Number(next.state.memoryArchive?.archivedCount ?? 0), theta: (rt as any).getWarpTheta?.() ?? null };
+  m.warpbornGates = warpbornIds(next.state);
   return { record: next, metrics: m };
 }
 
@@ -102,7 +127,9 @@ export function wt3lSummary(m: Wt3lMetrics) {
     warpVisitsPer1000: (visits.length / n) * 1000, warpVisits: visits.length,
     meanWarpVisit: visits.length ? mean(visits.map(v => v.length)) : 0, longestWarpVisit: Math.max(0, ...visits.map(v => v.length)),
     linesOfFlight: m.landings.length, landings: land, zones, zonesVisited: Object.keys(zones).length,
-    offered: m.offered, admitted: m.admitted, flowHops: m.flowHops, final: m.final ?? null };
+    offered: m.offered, admitted: m.admitted, flowHops: m.flowHops,
+    warpExits: m.exits ?? null, warpbornAtStart: m.warpbornAtStart ?? null, warpbornAtEnd: m.warpbornGates?.length ?? null,
+    warpbornGates: m.warpbornGates ?? null, final: m.final ?? null };
 }
 
 /** Exact two-sided sign-flip test of the mean of d over all 2^n sign patterns (registered analysis). */

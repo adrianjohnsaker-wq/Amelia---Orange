@@ -37,7 +37,7 @@
 - **Secondary measures:**
   - Warp visits per 1,000 runtime steps, as maximal runs of steps in {3, 6};
   - mean and longest Warp visit;
-  - lines of flight (`warpRelease` in the snapshot) and their landing zones;
+  - lines of flight and their landing zones (source corrected in Amendment 1);
   - zones visited, with counts;
   - replayed encounters admitted (ATTEND);
   - flow hops.

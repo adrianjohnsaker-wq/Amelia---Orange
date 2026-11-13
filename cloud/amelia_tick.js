@@ -20825,6 +20825,8 @@ function verifyArchive(segments, state) {
 var WT3L_ITER_PER_TICK = 15;
 var WT3L_TICKS_PER_RUN = 96;
 var wt3lId = (unit, pass, eventId) => `wt3l:${unit}:${pass}:${eventId}`;
+var WARP4 = new Set([3, 6]);
+var warpbornIds = (state) => (state?.qabbalaGates ?? []).map((g) => String(g?.id ?? "")).filter((id) => id.startsWith("warpborn")).sort();
 var stripTheta = (state) => JSON.stringify({ ...state, nd1: { ...state?.nd1 ?? {}, theta: undefined } });
 function wt3lBegin(start, run, unit, arm, nowIso) {
   if (start?.state?.nd1?.theta !== 12)
@@ -20835,6 +20837,7 @@ function wt3lBegin(start, run, unit, arm, nowIso) {
     if (stripTheta(record.state) !== stripTheta(start.state))
       throw new Error("WT-3L: T24 differs from T12 in more than Θ");
   }
+  const warpborn = warpbornIds(record.state);
   const metrics = {
     run,
     unit,
@@ -20847,7 +20850,11 @@ function wt3lBegin(start, run, unit, arm, nowIso) {
     admitted: 0,
     offered: 0,
     flowHops: 0,
-    segments: []
+    segments: [],
+    exits: { flight: 0, warpborn: 0, preexisting: 0 },
+    exitLog: [],
+    warpbornAtStart: warpborn.length,
+    warpbornGates: warpborn
   };
   return { record, metrics };
 }
@@ -20880,14 +20887,30 @@ function wt3lChunk(scratch, ticks, nTicks, idFn = wt3lId) {
   if (!record.fieldCheckpoint)
     throw new Error("WT-3L: her body is required");
   let field = restoreLiveField(record.fieldCheckpoint, rt);
+  m.exits = { flight: 0, warpborn: 0, preexisting: 0, ...m.exits ?? {} };
+  m.exitLog = [...m.exitLog ?? []];
+  const flights = () => Number(rt.getNDStatus?.().flights ?? 0);
+  const gateTable = () => rt.qabbala?.getGates?.() ?? [];
+  let before = { zone: rt.getCurrentZone(), flights: flights(), events: rt.getMemory().getEvents().length };
   const seen = (snap) => {
-    m.path += String(rt.getCurrentZone());
+    const zone = rt.getCurrentZone();
+    m.path += String(zone);
     m.tensions.push(Number(snap?.governor?.deformationFieldTension ?? NaN));
-    if (snap?.warpRelease)
-      m.landings.push(Number(snap.warpRelease.to));
     for (const d of snap?.encounterDecisions ?? [])
       if (d.disposition === "ATTEND" && String(d.eventId).startsWith("wt3l"))
         m.admitted++;
+    const ev = rt.getMemory().getEvents(), fl = flights();
+    const firstTarget = ev.length > before.events ? Number(ev[before.events]?.targetZone) : zone;
+    const isFlight = fl > before.flights;
+    if (isFlight)
+      m.landings.push(firstTarget);
+    if (WARP4.has(before.zone) && !WARP4.has(firstTarget)) {
+      const gate = gateTable().find((g) => g.source === before.zone && g.target === firstTarget)?.id ?? null;
+      const via = isFlight ? "flight" : gate?.startsWith("warpborn") ? "warpborn" : "preexisting";
+      m.exits[via]++;
+      m.exitLog.push({ step: m.path.length, from: before.zone, to: firstTarget, via, gate });
+    }
+    before = { zone, flights: fl, events: ev.length };
   };
   const end = Math.min(WT3L_TICKS_PER_RUN, m.ticksDone + nTicks);
   for (let k = m.ticksDone;k < end; k++) {
@@ -20931,6 +20954,7 @@ function wt3lChunk(scratch, ticks, nTicks, idFn = wt3lId) {
       archived: Number(next.state.memoryArchive?.archivedCount ?? 0),
       theta: rt.getWarpTheta?.() ?? null
     };
+  m.warpbornGates = warpbornIds(next.state);
   return { record: next, metrics: m };
 }
 function wt3lSummary(m) {
@@ -20962,6 +20986,10 @@ function wt3lSummary(m) {
     offered: m.offered,
     admitted: m.admitted,
     flowHops: m.flowHops,
+    warpExits: m.exits ?? null,
+    warpbornAtStart: m.warpbornAtStart ?? null,
+    warpbornAtEnd: m.warpbornGates?.length ?? null,
+    warpbornGates: m.warpbornGates ?? null,
     final: m.final ?? null
   };
 }

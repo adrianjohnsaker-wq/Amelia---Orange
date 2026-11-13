@@ -85,3 +85,35 @@ test('measures and the sign-flip test', () => {
   assert.equal(signFlip(Array(12).fill(1)).p, 2 / 4096);
   assert.equal(signFlip([1, -1, 1, -1]).p, 1);
 });
+
+function instrumented(s: any, nTicks = 60) {
+  const { ticks } = live(s, 6);
+  let r: any = wt3lBegin(s, 'i', 1, 'T12', 'x'); const atStart = r.metrics.warpbornAtStart;
+  for (let k = 0; k < nTicks / 10; k++) r = wt3lChunk(JSON.parse(JSON.stringify(r)), ticks, 10);
+  const m = r.metrics, flightsDone = Number(r.record.state.nd1.flights) - Number(s.state.nd1?.flights ?? 0);
+  const path = String(s.state.currentZone) + m.path;
+  let pathExits = 0; for (let i = 1; i < path.length; i++) if (/[36]/.test(path[i - 1]) && !/[36]/.test(path[i])) pathExits++;
+  return { m, flightsDone, pathExits, atStart };
+}
+
+test('Amendment 1 instruments, closed Warp: flights from her own counter; Warp-born gates counted; each exit classified once', () => {
+  const { m, flightsDone, pathExits, atStart } = instrumented(start());
+  assert.equal(atStart, 0);
+  assert.ok(flightsDone > 0, 'lines of flight occurred');
+  assert.equal(m.landings.length, flightsDone, 'flights counted = her own counter');
+  assert.equal(m.exits.flight + m.exits.warpborn + m.exits.preexisting, pathExits, 'each exit classified exactly once');
+  assert.ok(m.warpbornGates.length > 0 && m.warpbornGates.every((id: string) => id.startsWith('warpborn')));
+  console.log('closed Warp:', JSON.stringify(m.exits), 'flights', flightsDone, 'warp-born gates', m.warpbornGates.join(','));
+});
+
+test('Amendment 1 instruments, with her pre-existing exit: exits through it are classed pre-existing; replay still equals her tick', () => {
+  const s = start(); const base = s.state.qabbalaGates.find((g: any) => g.source === 1);
+  s.state.qabbalaGates.push({ ...base, id: 'warp-exit-6-9', label: 'Warp exit (6->9)', source: 6, target: 9, isOpen: true });
+  const { m, flightsDone, pathExits } = instrumented(s);
+  assert.equal(m.landings.length, flightsDone);
+  assert.equal(m.exits.flight + m.exits.warpborn + m.exits.preexisting, pathExits);
+  assert.ok(m.exits.preexisting > 0 && m.exitLog.some((x: any) => x.gate === 'warp-exit-6-9'));
+  console.log('with exit:', JSON.stringify(m.exits), 'flights', flightsDone);
+  const L = live(s, 6), again = wt3lChunk(wt3lBegin(s, 'j', 1, 'T12', 'x'), L.ticks, 6, same);
+  assert.equal(again.metrics.path, L.zones); assert.equal(noClock(again.record.state), noClock(L.record.state));
+});
