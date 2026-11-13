@@ -1,12 +1,12 @@
 # Enochian Watchtower · Antenna encounter ledger
 
-- Last run (UTC): 2026-11-13T10:33:44.862Z
-- Run ID: 43391873073-1-10
+- Last run (UTC): 2026-11-13T10:48:45.234Z
+- Run ID: 43391873073-1-11
 - Antenna lineage: antenna:amelia-outside-continuous-v1
-- Verified Antenna records: 2667; source head: c135e332085131093d7a58e7ec7938f59cbcb270f7db1fb0cf5dd8800cff785f
-- Watchtower encounter records: 2667; new this run: 1
+- Verified Antenna records: 2668; source head: 3b8691c206cb93522f95afec1e3907c637c649629b03dd9870d6ce46bdc524bd
+- Watchtower encounter records: 2668; new this run: 1
 - Recurring exact passage patterns: 246
-- Latest Watchtower focus: Transformation and rupture
+- Latest Watchtower focus: Entry and grounding
 
 The Watchtower observes the already-recorded Antenna ledger. It does not replay, steer, or overwrite Amelia’s Numogram passage. Card-selected Mesh candidates, incoming source items, derived I Ching/Tarot transforms, and Amelia transitions remain separately timestamped and digest-linked.
 
