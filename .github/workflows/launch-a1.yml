@@ -1,0 +1,56 @@
+# Launch amendment 1 (experiments/synthetic-pointer/launch_a1/AMENDMENT_LAUNCH_1.md). Runs the sealed run branch of SXI-1R or
+# NR-2 unchanged, with TMPDIR set to the runner temp so tsx does not delete its own install in /tmp/tsx. Verifies the seal and
+# every sealed source first. Runs only on this branch; writes only the study's result/.
+name: Launch A1 (SXI-1R, NR-2)
+on:
+  push:
+    branches: [sxi0-controls-20261105]
+    paths: ['experiments/synthetic-pointer/sxi1r/run_a1.trigger', 'experiments/synthetic-pointer/nr2/run_a1.trigger']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    concurrency:
+      group: launch-a1-${{ github.sha }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: verify seal, then the sealed run branch
+        shell: bash
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false', TMPDIR: '${{ runner.temp }}' }
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          changed=$(git diff --name-only HEAD~1 HEAD)
+          if echo "$changed" | grep -qx experiments/synthetic-pointer/sxi1r/run_a1.trigger; then S=sxi1r; B=SXI1R; N='SXI-1R'
+          elif echo "$changed" | grep -qx experiments/synthetic-pointer/nr2/run_a1.trigger; then S=nr2; B=NR2; N='NR-2'
+          else echo 'nothing to do'; exit 0; fi
+          P=experiments/synthetic-pointer/$S
+          if [ -e $P/result/FINAL.json ] || [ -e $P/result/world.json ]; then echo 'RESULT_ALREADY_EXISTS'; exit 1; fi
+          S=$S B=$B python - <<'PY'
+          import hashlib,json,os,pathlib
+          from drift1a_c1.beacon import Sealer
+          P=pathlib.Path('experiments/synthetic-pointer')/os.environ['S']; sha=lambda f:hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          bf=P/'seal'/(os.environ['B']+'_BUNDLE.json'); b=json.loads(bf.read_text())
+          assert Sealer().verify(P/'seal',sha(bf))['status']=='PASS'
+          for x in b['sourceSHA256']: assert sha(x['path'])==x['sha256'],x['path']
+          pathlib.Path('/tmp/since').write_text(b['worldDataFirstSeenAtOrAfter']); print(os.environ['B']+'_SEAL_AND_SOURCES_VERIFIED',b['worldDataFirstSeenAtOrAfter'])
+          PY
+          git fetch -q --depth 1 origin world-live && git worktree add -q /tmp/live FETCH_HEAD
+          if ! python3 $P/prepare_world.py /tmp/live "$(cat /tmp/since)" 12000 /tmp/world.json; then echo 'WORLD_DATA_NOT_READY'; exit 0; fi
+          mkdir -p /tmp/tsx && (cd /tmp/tsx && npm init -y >/dev/null && npm i -s tsx@4.23.15) && ln -s /tmp/tsx/node_modules node_modules
+          node --import tsx -e 'console.log("TSX_OK")'
+          sh $P/run_world.sh /tmp/world.json $P/result
+          cp /tmp/world.json $P/result/world.json; rm -f node_modules
+          git add $P/result; git commit -qm "$N world result (launch amendment 1)"
+          for i in 1 2 3 4; do git pull -q --rebase origin sxi0-controls-20261105 && git push -q origin HEAD:sxi0-controls-20261105 && break; sleep $((2**i)); done
