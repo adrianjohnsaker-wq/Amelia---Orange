@@ -1,10 +1,10 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-13T03:21:03.199Z
-- Cycle: 1105 (43352986290-1-4)
+- Last cycle (UTC): 2026-11-13T03:36:03.005Z
+- Cycle: 1106 (43352986290-1-5)
 - RSS items seen: 69; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -2
-- Candidate: Doogu / Mesh-02 / Cyclic Chronodemon
+- Subdecadence: MESH_TERMINAL; score -21
+- Candidate: Puppo / Mesh-21 / Amphidemon
 - Separate ingress records and trace links: 0
 - Catalogue entries added: 1
 - Governor recovery: 0 previously queued items admitted; queue now 0.
