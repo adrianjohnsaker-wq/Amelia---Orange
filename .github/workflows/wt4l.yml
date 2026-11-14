@@ -1,0 +1,32 @@
+name: WT-4L (what draws her into the Warp)
+
+# Amendment 2 (experiments/live-amelia/wt4l/REGISTRATION.md): the study runs here, off her database's live path.
+# Started by committing a UTC time to experiments/live-amelia/wt4l/run.trigger on her branch.
+on:
+  push:
+    branches: [research/live-run-history-20261109]
+    paths: ['experiments/live-amelia/wt4l/run.trigger']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wt4l
+  cancel-in-progress: false
+
+jobs:
+  wt4l:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - name: Machinery checks (synthetic only)
+        run: bun test --timeout 900000 experiments/live-amelia/wt3l.test.ts experiments/live-amelia/wt4l.test.ts
+      - name: Run WT-4L (determinism pair, then 48 runs, then the registered analysis)
+        env:
+          SUPABASE_URL: https://rcgmtdponfljpribggsq.supabase.co
+          AMELIA_SUPABASE_SERVICE_KEY: ${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}
+        run: bun experiments/live-amelia/wt4l/run_actions.ts

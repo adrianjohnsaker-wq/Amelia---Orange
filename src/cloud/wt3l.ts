@@ -26,6 +26,9 @@ export interface Wt3lMetrics {
   exits?: { flight: number; warpborn: number; preexisting: number };
   exitLog?: Array<{ step: number; from: number; to: number; via: 'flight' | 'warpborn' | 'preexisting'; gate: string | null }>;
   warpbornAtStart?: number; warpbornGates?: string[];
+  /** WT-4L: Warp entries counted hop by hop (a hop from outside {3, 6} into 3 or 6): the step's first record is a choice,
+   *  any later record a flow hop. flowSteps counts steps that write more than one memory record. */
+  entries?: { choice: number; flow: number }; flowSteps?: number;
   final?: { memoryHeadDigest: string; bodyChecksum: string; resident: number; archived: number; theta: number | null };
 }
 export type IdFn = (unit: number, pass: number, eventId: string) => string;
@@ -66,6 +69,7 @@ export function wt3lChunk(scratch: { record: Record<string, any>; metrics: Wt3lM
   if (!record.fieldCheckpoint) throw new Error('WT-3L: her body is required');
   let field: any = restoreLiveField(record.fieldCheckpoint, rt as unknown as AmeliaOutsideRuntime);
   m.exits = { flight: 0, warpborn: 0, preexisting: 0, ...(m.exits ?? {}) }; m.exitLog = [...(m.exitLog ?? [])];
+  m.entries = { choice: 0, flow: 0, ...(m.entries ?? {}) }; m.flowSteps = m.flowSteps ?? 0;
   // Read-only instruments (Amendment 1): her own flight counter, her memory and her gate table, read around each step.
   const flights = () => Number((rt as any).getNDStatus?.().flights ?? 0);
   const gateTable = () => ((rt as any).qabbala?.getGates?.() ?? []) as Array<{ id: string; source: number; target: number }>;
@@ -77,6 +81,10 @@ export function wt3lChunk(scratch: { record: Record<string, any>; metrics: Wt3lM
     for (const d of snap?.encounterDecisions ?? []) if (d.disposition === 'ATTEND' && String(d.eventId).startsWith('wt3l')) m.admitted++;
     const ev: any[] = rt.getMemory().getEvents() as any[], fl = flights();
     const firstTarget = ev.length > before.events ? Number(ev[before.events]?.targetZone) : zone;   // the gate she left by
+    { let prev = before.zone;                                                                      // WT-4L entry counter
+      for (let i = before.events; i < ev.length; i++) { const t = Number(ev[i]?.targetZone);
+        if (!WARP.has(prev) && WARP.has(t)) m.entries![i === before.events ? 'choice' : 'flow']++; prev = t; }
+      if (ev.length - before.events > 1) m.flowSteps = (m.flowSteps ?? 0) + 1; }
     const isFlight = fl > before.flights;
     if (isFlight) m.landings.push(firstTarget);
     if (WARP.has(before.zone) && !WARP.has(firstTarget)) {
@@ -128,6 +136,9 @@ export function wt3lSummary(m: Wt3lMetrics) {
     meanWarpVisit: visits.length ? mean(visits.map(v => v.length)) : 0, longestWarpVisit: Math.max(0, ...visits.map(v => v.length)),
     linesOfFlight: m.landings.length, landings: land, zones, zonesVisited: Object.keys(zones).length,
     offered: m.offered, admitted: m.admitted, flowHops: m.flowHops,
+    E: m.entries ? ((m.entries.choice + m.entries.flow) / n) * 1000 : null,
+    E_choice: m.entries ? (m.entries.choice / n) * 1000 : null, E_flow: m.entries ? (m.entries.flow / n) * 1000 : null,
+    entries: m.entries ?? null, flowShare: m.flowSteps != null ? m.flowSteps / n : null,
     warpExits: m.exits ?? null, warpbornAtStart: m.warpbornAtStart ?? null, warpbornAtEnd: m.warpbornGates?.length ?? null,
     warpbornGates: m.warpbornGates ?? null, final: m.final ?? null };
 }
