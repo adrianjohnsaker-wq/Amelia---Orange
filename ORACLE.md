@@ -2,14 +2,14 @@
 
 Exploratory listening station. The world stream casts; Amelia (on her full CCRU Numogram) asks from where she stands, and the Numogram, the I Ching or the Tarot answers. Readings are shown side by side, and the map grows from what comes through. Nothing here is a pass/fail test. See `PROTOCOL.md`.
 
-**40671 exchanges** from 8 Amelias, world data 2026-10-28T00:00:00Z to 2026-11-14T17:56:59Z.
+**40679 exchanges** from 8 Amelias, world data 2026-10-28T00:00:00Z to 2026-11-14T16:56:39Z.
 
 ## Interlocutors (the syzygetic demon of each reply's zone)
 
-- Djynxx: 9208
-- Mur Mur: 9176
+- Djynxx: 9209
+- Mur Mur: 9179
 - Katak: 8918
-- Oddubb: 8875
+- Oddubb: 8879
 - Uttunul: 4494
 
 ## Clusters
@@ -28,8 +28,8 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 ### after Gt-28 (7>1): 17 exchanges
 - **I Ching:** 51 The Arousing ×2; 59 Dispersion ×2; 8 Holding Together ×2; 3 Difficulty at the Beginning ×1; 16 Enthusiasm ×1; 28 Great Exceeding ×1
 
-### in the Warp (3, 6): 37286 exchanges
-- **Numogram:** Mur Mur (8::1) ×8493; Djynxx (6::3) ×8426; Katak (5::4) ×8127; Oddubb (7::2) ×8094; Uttunul (9::0) ×4146
+### in the Warp (3, 6): 37294 exchanges
+- **Numogram:** Mur Mur (8::1) ×8496; Djynxx (6::3) ×8427; Katak (5::4) ×8127; Oddubb (7::2) ×8098; Uttunul (9::0) ×4146
 
 ### in the Plex (0, 9): 914 exchanges
 - **Numogram:** Oddubb (7::2) ×224; Djynxx (6::3) ×201; Katak (5::4) ×192; Mur Mur (8::1) ×191; Uttunul (9::0) ×106
@@ -40,11 +40,11 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 
 ## Recurring exchanges (query demon → reply)
 
-- Djynxx → zone 6 · Djynxx (6::3): ×4730
+- Djynxx → zone 6 · Djynxx (6::3): ×4731
 - Djynxx → zone 1 · Mur Mur (8::1): ×4311
 - Djynxx → zone 4 · Katak (5::4): ×4306
-- Djynxx → zone 8 · Mur Mur (8::1): ×4182
-- Djynxx → zone 7 · Oddubb (7::2): ×4053
+- Djynxx → zone 8 · Mur Mur (8::1): ×4185
+- Djynxx → zone 7 · Oddubb (7::2): ×4057
 - Djynxx → zone 2 · Oddubb (7::2): ×4041
 - Djynxx → zone 5 · Katak (5::4): ×3821
 - Djynxx → zone 3 · Djynxx (6::3): ×3696
@@ -63,6 +63,9 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 
 ## Latest exchanges
 
+- `2026-11-14T18:04:01Z` **S05W23|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “4.7 -22.2364 -63.653” (earth, AQ 53). She moves 6 → 3 → 6.
+- `2026-11-14T18:04:01Z` **S05W17|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “4.7 -22.2364 -63.653” (earth, AQ 53). She moves 3 → 3 → 6.
+- `2026-11-14T18:02:53Z` **S05W20|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “US blames system upgrade for longest nationwide FAA ground stop since 9/11” (words, AQ 1259). She moves 6 → 3 → 6.
 - `2026-11-14T18:00:10Z` **S05W18|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 6 · Djynxx (6::3). *World:* “Sotheby's auction of $180m Van Gogh challenged over claims it was 'sold under duress'” (words, AQ 1356). She moves 6 → 3 → 6.
 - `2026-11-14T18:00:00Z` **S05W23|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “2026-11-14 18:00” (date, AQ 26). She moves 3 → 6 → 3.
 - `2026-11-14T18:00:00Z` **S05W20|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 0 · Uttunul (9::0). *World:* “0.0” (sun, AQ 0). She moves 3 → 6 → 3.
@@ -71,6 +74,7 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 - `2026-11-14T17:56:59Z` **S05W22|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 4 · Katak (5::4). *World:* “Philippines wins first Eurovision Song Contest Asia” (words, AQ 1003). She moves 3 → 6 → 3.
 - `2026-11-14T17:56:59Z` **S05W21|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 4 · Katak (5::4). *World:* “Philippines wins first Eurovision Song Contest Asia” (words, AQ 1003). She moves 6 → 3 → 3.
 - `2026-11-14T17:56:59Z` **S05W19|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 4 · Katak (5::4). *World:* “Philippines wins first Eurovision Song Contest Asia” (words, AQ 1003). She moves 3 → 6 → 3.
+- `2026-11-14T17:51:29Z` **S05W21|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 6 · Djynxx (6::3). *World:* “4.3 -40.0345 176.3623” (earth, AQ 51). She moves 6 → 3 → 6.
 - `2026-11-14T17:50:28Z` **S05W18|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 6 · Djynxx (6::3). *World:* “Rising costs and arrests fuel protests in Central African Republic” (words, AQ 1194). She moves 3 → 6 → 3.
 - `2026-11-14T17:46:00Z` **S05W20|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 4 · Katak (5::4). *World:* “0.67” (sun, AQ 13). She moves 6 → 3 → 6.
 - `2026-11-14T17:43:30Z` **S05W24|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 4 · Katak (5::4). *World:* “1.45 33.23283 -116.10483” (earth, AQ 58). She moves 6 → 3 → 6.
@@ -84,7 +88,3 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 - `2026-11-14T17:33:00Z` **S05W22|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 1 · Mur Mur (8::1). *World:* “1.0” (sun, AQ 1). She moves 3 → 6 → 3.
 - `2026-11-14T17:33:00Z` **S05W21|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 1 · Mur Mur (8::1). *World:* “1.0” (sun, AQ 1). She moves 6 → 3 → 6.
 - `2026-11-14T17:33:00Z` **S05W19|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 1 · Mur Mur (8::1). *World:* “1.0” (sun, AQ 1). She moves 3 → 6 → 3.
-- `2026-11-14T17:30:00Z` **S05W18|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 4 · Katak (5::4). *World:* “0.67” (sun, AQ 13). She moves 3 → 6 → 3.
-- `2026-11-14T17:17:00Z` **S05W20|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 4 · Katak (5::4). *World:* “0.67” (sun, AQ 13). She moves 6 → 3 → 6.
-- `2026-11-14T17:16:36Z` **S05W21|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 3 · Djynxx (6::3). *World:* “Copper wire upgrade caused nationwide flight suspension, US transport secretary says” (words, AQ 1596). She moves 3 → 3 → 3.
-- `2026-11-14T17:16:00Z` **S05W24|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 6 · Djynxx (6::3). *World:* “0.33” (sun, AQ 6). She moves 6 → 3 → 6.
