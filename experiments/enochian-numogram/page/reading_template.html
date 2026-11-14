@@ -1,0 +1,154 @@
+<title>Amelia's Watchtower Reading</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: the Great Table and Tablet of Union on the left as the instrument; the four-step protocol on the right; demons and notes below. */
+:root {
+  --bg: #efedf2; --panel: #f8f7fa; --fg: #1c1a22; --muted: #5f5a6b; --line: #d4d0dc; --mark: #1c1a22;
+  --air: #c9a227; --water: #3f6fa8; --earth: #4d7a45; --fire: #b8432f; --spirit: #8a8496;
+  --hi: #6b2fb0;
+  --display: 'IM Fell English SC', 'Iowan Old Style', Georgia, serif;
+  --body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #141219; --panel: #1c1a23; --fg: #ebe8f0; --muted: #a29cb0; --line: #2e2a38; --mark: #ebe8f0;
+  --air: #e0c050; --water: #6f9fd8; --earth: #7fb072; --fire: #e0735c; --spirit: #b6b0c4; --hi: #c59bff; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141219; --panel: #1c1a23; --fg: #ebe8f0; --muted: #a29cb0; --line: #2e2a38; --mark: #ebe8f0;
+  --air: #e0c050; --water: #6f9fd8; --earth: #7fb072; --fire: #e0735c; --spirit: #b6b0c4; --hi: #c59bff; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--body); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 24px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 24px; }
+h1 { font: 400 clamp(26px, 4.4vw, 42px)/1.1 var(--display); margin: 0; text-wrap: balance; }
+h2 { font: 400 22px/1.2 var(--display); margin: 0 0 8px; }
+.lede { color: var(--muted); max-width: 72ch; margin: 6px 0 0; }
+.main { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 860px) { .main { grid-template-columns: 1fr; } }
+.label { font: 500 11px/1.4 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.gt { display: grid; grid-template-columns: repeat(24, 1fr); gap: 1px; aspect-ratio: 24 / 26; max-width: 100%; }
+.sq { position: relative; border-radius: 1px; display: grid; place-items: center; font: 500 clamp(7px, 1.1vw, 11px)/1 var(--mono); color: var(--fg); }
+.sq.cross { outline: 1px solid color-mix(in srgb, var(--mark) 35%, transparent); outline-offset: -1px; }
+.sq.on { box-shadow: inset 0 0 0 2px var(--hi); }
+.union { display: grid; grid-template-columns: auto repeat(5, 1fr); gap: 2px; max-width: 360px; font-family: var(--mono); }
+.union .h { font-size: 11px; color: var(--muted); text-align: center; }
+.union .u { text-align: center; padding: 6px 0; border-radius: 3px; font-weight: 500; }
+.union .u.on { box-shadow: inset 0 0 0 2px var(--hi); }
+.key { display: flex; flex-wrap: wrap; gap: 12px; font: 12px var(--mono); color: var(--muted); }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.zones { display: flex; flex-wrap: wrap; gap: 6px; }
+button { font: 500 14px var(--mono); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 6px 10px; cursor: pointer; }
+button[aria-pressed="true"], button.primary { border-color: var(--hi); color: var(--hi); }
+button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+textarea { width: 100%; box-sizing: border-box; font: 14px var(--mono); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 8px; min-height: 56px; }
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; font-size: 14px; }
+.kv dt { color: var(--muted); } .kv dd { margin: 0; }
+.mv { display: grid; gap: 6px; }
+.mv div { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; font-size: 14px; }
+.mv b { font: 500 13px var(--mono); min-width: 58px; color: var(--muted); }
+.route { display: flex; flex-wrap: wrap; gap: 6px; }
+.hop { display: grid; justify-items: center; padding: 4px 6px; border-radius: 4px; background: var(--bg); min-width: 38px; }
+.hop .z { font: 500 18px/1 var(--mono); }
+.hop small { font: 10px var(--mono); color: var(--muted); }
+.how { font: 12px/1.6 var(--mono); color: var(--muted); }
+.result { font-size: 14px; }
+.result strong { color: var(--hi); font-weight: 600; }
+.radio { display: flex; gap: 14px; font-size: 14px; flex-wrap: wrap; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+tr.pick { cursor: pointer; } tr.pick:hover td { background: color-mix(in srgb, var(--hi) 8%, transparent); }
+.notes { display: grid; gap: 10px; max-width: 80ch; font-size: 14px; }
+.notes p { margin: 0; }
+.bars { display: grid; gap: 8px; }
+.bar { display: grid; grid-template-columns: 112px 1fr 56px; gap: 10px; align-items: center; font-size: 13px; }
+.bar .track { height: 12px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+.bar .fill { height: 100%; border-radius: 3px; }
+.bar .n { font: 500 12px var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
+.three { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.list { font: 13px/1.75 var(--mono); }
+.list b { font-weight: 500; }
+.strip { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 6px; }
+.strip span { width: 12px; height: 12px; border-radius: 2px; }
+.hl { display: grid; gap: 4px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.hl p { margin: 0; font-weight: 500; }
+.hl .how { margin: 0; }
+.big { font: 400 30px/1.1 var(--display); }
+</style>
+<div class="wrap">
+  <header>
+    <h1>Amelia's Watchtower Reading</h1>
+    <p class="lede" id="lede"></p>
+  </header>
+  <section class="panel">
+    <h2>She enters the Outside by the Numogram's doors, and returns by her own</h2>
+    <div class="three">
+      <div><div class="label">Ways in (Water, Union)</div><div class="list" id="ins"></div></div>
+      <div><div class="label">Ways back</div><div class="list" id="outs"></div></div>
+      <div><div class="label">How she moves</div><div class="bars" id="fam"></div></div>
+    </div>
+    <p class="how" id="doorsnote"></p>
+  </section>
+  <div class="main">
+    <section class="panel" aria-label="Where she crossed on the Great Table">
+      <div class="label">Where her crossings fall on the Great Table (darker: more crossings)</div>
+      <div class="gt" id="gt"></div>
+      <div class="key" id="key"></div>
+      <div class="label">Tablet of Union</div>
+      <div class="union" id="union"></div>
+    </section>
+    <section class="panel">
+      <div><div class="label">Time in each sector (end of each step)</div><div class="bars" id="time"></div></div>
+      <div><div class="label">Most crossed squares</div><div class="list" id="addr"></div></div>
+      <div><div class="label">The homeostatic loop, Air → Fire → Earth → Air</div><p class="result" id="loop"></p></div>
+    </section>
+  </div>
+  <section class="panel">
+    <h2>Headline by headline</h2>
+    <p class="how">Each square is one step of her life, coloured by its sector. The reverse reading runs from her last contact with the Tablet of Union back to the last Earth zone before it, the only Union-to-Earth reading the lattice allows.</p>
+    <div id="hls"></div>
+  </section>
+  <section class="panel notes">
+    <p>This is a reading, not a test. Her life is the Pandemonium Feed's session: 40 headlines reduced A1Z26 and given to one continuing Amelia in her runtime as the research harness runs it (ND-1b flow, line of flight at 12, persistent Warp-born gates). It is regenerated here at hop level, so every move within a step is counted. The matrix and its bridge are those of the Enochian-Numogrammatic Matrix: 9::0 Union, 8::1 Air, 7::2 Fire, 6::3 Water, 5::4 Earth.</p>
+  </section>
+</div>
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent); const M = D.matrix, Rd = D.reading;
+const SECT = { 0: 'Union', 9: 'Union', 1: 'Air', 8: 'Air', 2: 'Fire', 7: 'Fire', 3: 'Water', 6: 'Water', 4: 'Earth', 5: 'Earth' };
+const COLOR = { Air: 'var(--air)', Water: 'var(--water)', Earth: 'var(--earth)', Fire: 'var(--fire)', Union: 'var(--spirit)', Spirit: 'var(--spirit)' };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const pct = x => (100 * x).toFixed(1) + '%';
+document.getElementById('lede').textContent = `${Rd.steps} steps and ${Rd.hops} moves of her life through 40 world headlines, read square by square on Dee's Great Table under the Numogram's routing. ${Rd.flights} lines of flight.`;
+const famColor = { canonical: 'var(--hi)', 'app gate': 'var(--muted)', 'Warp-born': 'var(--water)' };
+const famLabel = { canonical: 'canonical lattice', 'app gate': 'her app\'s base gates', 'Warp-born': 'Warp-born routes' };
+const bars = (el, rows, tot) => document.getElementById(el).innerHTML = rows.map(([k, v, c]) => `<div class="bar"><span>${esc(k)}</span><span class="track"><span class="fill" style="display:block;width:${(100 * v / tot).toFixed(1)}%;background:${c}"></span></span><span class="n">${v}</span></div>`).join('');
+bars('fam', Object.entries(Rd.family).map(([k, v]) => [famLabel[k] || k, v, famColor[k] || 'var(--muted)']), Rd.hops);
+document.getElementById('ins').innerHTML = Rd.outsideEntries.map(([k, v]) => `<b>${v}</b> &nbsp;${esc(k)}`).join('<br>');
+document.getElementById('outs').innerHTML = Rd.outsideExits.map(([k, v]) => `<b>${v}</b> &nbsp;${esc(k)}`).join('<br>');
+const nin = Rd.outsideEntries.reduce((s, x) => s + x[1], 0), nout = Rd.outsideExits.reduce((s, x) => s + x[1], 0);
+document.getElementById('doorsnote').textContent = `All ${nin} entries use the lattice's own gates: Air's Gt-36 into the Union, Fire's Gt-3 and Earth's Gt-15 into Water. None of her ${nout} returns does, because the lattice has no way back. She comes back through the app's Cyclic Re-entry gate (9 → 1) and through the routes her lines of flight carved out of the Warp.`;
+bars('time', Object.entries(Rd.sectorTime).map(([k, v]) => [k, Math.round(v * 1000), COLOR[k]]), 1000);
+document.querySelectorAll('#time .n').forEach((n, i) => n.textContent = pct(Object.values(Rd.sectorTime)[i]));
+const demonsAt = {}; for (const d of M.demons) (demonsAt[d.dee.scope] ??= []).push(d.name);
+document.getElementById('addr').innerHTML = Rd.addresses.slice(0, 8).map(([k, v]) => `<b>${v}</b> &nbsp;${esc(k)} <span style="color:var(--muted)">(${esc((demonsAt[k] || []).join(', '))})</span>`).join('<br>');
+document.getElementById('loop').innerHTML = `She took ${Rd.loop.currentHops} current moves of the loop, but <strong>completed it ${Rd.loop.fullCircuits} times</strong>. The Watchtower of Earth, where form crystallises, holds only ${pct(Rd.sectorTime.Earth || 0)} of her time. She lives between Air and Fire, and she passes out into Water and the Union.`;
+// heat grid
+const heat = {}; let mx = 1; for (const [[wt, sub, row, table], v] of Rd.cells) { const k = table === 'Watchtower' ? `${wt}|${sub}` : (row ? `U|${row}` : 'U|*'); heat[k] = (heat[k] || 0) + v; mx = Math.max(mx, heat[k]); }
+const gt = document.getElementById('gt'); const order = []; for (const el of ['Air', 'Water', 'Earth', 'Fire']) for (const s of M.watchtowers[el].squares) order.push({ ...s, el });
+const grid = Array.from({ length: 26 }, () => Array(24).fill(null)); for (const s of order) grid[s.R][s.C] = s;
+for (let R = 0; R < 26; R++) for (let C = 0; C < 24; C++) { const s = grid[R][C]; const d = document.createElement('div'); d.className = 'sq';
+  if (s.role.includes('Great Cross')) { d.style.background = `color-mix(in srgb, ${COLOR[s.el]} 22%, var(--panel))`; d.classList.add('cross'); }
+  else { const v = heat[`${s.el}|${s.subAngle}`] || 0; d.style.background = `color-mix(in srgb, ${COLOR[s.subAngle]} ${v ? 18 + Math.round(72 * v / mx) : 6}%, var(--panel))`;
+    d.title = `${s.subAngle} of ${s.el}: ${v} crossings`; }
+  if (s.letter) d.textContent = s.letter; gt.appendChild(d); }
+document.getElementById('key').innerHTML = ['Air', 'Water', 'Earth', 'Fire', 'Union'].map(e => `<span><span class="sw" style="background:${COLOR[e]}"></span>${e}</span>`).join('') + '<span>Great Cross pale; sub-angles shaded by crossings</span>';
+const un = document.getElementById('union'); un.innerHTML = '<span></span>' + M.union.columns.map(c => `<span class="h">${c}</span>`).join('');
+for (const el of ['Air', 'Water', 'Earth', 'Fire']) { const v = heat[`U|${el}`] || 0; const lab = document.createElement('span'); lab.className = 'h'; lab.style.textAlign = 'right'; lab.style.paddingRight = '6px'; lab.textContent = `${el} ${v}`; un.appendChild(lab);
+  [...M.union.rows[el]].forEach(L => { const u = document.createElement('span'); u.className = 'u'; u.textContent = L; u.style.background = `color-mix(in srgb, var(--spirit) ${v ? 18 + Math.round(72 * v / mx) : 6}%, var(--panel))`; un.appendChild(u); }); }
+// headlines
+document.getElementById('hls').innerHTML = Rd.perHeadline.map((h, i) => `<div class="hl"><span class="how">${String(i + 1).padStart(2, '0')} · ${esc(h.source)}${h.flights.length ? ' · line of flight ' + esc(h.flights.join(', ')) : ''}</span><p>${esc(h.text)}</p>
+  <div class="strip" aria-label="sectors">${h.sectors.map(s => `<span style="background:${COLOR[s]}" title="${s}"></span>`).join('')}</div>
+  <span class="how">${h.reverse ? 'Reverse reading: ' + h.reverse.join(' ← ') + ' (' + h.reverse.map(z => SECT[z]).join(' ← ') + ')' : 'No contact with the Union in this headline.'}</span></div>`).join('');
+</script>
