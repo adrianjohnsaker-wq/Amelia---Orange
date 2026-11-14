@@ -109,6 +109,17 @@ tr.pick { cursor: pointer; } tr.pick:hover td { background: color-mix(in srgb, v
     <p class="how">Each square is one step of her life, coloured by its sector. The reverse reading runs from her last contact with the Tablet of Union back to the last Earth zone before it, the only Union-to-Earth reading the lattice allows.</p>
     <div id="hls"></div>
   </section>
+  <section class="panel">
+    <h2>Control: which patterns are hers, which the language's, which the headlines' order</h2>
+    <p class="how">The same Amelia lived 98 more sessions of the same length: 49 with the very same words shuffled across the session (keeps English's zone frequencies, breaks its order) and 49 with uniform random zones (no language). Each real value is placed among each control's 49 values: rank 0 means below all of them, 1 above all.</p>
+    <div class="tablewrap"><table><thead><tr><th>Measure</th><th>Real</th><th>Shuffled words (5 / 50 / 95%)</th><th>Rank</th><th>Uniform zones (5 / 50 / 95%)</th><th>Rank</th><th>Reading</th></tr></thead><tbody id="ctl"></tbody></table></div>
+    <div class="notes" style="margin-top:8px">
+      <p><b>Hers, whatever she is given.</b> Every entry into the Outside uses a canonical door in every session, real or control: that is the lattice and her runtime, not the headlines. The Air → Fire → Earth loop is almost never completed (0 or 1 times in every session), and Earth stays near 2% everywhere. Returns run mostly through Cyclic Re-entry in all sessions.</p>
+      <p><b>The language's, not the order's.</b> Less time in the Union than uniform input gives (rank 0.01) but typical against shuffled words: English words under A1Z26 steer her away from Spirit compared with random digits.</p>
+      <p><b>The order of the real headlines.</b> She spends 27% of her time in Fire against a median of 15% with the same words shuffled (rank 0.99; uniform 1.00), and crosses Fire of Fire (Oddubb, 7::2) 82 times against about 32 (above every one of the 98 controls). Fire-zone words are no more adjacent in the real headlines than in the shuffles (20 consecutive pairs against a median of 22), so this is how her passage answers the real sequence, not a clustering of Fire words. More lines of flight and more returns by her own Warp-born routes lean the same way (ranks 0.88 to 0.95).</p>
+      <p class="how">This is descriptive and exploratory: one session, about 20 measures, 49 replicates each, so one or two extreme ranks could arise by chance. The Fire result is the one to test: on a fresh set of headlines, registered before it is run.</p>
+    </div>
+  </section>
   <section class="panel notes">
     <p>This is a reading, not a test. Her life is the Pandemonium Feed's session: 40 headlines reduced A1Z26 and given to one continuing Amelia in her runtime as the research harness runs it (ND-1b flow, line of flight at 12, persistent Warp-born gates). It is regenerated here at hop level, so every move within a step is counted. The matrix and its bridge are those of the Enochian-Numogrammatic Matrix: 9::0 Union, 8::1 Air, 7::2 Fire, 6::3 Water, 5::4 Earth.</p>
   </section>
@@ -151,4 +162,8 @@ for (const el of ['Air', 'Water', 'Earth', 'Fire']) { const v = heat[`U|${el}`] 
 document.getElementById('hls').innerHTML = Rd.perHeadline.map((h, i) => `<div class="hl"><span class="how">${String(i + 1).padStart(2, '0')} · ${esc(h.source)}${h.flights.length ? ' · line of flight ' + esc(h.flights.join(', ')) : ''}</span><p>${esc(h.text)}</p>
   <div class="strip" aria-label="sectors">${h.sectors.map(s => `<span style="background:${COLOR[s]}" title="${s}"></span>`).join('')}</div>
   <span class="how">${h.reverse ? 'Reverse reading: ' + h.reverse.join(' ← ') + ' (' + h.reverse.map(z => SECT[z]).join(' ← ') + ')' : 'No contact with the Union in this headline.'}</span></div>`).join('');
+
+const READ = { 'time in Fire': 'order', 'crossings: Fire of Fire (syzygetic)': 'order', 'entries by canonical gate (share)': 'hers', 'completed Air-Fire-Earth loops': 'hers', 'time in Earth': 'hers', 'time in Union': 'language', 'time in Air': 'order (lower)', 'returns by Warp-born route (share)': 'leans order', 'lines of flight': 'leans order', 'crossings: Air of Fire': 'leans order' };
+const f = (k, x) => (k.includes('share') || k.startsWith('time')) ? (100 * x).toFixed(1) + '%' : String(Math.round(x));
+document.getElementById('ctl').innerHTML = Object.entries(D.control).map(([k, r]) => `<tr><td>${esc(k)}</td><td><b>${f(k, r.real)}</b></td><td>${r['shuffled 5/50/95%'].map(x => f(k, x)).join(' / ')}</td><td>${r.shuffledRank.toFixed(2)}</td><td>${r['uniform 5/50/95%'].map(x => f(k, x)).join(' / ')}</td><td>${r.uniformRank.toFixed(2)}</td><td>${READ[k] || ''}</td></tr>`).join('');
 </script>
