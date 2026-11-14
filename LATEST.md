@@ -1,14 +1,14 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-14T07:38:28.953Z
-- Cycle: 1219 (43569474551-1-3)
+- Last cycle (UTC): 2026-11-14T07:53:28.460Z
+- Cycle: 1220 (43569474551-1-4)
 - RSS items seen: 60; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score 0
-- Candidate: Lurgo / Mesh-00 / Amphidemon
+- Subdecadence: DECK_EXHAUSTED_POSITIVE; score 20
+- Candidate: none (positive deck exhaustion)
 - Separate ingress records and trace links: 0
-- Catalogue entries added: 1
+- Catalogue entries added: 0
 - Governor recovery: 0 previously queued items admitted; queue now 0.
-- Native consolidations this cycle: 1; complete receipts in recovery-journal.jsonl.
+- Native consolidations this cycle: 0; complete receipts in recovery-journal.jsonl.
 - New offers: 1; attended 1, deferred 0, refused 0.
 - Source errors: none
 
