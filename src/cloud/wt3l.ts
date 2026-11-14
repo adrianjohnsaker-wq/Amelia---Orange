@@ -56,11 +56,11 @@ export function wt3lBegin(start: Record<string, any>, run: string, unit: number,
 
 /** Replay up to nTicks recorded ticks (cycled over the window, A0.3), from metrics.ticksDone. */
 export function wt3lChunk(scratch: { record: Record<string, any>; metrics: Wt3lMetrics }, ticks: Wt3lTick[], nTicks: number,
-  idFn: IdFn = wt3lId) {
+  idFn: IdFn = wt3lId, make: (kind: ReturnType<typeof savedKind>) => AmeliaOutsideRuntime = bornAmeliaOf) {   // make: DEE-1L's research runtime
   const record = scratch.record; const m: Wt3lMetrics = { ...scratch.metrics, tensions: [...scratch.metrics.tensions],
     tickEndTensions: [...scratch.metrics.tickEndTensions], landings: [...scratch.metrics.landings], segments: [...scratch.metrics.segments] };
   if (!ticks.length) throw new Error('WT-3L: a window with no ticks');
-  const rt = bornAmeliaOf(savedKind(record.state)); rt.importState(record.state);
+  const rt = make(savedKind(record.state)); rt.importState(record.state);
   if (!record.state.admissionRule) rt.setAdmissionRule('relative-v1');                   // as ameliaTick
   const harm = new ExternalRhythmHarmonizer();
   for (const d of record.controls?.rhythms ?? []) { const c = harm.getRhythms().find(r => r.id === d.id); if (c && c.active !== d.active) harm.toggleRhythm(d.id); }

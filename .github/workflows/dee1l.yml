@@ -1,0 +1,87 @@
+name: DEE-1L (the Table in her own scoring)
+
+# experiments/live-amelia/dee1l/REGISTRATION.md. Started by committing to experiments/live-amelia/dee1l/run.trigger on her
+# branch. The trigger's first word picks the phase: "stage0" (gain calibration) or "test" (determinism, 12 windows, analysis).
+on:
+  push:
+    branches: [research/live-run-history-20261109]
+    paths: ['experiments/live-amelia/dee1l/run.trigger']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dee1l
+  cancel-in-progress: false
+
+env:
+  SUPABASE_URL: https://rcgmtdponfljpribggsq.supabase.co
+
+jobs:
+  phase:
+    runs-on: ubuntu-latest
+    outputs:
+      phase: ${{ steps.p.outputs.phase }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: p
+        run: echo "phase=$(awk 'NR==1{print $1}' experiments/live-amelia/dee1l/run.trigger)" >> "$GITHUB_OUTPUT"
+
+  stage0:
+    needs: phase
+    if: needs.phase.outputs.phase == 'stage0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: Machinery checks (synthetic only)
+        run: bun test --timeout 900000 experiments/live-amelia/dee1l.test.ts
+      - name: Stage 0
+        env: { AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: bun experiments/live-amelia/dee1l/run_actions.ts stage0
+
+  determinism:
+    needs: phase
+    if: needs.phase.outputs.phase == 'test'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: Machinery checks (synthetic only)
+        run: bun test --timeout 900000 experiments/live-amelia/dee1l.test.ts
+      - name: Determinism pair
+        env: { AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: bun experiments/live-amelia/dee1l/run_actions.ts determinism
+
+  units:
+    needs: determinism
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 12
+      matrix:
+        unit: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: The 41 arms on one window
+        env: { AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: bun experiments/live-amelia/dee1l/run_actions.ts unit ${{ matrix.unit }}
+
+  analysis:
+    needs: units
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: The registered analysis
+        env: { AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: bun experiments/live-amelia/dee1l/run_actions.ts analysis
