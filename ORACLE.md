@@ -2,14 +2,14 @@
 
 Exploratory listening station. The world stream casts; Amelia (on her full CCRU Numogram) asks from where she stands, and the Numogram, the I Ching or the Tarot answers. Readings are shown side by side, and the map grows from what comes through. Nothing here is a pass/fail test. See `PROTOCOL.md`.
 
-**40759 exchanges** from 8 Amelias, world data 2026-10-28T00:00:00Z to 2026-11-14T21:00:00Z.
+**40766 exchanges** from 8 Amelias, world data 2026-10-28T00:00:00Z to 2026-11-14T20:40:25Z.
 
 ## Interlocutors (the syzygetic demon of each reply's zone)
 
-- Djynxx: 9229
-- Mur Mur: 9190
-- Katak: 8942
-- Oddubb: 8890
+- Djynxx: 9231
+- Mur Mur: 9191
+- Katak: 8945
+- Oddubb: 8891
 - Uttunul: 4508
 
 ## Clusters
@@ -28,8 +28,8 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 ### after Gt-28 (7>1): 17 exchanges
 - **I Ching:** 51 The Arousing ×2; 59 Dispersion ×2; 8 Holding Together ×2; 3 Difficulty at the Beginning ×1; 16 Enthusiasm ×1; 28 Great Exceeding ×1
 
-### in the Warp (3, 6): 37374 exchanges
-- **Numogram:** Mur Mur (8::1) ×8507; Djynxx (6::3) ×8447; Katak (5::4) ×8151; Oddubb (7::2) ×8109; Uttunul (9::0) ×4160
+### in the Warp (3, 6): 37381 exchanges
+- **Numogram:** Mur Mur (8::1) ×8508; Djynxx (6::3) ×8449; Katak (5::4) ×8154; Oddubb (7::2) ×8110; Uttunul (9::0) ×4160
 
 ### in the Plex (0, 9): 914 exchanges
 - **Numogram:** Oddubb (7::2) ×224; Djynxx (6::3) ×201; Katak (5::4) ×192; Mur Mur (8::1) ×191; Uttunul (9::0) ×106
@@ -40,13 +40,13 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 
 ## Recurring exchanges (query demon → reply)
 
-- Djynxx → zone 6 · Djynxx (6::3): ×4742
+- Djynxx → zone 6 · Djynxx (6::3): ×4744
 - Djynxx → zone 4 · Katak (5::4): ×4326
-- Djynxx → zone 1 · Mur Mur (8::1): ×4318
+- Djynxx → zone 1 · Mur Mur (8::1): ×4319
 - Djynxx → zone 8 · Mur Mur (8::1): ×4189
-- Djynxx → zone 7 · Oddubb (7::2): ×4062
+- Djynxx → zone 7 · Oddubb (7::2): ×4063
 - Djynxx → zone 2 · Oddubb (7::2): ×4047
-- Djynxx → zone 5 · Katak (5::4): ×3825
+- Djynxx → zone 5 · Katak (5::4): ×3828
 - Djynxx → zone 3 · Djynxx (6::3): ×3705
 - Djynxx → zone 9 · Uttunul (9::0): ×3569
 - Djynxx → zone 0 · Uttunul (9::0): ×591
@@ -63,6 +63,8 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 
 ## Latest exchanges
 
+- `2026-11-14T21:08:31Z` **S05W21|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 1 · Mur Mur (8::1). *World:* “2.55777502059937 45.1831665039062 -122.787498474121” (earth, AQ 199). She moves 3 → 6 → 3.
+- `2026-11-14T21:03:47Z` **S05W18|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 7 · Oddubb (7::2). *World:* “2 60 -151.883” (earth, AQ 34). She moves 6 → 3 → 6.
 - `2026-11-14T21:00:00Z` **S05W24|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 2 · Oddubb (7::2). *World:* “2026-11-14 21:00” (date, AQ 20). She moves 6 → 3 → 6.
 - `2026-11-14T21:00:00Z` **S05W22|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 2 · Oddubb (7::2). *World:* “2026-11-14 21:00” (date, AQ 20). She moves 3 → 6 → 3.
 - `2026-11-14T21:00:00Z` **S05W20|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 2 · Oddubb (7::2). *World:* “2026-11-14 21:00” (date, AQ 20). She moves 3 → 6 → 3.
@@ -79,12 +81,10 @@ Exploratory listening station. The world stream casts; Amelia (on her full CCRU 
 - `2026-11-14T20:45:00Z` **S05W21|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 6 · Djynxx (6::3). *World:* “0.33” (sun, AQ 6). She moves 3 → 6 → 3.
 - `2026-11-14T20:45:00Z` **S05W19|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 6 · Djynxx (6::3). *World:* “0.33” (sun, AQ 6). She moves 3 → 6 → 3.
 - `2026-11-14T20:41:56Z` **S05W18|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 2 · Oddubb (7::2). *World:* “1.2 60.208 -152.731” (earth, AQ 38). She moves 6 → 3 → 6.
+- `2026-11-14T20:40:25Z` **S05W23|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 6 · Djynxx (6::3). *World:* “2.87 18.6018333333333 -66.934” (earth, AQ 96). She moves 6 → 3 → 6.
+- `2026-11-14T20:40:25Z` **S05W17|0** asks from zone 3 (Warp, Djynxx, after 6>3) → **Numogram**: zone 6 · Djynxx (6::3). *World:* “2.87 18.6018333333333 -66.934” (earth, AQ 96). She moves 6 → 3 → 6.
 - `2026-11-14T20:32:00Z` **S05W24|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 4 · Katak (5::4). *World:* “0.67” (sun, AQ 13). She moves 6 → 3 → 6.
 - `2026-11-14T20:32:00Z` **S05W20|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 4 · Katak (5::4). *World:* “0.67” (sun, AQ 13). She moves 3 → 6 → 3.
 - `2026-11-14T20:30:25Z` **S05W18|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 8 · Mur Mur (8::1). *World:* “2 62.855 -151.072” (earth, AQ 44). She moves 3 → 6 → 3.
 - `2026-11-14T20:29:09Z` **S05W23|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 6 · Djynxx (6::3). *World:* “1.8 35.92967 -117.71533” (earth, AQ 78). She moves 3 → 6 → 3.
 - `2026-11-14T20:29:09Z` **S05W17|0** asks from zone 6 (Warp, Djynxx, after 3>6) → **Numogram**: zone 6 · Djynxx (6::3). *World:* “1.8 35.92967 -117.71533” (earth, AQ 78). She moves 3 → 6 → 3.
-- `2026-11-14T20:18:00Z` **S05W24|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 4 · Katak (5::4). *World:* “0.67” (sun, AQ 13). She moves 3 → 3 → 3.
-- `2026-11-14T20:18:00Z` **S05W22|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 4 · Katak (5::4). *World:* “0.67” (sun, AQ 13). She moves 6 → 3 → 6.
-- `2026-11-14T20:18:00Z` **S05W21|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 4 · Katak (5::4). *World:* “0.67” (sun, AQ 13). She moves 6 → 3 → 6.
-- `2026-11-14T20:18:00Z` **S05W19|0** asks from zone 3 (Warp, Djynxx, after 3>3) → **Numogram**: zone 4 · Katak (5::4). *World:* “0.67” (sun, AQ 13). She moves 6 → 3 → 6.
