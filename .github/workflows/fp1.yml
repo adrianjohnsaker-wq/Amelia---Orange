@@ -1,0 +1,66 @@
+# FP-1 (experiments/enochian-numogram/fp1/REGISTRATION.md). seal.trigger: RFC3161 over registration and code; the seal time is the
+# data start. run.trigger: the registered run. Runs only on this branch; writes only experiments/enochian-numogram/fp1/.
+name: FP-1
+on:
+  push:
+    branches: [nr3-field-ingress-20261109]
+    paths: ['experiments/enochian-numogram/fp1/seal.trigger', 'experiments/enochian-numogram/fp1/run.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: fp1
+  cancel-in-progress: false
+jobs:
+  fp1:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: seal (once) or run
+        shell: bash
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false', TMPDIR: '${{ runner.temp }}' }
+        run: |
+          set -euo pipefail
+          P=experiments/enochian-numogram/fp1; E=experiments/enochian-numogram; S=experiments/synthetic-pointer
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          export FILES="$P/REGISTRATION.md $P/fp1.py $E/matrix.py $E/route.py $E/control.py $E/pandemonium-45.json $S/feed/sessions.ts $S/wt4/wt4Runtime.ts $S/nr1/graphs.ts $S/nr1/nrRuntime.ts src/core/fullNumogram.ts .github/workflows/fp1.yml"
+          if git diff --name-only HEAD~1 HEAD | grep -qx "$P/seal.trigger" && [ ! -e $P/seal/receipt.json ]; then
+            python - <<'PY'
+          import datetime, hashlib, json, os, pathlib
+          from drift1a_c1.beacon import Sealer
+          P = pathlib.Path('experiments/enochian-numogram/fp1'); sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          t = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+          b = {'schema': 'FP1_REGISTRATION_V1', 'headlinesFirstSeenAtOrAfter': t, 'N': 40, 'sourceSHA256': [{'path': f, 'sha256': sha(f)} for f in os.environ['FILES'].split()]}
+          (P / 'seal').mkdir(exist_ok=True); (P / 'seal/FP1_BUNDLE.json').write_text(json.dumps(b, sort_keys=True, indent=2) + '\n')
+          imprint = sha(P / 'seal/FP1_BUNDLE.json'); Sealer().seal(P / 'seal', imprint)
+          assert Sealer().verify(P / 'seal', imprint)['status'] == 'PASS'; print('FP1_SEALED', t, imprint)
+          PY
+            git add $P/seal; MSG='FP-1 registration sealed (RFC3161)'
+          elif git diff --name-only HEAD~1 HEAD | grep -qx "$P/run.trigger" && [ -e $P/seal/receipt.json ] && [ ! -e $P/result/RESULT.json ]; then
+            python - <<'PY'
+          import hashlib, json, pathlib
+          from drift1a_c1.beacon import Sealer
+          P = pathlib.Path('experiments/enochian-numogram/fp1'); sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          b = json.loads((P / 'seal/FP1_BUNDLE.json').read_text())
+          assert Sealer().verify(P / 'seal', sha(P / 'seal/FP1_BUNDLE.json'))['status'] == 'PASS'
+          for x in b['sourceSHA256']: assert sha(x['path']) == x['sha256'], x['path']
+          pathlib.Path('/tmp/since').write_text(b['headlinesFirstSeenAtOrAfter']); print('FP1_SEAL_AND_SOURCES_VERIFIED', b['headlinesFirstSeenAtOrAfter'])
+          PY
+            git fetch -q --depth 1 origin world-live && git worktree add -q /tmp/live FETCH_HEAD
+            if ! python3 -I $P/fp1.py prepare /tmp/live "$(cat /tmp/since)" /tmp/hl.json; then echo 'FP1_NOT_READY'; exit 0; fi
+            mkdir -p /tmp/tsx && (cd /tmp/tsx && npm init -y >/dev/null && npm i -s tsx@4.23.15) && ln -s /tmp/tsx/node_modules node_modules
+            python3 -I $P/fp1.py sessions /tmp/hl.json /tmp/sessions.json
+            node --import tsx $S/feed/sessions.ts /tmp/sessions.json /tmp/sessions_out.json
+            mkdir -p $P/result; python3 -I $P/fp1.py decide /tmp/sessions_out.json /tmp/hl.json $P/result/RESULT.json
+            rm -f node_modules; git add $P/result; MSG='FP-1 result'
+          else echo 'nothing to do'; exit 0; fi
+          git commit -qm "$MSG"
+          for i in 1 2 3 4; do git pull -q --rebase origin nr3-field-ingress-20261109 && git push -q origin HEAD:nr3-field-ingress-20261109 && break; sleep $((2**i)); done
