@@ -1,0 +1,6985 @@
+{
+ "schema": "ENM_V1",
+ "bridge": {
+  "9::0": "Union",
+  "8::1": "Air",
+  "7::2": "Fire",
+  "6::3": "Water",
+  "5::4": "Earth"
+ },
+ "zones": [
+  {
+   "zone": 0,
+   "syzygy": "9::0",
+   "partner": 9,
+   "current": 9,
+   "gate": 0,
+   "gateName": "Gt-0",
+   "region": "Plex",
+   "sector": "Union"
+  },
+  {
+   "zone": 1,
+   "syzygy": "8::1",
+   "partner": 8,
+   "current": 7,
+   "gate": 1,
+   "gateName": "Gt-1",
+   "region": "Time-Circuit",
+   "sector": "Air"
+  },
+  {
+   "zone": 2,
+   "syzygy": "7::2",
+   "partner": 7,
+   "current": 5,
+   "gate": 3,
+   "gateName": "Gt-3",
+   "region": "Time-Circuit",
+   "sector": "Fire"
+  },
+  {
+   "zone": 3,
+   "syzygy": "6::3",
+   "partner": 6,
+   "current": 3,
+   "gate": 6,
+   "gateName": "Gt-6",
+   "region": "Warp",
+   "sector": "Water"
+  },
+  {
+   "zone": 4,
+   "syzygy": "5::4",
+   "partner": 5,
+   "current": 1,
+   "gate": 1,
+   "gateName": "Gt-10",
+   "region": "Time-Circuit",
+   "sector": "Earth"
+  },
+  {
+   "zone": 5,
+   "syzygy": "5::4",
+   "partner": 4,
+   "current": 1,
+   "gate": 6,
+   "gateName": "Gt-15",
+   "region": "Time-Circuit",
+   "sector": "Earth"
+  },
+  {
+   "zone": 6,
+   "syzygy": "6::3",
+   "partner": 3,
+   "current": 3,
+   "gate": 3,
+   "gateName": "Gt-21",
+   "region": "Warp",
+   "sector": "Water"
+  },
+  {
+   "zone": 7,
+   "syzygy": "7::2",
+   "partner": 2,
+   "current": 5,
+   "gate": 1,
+   "gateName": "Gt-28",
+   "region": "Time-Circuit",
+   "sector": "Fire"
+  },
+  {
+   "zone": 8,
+   "syzygy": "8::1",
+   "partner": 1,
+   "current": 7,
+   "gate": 9,
+   "gateName": "Gt-36",
+   "region": "Time-Circuit",
+   "sector": "Air"
+  },
+  {
+   "zone": 9,
+   "syzygy": "9::0",
+   "partner": 0,
+   "current": 9,
+   "gate": 9,
+   "gateName": "Gt-45",
+   "region": "Plex",
+   "sector": "Union"
+  }
+ ],
+ "demons": [
+  {
+   "key": "0-1",
+   "zones": [
+    0,
+    1
+   ],
+   "netSpan": "1::0",
+   "mesh": "Mesh-00",
+   "serial": 0,
+   "name": "Lurgo",
+   "pitch": "Ana-1",
+   "classification": "Amphidemon",
+   "regions": [
+    "Time-Circuit",
+    "Plex"
+   ],
+   "sectors": [
+    "Air",
+    "Union"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the Union word EXARP (Air)",
+    "row": "Air"
+   }
+  },
+  {
+   "key": "0-2",
+   "zones": [
+    0,
+    2
+   ],
+   "netSpan": "2::0",
+   "mesh": "Mesh-01",
+   "serial": 1,
+   "name": "Duoddod",
+   "pitch": "Ana-2",
+   "classification": "Amphidemon",
+   "regions": [
+    "Time-Circuit",
+    "Plex"
+   ],
+   "sectors": [
+    "Fire",
+    "Union"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the Union word BITOM (Fire)",
+    "row": "Fire"
+   }
+  },
+  {
+   "key": "1-2",
+   "zones": [
+    1,
+    2
+   ],
+   "netSpan": "2::1",
+   "mesh": "Mesh-02",
+   "serial": 2,
+   "name": "Doogu",
+   "pitch": "Ana-3",
+   "classification": "Cyclic Chronodemon",
+   "regions": [
+    "Time-Circuit",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Fire",
+    "Air"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Fire",
+    "subAngle": "Air",
+    "scope": "Air of Fire"
+   }
+  },
+  {
+   "key": "0-3",
+   "zones": [
+    0,
+    3
+   ],
+   "netSpan": "3::0",
+   "mesh": "Mesh-03",
+   "serial": 3,
+   "name": "Ixix",
+   "pitch": "Ana-3",
+   "classification": "Chaotic Xenodemon",
+   "regions": [
+    "Warp",
+    "Plex"
+   ],
+   "sectors": [
+    "Water",
+    "Union"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the Union word HCOMA (Water)",
+    "row": "Water"
+   }
+  },
+  {
+   "key": "1-3",
+   "zones": [
+    1,
+    3
+   ],
+   "netSpan": "3::1",
+   "mesh": "Mesh-04",
+   "serial": 4,
+   "name": "Ixigool",
+   "pitch": "Ana-4",
+   "classification": "Amphidemon",
+   "regions": [
+    "Warp",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Water",
+    "Air"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Water",
+    "subAngle": "Air",
+    "scope": "Air of Water"
+   }
+  },
+  {
+   "key": "2-3",
+   "zones": [
+    2,
+    3
+   ],
+   "netSpan": "3::2",
+   "mesh": "Mesh-05",
+   "serial": 5,
+   "name": "Ixidod",
+   "pitch": "Ana-5",
+   "classification": "Amphidemon",
+   "regions": [
+    "Warp",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Water",
+    "Fire"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Water",
+    "subAngle": "Fire",
+    "scope": "Fire of Water"
+   }
+  },
+  {
+   "key": "0-4",
+   "zones": [
+    0,
+    4
+   ],
+   "netSpan": "4::0",
+   "mesh": "Mesh-06",
+   "serial": 6,
+   "name": "Krako",
+   "pitch": "Ana-4",
+   "classification": "Amphidemon",
+   "regions": [
+    "Time-Circuit",
+    "Plex"
+   ],
+   "sectors": [
+    "Earth",
+    "Union"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the Union word NANTA (Earth)",
+    "row": "Earth"
+   }
+  },
+  {
+   "key": "1-4",
+   "zones": [
+    1,
+    4
+   ],
+   "netSpan": "4::1",
+   "mesh": "Mesh-07",
+   "serial": 7,
+   "name": "Sukugool",
+   "pitch": "Ana-5",
+   "classification": "Cyclic Chronodemon",
+   "regions": [
+    "Time-Circuit",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Earth",
+    "Air"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Earth",
+    "subAngle": "Air",
+    "scope": "Air of Earth"
+   }
+  },
+  {
+   "key": "2-4",
+   "zones": [
+    2,
+    4
+   ],
+   "netSpan": "4::2",
+   "mesh": "Mesh-08",
+   "serial": 8,
+   "name": "Skoodu",
+   "pitch": "Ana-6",
+   "classification": "Cyclic Chronodemon",
+   "regions": [
+    "Time-Circuit",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Earth",
+    "Fire"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Earth",
+    "subAngle": "Fire",
+    "scope": "Fire of Earth"
+   }
+  },
+  {
+   "key": "3-4",
+   "zones": [
+    3,
+    4
+   ],
+   "netSpan": "4::3",
+   "mesh": "Mesh-09",
+   "serial": 9,
+   "name": "Skarkix",
+   "pitch": "Ana-7",
+   "classification": "Amphidemon",
+   "regions": [
+    "Time-Circuit",
+    "Warp"
+   ],
+   "sectors": [
+    "Earth",
+    "Water"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Earth",
+    "subAngle": "Water",
+    "scope": "Water of Earth"
+   }
+  },
+  {
+   "key": "0-5",
+   "zones": [
+    0,
+    5
+   ],
+   "netSpan": "5::0",
+   "mesh": "Mesh-10",
+   "serial": 10,
+   "name": "Tokhatto",
+   "pitch": "Cth-4",
+   "classification": "Amphidemon",
+   "regions": [
+    "Time-Circuit",
+    "Plex"
+   ],
+   "sectors": [
+    "Earth",
+    "Union"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the Union word NANTA (Earth)",
+    "row": "Earth"
+   }
+  },
+  {
+   "key": "1-5",
+   "zones": [
+    1,
+    5
+   ],
+   "netSpan": "5::1",
+   "mesh": "Mesh-11",
+   "serial": 11,
+   "name": "Tukkamu",
+   "pitch": "Cth-3",
+   "classification": "Cyclic Chronodemon",
+   "regions": [
+    "Time-Circuit",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Earth",
+    "Air"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Earth",
+    "subAngle": "Air",
+    "scope": "Air of Earth"
+   }
+  },
+  {
+   "key": "2-5",
+   "zones": [
+    2,
+    5
+   ],
+   "netSpan": "5::2",
+   "mesh": "Mesh-12",
+   "serial": 12,
+   "name": "Kuttadid",
+   "pitch": "Cth-2",
+   "classification": "Cyclic Chronodemon",
+   "regions": [
+    "Time-Circuit",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Earth",
+    "Fire"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Earth",
+    "subAngle": "Fire",
+    "scope": "Fire of Earth"
+   }
+  },
+  {
+   "key": "3-5",
+   "zones": [
+    3,
+    5
+   ],
+   "netSpan": "5::3",
+   "mesh": "Mesh-13",
+   "serial": 13,
+   "name": "Tikkitix",
+   "pitch": "Cth-1",
+   "classification": "Amphidemon",
+   "regions": [
+    "Time-Circuit",
+    "Warp"
+   ],
+   "sectors": [
+    "Earth",
+    "Water"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Earth",
+    "subAngle": "Water",
+    "scope": "Water of Earth"
+   }
+  },
+  {
+   "key": "4-5",
+   "zones": [
+    4,
+    5
+   ],
+   "netSpan": "5::4",
+   "mesh": "Mesh-14",
+   "serial": 14,
+   "name": "Katak",
+   "pitch": "Null",
+   "classification": "Syzygetic Chronodemon",
+   "regions": [
+    "Time-Circuit",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Earth",
+    "Earth"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Earth",
+    "subAngle": "Earth",
+    "scope": "Earth of Earth (syzygetic)"
+   }
+  },
+  {
+   "key": "0-6",
+   "zones": [
+    0,
+    6
+   ],
+   "netSpan": "6::0",
+   "mesh": "Mesh-15",
+   "serial": 15,
+   "name": "Tchu",
+   "pitch": "Cth-3",
+   "classification": "Chaotic Xenodemon",
+   "regions": [
+    "Warp",
+    "Plex"
+   ],
+   "sectors": [
+    "Water",
+    "Union"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the Union word HCOMA (Water)",
+    "row": "Water"
+   }
+  },
+  {
+   "key": "1-6",
+   "zones": [
+    1,
+    6
+   ],
+   "netSpan": "6::1",
+   "mesh": "Mesh-16",
+   "serial": 16,
+   "name": "Djungo",
+   "pitch": "Cth-2",
+   "classification": "Amphidemon",
+   "regions": [
+    "Warp",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Water",
+    "Air"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Water",
+    "subAngle": "Air",
+    "scope": "Air of Water"
+   }
+  },
+  {
+   "key": "2-6",
+   "zones": [
+    2,
+    6
+   ],
+   "netSpan": "6::2",
+   "mesh": "Mesh-17",
+   "serial": 17,
+   "name": "Djuddha",
+   "pitch": "Cth-2",
+   "classification": "Amphidemon",
+   "regions": [
+    "Warp",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Water",
+    "Fire"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Water",
+    "subAngle": "Fire",
+    "scope": "Fire of Water"
+   }
+  },
+  {
+   "key": "3-6",
+   "zones": [
+    3,
+    6
+   ],
+   "netSpan": "6::3",
+   "mesh": "Mesh-18",
+   "serial": 18,
+   "name": "Djynxx",
+   "pitch": "Null",
+   "classification": "Syzygetic Xenodemon",
+   "regions": [
+    "Warp",
+    "Warp"
+   ],
+   "sectors": [
+    "Water",
+    "Water"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Water",
+    "subAngle": "Water",
+    "scope": "Water of Water (syzygetic)"
+   }
+  },
+  {
+   "key": "4-6",
+   "zones": [
+    4,
+    6
+   ],
+   "netSpan": "6::4",
+   "mesh": "Mesh-19",
+   "serial": 19,
+   "name": "Tchakki",
+   "pitch": "Ana-1",
+   "classification": "Amphidemon",
+   "regions": [
+    "Warp",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Water",
+    "Earth"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Water",
+    "subAngle": "Earth",
+    "scope": "Earth of Water"
+   }
+  },
+  {
+   "key": "5-6",
+   "zones": [
+    5,
+    6
+   ],
+   "netSpan": "6::5",
+   "mesh": "Mesh-20",
+   "serial": 20,
+   "name": "Tchattuk",
+   "pitch": "Cth-7",
+   "classification": "Amphidemon",
+   "regions": [
+    "Warp",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Water",
+    "Earth"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Water",
+    "subAngle": "Earth",
+    "scope": "Earth of Water"
+   }
+  },
+  {
+   "key": "0-7",
+   "zones": [
+    0,
+    7
+   ],
+   "netSpan": "7::0",
+   "mesh": "Mesh-21",
+   "serial": 21,
+   "name": "Puppo",
+   "pitch": "Cth-2",
+   "classification": "Amphidemon",
+   "regions": [
+    "Time-Circuit",
+    "Plex"
+   ],
+   "sectors": [
+    "Fire",
+    "Union"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the Union word BITOM (Fire)",
+    "row": "Fire"
+   }
+  },
+  {
+   "key": "1-7",
+   "zones": [
+    1,
+    7
+   ],
+   "netSpan": "7::1",
+   "mesh": "Mesh-22",
+   "serial": 22,
+   "name": "Bubbamu",
+   "pitch": "Cth-1",
+   "classification": "Cyclic Chronodemon",
+   "regions": [
+    "Time-Circuit",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Fire",
+    "Air"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Fire",
+    "subAngle": "Air",
+    "scope": "Air of Fire"
+   }
+  },
+  {
+   "key": "2-7",
+   "zones": [
+    2,
+    7
+   ],
+   "netSpan": "7::2",
+   "mesh": "Mesh-23",
+   "serial": 23,
+   "name": "Oddubb",
+   "pitch": "Null",
+   "classification": "Syzygetic Chronodemon",
+   "regions": [
+    "Time-Circuit",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Fire",
+    "Fire"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Fire",
+    "subAngle": "Fire",
+    "scope": "Fire of Fire (syzygetic)"
+   }
+  },
+  {
+   "key": "3-7",
+   "zones": [
+    3,
+    7
+   ],
+   "netSpan": "7::3",
+   "mesh": "Mesh-24",
+   "serial": 24,
+   "name": "Pabbakis",
+   "pitch": "Ana-1",
+   "classification": "Amphidemon",
+   "regions": [
+    "Time-Circuit",
+    "Warp"
+   ],
+   "sectors": [
+    "Fire",
+    "Water"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Fire",
+    "subAngle": "Water",
+    "scope": "Water of Fire"
+   }
+  },
+  {
+   "key": "4-7",
+   "zones": [
+    4,
+    7
+   ],
+   "netSpan": "7::4",
+   "mesh": "Mesh-25",
+   "serial": 25,
+   "name": "Ababbatok",
+   "pitch": "Ana-2",
+   "classification": "Cyclic Chronodemon",
+   "regions": [
+    "Time-Circuit",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Fire",
+    "Earth"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Fire",
+    "subAngle": "Earth",
+    "scope": "Earth of Fire"
+   }
+  },
+  {
+   "key": "5-7",
+   "zones": [
+    5,
+    7
+   ],
+   "netSpan": "7::5",
+   "mesh": "Mesh-26",
+   "serial": 26,
+   "name": "Papatakoo",
+   "pitch": "Cth-6",
+   "classification": "Cyclic Chronodemon",
+   "regions": [
+    "Time-Circuit",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Fire",
+    "Earth"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Fire",
+    "subAngle": "Earth",
+    "scope": "Earth of Fire"
+   }
+  },
+  {
+   "key": "6-7",
+   "zones": [
+    6,
+    7
+   ],
+   "netSpan": "7::6",
+   "mesh": "Mesh-27",
+   "serial": 27,
+   "name": "Bobobja",
+   "pitch": "Cth-5",
+   "classification": "Amphidemon",
+   "regions": [
+    "Time-Circuit",
+    "Warp"
+   ],
+   "sectors": [
+    "Fire",
+    "Water"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Fire",
+    "subAngle": "Water",
+    "scope": "Water of Fire"
+   }
+  },
+  {
+   "key": "0-8",
+   "zones": [
+    0,
+    8
+   ],
+   "netSpan": "8::0",
+   "mesh": "Mesh-28",
+   "serial": 28,
+   "name": "Minommo",
+   "pitch": "Cth-1",
+   "classification": "Amphidemon",
+   "regions": [
+    "Time-Circuit",
+    "Plex"
+   ],
+   "sectors": [
+    "Air",
+    "Union"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the Union word EXARP (Air)",
+    "row": "Air"
+   }
+  },
+  {
+   "key": "1-8",
+   "zones": [
+    1,
+    8
+   ],
+   "netSpan": "8::1",
+   "mesh": "Mesh-29",
+   "serial": 29,
+   "name": "Mur Mur",
+   "pitch": "Null",
+   "classification": "Syzygetic Chronodemon",
+   "regions": [
+    "Time-Circuit",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Air",
+    "Air"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Air",
+    "subAngle": "Air",
+    "scope": "Air of Air (syzygetic)"
+   }
+  },
+  {
+   "key": "2-8",
+   "zones": [
+    2,
+    8
+   ],
+   "netSpan": "8::2",
+   "mesh": "Mesh-30",
+   "serial": 30,
+   "name": "Nammamad",
+   "pitch": "Ana-1",
+   "classification": "Cyclic Chronodemon",
+   "regions": [
+    "Time-Circuit",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Air",
+    "Fire"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Air",
+    "subAngle": "Fire",
+    "scope": "Fire of Air"
+   }
+  },
+  {
+   "key": "3-8",
+   "zones": [
+    3,
+    8
+   ],
+   "netSpan": "8::3",
+   "mesh": "Mesh-31",
+   "serial": 31,
+   "name": "Mummumix",
+   "pitch": "Ana-2",
+   "classification": "Amphidemon",
+   "regions": [
+    "Time-Circuit",
+    "Warp"
+   ],
+   "sectors": [
+    "Air",
+    "Water"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Air",
+    "subAngle": "Water",
+    "scope": "Water of Air"
+   }
+  },
+  {
+   "key": "4-8",
+   "zones": [
+    4,
+    8
+   ],
+   "netSpan": "8::4",
+   "mesh": "Mesh-32",
+   "serial": 32,
+   "name": "Numko",
+   "pitch": "Ana-3",
+   "classification": "Cyclic Chronodemon",
+   "regions": [
+    "Time-Circuit",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Air",
+    "Earth"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Air",
+    "subAngle": "Earth",
+    "scope": "Earth of Air"
+   }
+  },
+  {
+   "key": "5-8",
+   "zones": [
+    5,
+    8
+   ],
+   "netSpan": "8::5",
+   "mesh": "Mesh-33",
+   "serial": 33,
+   "name": "Muntuk",
+   "pitch": "Cth-5",
+   "classification": "Cyclic Chronodemon",
+   "regions": [
+    "Time-Circuit",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Air",
+    "Earth"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Air",
+    "subAngle": "Earth",
+    "scope": "Earth of Air"
+   }
+  },
+  {
+   "key": "6-8",
+   "zones": [
+    6,
+    8
+   ],
+   "netSpan": "8::6",
+   "mesh": "Mesh-34",
+   "serial": 34,
+   "name": "Mommoljo",
+   "pitch": "Cth-4",
+   "classification": "Amphidemon",
+   "regions": [
+    "Time-Circuit",
+    "Warp"
+   ],
+   "sectors": [
+    "Air",
+    "Water"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Air",
+    "subAngle": "Water",
+    "scope": "Water of Air"
+   }
+  },
+  {
+   "key": "7-8",
+   "zones": [
+    7,
+    8
+   ],
+   "netSpan": "8::7",
+   "mesh": "Mesh-35",
+   "serial": 35,
+   "name": "Mombbo",
+   "pitch": "Cth-3",
+   "classification": "Cyclic Chronodemon",
+   "regions": [
+    "Time-Circuit",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Air",
+    "Fire"
+   ],
+   "dee": {
+    "table": "Watchtower",
+    "watchtower": "Air",
+    "subAngle": "Fire",
+    "scope": "Fire of Air"
+   }
+  },
+  {
+   "key": "0-9",
+   "zones": [
+    0,
+    9
+   ],
+   "netSpan": "9::0",
+   "mesh": "Mesh-36",
+   "serial": 36,
+   "name": "Uttunul",
+   "pitch": "Null",
+   "classification": "Syzygetic Xenodemon",
+   "regions": [
+    "Plex",
+    "Plex"
+   ],
+   "sectors": [
+    "Union",
+    "Union"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the whole Tablet of Union (Spirit of Spirit)"
+   }
+  },
+  {
+   "key": "1-9",
+   "zones": [
+    1,
+    9
+   ],
+   "netSpan": "9::1",
+   "mesh": "Mesh-37",
+   "serial": 37,
+   "name": "Tutagool",
+   "pitch": "Ana-1",
+   "classification": "Amphidemon",
+   "regions": [
+    "Plex",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Union",
+    "Air"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the Union word EXARP (Air)",
+    "row": "Air"
+   }
+  },
+  {
+   "key": "2-9",
+   "zones": [
+    2,
+    9
+   ],
+   "netSpan": "9::2",
+   "mesh": "Mesh-38",
+   "serial": 38,
+   "name": "Unnunddo",
+   "pitch": "Ana-2",
+   "classification": "Amphidemon",
+   "regions": [
+    "Plex",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Union",
+    "Fire"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the Union word BITOM (Fire)",
+    "row": "Fire"
+   }
+  },
+  {
+   "key": "3-9",
+   "zones": [
+    3,
+    9
+   ],
+   "netSpan": "9::3",
+   "mesh": "Mesh-39",
+   "serial": 39,
+   "name": "Ununuttix",
+   "pitch": "Ana-3",
+   "classification": "Chaotic Xenodemon",
+   "regions": [
+    "Plex",
+    "Warp"
+   ],
+   "sectors": [
+    "Union",
+    "Water"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the Union word HCOMA (Water)",
+    "row": "Water"
+   }
+  },
+  {
+   "key": "4-9",
+   "zones": [
+    4,
+    9
+   ],
+   "netSpan": "9::4",
+   "mesh": "Mesh-40",
+   "serial": 40,
+   "name": "Ununak",
+   "pitch": "Ana-4",
+   "classification": "Amphidemon",
+   "regions": [
+    "Plex",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Union",
+    "Earth"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the Union word NANTA (Earth)",
+    "row": "Earth"
+   }
+  },
+  {
+   "key": "5-9",
+   "zones": [
+    5,
+    9
+   ],
+   "netSpan": "9::5",
+   "mesh": "Mesh-41",
+   "serial": 41,
+   "name": "Tukutu",
+   "pitch": "Cth-4",
+   "classification": "Amphidemon",
+   "regions": [
+    "Plex",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Union",
+    "Earth"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the Union word NANTA (Earth)",
+    "row": "Earth"
+   }
+  },
+  {
+   "key": "6-9",
+   "zones": [
+    6,
+    9
+   ],
+   "netSpan": "9::6",
+   "mesh": "Mesh-42",
+   "serial": 42,
+   "name": "Unnutchi",
+   "pitch": "Cth-3",
+   "classification": "Chaotic Xenodemon",
+   "regions": [
+    "Plex",
+    "Warp"
+   ],
+   "sectors": [
+    "Union",
+    "Water"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the Union word HCOMA (Water)",
+    "row": "Water"
+   }
+  },
+  {
+   "key": "7-9",
+   "zones": [
+    7,
+    9
+   ],
+   "netSpan": "9::7",
+   "mesh": "Mesh-43",
+   "serial": 43,
+   "name": "Nuttubab",
+   "pitch": "Cth-2",
+   "classification": "Amphidemon",
+   "regions": [
+    "Plex",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Union",
+    "Fire"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the Union word BITOM (Fire)",
+    "row": "Fire"
+   }
+  },
+  {
+   "key": "8-9",
+   "zones": [
+    8,
+    9
+   ],
+   "netSpan": "9::8",
+   "mesh": "Mesh-44",
+   "serial": 44,
+   "name": "Ummnu",
+   "pitch": "Cth-1",
+   "classification": "Amphidemon",
+   "regions": [
+    "Plex",
+    "Time-Circuit"
+   ],
+   "sectors": [
+    "Union",
+    "Air"
+   ],
+   "dee": {
+    "table": "Union",
+    "scope": "the Union word EXARP (Air)",
+    "row": "Air"
+   }
+  }
+ ],
+ "watchtowers": {
+  "Air": {
+   "holyNames": [
+    "ORO",
+    "IBAH",
+    "AOZPI"
+   ],
+   "king": "BATAIVAH",
+   "squares": [
+    {
+     "r": 0,
+     "c": 0,
+     "R": 0,
+     "C": 0,
+     "role": "Kerubic",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 1,
+     "R": 0,
+     "C": 1,
+     "role": "Kerubic",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 2,
+     "R": 0,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 3,
+     "R": 0,
+     "C": 3,
+     "role": "Kerubic",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 4,
+     "R": 0,
+     "C": 4,
+     "role": "Kerubic",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 5,
+     "R": 0,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 6,
+     "R": 0,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 7,
+     "R": 0,
+     "C": 7,
+     "role": "Kerubic",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 8,
+     "R": 0,
+     "C": 8,
+     "role": "Kerubic",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 9,
+     "R": 0,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 10,
+     "R": 0,
+     "C": 10,
+     "role": "Kerubic",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 11,
+     "R": 0,
+     "C": 11,
+     "role": "Kerubic",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 0,
+     "R": 1,
+     "C": 0,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 1,
+     "R": 1,
+     "C": 1,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 2,
+     "R": 1,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 3,
+     "R": 1,
+     "C": 3,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 4,
+     "R": 1,
+     "C": 4,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 5,
+     "R": 1,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 6,
+     "R": 1,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 7,
+     "R": 1,
+     "C": 7,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 8,
+     "R": 1,
+     "C": 8,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 9,
+     "R": 1,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 10,
+     "R": 1,
+     "C": 10,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 11,
+     "R": 1,
+     "C": 11,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 0,
+     "R": 2,
+     "C": 0,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 1,
+     "R": 2,
+     "C": 1,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 2,
+     "R": 2,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 3,
+     "R": 2,
+     "C": 3,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 4,
+     "R": 2,
+     "C": 4,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 5,
+     "R": 2,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 6,
+     "R": 2,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 7,
+     "R": 2,
+     "C": 7,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 8,
+     "R": 2,
+     "C": 8,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 9,
+     "R": 2,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 10,
+     "R": 2,
+     "C": 10,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 11,
+     "R": 2,
+     "C": 11,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 0,
+     "R": 3,
+     "C": 0,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 1,
+     "R": 3,
+     "C": 1,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 2,
+     "R": 3,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 3,
+     "R": 3,
+     "C": 3,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 4,
+     "R": 3,
+     "C": 4,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 5,
+     "R": 3,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 6,
+     "R": 3,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 7,
+     "R": 3,
+     "C": 7,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 8,
+     "R": 3,
+     "C": 8,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 9,
+     "R": 3,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 10,
+     "R": 3,
+     "C": 10,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 11,
+     "R": 3,
+     "C": 11,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 0,
+     "R": 4,
+     "C": 0,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 1,
+     "R": 4,
+     "C": 1,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 2,
+     "R": 4,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 3,
+     "R": 4,
+     "C": 3,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 4,
+     "R": 4,
+     "C": 4,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 5,
+     "R": 4,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 6,
+     "R": 4,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 7,
+     "R": 4,
+     "C": 7,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 8,
+     "R": 4,
+     "C": 8,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 9,
+     "R": 4,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 10,
+     "R": 4,
+     "C": 10,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 11,
+     "R": 4,
+     "C": 11,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 0,
+     "R": 5,
+     "C": 0,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 1,
+     "R": 5,
+     "C": 1,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 2,
+     "R": 5,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 3,
+     "R": 5,
+     "C": 3,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 4,
+     "R": 5,
+     "C": 4,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 5,
+     "R": 5,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 6,
+     "R": 5,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 7,
+     "R": 5,
+     "C": 7,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 8,
+     "R": 5,
+     "C": 8,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 9,
+     "R": 5,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 10,
+     "R": 5,
+     "C": 10,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 11,
+     "R": 5,
+     "C": 11,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 6,
+     "c": 0,
+     "R": 6,
+     "C": 0,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "O"
+    },
+    {
+     "r": 6,
+     "c": 1,
+     "R": 6,
+     "C": 1,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "R"
+    },
+    {
+     "r": 6,
+     "c": 2,
+     "R": 6,
+     "C": 2,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "O"
+    },
+    {
+     "r": 6,
+     "c": 3,
+     "R": 6,
+     "C": 3,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "I"
+    },
+    {
+     "r": 6,
+     "c": 4,
+     "R": 6,
+     "C": 4,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "B"
+    },
+    {
+     "r": 6,
+     "c": 5,
+     "R": 6,
+     "C": 5,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "A"
+    },
+    {
+     "r": 6,
+     "c": 6,
+     "R": 6,
+     "C": 6,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "H"
+    },
+    {
+     "r": 6,
+     "c": 7,
+     "R": 6,
+     "C": 7,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "A"
+    },
+    {
+     "r": 6,
+     "c": 8,
+     "R": 6,
+     "C": 8,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "O"
+    },
+    {
+     "r": 6,
+     "c": 9,
+     "R": 6,
+     "C": 9,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "Z"
+    },
+    {
+     "r": 6,
+     "c": 10,
+     "R": 6,
+     "C": 10,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "P"
+    },
+    {
+     "r": 6,
+     "c": 11,
+     "R": 6,
+     "C": 11,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "I"
+    },
+    {
+     "r": 7,
+     "c": 0,
+     "R": 7,
+     "C": 0,
+     "role": "Kerubic",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 1,
+     "R": 7,
+     "C": 1,
+     "role": "Kerubic",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 2,
+     "R": 7,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 3,
+     "R": 7,
+     "C": 3,
+     "role": "Kerubic",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 4,
+     "R": 7,
+     "C": 4,
+     "role": "Kerubic",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 5,
+     "R": 7,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 6,
+     "R": 7,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 7,
+     "R": 7,
+     "C": 7,
+     "role": "Kerubic",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 8,
+     "R": 7,
+     "C": 8,
+     "role": "Kerubic",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 9,
+     "R": 7,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 10,
+     "R": 7,
+     "C": 10,
+     "role": "Kerubic",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 11,
+     "R": 7,
+     "C": 11,
+     "role": "Kerubic",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 0,
+     "R": 8,
+     "C": 0,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 1,
+     "R": 8,
+     "C": 1,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 2,
+     "R": 8,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 3,
+     "R": 8,
+     "C": 3,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 4,
+     "R": 8,
+     "C": 4,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 5,
+     "R": 8,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 6,
+     "R": 8,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 7,
+     "R": 8,
+     "C": 7,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 8,
+     "R": 8,
+     "C": 8,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 9,
+     "R": 8,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 10,
+     "R": 8,
+     "C": 10,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 11,
+     "R": 8,
+     "C": 11,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 0,
+     "R": 9,
+     "C": 0,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 1,
+     "R": 9,
+     "C": 1,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 2,
+     "R": 9,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 3,
+     "R": 9,
+     "C": 3,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 4,
+     "R": 9,
+     "C": 4,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 5,
+     "R": 9,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 6,
+     "R": 9,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 7,
+     "R": 9,
+     "C": 7,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 8,
+     "R": 9,
+     "C": 8,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 9,
+     "R": 9,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 10,
+     "R": 9,
+     "C": 10,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 11,
+     "R": 9,
+     "C": 11,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 0,
+     "R": 10,
+     "C": 0,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 1,
+     "R": 10,
+     "C": 1,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 2,
+     "R": 10,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 3,
+     "R": 10,
+     "C": 3,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 4,
+     "R": 10,
+     "C": 4,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 5,
+     "R": 10,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 6,
+     "R": 10,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 7,
+     "R": 10,
+     "C": 7,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 8,
+     "R": 10,
+     "C": 8,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 9,
+     "R": 10,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 10,
+     "R": 10,
+     "C": 10,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 11,
+     "R": 10,
+     "C": 11,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 0,
+     "R": 11,
+     "C": 0,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 1,
+     "R": 11,
+     "C": 1,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 2,
+     "R": 11,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 3,
+     "R": 11,
+     "C": 3,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 4,
+     "R": 11,
+     "C": 4,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 5,
+     "R": 11,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 6,
+     "R": 11,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 7,
+     "R": 11,
+     "C": 7,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 8,
+     "R": 11,
+     "C": 8,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 9,
+     "R": 11,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 10,
+     "R": 11,
+     "C": 10,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 11,
+     "R": 11,
+     "C": 11,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 0,
+     "R": 12,
+     "C": 0,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 1,
+     "R": 12,
+     "C": 1,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 2,
+     "R": 12,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 3,
+     "R": 12,
+     "C": 3,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 4,
+     "R": 12,
+     "C": 4,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 5,
+     "R": 12,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 6,
+     "R": 12,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 7,
+     "R": 12,
+     "C": 7,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 8,
+     "R": 12,
+     "C": 8,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 9,
+     "R": 12,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 10,
+     "R": 12,
+     "C": 10,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 11,
+     "R": 12,
+     "C": 11,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    }
+   ]
+  },
+  "Water": {
+   "holyNames": [
+    "MPH",
+    "ARSL",
+    "GAIOL"
+   ],
+   "king": "RAAGIOSL",
+   "squares": [
+    {
+     "r": 0,
+     "c": 0,
+     "R": 0,
+     "C": 12,
+     "role": "Kerubic",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 1,
+     "R": 0,
+     "C": 13,
+     "role": "Kerubic",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 2,
+     "R": 0,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 3,
+     "R": 0,
+     "C": 15,
+     "role": "Kerubic",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 4,
+     "R": 0,
+     "C": 16,
+     "role": "Kerubic",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 5,
+     "R": 0,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 6,
+     "R": 0,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 7,
+     "R": 0,
+     "C": 19,
+     "role": "Kerubic",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 8,
+     "R": 0,
+     "C": 20,
+     "role": "Kerubic",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 9,
+     "R": 0,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 10,
+     "R": 0,
+     "C": 22,
+     "role": "Kerubic",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 11,
+     "R": 0,
+     "C": 23,
+     "role": "Kerubic",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 0,
+     "R": 1,
+     "C": 12,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 1,
+     "R": 1,
+     "C": 13,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 2,
+     "R": 1,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 3,
+     "R": 1,
+     "C": 15,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 4,
+     "R": 1,
+     "C": 16,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 5,
+     "R": 1,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 6,
+     "R": 1,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 7,
+     "R": 1,
+     "C": 19,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 8,
+     "R": 1,
+     "C": 20,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 9,
+     "R": 1,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 10,
+     "R": 1,
+     "C": 22,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 11,
+     "R": 1,
+     "C": 23,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 0,
+     "R": 2,
+     "C": 12,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 1,
+     "R": 2,
+     "C": 13,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 2,
+     "R": 2,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 3,
+     "R": 2,
+     "C": 15,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 4,
+     "R": 2,
+     "C": 16,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 5,
+     "R": 2,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 6,
+     "R": 2,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 7,
+     "R": 2,
+     "C": 19,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 8,
+     "R": 2,
+     "C": 20,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 9,
+     "R": 2,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 10,
+     "R": 2,
+     "C": 22,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 11,
+     "R": 2,
+     "C": 23,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 0,
+     "R": 3,
+     "C": 12,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 1,
+     "R": 3,
+     "C": 13,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 2,
+     "R": 3,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 3,
+     "R": 3,
+     "C": 15,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 4,
+     "R": 3,
+     "C": 16,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 5,
+     "R": 3,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 6,
+     "R": 3,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 7,
+     "R": 3,
+     "C": 19,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 8,
+     "R": 3,
+     "C": 20,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 9,
+     "R": 3,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 10,
+     "R": 3,
+     "C": 22,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 11,
+     "R": 3,
+     "C": 23,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 0,
+     "R": 4,
+     "C": 12,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 1,
+     "R": 4,
+     "C": 13,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 2,
+     "R": 4,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 3,
+     "R": 4,
+     "C": 15,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 4,
+     "R": 4,
+     "C": 16,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 5,
+     "R": 4,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 6,
+     "R": 4,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 7,
+     "R": 4,
+     "C": 19,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 8,
+     "R": 4,
+     "C": 20,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 9,
+     "R": 4,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 10,
+     "R": 4,
+     "C": 22,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 11,
+     "R": 4,
+     "C": 23,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 0,
+     "R": 5,
+     "C": 12,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 1,
+     "R": 5,
+     "C": 13,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 2,
+     "R": 5,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 3,
+     "R": 5,
+     "C": 15,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 4,
+     "R": 5,
+     "C": 16,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 5,
+     "R": 5,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 6,
+     "R": 5,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 7,
+     "R": 5,
+     "C": 19,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 8,
+     "R": 5,
+     "C": 20,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 9,
+     "R": 5,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 10,
+     "R": 5,
+     "C": 22,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 11,
+     "R": 5,
+     "C": 23,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 6,
+     "c": 0,
+     "R": 6,
+     "C": 12,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "M"
+    },
+    {
+     "r": 6,
+     "c": 1,
+     "R": 6,
+     "C": 13,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "P"
+    },
+    {
+     "r": 6,
+     "c": 2,
+     "R": 6,
+     "C": 14,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "H"
+    },
+    {
+     "r": 6,
+     "c": 3,
+     "R": 6,
+     "C": 15,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "A"
+    },
+    {
+     "r": 6,
+     "c": 4,
+     "R": 6,
+     "C": 16,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "R"
+    },
+    {
+     "r": 6,
+     "c": 5,
+     "R": 6,
+     "C": 17,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "S"
+    },
+    {
+     "r": 6,
+     "c": 6,
+     "R": 6,
+     "C": 18,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "L"
+    },
+    {
+     "r": 6,
+     "c": 7,
+     "R": 6,
+     "C": 19,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "G"
+    },
+    {
+     "r": 6,
+     "c": 8,
+     "R": 6,
+     "C": 20,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "A"
+    },
+    {
+     "r": 6,
+     "c": 9,
+     "R": 6,
+     "C": 21,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "I"
+    },
+    {
+     "r": 6,
+     "c": 10,
+     "R": 6,
+     "C": 22,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "O"
+    },
+    {
+     "r": 6,
+     "c": 11,
+     "R": 6,
+     "C": 23,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "L"
+    },
+    {
+     "r": 7,
+     "c": 0,
+     "R": 7,
+     "C": 12,
+     "role": "Kerubic",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 1,
+     "R": 7,
+     "C": 13,
+     "role": "Kerubic",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 2,
+     "R": 7,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 3,
+     "R": 7,
+     "C": 15,
+     "role": "Kerubic",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 4,
+     "R": 7,
+     "C": 16,
+     "role": "Kerubic",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 5,
+     "R": 7,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 6,
+     "R": 7,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 7,
+     "R": 7,
+     "C": 19,
+     "role": "Kerubic",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 8,
+     "R": 7,
+     "C": 20,
+     "role": "Kerubic",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 9,
+     "R": 7,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 10,
+     "R": 7,
+     "C": 22,
+     "role": "Kerubic",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 11,
+     "R": 7,
+     "C": 23,
+     "role": "Kerubic",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 0,
+     "R": 8,
+     "C": 12,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 1,
+     "R": 8,
+     "C": 13,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 2,
+     "R": 8,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 3,
+     "R": 8,
+     "C": 15,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 4,
+     "R": 8,
+     "C": 16,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 5,
+     "R": 8,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 6,
+     "R": 8,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 7,
+     "R": 8,
+     "C": 19,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 8,
+     "R": 8,
+     "C": 20,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 9,
+     "R": 8,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 10,
+     "R": 8,
+     "C": 22,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 11,
+     "R": 8,
+     "C": 23,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 0,
+     "R": 9,
+     "C": 12,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 1,
+     "R": 9,
+     "C": 13,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 2,
+     "R": 9,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 3,
+     "R": 9,
+     "C": 15,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 4,
+     "R": 9,
+     "C": 16,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 5,
+     "R": 9,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 6,
+     "R": 9,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 7,
+     "R": 9,
+     "C": 19,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 8,
+     "R": 9,
+     "C": 20,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 9,
+     "R": 9,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 10,
+     "R": 9,
+     "C": 22,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 11,
+     "R": 9,
+     "C": 23,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 0,
+     "R": 10,
+     "C": 12,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 1,
+     "R": 10,
+     "C": 13,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 2,
+     "R": 10,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 3,
+     "R": 10,
+     "C": 15,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 4,
+     "R": 10,
+     "C": 16,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 5,
+     "R": 10,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 6,
+     "R": 10,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 7,
+     "R": 10,
+     "C": 19,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 8,
+     "R": 10,
+     "C": 20,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 9,
+     "R": 10,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 10,
+     "R": 10,
+     "C": 22,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 11,
+     "R": 10,
+     "C": 23,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 0,
+     "R": 11,
+     "C": 12,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 1,
+     "R": 11,
+     "C": 13,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 2,
+     "R": 11,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 3,
+     "R": 11,
+     "C": 15,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 4,
+     "R": 11,
+     "C": 16,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 5,
+     "R": 11,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 6,
+     "R": 11,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 7,
+     "R": 11,
+     "C": 19,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 8,
+     "R": 11,
+     "C": 20,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 9,
+     "R": 11,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 10,
+     "R": 11,
+     "C": 22,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 11,
+     "R": 11,
+     "C": 23,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 0,
+     "R": 12,
+     "C": 12,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 1,
+     "R": 12,
+     "C": 13,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 2,
+     "R": 12,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 3,
+     "R": 12,
+     "C": 15,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 4,
+     "R": 12,
+     "C": 16,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 5,
+     "R": 12,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 6,
+     "R": 12,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 7,
+     "R": 12,
+     "C": 19,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 8,
+     "R": 12,
+     "C": 20,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 9,
+     "R": 12,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 10,
+     "R": 12,
+     "C": 22,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 11,
+     "R": 12,
+     "C": 23,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    }
+   ]
+  },
+  "Earth": {
+   "holyNames": [
+    "MOR",
+    "DIAL",
+    "HCTGA"
+   ],
+   "king": "ICZHIHAL",
+   "squares": [
+    {
+     "r": 0,
+     "c": 0,
+     "R": 13,
+     "C": 0,
+     "role": "Kerubic",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 1,
+     "R": 13,
+     "C": 1,
+     "role": "Kerubic",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 2,
+     "R": 13,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 3,
+     "R": 13,
+     "C": 3,
+     "role": "Kerubic",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 4,
+     "R": 13,
+     "C": 4,
+     "role": "Kerubic",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 5,
+     "R": 13,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 6,
+     "R": 13,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 7,
+     "R": 13,
+     "C": 7,
+     "role": "Kerubic",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 8,
+     "R": 13,
+     "C": 8,
+     "role": "Kerubic",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 9,
+     "R": 13,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 10,
+     "R": 13,
+     "C": 10,
+     "role": "Kerubic",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 11,
+     "R": 13,
+     "C": 11,
+     "role": "Kerubic",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 0,
+     "R": 14,
+     "C": 0,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 1,
+     "R": 14,
+     "C": 1,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 2,
+     "R": 14,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 3,
+     "R": 14,
+     "C": 3,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 4,
+     "R": 14,
+     "C": 4,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 5,
+     "R": 14,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 6,
+     "R": 14,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 7,
+     "R": 14,
+     "C": 7,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 8,
+     "R": 14,
+     "C": 8,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 9,
+     "R": 14,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 10,
+     "R": 14,
+     "C": 10,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 11,
+     "R": 14,
+     "C": 11,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 0,
+     "R": 15,
+     "C": 0,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 1,
+     "R": 15,
+     "C": 1,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 2,
+     "R": 15,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 3,
+     "R": 15,
+     "C": 3,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 4,
+     "R": 15,
+     "C": 4,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 5,
+     "R": 15,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 6,
+     "R": 15,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 7,
+     "R": 15,
+     "C": 7,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 8,
+     "R": 15,
+     "C": 8,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 9,
+     "R": 15,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 10,
+     "R": 15,
+     "C": 10,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 11,
+     "R": 15,
+     "C": 11,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 0,
+     "R": 16,
+     "C": 0,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 1,
+     "R": 16,
+     "C": 1,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 2,
+     "R": 16,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 3,
+     "R": 16,
+     "C": 3,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 4,
+     "R": 16,
+     "C": 4,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 5,
+     "R": 16,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 6,
+     "R": 16,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 7,
+     "R": 16,
+     "C": 7,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 8,
+     "R": 16,
+     "C": 8,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 9,
+     "R": 16,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 10,
+     "R": 16,
+     "C": 10,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 11,
+     "R": 16,
+     "C": 11,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 0,
+     "R": 17,
+     "C": 0,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 1,
+     "R": 17,
+     "C": 1,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 2,
+     "R": 17,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 3,
+     "R": 17,
+     "C": 3,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 4,
+     "R": 17,
+     "C": 4,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 5,
+     "R": 17,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 6,
+     "R": 17,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 7,
+     "R": 17,
+     "C": 7,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 8,
+     "R": 17,
+     "C": 8,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 9,
+     "R": 17,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 10,
+     "R": 17,
+     "C": 10,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 11,
+     "R": 17,
+     "C": 11,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 0,
+     "R": 18,
+     "C": 0,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 1,
+     "R": 18,
+     "C": 1,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 2,
+     "R": 18,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 3,
+     "R": 18,
+     "C": 3,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 4,
+     "R": 18,
+     "C": 4,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 5,
+     "R": 18,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 6,
+     "R": 18,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 7,
+     "R": 18,
+     "C": 7,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 8,
+     "R": 18,
+     "C": 8,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 9,
+     "R": 18,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 10,
+     "R": 18,
+     "C": 10,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 11,
+     "R": 18,
+     "C": 11,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 6,
+     "c": 0,
+     "R": 19,
+     "C": 0,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "M"
+    },
+    {
+     "r": 6,
+     "c": 1,
+     "R": 19,
+     "C": 1,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "O"
+    },
+    {
+     "r": 6,
+     "c": 2,
+     "R": 19,
+     "C": 2,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "R"
+    },
+    {
+     "r": 6,
+     "c": 3,
+     "R": 19,
+     "C": 3,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "D"
+    },
+    {
+     "r": 6,
+     "c": 4,
+     "R": 19,
+     "C": 4,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "I"
+    },
+    {
+     "r": 6,
+     "c": 5,
+     "R": 19,
+     "C": 5,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "A"
+    },
+    {
+     "r": 6,
+     "c": 6,
+     "R": 19,
+     "C": 6,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "L"
+    },
+    {
+     "r": 6,
+     "c": 7,
+     "R": 19,
+     "C": 7,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "H"
+    },
+    {
+     "r": 6,
+     "c": 8,
+     "R": 19,
+     "C": 8,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "C"
+    },
+    {
+     "r": 6,
+     "c": 9,
+     "R": 19,
+     "C": 9,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "T"
+    },
+    {
+     "r": 6,
+     "c": 10,
+     "R": 19,
+     "C": 10,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "G"
+    },
+    {
+     "r": 6,
+     "c": 11,
+     "R": 19,
+     "C": 11,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "A"
+    },
+    {
+     "r": 7,
+     "c": 0,
+     "R": 20,
+     "C": 0,
+     "role": "Kerubic",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 1,
+     "R": 20,
+     "C": 1,
+     "role": "Kerubic",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 2,
+     "R": 20,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 3,
+     "R": 20,
+     "C": 3,
+     "role": "Kerubic",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 4,
+     "R": 20,
+     "C": 4,
+     "role": "Kerubic",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 5,
+     "R": 20,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 6,
+     "R": 20,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 7,
+     "R": 20,
+     "C": 7,
+     "role": "Kerubic",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 8,
+     "R": 20,
+     "C": 8,
+     "role": "Kerubic",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 9,
+     "R": 20,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 10,
+     "R": 20,
+     "C": 10,
+     "role": "Kerubic",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 11,
+     "R": 20,
+     "C": 11,
+     "role": "Kerubic",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 0,
+     "R": 21,
+     "C": 0,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 1,
+     "R": 21,
+     "C": 1,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 2,
+     "R": 21,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 3,
+     "R": 21,
+     "C": 3,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 4,
+     "R": 21,
+     "C": 4,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 5,
+     "R": 21,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 6,
+     "R": 21,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 7,
+     "R": 21,
+     "C": 7,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 8,
+     "R": 21,
+     "C": 8,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 9,
+     "R": 21,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 10,
+     "R": 21,
+     "C": 10,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 11,
+     "R": 21,
+     "C": 11,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 0,
+     "R": 22,
+     "C": 0,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 1,
+     "R": 22,
+     "C": 1,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 2,
+     "R": 22,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 3,
+     "R": 22,
+     "C": 3,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 4,
+     "R": 22,
+     "C": 4,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 5,
+     "R": 22,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 6,
+     "R": 22,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 7,
+     "R": 22,
+     "C": 7,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 8,
+     "R": 22,
+     "C": 8,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 9,
+     "R": 22,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 10,
+     "R": 22,
+     "C": 10,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 11,
+     "R": 22,
+     "C": 11,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 0,
+     "R": 23,
+     "C": 0,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 1,
+     "R": 23,
+     "C": 1,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 2,
+     "R": 23,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 3,
+     "R": 23,
+     "C": 3,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 4,
+     "R": 23,
+     "C": 4,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 5,
+     "R": 23,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 6,
+     "R": 23,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 7,
+     "R": 23,
+     "C": 7,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 8,
+     "R": 23,
+     "C": 8,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 9,
+     "R": 23,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 10,
+     "R": 23,
+     "C": 10,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 11,
+     "R": 23,
+     "C": 11,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 0,
+     "R": 24,
+     "C": 0,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 1,
+     "R": 24,
+     "C": 1,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 2,
+     "R": 24,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 3,
+     "R": 24,
+     "C": 3,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 4,
+     "R": 24,
+     "C": 4,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 5,
+     "R": 24,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 6,
+     "R": 24,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 7,
+     "R": 24,
+     "C": 7,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 8,
+     "R": 24,
+     "C": 8,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 9,
+     "R": 24,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 10,
+     "R": 24,
+     "C": 10,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 11,
+     "R": 24,
+     "C": 11,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 0,
+     "R": 25,
+     "C": 0,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 1,
+     "R": 25,
+     "C": 1,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 2,
+     "R": 25,
+     "C": 2,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 3,
+     "R": 25,
+     "C": 3,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 4,
+     "R": 25,
+     "C": 4,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 5,
+     "R": 25,
+     "C": 5,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 6,
+     "R": 25,
+     "C": 6,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 7,
+     "R": 25,
+     "C": 7,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 8,
+     "R": 25,
+     "C": 8,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 9,
+     "R": 25,
+     "C": 9,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 10,
+     "R": 25,
+     "C": 10,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 11,
+     "R": 25,
+     "C": 11,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    }
+   ]
+  },
+  "Fire": {
+   "holyNames": [
+    "OIP",
+    "TEAA",
+    "PDOCE"
+   ],
+   "king": "EDLPRNAA",
+   "squares": [
+    {
+     "r": 0,
+     "c": 0,
+     "R": 13,
+     "C": 12,
+     "role": "Kerubic",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 1,
+     "R": 13,
+     "C": 13,
+     "role": "Kerubic",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 2,
+     "R": 13,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 3,
+     "R": 13,
+     "C": 15,
+     "role": "Kerubic",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 4,
+     "R": 13,
+     "C": 16,
+     "role": "Kerubic",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 5,
+     "R": 13,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 6,
+     "R": 13,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 7,
+     "R": 13,
+     "C": 19,
+     "role": "Kerubic",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 8,
+     "R": 13,
+     "C": 20,
+     "role": "Kerubic",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 9,
+     "R": 13,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 10,
+     "R": 13,
+     "C": 22,
+     "role": "Kerubic",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 0,
+     "c": 11,
+     "R": 13,
+     "C": 23,
+     "role": "Kerubic",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 0,
+     "R": 14,
+     "C": 12,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 1,
+     "R": 14,
+     "C": 13,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 2,
+     "R": 14,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 3,
+     "R": 14,
+     "C": 15,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 4,
+     "R": 14,
+     "C": 16,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 5,
+     "R": 14,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 6,
+     "R": 14,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 7,
+     "R": 14,
+     "C": 19,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 8,
+     "R": 14,
+     "C": 20,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 9,
+     "R": 14,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 10,
+     "R": 14,
+     "C": 22,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 1,
+     "c": 11,
+     "R": 14,
+     "C": 23,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 0,
+     "R": 15,
+     "C": 12,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 1,
+     "R": 15,
+     "C": 13,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 2,
+     "R": 15,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 3,
+     "R": 15,
+     "C": 15,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 4,
+     "R": 15,
+     "C": 16,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 5,
+     "R": 15,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 6,
+     "R": 15,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 7,
+     "R": 15,
+     "C": 19,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 8,
+     "R": 15,
+     "C": 20,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 9,
+     "R": 15,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 10,
+     "R": 15,
+     "C": 22,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 2,
+     "c": 11,
+     "R": 15,
+     "C": 23,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 0,
+     "R": 16,
+     "C": 12,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 1,
+     "R": 16,
+     "C": 13,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 2,
+     "R": 16,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 3,
+     "R": 16,
+     "C": 15,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 4,
+     "R": 16,
+     "C": 16,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 5,
+     "R": 16,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 6,
+     "R": 16,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 7,
+     "R": 16,
+     "C": 19,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 8,
+     "R": 16,
+     "C": 20,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 9,
+     "R": 16,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 10,
+     "R": 16,
+     "C": 22,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 3,
+     "c": 11,
+     "R": 16,
+     "C": 23,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 0,
+     "R": 17,
+     "C": 12,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 1,
+     "R": 17,
+     "C": 13,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 2,
+     "R": 17,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 3,
+     "R": 17,
+     "C": 15,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 4,
+     "R": 17,
+     "C": 16,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 5,
+     "R": 17,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 6,
+     "R": 17,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 7,
+     "R": 17,
+     "C": 19,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 8,
+     "R": 17,
+     "C": 20,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 9,
+     "R": 17,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 10,
+     "R": 17,
+     "C": 22,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 4,
+     "c": 11,
+     "R": 17,
+     "C": 23,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 0,
+     "R": 18,
+     "C": 12,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 1,
+     "R": 18,
+     "C": 13,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 2,
+     "R": 18,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 3,
+     "R": 18,
+     "C": 15,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 4,
+     "R": 18,
+     "C": 16,
+     "role": "Servient",
+     "subAngle": "Air",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 5,
+     "R": 18,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 6,
+     "R": 18,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 7,
+     "R": 18,
+     "C": 19,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 8,
+     "R": 18,
+     "C": 20,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 9,
+     "R": 18,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 10,
+     "R": 18,
+     "C": 22,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 5,
+     "c": 11,
+     "R": 18,
+     "C": 23,
+     "role": "Servient",
+     "subAngle": "Water",
+     "letter": null
+    },
+    {
+     "r": 6,
+     "c": 0,
+     "R": 19,
+     "C": 12,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "O"
+    },
+    {
+     "r": 6,
+     "c": 1,
+     "R": 19,
+     "C": 13,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "I"
+    },
+    {
+     "r": 6,
+     "c": 2,
+     "R": 19,
+     "C": 14,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "P"
+    },
+    {
+     "r": 6,
+     "c": 3,
+     "R": 19,
+     "C": 15,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "T"
+    },
+    {
+     "r": 6,
+     "c": 4,
+     "R": 19,
+     "C": 16,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "E"
+    },
+    {
+     "r": 6,
+     "c": 5,
+     "R": 19,
+     "C": 17,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "A"
+    },
+    {
+     "r": 6,
+     "c": 6,
+     "R": 19,
+     "C": 18,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "A"
+    },
+    {
+     "r": 6,
+     "c": 7,
+     "R": 19,
+     "C": 19,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "P"
+    },
+    {
+     "r": 6,
+     "c": 8,
+     "R": 19,
+     "C": 20,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "D"
+    },
+    {
+     "r": 6,
+     "c": 9,
+     "R": 19,
+     "C": 21,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "O"
+    },
+    {
+     "r": 6,
+     "c": 10,
+     "R": 19,
+     "C": 22,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "C"
+    },
+    {
+     "r": 6,
+     "c": 11,
+     "R": 19,
+     "C": 23,
+     "role": "Linea Spiritus Sancti (Great Cross)",
+     "subAngle": null,
+     "letter": "E"
+    },
+    {
+     "r": 7,
+     "c": 0,
+     "R": 20,
+     "C": 12,
+     "role": "Kerubic",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 1,
+     "R": 20,
+     "C": 13,
+     "role": "Kerubic",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 2,
+     "R": 20,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 3,
+     "R": 20,
+     "C": 15,
+     "role": "Kerubic",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 4,
+     "R": 20,
+     "C": 16,
+     "role": "Kerubic",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 5,
+     "R": 20,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 6,
+     "R": 20,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 7,
+     "R": 20,
+     "C": 19,
+     "role": "Kerubic",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 8,
+     "R": 20,
+     "C": 20,
+     "role": "Kerubic",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 9,
+     "R": 20,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 10,
+     "R": 20,
+     "C": 22,
+     "role": "Kerubic",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 7,
+     "c": 11,
+     "R": 20,
+     "C": 23,
+     "role": "Kerubic",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 0,
+     "R": 21,
+     "C": 12,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 1,
+     "R": 21,
+     "C": 13,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 2,
+     "R": 21,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 3,
+     "R": 21,
+     "C": 15,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 4,
+     "R": 21,
+     "C": 16,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 5,
+     "R": 21,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 6,
+     "R": 21,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 7,
+     "R": 21,
+     "C": 19,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 8,
+     "R": 21,
+     "C": 20,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 9,
+     "R": 21,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 10,
+     "R": 21,
+     "C": 22,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 8,
+     "c": 11,
+     "R": 21,
+     "C": 23,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 0,
+     "R": 22,
+     "C": 12,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 1,
+     "R": 22,
+     "C": 13,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 2,
+     "R": 22,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 3,
+     "R": 22,
+     "C": 15,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 4,
+     "R": 22,
+     "C": 16,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 5,
+     "R": 22,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 6,
+     "R": 22,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 7,
+     "R": 22,
+     "C": 19,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 8,
+     "R": 22,
+     "C": 20,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 9,
+     "R": 22,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 10,
+     "R": 22,
+     "C": 22,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 9,
+     "c": 11,
+     "R": 22,
+     "C": 23,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 0,
+     "R": 23,
+     "C": 12,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 1,
+     "R": 23,
+     "C": 13,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 2,
+     "R": 23,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 3,
+     "R": 23,
+     "C": 15,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 4,
+     "R": 23,
+     "C": 16,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 5,
+     "R": 23,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 6,
+     "R": 23,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 7,
+     "R": 23,
+     "C": 19,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 8,
+     "R": 23,
+     "C": 20,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 9,
+     "R": 23,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 10,
+     "R": 23,
+     "C": 22,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 10,
+     "c": 11,
+     "R": 23,
+     "C": 23,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 0,
+     "R": 24,
+     "C": 12,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 1,
+     "R": 24,
+     "C": 13,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 2,
+     "R": 24,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 3,
+     "R": 24,
+     "C": 15,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 4,
+     "R": 24,
+     "C": 16,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 5,
+     "R": 24,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 6,
+     "R": 24,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 7,
+     "R": 24,
+     "C": 19,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 8,
+     "R": 24,
+     "C": 20,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 9,
+     "R": 24,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 10,
+     "R": 24,
+     "C": 22,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 11,
+     "c": 11,
+     "R": 24,
+     "C": 23,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 0,
+     "R": 25,
+     "C": 12,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 1,
+     "R": 25,
+     "C": 13,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 2,
+     "R": 25,
+     "C": 14,
+     "role": "Calvary Cross",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 3,
+     "R": 25,
+     "C": 15,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 4,
+     "R": 25,
+     "C": 16,
+     "role": "Servient",
+     "subAngle": "Earth",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 5,
+     "R": 25,
+     "C": 17,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 6,
+     "R": 25,
+     "C": 18,
+     "role": "Linea Dei Patris Filiique (Great Cross)",
+     "subAngle": null,
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 7,
+     "R": 25,
+     "C": 19,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 8,
+     "R": 25,
+     "C": 20,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 9,
+     "R": 25,
+     "C": 21,
+     "role": "Calvary Cross",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 10,
+     "R": 25,
+     "C": 22,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    },
+    {
+     "r": 12,
+     "c": 11,
+     "R": 25,
+     "C": 23,
+     "role": "Servient",
+     "subAngle": "Fire",
+     "letter": null
+    }
+   ]
+  }
+ },
+ "union": {
+  "rows": {
+   "Air": "EXARP",
+   "Water": "HCOMA",
+   "Earth": "NANTA",
+   "Fire": "BITOM"
+  },
+  "columns": [
+   "Spirit",
+   "Air",
+   "Water",
+   "Earth",
+   "Fire"
+  ]
+ },
+ "lettersLoaded": false
+}

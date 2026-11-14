@@ -1,0 +1,196 @@
+<title>Enochian-Numogrammatic Matrix</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: the Great Table and Tablet of Union on the left as the instrument; the four-step protocol on the right; demons and notes below. */
+:root {
+  --bg: #efedf2; --panel: #f8f7fa; --fg: #1c1a22; --muted: #5f5a6b; --line: #d4d0dc; --mark: #1c1a22;
+  --air: #c9a227; --water: #3f6fa8; --earth: #4d7a45; --fire: #b8432f; --spirit: #8a8496;
+  --hi: #6b2fb0;
+  --display: 'IM Fell English SC', 'Iowan Old Style', Georgia, serif;
+  --body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #141219; --panel: #1c1a23; --fg: #ebe8f0; --muted: #a29cb0; --line: #2e2a38; --mark: #ebe8f0;
+  --air: #e0c050; --water: #6f9fd8; --earth: #7fb072; --fire: #e0735c; --spirit: #b6b0c4; --hi: #c59bff; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141219; --panel: #1c1a23; --fg: #ebe8f0; --muted: #a29cb0; --line: #2e2a38; --mark: #ebe8f0;
+  --air: #e0c050; --water: #6f9fd8; --earth: #7fb072; --fire: #e0735c; --spirit: #b6b0c4; --hi: #c59bff; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--body); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 24px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 24px; }
+h1 { font: 400 clamp(26px, 4.4vw, 42px)/1.1 var(--display); margin: 0; text-wrap: balance; }
+h2 { font: 400 22px/1.2 var(--display); margin: 0 0 8px; }
+.lede { color: var(--muted); max-width: 72ch; margin: 6px 0 0; }
+.main { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 860px) { .main { grid-template-columns: 1fr; } }
+.label { font: 500 11px/1.4 var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.gt { display: grid; grid-template-columns: repeat(24, 1fr); gap: 1px; aspect-ratio: 24 / 26; max-width: 100%; }
+.sq { position: relative; border-radius: 1px; display: grid; place-items: center; font: 500 clamp(7px, 1.1vw, 11px)/1 var(--mono); color: var(--fg); }
+.sq.cross { outline: 1px solid color-mix(in srgb, var(--mark) 35%, transparent); outline-offset: -1px; }
+.sq.on { box-shadow: inset 0 0 0 2px var(--hi); }
+.union { display: grid; grid-template-columns: auto repeat(5, 1fr); gap: 2px; max-width: 360px; font-family: var(--mono); }
+.union .h { font-size: 11px; color: var(--muted); text-align: center; }
+.union .u { text-align: center; padding: 6px 0; border-radius: 3px; font-weight: 500; }
+.union .u.on { box-shadow: inset 0 0 0 2px var(--hi); }
+.key { display: flex; flex-wrap: wrap; gap: 12px; font: 12px var(--mono); color: var(--muted); }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.zones { display: flex; flex-wrap: wrap; gap: 6px; }
+button { font: 500 14px var(--mono); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 6px 10px; cursor: pointer; }
+button[aria-pressed="true"], button.primary { border-color: var(--hi); color: var(--hi); }
+button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--hi); outline-offset: 2px; }
+textarea { width: 100%; box-sizing: border-box; font: 14px var(--mono); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 8px; min-height: 56px; }
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; font-size: 14px; }
+.kv dt { color: var(--muted); } .kv dd { margin: 0; }
+.mv { display: grid; gap: 6px; }
+.mv div { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; font-size: 14px; }
+.mv b { font: 500 13px var(--mono); min-width: 58px; color: var(--muted); }
+.route { display: flex; flex-wrap: wrap; gap: 6px; }
+.hop { display: grid; justify-items: center; padding: 4px 6px; border-radius: 4px; background: var(--bg); min-width: 38px; }
+.hop .z { font: 500 18px/1 var(--mono); }
+.hop small { font: 10px var(--mono); color: var(--muted); }
+.how { font: 12px/1.6 var(--mono); color: var(--muted); }
+.result { font-size: 14px; }
+.result strong { color: var(--hi); font-weight: 600; }
+.radio { display: flex; gap: 14px; font-size: 14px; flex-wrap: wrap; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+tr.pick { cursor: pointer; } tr.pick:hover td { background: color-mix(in srgb, var(--hi) 8%, transparent); }
+.notes { display: grid; gap: 10px; max-width: 80ch; font-size: 14px; }
+.notes p { margin: 0; }
+</style>
+<div class="wrap">
+  <header>
+    <h1>Enochian-Numogrammatic Matrix</h1>
+    <p class="lede">Dee's Great Table as the spatial hardware and the CCRU Numogram as the temporal routing. Every route moves only along canonical Numogram connections (syzygy, current, gate), and every crossing is placed at its square on the Watchtowers.</p>
+  </header>
+  <div class="main">
+    <section class="panel" aria-label="The Great Table">
+      <div class="label">The Great Table, 24 × 26 (Golden Dawn arrangement)</div>
+      <div class="gt" id="gt"></div>
+      <div class="key" id="key"></div>
+      <div class="label">The Tablet of Union (Spirit, 9::0)</div>
+      <div class="union" id="union"></div>
+      <p class="how" id="selnote">Tap a demon, a zone or run a Call to light its squares.</p>
+    </section>
+    <section class="panel" aria-label="Protocol">
+      <h2>The four-step protocol</h2>
+      <div><div class="label">1 · Locate the zone</div><div class="zones" id="zonebtns"></div></div>
+      <dl class="kv" id="diag"></dl>
+      <div><div class="label">2 · Its canonical moves and syzygy partner</div><div class="mv" id="moves"></div></div>
+      <div>
+        <div class="label">3 · Inject the Call at Air (8::1)</div>
+        <textarea id="calltext" aria-label="Call text">Ol sonf vorsg goho Iad Balt</textarea>
+        <div class="radio"><label><input type="radio" name="entry" id="entry1" value="1" checked> enter at 1 (into time)</label><label><input type="radio" name="entry" id="entry8" value="8"> enter at 8 (the outer threshold)</label></div>
+        <div><button class="primary" id="run">Route the Call</button></div>
+      </div>
+      <div class="route" id="route"></div>
+      <div class="how" id="how"></div>
+      <div><div class="label">4 · Read the reverse output</div><div class="result" id="result"></div></div>
+    </section>
+  </div>
+  <section class="panel">
+    <h2>The 45 demons and their squares</h2>
+    <div class="tablewrap"><table><thead><tr><th>Demon</th><th>Pair</th><th>Class</th><th>Regions</th><th>Dee address</th></tr></thead><tbody id="demons"></tbody></table></div>
+  </section>
+  <section class="panel notes">
+    <h2>How this model reads the outline</h2>
+    <p><b>The circulation runs Air → Fire → Earth.</b> The Time-Circuit is zones 1, 2, 4, 5, 7, 8, and its currents close the loop 5::4 → 1, 8::1 → 7, 7::2 → 5. Under the bridge, homeostasis lives in Air, Fire and Earth.</p>
+    <p><b>Water is the Warp, and the Union is the Plex.</b> The Warp's current (6 − 3 = 3) feeds itself, a vortex rather than a circuit, and the Plex's current (9) feeds itself. These two sectors are the Outside.</p>
+    <p><b>The demon classes follow the regions.</b> Chronodemons have both zones in the Time-Circuit, Xenodemons both outside, and Amphidemons bridge them. This is the CCRU's own split, not "2–7 against 0, 1, 8, 9".</p>
+    <p><b>The doors.</b> Air opens onto Spirit through Gt-36 (8 → 9). Fire opens into Water through Gt-3 (2 → 3), and Earth through Gt-15 (5 → 6). The outline's example, Earth 4 → its partner 5 → up into Water 6, is exactly canonical: a syzygy, then Gt-15.</p>
+    <p><b>The Outside is one-way.</b> No canonical move leads from Water or the Union back into the Time-Circuit. So step 4 reads backward: from the Union along the route that brought form to Spirit (for example 4 → 1 → 8 → 9), which is the only Union-to-Earth reading the lattice allows.</p>
+    <p><b>Letters.</b> Only certain letters are shown: the Tablet of Union, each Watchtower's three Holy Names across its Great Cross, and its King. The remaining 576 squares await a verified transcription. Addresses, roles and routing do not need them; name extraction by Dee's paths does.</p>
+    <p class="how">The default Call is the opening line of the First Call. Its first four words reduce under A1Z26 to 9 (OL 27, SONF 54, VORSG 81, GOHO 45). Entering at 8, the first word opens Gt-36 into the Union; entering at 1, there is no canonical move to 9 and the Call circulates in time.</p>
+  </section>
+</div>
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const M = JSON.parse(document.getElementById('data').textContent);
+const SECT = { 0: 'Union', 9: 'Union', 1: 'Air', 8: 'Air', 2: 'Fire', 7: 'Fire', 3: 'Water', 6: 'Water', 4: 'Earth', 5: 'Earth' };
+const REG = z => (z === 0 || z === 9) ? 'Plex' : (z === 3 || z === 6) ? 'Warp' : 'Time-Circuit';
+const COLOR = { Air: 'var(--air)', Water: 'var(--water)', Earth: 'var(--earth)', Fire: 'var(--fire)', Union: 'var(--spirit)', Spirit: 'var(--spirit)' };
+const droot = n => n === 0 ? 0 : 1 + (n - 1) % 9;
+const moves = z => ({ syzygy: 9 - z, current: Math.abs(2 * z - 9), gate: droot(z * (z + 1) / 2) });
+const kinds = (a, b) => Object.entries(moves(a)).filter(([, t]) => t === b).map(([k]) => k);
+const DEM = Object.fromEntries(M.demons.map(d => [d.key, d]));
+const demon = (a, b) => a === b ? null : DEM[[a, b].sort((x, y) => x - y).join('-')];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// Great Table
+const gt = document.getElementById('gt'); const cells = {};
+const order = []; for (const el of ['Air', 'Water', 'Earth', 'Fire']) for (const s of M.watchtowers[el].squares) order.push({ ...s, el });
+const grid = Array.from({ length: 26 }, () => Array(24).fill(null)); for (const s of order) grid[s.R][s.C] = s;
+for (let R = 0; R < 26; R++) for (let C = 0; C < 24; C++) {
+  const s = grid[R][C]; const d = document.createElement('div'); d.className = 'sq';
+  const cross = s.role.includes('Great Cross'); const base = cross ? s.el : s.subAngle;
+  const mix = cross ? 70 : s.role === 'Calvary Cross' ? 46 : s.role === 'Kerubic' ? 34 : 20;
+  d.style.background = `color-mix(in srgb, ${COLOR[base]} ${mix}%, var(--panel))`;
+  d.style.borderTop = cross ? '' : `2px solid color-mix(in srgb, ${COLOR[s.el]} 55%, transparent)`;
+  if (cross) d.classList.add('cross'); if (s.letter) d.textContent = s.letter;
+  d.title = `${s.el} Watchtower · ${s.role}${s.subAngle ? ' · ' + s.subAngle + ' of ' + s.el : ''}`;
+  gt.appendChild(d); (cells[`${s.el}|${s.subAngle}`] ??= []).push(d);
+}
+document.getElementById('key').innerHTML = ['Air', 'Water', 'Earth', 'Fire', 'Union'].map(e => `<span><span class="sw" style="background:${COLOR[e]}"></span>${e} ${({ Air: '8::1', Water: '6::3 Warp', Earth: '5::4', Fire: '7::2', Union: '9::0 Plex' })[e]}</span>`).join('') + '<span>strong tint: Great Cross · mid: Calvary Cross · light: servient</span>';
+const un = document.getElementById('union'); const ucells = {};
+un.innerHTML = '<span></span>' + M.union.columns.map(c => `<span class="h">${c}</span>`).join('');
+for (const el of ['Air', 'Water', 'Earth', 'Fire']) {
+  const lab = document.createElement('span'); lab.className = 'h'; lab.style.textAlign = 'right'; lab.style.paddingRight = '6px'; lab.textContent = el; un.appendChild(lab);
+  [...M.union.rows[el]].forEach((L, i) => { const u = document.createElement('span'); u.className = 'u'; u.textContent = L;
+    u.style.background = `color-mix(in srgb, ${COLOR[M.union.columns[i]]} 38%, var(--panel))`; un.appendChild(u); (ucells[el] ??= []).push(u); });
+}
+const clearHi = () => document.querySelectorAll('.on').forEach(e => e.classList.remove('on'));
+function light(d) {
+  if (!d) return; const a = d.dee;
+  if (a.table === 'Watchtower') (cells[`${a.watchtower}|${a.subAngle}`] || []).forEach(e => e.classList.add('on'));
+  else if (a.row) (ucells[a.row] || []).forEach(e => e.classList.add('on'));
+  else Object.values(ucells).flat().forEach(e => e.classList.add('on'));
+}
+function showDemon(d) { clearHi(); light(d); document.getElementById('selnote').textContent = `${d.name} (${d.netSpan}, ${d.classification}): ${d.dee.scope}.`; }
+// Step 1-2
+const zb = document.getElementById('zonebtns');
+for (let z = 0; z <= 9; z++) { const b = document.createElement('button'); b.id = 'z' + z; b.textContent = z; b.setAttribute('aria-pressed', 'false'); b.onclick = () => pick(z); zb.appendChild(b); }
+function pick(z) {
+  zb.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.id === 'z' + z)));
+  const zi = M.zones[z];
+  document.getElementById('diag').innerHTML = `<dt>Zone</dt><dd>${z}</dd><dt>Syzygy</dt><dd>${zi.syzygy}</dd><dt>Region</dt><dd>${zi.region}</dd><dt>Sector</dt><dd>${zi.sector === 'Union' ? 'Tablet of Union (Spirit)' : 'Watchtower of ' + zi.sector}</dd>`;
+  document.getElementById('moves').innerHTML = Object.entries(moves(z)).map(([k, t]) => { const d = demon(z, t);
+    return `<div><b>${k}</b><span>${z} → ${t} · ${REG(t)} · ${SECT[t]}${k === 'gate' ? ' · ' + zi.gateName : ''}${k === 'current' ? ' · the pair\'s difference' : ''}</span>${d ? `<span>crossing <em>${esc(d.name)}</em> (${esc(d.dee.scope)})</span>` : '<span>a dwell</span>'}</div>`; }).join('');
+  clearHi(); document.getElementById('selnote').textContent = `Zone ${z}: ${zi.region}, ${zi.sector}.`;
+}
+// Step 3-4
+function a1z26(text) { const t = text.normalize('NFKD').replace(/[̀-ͯ]/g, '').toUpperCase(); return (t.match(/[A-Z]+/g) || []).map(w => { const n = [...w].reduce((s, c) => s + c.charCodeAt(0) - 64, 0); return [w, n, droot(n)]; }); }
+function route(text, entry) {
+  let z = entry; const path = [z], how = ['entry (Air)'];
+  for (const [w, n, zw] of a1z26(text)) {
+    if (zw === z) { how.push(`${w}=${n}→${zw}: already there (dwell)`); path.push(z); continue; }
+    const ks = kinds(z, zw);
+    if (ks.length) { z = zw; how.push(`${w}=${n}→${zw}: ${ks.join('/')}`); } else { z = moves(z).current; how.push(`${w}=${n}→${zw}: no canonical move; current`); }
+    path.push(z);
+  }
+  const seen = new Map(), free = []; for (let i = 0; i < 40 && !seen.has(z); i++) { seen.set(z, i); z = moves(z).current; free.push(z); }
+  return { path, how, free, cycle: seen.has(z) ? free.slice(seen.get(z)) : [], end: z };
+}
+function reverse(path) {
+  let u = -1; path.forEach((z, i) => { if (z === 0 || z === 9) u = i; });
+  if (u < 0) return null; let e = -1; for (let i = 0; i < u; i++) if (path[i] === 4 || path[i] === 5) e = i;
+  return path.slice(e < 0 ? 0 : e, u + 1).reverse();
+}
+document.getElementById('run').onclick = () => {
+  const entry = document.getElementById('entry8').checked ? 8 : 1; const r = route(document.getElementById('calltext').value, entry);
+  clearHi(); const crossed = [];
+  document.getElementById('route').innerHTML = r.path.map((z, i) => { const d = i ? demon(r.path[i - 1], z) : null; if (d) { crossed.push(d); light(d); }
+    return `<span class="hop"><span class="z" style="color:${COLOR[SECT[z]]}">${z}</span><small>${d ? esc(d.name) : i ? 'dwell' : 'entry'}</small></span>`; }).join('');
+  document.getElementById('how').innerHTML = r.how.map(esc).join('<br>');
+  const rev = reverse(r.path); const cyc = r.cycle.length ? r.cycle.join(' → ') : r.end;
+  document.getElementById('result').innerHTML = `What stabilized on free flow: <strong>${cyc}</strong>, ${REG(r.end)} (${SECT[r.end] === 'Union' ? 'the Tablet of Union' : 'the Watchtower of ' + SECT[r.end]}).<br>` +
+    (rev ? `Reverse reading from the Union: <strong>${rev.join(' ← ')}</strong> (${rev.map(z => SECT[z]).join(' ← ')}).` : 'The route never reached the Tablet of Union, so there is no reverse reading from Spirit: on the canonical lattice only Air\'s gate 8 → 9 opens onto it.');
+  document.getElementById('selnote').textContent = `Lit: the squares of ${crossed.length} crossing${crossed.length === 1 ? '' : 's'} on this route.`;
+};
+// Demons table
+document.getElementById('demons').innerHTML = [...M.demons].sort((a, b) => a.serial - b.serial).map(d => `<tr class="pick" data-k="${d.key}" tabindex="0"><td>${esc(d.name)}</td><td>${d.netSpan}</td><td>${esc(d.classification)}</td><td>${d.regions.join(' · ')}</td><td>${esc(d.dee.scope)}</td></tr>`).join('');
+document.querySelectorAll('tr.pick').forEach(tr => { const go = () => showDemon(DEM[tr.dataset.k]); tr.onclick = go; tr.onkeydown = e => { if (e.key === 'Enter') go(); }; });
+pick(8); document.getElementById('run').click();
+</script>
