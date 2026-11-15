@@ -135,3 +135,50 @@ with intact stops appeared for the third time (36 vs 59). That is a candidate fo
 **Limits.**
 - Two findings of the line are corroborated so far (R5, R6). The others await their evidence packages.
 - All of this is the prototype ecology, not Amelia's living runtime.
+
+## 9. R4, the no-op slide: validated, replicated and rerun on the canonical Numogram
+**Package.** `CYBERGOTHIC_DONOR_CONTEXT_EVIDENCE_2026-11-15.zip`, in `evidence/R4_donor_context/package/`. R4 ran on an
+earlier engine version (`legacy_engine.py` e7514c3f) with the same nine non-canonical zone rules.
+
+**Checks on the shipped evidence.**
+- **Source hashes:** 25/25 match their two protocols.
+- **Tests:** 32/32 pass.
+- **Full replay:** all 3,346 branches match their saved records (1,666 first-study, 1,680 confirmation), with 0 gate
+  violations.
+- **Independent recomputation** (`validation/recompute_r4.py`):
+
+| Claim | Reported | Recomputed |
+|---|---|---|
+| First study: survival at 24, slide vs jump | 215/238 vs 162/238; +22.1 pp (95% +16.3 to +27.9) | **215 vs 162; +22.1 (+16.2 to +27.9)** |
+| Confirmation | 216/240 vs 176/240; +16.7 pp (+10.4 to +23.8) | **216 vs 176; +16.7 (+10.4 to +23.8)** |
+| Rotated / shuffled slide (confirmation) | 220 / 216 | **220 / 216** |
+| Meltdown deaths by 24, slide vs jump (confirmation) | 7 vs 35 | **7 vs 35** |
+
+**REP-2.**
+- **Setup.** Sealed by RFC 3161 (`177d3bf`) before running; result in commit `00dde7d`. Fresh seeds. `canonical_r4/` is R4's
+  engine with the same `topology.py` switch, and its hybrid mode reproduces the shipped records.
+
+| | Hybrid, fresh (66001–66060) | **Canonical, fresh (67001–67060)** |
+|---|---|---|
+| Encounters | 240 | 232 |
+| Alive at 24: slide / jump | 214 / 155 | **207 / 134** |
+| Slide − jump (seed-clustered) | **+24.6 pp (95% +17.9 to +31.7)** | **+32.6 pp (95% +25.3 to +40.3)** |
+| Meltdown deaths by 24: slide / jump | 5 / 50 | 10 / 67 |
+| Answer | **CORROBORATED** | **CORROBORATED** |
+
+**Reading.**
+- **The finding.** Spending a neutral action instead of executing the next instruction protects hosts. The effect is stronger
+  on the canonical Numogram, where the furnace is the Warp.
+- **The likely route.** Most of the difference is in meltdown deaths, which points to reduced exposure to dangerous opcodes
+  rather than pointer phase, though the design does not separate the two.
+- **The other slides.** The rotated, shuffled and encounter-yoked slides survive as well as the productive slide in both
+  topologies, so the donor's zone is not what matters. The open condition, where blocked code runs anywhere, survives worst.
+
+## 10. Received but not yet verifiable (code not in any package)
+- **The 14 Nov assemblage studies.** Their results and protocol are in `evidence/A_assemblage_2026-11-14/`.
+  - Four of their sealed files match R4's package (`legacy_engine.py`, `reactor.py`, `storage.py`, `study.py`).
+  - `assemblage.py` (2845e584) is a different version.
+  - `experiment.py`, `test_assemblage.py` (d444f448), `cli.py`, `cloud_sync.py` and `isolated_supabase_setup.sql` are
+    missing.
+- **R7.** The observer integration report and the seal addendum are in `evidence/R7_chimeric_cohort/`; the results package
+  is still missing.
