@@ -227,7 +227,7 @@ state hashes: R1 initial 1,440/1,440 (480 encounters; it also re-finds the 17 en
 infection), R1 confirmation 1,389/1,389 (463 first-contact checks), R2 705/705, R3 1,200/1,200 (zero zone-rule
 violations). R7's 17 ledger parts (2.72 GiB) were not supplied, so instead every screened seed 50001–50360 was regenerated
 from the sealed source (`cohort_worker.py --no-ledgers`) and compared field by field with the archived population summaries
-(`validation/compare_r7.py`): R7_REGEN_RESULT.
+(`validation/compare_r7.py`): **all 360 seeds regenerated; 250/250 eligible populations match in every field (event, state and shadow hashes, classifications, survival), and all 110 ineligible seeds agree with the cohort manifest** (`validation/REGEN_LOG_R7.txt`). The regenerated natural branch of seed 50176 also matches the event-audit hashes.
 
 **Independent recomputation** (`validation/recompute_r1r3.py`, `validation/recompute_r7.py`; output in
 `validation/RECOMPUTE_*.txt`). Seed-weighted paired means; this script's own 10,000-draw seed bootstrap.
