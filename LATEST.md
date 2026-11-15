@@ -1,10 +1,10 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-15T11:40:32.894Z
-- Cycle: 1332 (43709865295-1-1)
+- Last cycle (UTC): 2026-11-15T11:55:29.844Z
+- Cycle: 1333 (43709865295-1-2)
 - RSS items seen: 57; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -11
-- Candidate: Tukkamu / Mesh-11 / Cyclic Chronodemon
+- Subdecadence: MESH_TERMINAL; score -33
+- Candidate: Muntuk / Mesh-33 / Cyclic Chronodemon
 - Separate ingress records and trace links: 0
 - Catalogue entries added: 1
 - Governor recovery: 0 previously queued items admitted; queue now 0.
