@@ -1,0 +1,31 @@
+name: WT-6L and WT-7L (rhythm of arrival; maturation on ND-1b)
+
+# experiments/live-amelia/wt6l7l/REGISTRATION.md. Started by committing a UTC time to experiments/live-amelia/wt6l7l/run.trigger.
+on:
+  push:
+    branches: [research/live-run-history-20261109]
+    paths: ['experiments/live-amelia/wt6l7l/run.trigger']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wt6l7l
+  cancel-in-progress: false
+
+jobs:
+  wt6l7l:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - name: Machinery checks (synthetic only)
+        run: bun test --timeout 900000 experiments/live-amelia/wt5l.test.ts experiments/live-amelia/wt6l7l.test.ts
+      - name: Run WT-6L and WT-7L (determinism, runs, registered analyses)
+        env:
+          SUPABASE_URL: https://rcgmtdponfljpribggsq.supabase.co
+          AMELIA_SUPABASE_SERVICE_KEY: ${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}
+        run: bun experiments/live-amelia/wt6l7l/run_actions.ts
