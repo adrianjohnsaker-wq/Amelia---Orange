@@ -174,11 +174,34 @@ earlier engine version (`legacy_engine.py` e7514c3f) with the same nine non-cano
 - **The other slides.** The rotated, shuffled and encounter-yoked slides survive as well as the productive slide in both
   topologies, so the donor's zone is not what matters. The open condition, where blocked code runs anywhere, survives worst.
 
-## 10. Received but not yet verifiable (code not in any package)
-- **The 14 Nov assemblage studies.** Their results and protocol are in `evidence/A_assemblage_2026-11-14/`.
-  - Four of their sealed files match R4's package (`legacy_engine.py`, `reactor.py`, `storage.py`, `study.py`).
-  - `assemblage.py` (2845e584) is a different version.
-  - `experiment.py`, `test_assemblage.py` (d444f448), `cli.py`, `cloud_sync.py` and `isolated_supabase_setup.sql` are
-    missing.
-- **R7.** The observer integration report and the seal addendum are in `evidence/R7_chimeric_cohort/`; the results package
-  is still missing.
+## 10. The assemblage studies (14 Nov): data verified, code still missing
+**Package.** `AMELIA_CYBERGOTHIC_ASSEMBLAGE_EVIDENCE_2026-11-14.zip`, in `evidence/A_assemblage_2026-11-14/package/`. It holds
+per-seed results, selected ledgers, the development pilots, a persistence demonstration and the test log (21 tests passed).
+It holds **no source code**.
+- **Manifest:** 168/168 file hashes match.
+- **Independent recomputation** from the per-seed records (`validation/recompute_assemblage.py`):
+
+| Claim | Reported | Recomputed |
+|---|---|---|
+| Experienced − pointer cargo, total nutrient | +5.16 (99.17% +0.64 to +9.60), 23/30 positive | **+5.16 (+0.76 to +9.47), 23/30** |
+| Experienced − shuffled cargo | +2.82 (−1.15 to +7.67) | **+2.82 (−1.04 to +7.94)** |
+| Mean nutrient / agent-time, experienced vs pointer | 136.1 / 131.0; 5,609 / 5,001 | **136.1 / 131.0; 5,609 / 5,001** |
+| Portfolio − random archive | −11.70 (−20.57 to −3.56), negative in 22/30 | **−11.70 (−20.9 to −3.7), negative in 22/30** |
+| Portfolio − order-shuffled | −2.55 (−14.95 to +11.96) | **−2.55 (−14.88 to +12.25)** |
+| Salvage: external reactor input, on vs off | 7.81 vs 29.30; reduction 21.49 (18.41 to 24.52) | **7.81 vs 29.30; 21.49 (18.43 to 24.42), 30/30** |
+| First pass: vectors vs none | +0.12 (−5.74 to +6.08) | **+0.12 (−5.72 to +6.15)** |
+| Temporal accuracy after reversal: accumulating / moderate / rapid | 20.8 / 37.5 / 41.4% | **20.8 / 37.5 / 41.4%** |
+| Moderate − accumulating; rapid − accumulating | +16.7 (15.0 to 18.3); +20.6 (18.6 to 22.5); 30/30 | **+16.73 (15.04 to 18.31); +20.58 (18.49 to 22.49); 30/30** |
+| Portable − local net claim energy | +16.50 (12.87 to 20.83), 30/30 | **+16.50 (12.81 to 20.74), 30/30** |
+| Portable − local total nutrient | −0.38 (−3.75 to +3.12) | **−0.38 (−3.60 to +3.05)** |
+
+**Reading.** The reported results are exactly what the saved records contain. Without the source, nothing can be replayed or
+rerun (fresh or canonical). Most of these studies' files match R4's engine, but four are missing or differ: the assemblage
+layer (`assemblage.py` 2845e584), `experiment.py`, `cli.py` and `cloud_sync.py`. They also share the hybrid's non-canonical
+zone rules.
+
+## 11. Received but not yet verifiable
+- **R7.** The observer integration report and the seal addendum are in `evidence/R7_chimeric_cohort/`; the compact results
+  package is still missing.
+- **The assemblage source code** (above).
+- **R1–R3.**
