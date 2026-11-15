@@ -1,1 +1,1 @@
-RC-2 live ledger (amendment A1): 35 epochs; latest 2026-11-15T11:11:43Z: round 33979246, zPre=1, fed 196
+RC-2 live ledger (amendment A1): 36 epochs; latest 2026-11-15T17:50:35Z: round 33987223, zPre=1, fed 160
