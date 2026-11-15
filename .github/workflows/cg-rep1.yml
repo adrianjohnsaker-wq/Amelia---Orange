@@ -1,0 +1,63 @@
+# REP-1 (experiments/cybergothic/replication1/REGISTRATION.md). seal.trigger: RFC3161 over the registration, the analysis and
+# the shipped engine sources. run.trigger: the registered runs and analysis. Runs only on this branch.
+name: CG REP-1
+on:
+  push:
+    branches: [cybergothic-20261115]
+    paths: ['experiments/cybergothic/replication1/seal.trigger', 'experiments/cybergothic/replication1/run.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: cg-rep1
+  cancel-in-progress: false
+jobs:
+  rep1:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.13' }
+      - name: seal (once) or run
+        shell: bash
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        run: |
+          set -euo pipefail
+          D=experiments/cybergothic; P=$D/replication1; VS=$D/evidence/CYBERGOTHIC_VIRAL_STOP_EVIDENCE_2026-11-15; DG=$D/evidence/CYBERGOTHIC_DIGIT_GENOME_EVIDENCE_2026-11-15
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          export FILES="$P/REGISTRATION.md $P/analyse.py .github/workflows/cg-rep1.yml $(ls $VS/*.py | tr '\n' ' ') $(ls $DG/*.py | tr '\n' ' ')"
+          if git diff --name-only HEAD~1 HEAD | grep -qx "$P/seal.trigger" && [ ! -e $P/seal/receipt.json ]; then
+            python - <<'PY'
+          import datetime, hashlib, json, os, pathlib
+          from drift1a_c1.beacon import Sealer
+          P = pathlib.Path('experiments/cybergothic/replication1'); sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          b = {'schema': 'CG_REP1_V1', 'sealedAt': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+               'seeds': {'stop': [61001, 61300], 'birth': [62001, 62030]}, 'sourceSHA256': [{'path': f, 'sha256': sha(f)} for f in os.environ['FILES'].split()]}
+          (P / 'seal').mkdir(exist_ok=True); (P / 'seal/REP1_BUNDLE.json').write_text(json.dumps(b, sort_keys=True, indent=2) + '\n')
+          imprint = sha(P / 'seal/REP1_BUNDLE.json'); Sealer().seal(P / 'seal', imprint)
+          assert Sealer().verify(P / 'seal', imprint)['status'] == 'PASS'; print('REP1_SEALED', imprint)
+          PY
+            git add $P/seal; MSG='CG REP-1 registration sealed (RFC3161)'
+          elif git diff --name-only HEAD~1 HEAD | grep -qx "$P/run.trigger" && [ -e $P/seal/receipt.json ] && [ ! -e $P/result/RESULT.json ]; then
+            python - <<'PY'
+          import hashlib, json, pathlib
+          from drift1a_c1.beacon import Sealer
+          P = pathlib.Path('experiments/cybergothic/replication1'); sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          b = json.loads((P / 'seal/REP1_BUNDLE.json').read_text())
+          assert Sealer().verify(P / 'seal', sha(P / 'seal/REP1_BUNDLE.json'))['status'] == 'PASS'
+          for x in b['sourceSHA256']: assert sha(x['path']) == x['sha256'], x['path']
+          print('REP1_SEAL_AND_SOURCES_VERIFIED')
+          PY
+            O=$RUNNER_TEMP/rep1; mkdir -p $O
+            (cd $VS && python stop_trial.py --start 61001 --seeds 300 --workers 4 --output $O/stop | tail -3)
+            (cd $DG && python from_birth_study.py --start 62001 --seeds 30 --horizon 180 --workers 4 --output $O/birth | tail -3)
+            mkdir -p $P/result; python -I $P/analyse.py $O/stop $O/birth $P/result/RESULT.json
+            mkdir -p $P/result/stop $P/result/birth; cp $O/stop/seed_*.json $P/result/stop/; cp $O/birth/seed_*.json $P/result/birth/
+            git add $P/result; MSG='CG REP-1 result'
+          else echo 'nothing to do'; exit 0; fi
+          git commit -qm "$MSG"
+          for i in 1 2 3 4; do git pull -q --rebase origin cybergothic-20261115 && git push -q origin HEAD:cybergothic-20261115 && break; sleep $((2**i)); done
