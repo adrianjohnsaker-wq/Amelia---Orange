@@ -1,14 +1,14 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-15T20:07:55.903Z
-- Cycle: 1366 (43740549853-1-12)
-- RSS items seen: 59; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -1
-- Candidate: Duoddod / Mesh-01 / Amphidemon
+- Last cycle (UTC): 2026-11-15T20:22:57.071Z
+- Cycle: 1367 (43740549853-1-13)
+- RSS items seen: 55; newly processed: 0 (last-cycle window; 24-hour initial window)
+- Subdecadence: MESH_TERMINAL; score -7
+- Candidate: Sukugool / Mesh-07 / Cyclic Chronodemon
 - Separate ingress records and trace links: 0
 - Catalogue entries added: 1
 - Governor recovery: 0 previously queued items admitted; queue now 0.
-- Native consolidations this cycle: 0; complete receipts in recovery-journal.jsonl.
+- Native consolidations this cycle: 1; complete receipts in recovery-journal.jsonl.
 - New offers: 1; attended 1, deferred 0, refused 0.
 - Source errors: none
 
