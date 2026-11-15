@@ -7,6 +7,8 @@
 
 Plus the donor-context results report (R4), and the supplied Prototype 0 (`prototype0/AUDIT.md`).
 
+**Added later the same day:** the R4 package (§9), the assemblage studies (§10), and R1–R3 and R7 (§11).
+
 ## Summary
 For everything packaged, the reported results are exactly what the shipped code produces, and the code is the code the
 protocols name. The one layer still to come is a fresh replication under a public seal (REP-1). The prototype is a hybrid
@@ -70,6 +72,9 @@ The findings are about this hybrid. The canonical rerun (planned after this revi
 - the opcode classes with the CCRU classes.
 
 ## 6. Not yet validated (packages not received)
+
+*Superseded: all five packages have since arrived; see §9 and §11.*
+
 - R1 (fragment transfer);
 - R2 (code echo);
 - R3 (promoter);
@@ -175,6 +180,9 @@ earlier engine version (`legacy_engine.py` e7514c3f) with the same nine non-cano
   topologies, so the donor's zone is not what matters. The open condition, where blocked code runs anywhere, survives worst.
 
 ## 10. The assemblage studies (14 Nov): data verified, code still missing
+
+*Update: the assemblage source arrived later and is in `evidence/A_assemblage_2026-11-14/code/` (manifest 70/70, protocol hashes 41/41, 21/21 tests). It has not yet been replayed.*
+
 **Package.** `AMELIA_CYBERGOTHIC_ASSEMBLAGE_EVIDENCE_2026-11-14.zip`, in `evidence/A_assemblage_2026-11-14/package/`. It holds
 per-seed results, selected ledgers, the development pilots, a persistence demonstration and the test log (21 tests passed).
 It holds **no source code**.
@@ -200,8 +208,53 @@ rerun (fresh or canonical). Most of these studies' files match R4's engine, but 
 layer (`assemblage.py` 2845e584), `experiment.py`, `cli.py` and `cloud_sync.py`. They also share the hybrid's non-canonical
 zone rules.
 
-## 11. Received but not yet verifiable
-- **R7.** The observer integration report and the seal addendum are in `evidence/R7_chimeric_cohort/`; the compact results
-  package is still missing.
-- **The assemblage source code** (above).
-- **R1–R3.**
+## 11. R1–R3 and R7: received 15 Nov, reproduced
+
+Received: the host-encounter code and evidence (R1, 14 Nov), the viral-echo package (R2), the promoter package (R3), the
+chimeric cohort's compact results package with `SEALED_OBSERVER_EVIDENCE.zip` (R7) and the seed 50176 audit, the reactor
+code and evidence (14 Nov), and the assemblage source code. All are in `evidence/` as received.
+
+**Integrity.** Every manifest matches: R1 code 39/39 and evidence 181/181; R2 122/122; R3 98/98; R7 bundle 29/29; reactor
+code 35/35 and evidence 110/110. Every protocol hash list matches its source: R1 initial 10/10, R1 confirmation 12/12,
+R2 12/12, R3 14/14. R7's local seal (`FINAL_COHORT_SEAL.json`, sealed 06:29 UTC 15 Nov) matches 42/42 source files, 14/14
+evidence files, 7/7 gate records and the protocol. The protocols uploaded separately are byte-identical to the packaged ones.
+All R1–R3 studies run on the same engine files (`legacy_engine.py` e7514c3f, `reactor.py` 4b5ce680).
+
+**Tests** (`validation/REPLAY_LOG_R1_R3.txt`): R1 32/32, R2 38/38, R3 26/26, R7 27/27.
+
+**Full replay.** Each package's replay tool, run on a copy, re-simulates every branch and requires identical event and
+state hashes: R1 initial 1,440/1,440 (480 encounters; it also re-finds the 17 encounters with an earlier warm-up
+infection), R1 confirmation 1,389/1,389 (463 first-contact checks), R2 705/705, R3 1,200/1,200 (zero zone-rule
+violations). R7's 17 ledger parts (2.72 GiB) were not supplied, so instead every screened seed 50001–50360 was regenerated
+from the sealed source (`cohort_worker.py --no-ledgers`) and compared field by field with the archived population summaries
+(`validation/compare_r7.py`): R7_REGEN_RESULT.
+
+**Independent recomputation** (`validation/recompute_r1r3.py`, `validation/recompute_r7.py`; output in
+`validation/RECOMPUTE_*.txt`). Seed-weighted paired means; this script's own 10,000-draw seed bootstrap.
+
+| Claim | Reported | Recomputed |
+|---|---|---|
+| R1 initial: experienced − pointer / shuffled, 12-unit nutrient (98.75%) | −0.0042 (−0.0339 to +0.0260); +0.0106 (−0.0082 to +0.0308) | **−0.00421 (−0.0345 to +0.0260); +0.01056 (−0.0080 to +0.0311)** |
+| R1 initial: survival vs pointer / shuffled | +1.25 (−3.33 to +5.83); +3.13 (−1.25 to +7.50); 400/394/385 of 480 | **+1.25 (−3.33 to +6.04); +3.13 (−1.25 to +7.50); 400/394/385** |
+| R1 confirmation: first-action uptake vs pointer (97.5%) | +0.00564 (+0.00108 to +0.01034) | **+0.00564 (+0.00097 to +0.01041)** |
+| R1 confirmation: vs shuffled | +0.00683 (+0.00272 to +0.01098) | **+0.00683 (+0.00268 to +0.01103)** |
+| R1 confirmation: arm means; first digit matched; survived | 0.04527 / 0.03963 / 0.03844; 363/368/353; 378/387/372 | **identical** |
+| R2: any intact copy at 24, echo − natural (97.5%) | +31.25 (+22.36 to +40.56); 143 vs 70 of 235 | **+31.25 (+22.36 to +40.28); 143 vs 70** |
+| R2: 24-unit uptake, experienced − shuffled echo | +0.0193 (−0.0407 to +0.0775); 0.6362 vs 0.6168 | **+0.0193 (−0.0414 to +0.0781); 0.6362 vs 0.6168** |
+| R2: survival | 155 vs 156 of 235 | **155 vs 156** |
+| R3: zone − open uptake (98.33%) | −0.0820 (−0.1603 to −0.0070) | **−0.0820 (−0.1619 to −0.0081)** |
+| R3: zone − rotated; zone − zone/shuffled | −0.0049 (−0.0908 to +0.0701); +0.0020 (−0.0470 to +0.0527) | **−0.0049 (−0.0924 to +0.0702); +0.0020 (−0.0478 to +0.0509)** |
+| R3: arm uptake; survivors; payload actions per recipient | 0.6656/0.5836/0.5885/0.5816/0.6021; 168/158/168/160/177; 9.78/2.15/0.46/2.03/3.73 | **identical** |
+| R7: deliveries; recipient hosts; populations | 5; 3; 3 (of 250) | **5; 3; 3** |
+| R7: natural secondary carriers by route | necrotic 7, drift repair 3, recall 2 | **identical** |
+| R7: founder survival, natural vs recipient-active (exploratory, 95%) | 181 vs 155; +10.4 (+3.2 to +17.6) | **181 vs 155; +10.4 (+3.2 to +17.6)** |
+| R7: natural vs ruptured `09→08` | 181 vs 167; +5.6 (−1.2 to +12.4) | **+5.6 (−1.2 to +12.8)** |
+
+Every point estimate is exact; the intervals differ only by bootstrap draw.
+
+**Reading.** R1, R2, R3 and R7 are now **REPRODUCED** to the same standard as R4–R6. None has yet been run on fresh seeds
+under a public seal, or on the canonical Numogram. The reactor package (14 Nov) is the engine stage before R1; it was
+checked for integrity only. The assemblage source now present has not yet been replayed.
+
+R7 adds one observation to the paper's theme: forcing the founder's silent graft to execute cost survival
+(+10.4 pp for the natural, silent version), the same signature as R6's forced-active arm. It was exploratory in R7.

@@ -1,0 +1,19 @@
+R1-R3 full replay, 15 Nov 2026 (package's own replay tools, run on copies; Python 3.13.16)
+### r1 full_audit.py start 23:04:09
+{"populations": 60, "encounters": 480, "branches": 1440, "prior_packet_infections": 22, "encounters_with_prior_packet_infection": 17}
+### r1 full_audit.py exit 0 49s
+### r1 strict_full_audit.py start 23:04:58
+{"populations": 60, "encounters": 463, "branches": 1389, "first_contact_checks": 463}
+### r1 strict_full_audit.py exit 0 81s
+### r2 verify_viral_echo.py start 23:06:19
+{"status": "pass", "populations": 60, "encounters": 235, "branches": 705}
+### r2 verify_viral_echo.py exit 0 61s
+### r3 verify_promoter.py start 23:07:20
+{"status": "pass", "populations": 60, "encounters": 240, "branches": 1200, "violations": 0}
+### r3 verify_promoter.py exit 0 109s
+
+Unit tests (unittest discover):
+r1: Ran 32 tests in 17.906s OK
+r2: Ran 38 tests in 20.830s OK
+r3: Ran 26 tests in 16.459s OK
+r7: Ran 27 tests in 0.067s OK
