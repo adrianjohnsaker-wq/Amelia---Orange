@@ -102,3 +102,36 @@ remains exploratory.
 
 **Limit.** All of this is about the prototype as built, with its non-canonical furnace, recycling zones and opcode classes
 (section 5).
+
+## 8. CAN-1: the findings on the canonical CCRU Numogram (`canonical/`, `canonical_rerun/`)
+**Setup.**
+- The three non-canonical rule sets were replaced through `canonical/topology.py`: the furnace becomes the Warp {3, 6}; the
+  Time-Circuit {1, 2, 4, 5, 7, 8} takes recycling, fission and births; the opcode families follow the CCRU classes (15 / 6 /
+  24).
+- In hybrid mode the patched engine reproduces the shipped records exactly.
+- Sealed by RFC 3161 (`646408c`) before running. Result in commit `2c34680`.
+- Fresh seeds: 64001–64300 and 65001–65030.
+
+| Finding | Hybrid, original | Hybrid, REP-1 (fresh) | **Canonical, CAN-1 (fresh)** |
+|---|---|---|---|
+| R6: intact − ruptured | +10.16 pp (+4.07, +16.26) | +8.53 (+2.33, +14.73) | **+7.87 (+1.50, +13.86)** |
+| R6: intact − forced-active | +11.79 (+5.69, +18.29) | +14.73 (+8.14, +21.32) | **+8.24 (+1.87, +14.61)** |
+| Eligible / screened | 246 / 300 | 258 / 300 | 267 / 300 |
+| Survival, intact / ruptured / active (transfer) | 220 / 195 / 191 | 232 / 210 / 194 | 237 / 216 / 215 |
+| Exposure controls | 218 / 194 / 190 | 237 / 213 / 199 | 244 / 202 / 200 |
+| Births, intact vs ruptured (exploratory) | 47 vs 68 | 65 vs 78 | 36 vs 59 |
+| R5: mutation-created / executed / carried (of 30) | 29 / 30 / 30 | 29 / 30 / 30 | **30 / 30 / 30** |
+| R5: intron no-ops | 6,729 | 6,819 | 9,922 |
+| Answer | | CORROBORATED (both) | **CORROBORATED (both)** |
+
+**Reading.** Both findings survive the move to the canonical Numogram:
+- **Survival.** Hosts whose introns stay silent survive better: about 8 points on the canonical topology, against 9–15 in the
+  hybrid, with intervals clear of zero.
+- **Formation.** Silent introns form on their own in all 30 populations, and are executed more often (9,922 no-ops).
+
+The exposure controls again place the protection in the host's silent introns, not in the viral fragment. Fewer births
+with intact stops appeared for the third time (36 vs 59). That is a candidate for its own registered test.
+
+**Limits.**
+- Two findings of the line are corroborated so far (R5, R6). The others await their evidence packages.
+- All of this is the prototype ecology, not Amelia's living runtime.
