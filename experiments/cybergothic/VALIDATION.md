@@ -76,6 +76,29 @@ The findings are about this hybrid. The canonical rerun (planned after this revi
 - R4 (donor context and no-op slide), whose results report alone is in `evidence/`;
 - R7 (the sealed chimeric cohort's results); only its design package is here.
 
-## 7. REP-1
-REP-1 is a fresh replication of R6 and R5 on seeds the prototype session never used, sealed by RFC 3161 before running
-(`replication1/`).
+## 7. REP-1: fresh-seed replication under a public seal (`replication1/`)
+**Setup.**
+- Registration and analysis sealed by RFC 3161 (commit `7e20392`) before any REP-1 seed was run.
+- Run in GitHub Actions (result commit `c6e7f1d`).
+- Seeds 61001–61300 and 62001–62030, never used by the prototype session.
+
+| Finding | Original (seeds 44001–44300 / 41001–41030) | REP-1 (fresh) | Answer |
+|---|---|---|---|
+| R6: intact − ruptured, survival at 24 | +10.16 pp (+4.07 to +16.26), n = 246 | **+8.53 pp (97.5% +2.33 to +14.73), n = 258** | **CORROBORATED** |
+| R6: intact − forced-active | +11.79 pp (+5.69 to +18.29) | **+14.73 pp (+8.14 to +21.32)** | **CORROBORATED** |
+| R6: survival, intact / ruptured / active (transfer) | 220 / 195 / 191 of 246 | 232 / 210 / 194 of 258 | |
+| R6: exposure controls | 218 / 194 / 190 | 237 / 213 / 199 | |
+| R6: births, intact vs ruptured (exploratory) | 47 vs 68 | 65 vs 78 | same direction |
+| R5: mutation-created intron / no-op executed / carriers | 29 / 30 / 30 of 30 | **29 / 30 / 30 of 30** | **CORROBORATED** |
+| R5: intron no-ops | 6,729 | 6,819 | |
+
+**Reading.** Both packaged findings hold on new populations, under a public seal:
+- A host whose introns stay silent survives better, by about 9–15 points.
+- Silent introns form on their own by point mutation.
+
+The exposure controls again show that the protection belongs to the host's silent introns, not to the incoming viral
+fragment. The survival–reproduction trade-off (fewer births with intact stops) appeared again in the same direction; it
+remains exploratory.
+
+**Limit.** All of this is about the prototype as built, with its non-canonical furnace, recycling zones and opcode classes
+(section 5).
