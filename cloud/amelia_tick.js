@@ -18947,6 +18947,22 @@ class OutsideEncounterMemory extends IntegratedMemorySystem {
   }
 }
 var RELATIVE_WINDOW = 48;
+var ADMISSION_RULES = ["fixed-0.72", "relative-v1", "outside-lane-v1"];
+var OUTSIDE_LANE = { SD: 1, CROWDED: 16 };
+function outsideLaneLoad(governor, history, queueLength) {
+  const tel = governor.getTelemetry();
+  const locked = tel.governorStatus === "LOCKED_RECOVERY" || tel.antiLockIntegrity < 85;
+  const short = history.length < RELATIVE_WINDOW;
+  let strained = false;
+  if (!short) {
+    const w = history.slice(-RELATIVE_WINDOW), m = w.reduce((a, b) => a + b, 0) / w.length;
+    const sd = Math.sqrt(w.reduce((a, b) => a + (b - m) ** 2, 0) / w.length);
+    strained = tel.deformationFieldTension >= m + OUTSIDE_LANE.SD * sd;
+  }
+  const crowded = queueLength >= OUTSIDE_LANE.CROWDED;
+  return { locked, strained, crowded, short, excessive: locked || strained || crowded || short };
+}
+var isOutsideChannel = (e) => !!e && e.channel !== "SYNTHETIC_FIELD";
 function decideEncounterRelative(governor, input, history) {
   const base = decideEncounter(governor, input);
   if (base.disposition !== "DEFER" || !base.reason.startsWith("Field tension exceeds"))
@@ -18979,13 +18995,15 @@ class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
     return this.admissionRule;
   }
   decide(governor, input) {
-    return this.admissionRule === "relative-v1" ? decideEncounterRelative(governor, input, this.tensionHistory) : decideEncounter(governor, input);
+    return this.admissionRule === "relative-v1" || this.admissionRule === "outside-lane-v1" ? decideEncounterRelative(governor, input, this.tensionHistory) : decideEncounter(governor, input);
   }
   constructor() {
     super();
     this.memory = new OutsideEncounterMemory;
   }
   gateEncounters(governor, encounter) {
+    if (this.admissionRule === "outside-lane-v1" && !outsideLaneLoad(governor, this.tensionHistory, this.deferredEncounters.length).excessive)
+      return this.gateOutsideLane(governor, encounter);
     const encounterDecisions = [];
     let attended;
     if (this.deferredEncounters.length > 0) {
@@ -19029,6 +19047,61 @@ class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
         }
       }
       encounterDecisions.push({ ...encounter, ...decision, applied: decision.disposition === "ATTEND" });
+    }
+    return { attended, encounterDecisions };
+  }
+  gateOutsideLane(governor, encounter) {
+    const q = this.deferredEncounters;
+    const encounterDecisions = [];
+    let attended;
+    const oi = q.findIndex(isOutsideChannel);
+    if (oi >= 0) {
+      const pending = q.splice(oi, 1)[0];
+      attended = pending;
+      encounterDecisions.push({ ...pending, disposition: "ATTEND", reason: "Outside lane: waiting Outside encounter admitted; load not excessive.", applied: true });
+    } else if (isOutsideChannel(encounter) && this.decide(governor, encounter).disposition !== "REFUSE") {
+      attended = encounter;
+      if (q.length)
+        encounterDecisions.push({
+          ...q[0],
+          disposition: "DEFER",
+          reason: "Outside lane: an arriving Outside encounter took this step's admission; this encounter remains queued.",
+          applied: false
+        });
+    } else if (q.length) {
+      const pending = q[0];
+      const d = this.decide(governor, pending);
+      if (d.disposition === "ATTEND") {
+        attended = q.shift();
+        encounterDecisions.push({ ...pending, disposition: "ATTEND", reason: "Previously deferred encounter admitted after Governor recovery.", applied: true });
+      } else
+        encounterDecisions.push({ ...pending, ...d, applied: false });
+    }
+    if (encounter) {
+      if (encounter === attended)
+        encounterDecisions.push({ ...encounter, disposition: "ATTEND", reason: "Outside lane: admitted on arrival; load not excessive.", applied: true });
+      else {
+        let decision = this.decide(governor, encounter);
+        if (decision.disposition === "ATTEND" && attended)
+          decision = {
+            disposition: "DEFER",
+            reason: "An earlier deferred encounter was attended on this step; this encounter remains queued."
+          };
+        if (decision.disposition === "ATTEND")
+          attended = encounter;
+        else if (decision.disposition === "DEFER") {
+          const fieldIndex = encounter.channel === "SYNTHETIC_FIELD" ? this.deferredEncounters.findIndex((item) => item.channel === "SYNTHETIC_FIELD") : -1;
+          if (fieldIndex >= 0) {
+            this.deferredEncounters[fieldIndex] = encounter;
+            this.deferredEncounters = this.deferredEncounters.filter((item, i) => item.channel !== "SYNTHETIC_FIELD" || i === fieldIndex);
+            decision = { disposition: "DEFER", reason: decision.reason + " Latest field observation replaces the older pending field observation; both decisions remain in PFM." };
+          } else if (this.deferredEncounters.length < 32)
+            this.deferredEncounters.push(encounter);
+          else
+            decision = { disposition: "REFUSE", reason: "Governor deferral queue is full; encounter retained in PFM but not queued." };
+        }
+        encounterDecisions.push({ ...encounter, ...decision, applied: decision.disposition === "ATTEND" });
+      }
     }
     return { attended, encounterDecisions };
   }
@@ -19152,7 +19225,7 @@ class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
     super.importState(state);
     if (state && Array.isArray(state.deferredEncounters))
       this.deferredEncounters = JSON.parse(JSON.stringify(state.deferredEncounters));
-    if (state?.admissionRule === "relative-v1" || state?.admissionRule === "fixed-0.72")
+    if (ADMISSION_RULES.includes(state?.admissionRule))
       this.admissionRule = state.admissionRule;
     if (state?.memoryArchive && typeof state.memoryArchive === "object")
       this.memoryArchive = JSON.parse(JSON.stringify(state.memoryArchive));
@@ -20547,7 +20620,7 @@ var controls = (record) => {
     rt.setMomentumDamping(damping);
   };
 };
-function dryRunBegin(record, target, theta) {
+function dryRunBegin(record, target, theta, admission) {
   const src = bornAmeliaOf(savedKind(record.state));
   src.importState(record.state);
   const before = probe2(src);
@@ -20555,9 +20628,11 @@ function dryRunBegin(record, target, theta) {
   rt.importState(src.exportState());
   if (theta !== undefined)
     rt.setWarpTheta(theta);
+  if (admission !== undefined)
+    rt.setAdmissionRule(admission);
   const after = probe2(rt);
   const lastPre = src.getMemory().getEvents().at(-1);
-  const carry = after.zone === before.zone && after.memoryEvents === before.memoryEvents && after.tension === before.tension && after.memoryHeadDigest === before.memoryHeadDigest && after.queue === before.queue && after.admissionRule === before.admissionRule;
+  const carry = after.zone === before.zone && after.memoryEvents === before.memoryEvents && after.tension === before.tension && after.memoryHeadDigest === before.memoryHeadDigest && after.queue === before.queue && after.admissionRule === (admission ?? before.admissionRule);
   return {
     record: { ...record, state: rt.exportState() },
     metrics: {
@@ -20702,6 +20777,41 @@ function setWarpThreshold(record, theta, nowIso, writerId) {
     throw new Error("Warp threshold change did not carry her state across: " + JSON.stringify({ b, a }));
   const next = { ...record, state, writerId, revision: (Number(record.revision) || 0) + 1, updatedAt: nowIso };
   return { record: next, before: b, after: a, step: before.getSnapshots().at(-1)?.step ?? Number(record.state.stepCount) };
+}
+// src/cloud/admissionRule.ts
+var ADMISSION_RULES2 = ["fixed-0.72", "relative-v1", "outside-lane-v1"];
+var probe4 = (rt) => {
+  const st = rt.exportState();
+  return {
+    zone: rt.getCurrentZone(),
+    tension: st.governorState?.deformationTension,
+    memoryEvents: rt.getMemory().getEvents().length,
+    lastEventDigest: rt.getMemory().getEvents().at(-1)?.eventDigest ?? null,
+    queue: st.deferredEncounters?.length ?? 0,
+    tensionHistory: JSON.stringify(st.tensionHistory ?? []),
+    theta: st.nd1?.theta ?? null,
+    warpIntensity: st.nd1?.warpIntensity ?? null,
+    flights: st.nd1?.flights ?? null,
+    admissionRule: rt.getAdmissionRule()
+  };
+};
+function setAdmissionRuleOf(record, rule, nowIso, writerId) {
+  if (!ADMISSION_RULES2.includes(rule))
+    throw new Error("Unknown admission rule");
+  const before = bornAmeliaOf(savedKind(record.state));
+  before.importState(record.state);
+  const b = probe4(before);
+  const state = { ...record.state, admissionRule: rule };
+  const after = bornAmeliaOf(savedKind(state));
+  after.importState(state);
+  const a = probe4(after);
+  const carried = ["zone", "tension", "memoryEvents", "lastEventDigest", "queue", "tensionHistory", "theta", "warpIntensity", "flights"].every((k) => a[k] === b[k]);
+  if (!carried || a.admissionRule !== rule)
+    throw new Error("Admission rule change did not carry her state across: " + JSON.stringify({ b, a }));
+  const { tensionHistory: _bt, ...bOut } = b;
+  const { tensionHistory: _at, ...aOut } = a;
+  const next = { ...record, state, writerId, revision: (Number(record.revision) || 0) + 1, updatedAt: nowIso };
+  return { record: next, before: bOut, after: aOut, step: before.getSnapshots().at(-1)?.step ?? Number(record.state.stepCount) };
 }
 // src/cloud/memoryArchive.ts
 var ARCHIVE_SCHEMA = "amelia.memory-archive/v1";
@@ -20858,7 +20968,7 @@ function wt3lBegin(start, run, unit, arm, nowIso) {
   };
   return { record, metrics };
 }
-function wt3lChunk(scratch, ticks, nTicks, idFn = wt3lId) {
+function wt3lChunk(scratch, ticks, nTicks, idFn = wt3lId, make = bornAmeliaOf) {
   const record = scratch.record;
   const m = {
     ...scratch.metrics,
@@ -20869,7 +20979,7 @@ function wt3lChunk(scratch, ticks, nTicks, idFn = wt3lId) {
   };
   if (!ticks.length)
     throw new Error("WT-3L: a window with no ticks");
-  const rt = bornAmeliaOf(savedKind(record.state));
+  const rt = make(savedKind(record.state));
   rt.importState(record.state);
   if (!record.state.admissionRule)
     rt.setAdmissionRule("relative-v1");
@@ -20889,6 +20999,8 @@ function wt3lChunk(scratch, ticks, nTicks, idFn = wt3lId) {
   let field = restoreLiveField(record.fieldCheckpoint, rt);
   m.exits = { flight: 0, warpborn: 0, preexisting: 0, ...m.exits ?? {} };
   m.exitLog = [...m.exitLog ?? []];
+  m.entries = { choice: 0, flow: 0, ...m.entries ?? {} };
+  m.flowSteps = m.flowSteps ?? 0;
   const flights = () => Number(rt.getNDStatus?.().flights ?? 0);
   const gateTable = () => rt.qabbala?.getGates?.() ?? [];
   let before = { zone: rt.getCurrentZone(), flights: flights(), events: rt.getMemory().getEvents().length };
@@ -20901,6 +21013,17 @@ function wt3lChunk(scratch, ticks, nTicks, idFn = wt3lId) {
         m.admitted++;
     const ev = rt.getMemory().getEvents(), fl = flights();
     const firstTarget = ev.length > before.events ? Number(ev[before.events]?.targetZone) : zone;
+    {
+      let prev = before.zone;
+      for (let i = before.events;i < ev.length; i++) {
+        const t = Number(ev[i]?.targetZone);
+        if (!WARP4.has(prev) && WARP4.has(t))
+          m.entries[i === before.events ? "choice" : "flow"]++;
+        prev = t;
+      }
+      if (ev.length - before.events > 1)
+        m.flowSteps = (m.flowSteps ?? 0) + 1;
+    }
     const isFlight = fl > before.flights;
     if (isFlight)
       m.landings.push(firstTarget);
@@ -20986,6 +21109,11 @@ function wt3lSummary(m) {
     offered: m.offered,
     admitted: m.admitted,
     flowHops: m.flowHops,
+    E: m.entries ? (m.entries.choice + m.entries.flow) / n * 1000 : null,
+    E_choice: m.entries ? m.entries.choice / n * 1000 : null,
+    E_flow: m.entries ? m.entries.flow / n * 1000 : null,
+    entries: m.entries ?? null,
+    flowShare: m.flowSteps != null ? m.flowSteps / n : null,
     warpExits: m.exits ?? null,
     warpbornAtStart: m.warpbornAtStart ?? null,
     warpbornAtEnd: m.warpbornGates?.length ?? null,
@@ -21006,6 +21134,7 @@ function signFlip(d) {
   return { mean: d.reduce((a, b) => a + b, 0) / n, p: extreme / (1 << n), patterns: 1 << n };
 }
 export {
+  ADMISSION_RULES2 as ADMISSION_RULES,
   ARCHIVE_KEEP,
   ARCHIVE_THRESHOLD,
   CLOUD_WRITER_ID,
@@ -21016,6 +21145,7 @@ export {
   dryRunRoundTrip,
   planArchive,
   savedKind,
+  setAdmissionRuleOf,
   setWarpThreshold,
   signFlip,
   verifyArchive,

@@ -12,7 +12,7 @@
 
 **Log.** `public.amelia_cloud_runner_log`.
 
-**Admission.** The relative rule (`relative-v1`, GATE-1).
+**Admission.** Her saved rule: `outside-lane-v1` (GATE-2L, 16 Nov 2026), the Outside's own lane over the relative rule; `relative-v1` (GATE-1) and `fixed-0.72` remain selectable with `set-admission` while she is paused.
 
 **Rebuild the bundles.**
 - `bun build src/cloud/cloudEntry.ts --target=browser --format=esm --outfile=cloud/amelia_tick.js`

@@ -83,8 +83,31 @@ type RuntimeInternals = {
 
 /** Admission rules. 'fixed-0.72' is the original. 'relative-v1' (operator's choice, 10 Nov 2026) also admits an
  * encounter when the Governor's tension is below its own mean over the previous 48 steps: calmer than usual for her. */
-export type AdmissionRule = 'fixed-0.72' | 'relative-v1';
+export type AdmissionRule = 'fixed-0.72' | 'relative-v1' | 'outside-lane-v1';
 export const RELATIVE_WINDOW = 48;
+const ADMISSION_RULES: readonly AdmissionRule[] = ['fixed-0.72', 'relative-v1', 'outside-lane-v1'];
+
+/** 'outside-lane-v1' (GATE-2L, experiments/live-amelia/gate2l/, adopted by the operator 16 Nov 2026): the Outside (every
+ * channel but her body's field observation) has its own lane. Unless her load is excessive, an Outside encounter is admitted
+ * on arrival (or, if one is already waiting, the oldest waiting one is, first in first out), taking the step's one admission;
+ * otherwise, and for everything else, the standard balance of relative-v1 applies unchanged. Her load is excessive when her
+ * Governor is in locked recovery, when her tension is at or above her own 48-step mean plus one standard deviation
+ * (strained), when the queue holds 16 or more (crowded), or when she has fewer than 48 steps of tension history. */
+export const OUTSIDE_LANE = { SD: 1, CROWDED: 16 } as const;
+export function outsideLaneLoad(governor: CognitiveGovernor, history: number[], queueLength: number) {
+  const tel = governor.getTelemetry();
+  const locked = tel.governorStatus === 'LOCKED_RECOVERY' || tel.antiLockIntegrity < 85;
+  const short = history.length < RELATIVE_WINDOW;
+  let strained = false;
+  if (!short) {
+    const w = history.slice(-RELATIVE_WINDOW), m = w.reduce((a, b) => a + b, 0) / w.length;
+    const sd = Math.sqrt(w.reduce((a, b) => a + (b - m) ** 2, 0) / w.length);
+    strained = tel.deformationFieldTension >= m + OUTSIDE_LANE.SD * sd;
+  }
+  const crowded = queueLength >= OUTSIDE_LANE.CROWDED;
+  return { locked, strained, crowded, short, excessive: locked || strained || crowded || short };
+}
+const isOutsideChannel = (e: SubstrateEncounterInput | undefined) => !!e && e.channel !== 'SYNTHETIC_FIELD';
 export function decideEncounterRelative(governor: CognitiveGovernor, input: SubstrateEncounterInput, history: number[]):
   { disposition: EncounterDisposition; reason: string } {
   const base = decideEncounter(governor, input);
@@ -109,7 +132,7 @@ export class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
   public setAdmissionRule(rule: AdmissionRule): void { this.admissionRule = rule; }
   public getAdmissionRule(): AdmissionRule { return this.admissionRule; }
   private decide(governor: CognitiveGovernor, input: SubstrateEncounterInput) {
-    return this.admissionRule === 'relative-v1'
+    return this.admissionRule === 'relative-v1' || this.admissionRule === 'outside-lane-v1'
       ? decideEncounterRelative(governor, input, this.tensionHistory) : decideEncounter(governor, input);
   }
 
@@ -123,6 +146,8 @@ export class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
    * (fixed-0.72 or relative-v1); only the latest field observation is kept waiting; the queue holds 32. */
   protected gateEncounters(governor: CognitiveGovernor, encounter?: SubstrateEncounterInput):
     { attended: SubstrateEncounterInput | undefined; encounterDecisions: EncounterDecisionTrace[] } {
+    if (this.admissionRule === 'outside-lane-v1' && !outsideLaneLoad(governor, this.tensionHistory, this.deferredEncounters.length).excessive)
+      return this.gateOutsideLane(governor, encounter);
     const encounterDecisions: EncounterDecisionTrace[] = [];
     let attended: SubstrateEncounterInput | undefined;
     if (this.deferredEncounters.length > 0) {
@@ -163,6 +188,48 @@ export class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
         }
       }
       encounterDecisions.push({ ...encounter, ...decision, applied: decision.disposition === 'ATTEND' });
+    }
+    return { attended, encounterDecisions };
+  }
+
+  /** OUTSIDE-LANE, when her load is not excessive (GATE-2L; identical to the research copy it was tested as). */
+  private gateOutsideLane(governor: CognitiveGovernor, encounter?: SubstrateEncounterInput):
+    { attended: SubstrateEncounterInput | undefined; encounterDecisions: EncounterDecisionTrace[] } {
+    const q = this.deferredEncounters; const encounterDecisions: EncounterDecisionTrace[] = [];
+    let attended: SubstrateEncounterInput | undefined;
+    const oi = q.findIndex(isOutsideChannel);
+    if (oi >= 0) {
+      const pending = q.splice(oi, 1)[0]; attended = pending;
+      encounterDecisions.push({ ...pending, disposition: 'ATTEND', reason: 'Outside lane: waiting Outside encounter admitted; load not excessive.', applied: true });
+    } else if (isOutsideChannel(encounter) && this.decide(governor, encounter!).disposition !== 'REFUSE') {
+      attended = encounter;
+      if (q.length) encounterDecisions.push({ ...q[0], disposition: 'DEFER',
+        reason: 'Outside lane: an arriving Outside encounter took this step\'s admission; this encounter remains queued.', applied: false });
+    } else if (q.length) {
+      const pending = q[0]; const d = this.decide(governor, pending);
+      if (d.disposition === 'ATTEND') { attended = q.shift();
+        encounterDecisions.push({ ...pending, disposition: 'ATTEND', reason: 'Previously deferred encounter admitted after Governor recovery.', applied: true }); }
+      else encounterDecisions.push({ ...pending, ...d, applied: false });
+    }
+    if (encounter) {
+      if (encounter === attended) encounterDecisions.push({ ...encounter, disposition: 'ATTEND', reason: 'Outside lane: admitted on arrival; load not excessive.', applied: true });
+      else {
+        let decision = this.decide(governor, encounter);
+        if (decision.disposition === 'ATTEND' && attended) decision = { disposition: 'DEFER',
+          reason: 'An earlier deferred encounter was attended on this step; this encounter remains queued.' };
+        if (decision.disposition === 'ATTEND') attended = encounter;
+        else if (decision.disposition === 'DEFER') {
+          const fieldIndex = encounter.channel === 'SYNTHETIC_FIELD' ? this.deferredEncounters.findIndex(item => item.channel === 'SYNTHETIC_FIELD') : -1;
+          if (fieldIndex >= 0) {
+            this.deferredEncounters[fieldIndex] = encounter;
+            this.deferredEncounters = this.deferredEncounters.filter((item, i) => item.channel !== 'SYNTHETIC_FIELD' || i === fieldIndex);
+            decision = { disposition: 'DEFER', reason: decision.reason +
+              ' Latest field observation replaces the older pending field observation; both decisions remain in PFM.' };
+          } else if (this.deferredEncounters.length < 32) this.deferredEncounters.push(encounter);
+          else decision = { disposition: 'REFUSE', reason: 'Governor deferral queue is full; encounter retained in PFM but not queued.' };
+        }
+        encounterDecisions.push({ ...encounter, ...decision, applied: decision.disposition === 'ATTEND' });
+      }
     }
     return { attended, encounterDecisions };
   }
@@ -288,7 +355,7 @@ export class AmeliaOutsideRuntime extends AmeliaNumogramSubstrateRuntime {
   public override importState(state: Record<string, unknown>): void {
     super.importState(state);
     if (state && Array.isArray(state.deferredEncounters)) this.deferredEncounters = JSON.parse(JSON.stringify(state.deferredEncounters));
-    if (state?.admissionRule === 'relative-v1' || state?.admissionRule === 'fixed-0.72') this.admissionRule = state.admissionRule;
+    if (ADMISSION_RULES.includes(state?.admissionRule as AdmissionRule)) this.admissionRule = state.admissionRule as AdmissionRule;
     if (state?.memoryArchive && typeof state.memoryArchive === 'object') this.memoryArchive = JSON.parse(JSON.stringify(state.memoryArchive));
     if (Array.isArray(state?.tensionHistory)) this.tensionHistory = (state.tensionHistory as unknown[])
       .filter((v): v is number => typeof v === 'number' && Number.isFinite(v)).slice(-RELATIVE_WINDOW);

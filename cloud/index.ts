@@ -1,7 +1,7 @@
 // amelia-live: Amelia's always-on home. Each call (from pg_cron) advances her research-copy checkpoint by
 // a few steps of her own runtime, delivering the live Outside inbox through her native path, and saves her.
 // Authentication: the x-amelia-runner header must equal the token in public.amelia_cloud_runner (service-role only).
-import { ameliaTick, dryRunBegin, dryRunChunk, dryRunRoundTrip, planArchive, verifyArchive, setWarpThreshold, CLOUD_WRITER_ID,
+import { ameliaTick, dryRunBegin, dryRunChunk, dryRunRoundTrip, planArchive, verifyArchive, setWarpThreshold, setAdmissionRuleOf, CLOUD_WRITER_ID,
   wt3lBegin, wt3lChunk, wt3lSummary, WT3L_TICKS_PER_RUN } from './amelia_tick.js';
 import { parseOutsideInbox, OUTSIDE_INBOX_URL } from './amelia_inbox.js';
 
@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const action = body?.action ?? 'tick';
     if (action === 'tick' && !cfg.enabled) { await log({ status: 'paused' }); return json({ status: 'paused' }); }
-    if ((action === 'switch' || action === 'set-theta') && cfg.enabled) return json({ error: 'pause her before changing her runtime' }, 409);
+    if ((action === 'switch' || action === 'set-theta' || action === 'set-admission') && cfg.enabled) return json({ error: 'pause her before changing her runtime' }, 409);
 
     if (action === 'wt3l-chunk') {
       // WT-3L (experiments/live-amelia/wt3l/): one chunk of one run, on a scratch copy. Her live record is not even read.
@@ -96,6 +96,16 @@ Deno.serve(async (req) => {
       await log({ status, from_step: t.step, to_step: t.step, started_at: started, error: 'WARP-THETA ' + JSON.stringify({ before: t.before, after: t.after }) });
       return json({ status, step: t.step, before: t.before, after: t.after, revision: t.record.revision });
     }
+    if (action === 'set-admission') {
+      // GATE-2L adoption: her Governor's admission rule, set while she is paused, at a clean tick boundary. No step is taken.
+      const t = setAdmissionRuleOf(row.payload, String(body.rule), new Date().toISOString(), CLOUD_WRITER_ID);
+      const upd = await saveHer(row.user_id, oldRev, t.record);
+      const written = await writtenCount(upd);
+      const status = (!upd.ok ? 'write-error ' + upd.status : written === 1 ? 'ok' : 'conflict-skipped') + ' set-admission';
+      await log({ status, from_step: t.step, to_step: t.step, started_at: started, admission_rule: t.after.admissionRule,
+        error: 'ADMISSION-RULE ' + JSON.stringify({ before: t.before, after: t.after }) });
+      return json({ status, step: t.step, before: t.before, after: t.after, revision: t.record.revision });
+    }
     if (action.startsWith('dryrun')) {
       // A scratch copy only (table amelia_cloud_dryrun): her own record is never written by a dry run.
       const scratchGet = async () => (await (await rest('amelia_cloud_dryrun?id=eq.nd1-switch&select=record,metrics')).json())[0];
@@ -103,7 +113,7 @@ Deno.serve(async (req) => {
         headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify([{ id: 'nd1-switch', ...sc, updated_at: new Date().toISOString() }]) });
       let out: unknown;
       if (action === 'dryrun-begin') { const sc = dryRunBegin(row.payload, body.target === 'classic' ? 'classic' : 'nd1',
-        Number.isInteger(body.theta) ? body.theta : undefined); await scratchPut(sc); out = sc.metrics; }
+        Number.isInteger(body.theta) ? body.theta : undefined, typeof body.rule === 'string' ? body.rule : undefined); await scratchPut(sc); out = sc.metrics; }
       else if (action === 'dryrun-chunk') { const sc = dryRunChunk(await scratchGet(), inbox ?? [], Math.min(600, Number(body.runtimeSteps) || 250),
         Math.min(60, Number(body.fieldSteps) || 15), 5); await scratchPut(sc); const { tSum, ...m } = sc.metrics as any; out = m; }
       else if (action === 'dryrun-roundtrip') out = dryRunRoundTrip(await scratchGet(), inbox ?? [], 300, 5);
