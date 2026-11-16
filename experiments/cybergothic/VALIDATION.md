@@ -258,3 +258,36 @@ checked for integrity only. The assemblage source now present has not yet been r
 
 R7 adds one observation to the paper's theme: forcing the founder's silent graft to execute cost survival
 (+10.4 pp for the natural, silent version), the same signature as R6's forced-active arm. It was exploratory in R7.
+
+## 12. CAN-2: R1, R2, R3 and R7 on fresh seeds and on the canonical Numogram (`can2/`)
+Registered and sealed under RFC 3161 before any data (`can2/REGISTRATION.md`; sealed 2026-11-16 10:23:28 UTC, 59 source
+files; result commit `690e941e`). Each study ran twice on the same new seeds: **A**, the prototype's hybrid topology (a
+fresh replication), and **B**, the canonical CCRU Numogram. Before the runs, hybrid mode reproduced shipped records of R1,
+R2, R3 and R7 exactly (`can2/result/EQUIVALENCE.txt`).
+
+| Registered test | Original | A: hybrid, fresh seeds | B: canonical |
+|---|---|---|---|
+| R1 first-action uptake, experienced − pointer (97.5%) | +0.00564 (+0.00108 to +0.01034) | +0.00691 (+0.00275 to +0.01119) **HOLDS** | +0.00238 (−0.00124 to +0.00588) **DOES NOT HOLD** |
+| R1 experienced − shuffled (97.5%) | +0.00683 (+0.00272 to +0.01098) | +0.00430 (+0.00103 to +0.00772) **HOLDS** | +0.00211 (−0.00105 to +0.00532) **DOES NOT HOLD** |
+| R2 any intact copy at 24, echo − natural (97.5%) | +31.3 pp (+22.4 to +40.6) | +30.1 (+22.2 to +37.9) **HOLDS** | +25.1 (+16.0 to +33.9) **HOLDS** |
+| R3 uptake, zone − open (98.33%; predicted below 0) | −0.0820 (−0.1603 to −0.0070) | −0.0211 (−0.0779 to +0.0342) **DOES NOT HOLD** | −0.0385 (−0.1155 to +0.0418) **DOES NOT HOLD** |
+| **R7 founder survival, natural − forced-active (95%; confirmatory here)** | +10.4 pp (+3.2 to +17.6), exploratory | **+12.4 (+5.6 to +19.2) HOLDS** | **+13.2 (+6.0 to +20.4) HOLDS** |
+
+**Reported, not criteria.**
+- R2 uptake, experienced − shuffled echo: original +0.019 (null); A −0.010 (−0.069 to +0.050); B +0.059 (+0.004 to +0.115).
+- R3 zone − rotated and zone − zone/shuffled: null in A and B, as in the original.
+- R7 natural − ruptured `09→08`: original +5.6 (−1.2 to +12.4); A +7.6 (+1.2 to +14.0); B +6.8 (−0.4 to +14.0).
+- R7 founder survival, natural / forced-active of 250: A 180 / 149; B 170 / 137.
+- R7 horizontal transfer stayed rare: A 1 delivery (1 host, 1 population); B 2 (2 hosts, 2 populations). `cohort_analysis.py`'s
+  own primary contrasts were null in A and B, as in the original.
+- Sizes: R1 475 / 459 encounters; R2 237 / 233; R3 238 / 236; R7 250 populations from 353 / 341 screened.
+
+**Reading.**
+- **R7, the silence signature, holds in both parts.** Forcing a silent graft to execute costs its founder about 12–13 points
+  of survival, on new populations and on the canonical Numogram. It was exploratory; it is now a registered,
+  corroborated result.
+- **R2's engineered maintenance holds in both.** Re-inserting a fragment keeps an ordered copy available.
+- **R1 holds in A only.** The small first-action benefit of experienced code replicates on fresh seeds, but not on the
+  canonical topology: it depends on the prototype's zone sets.
+- **R3 holds in neither.** The promoter's uptake penalty did not replicate even on the prototype's own topology. It should be
+  treated as not established.
