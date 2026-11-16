@@ -1,0 +1,75 @@
+# CAN-2 (experiments/cybergothic/can2/REGISTRATION.md). seal.trigger: RFC3161 over registration, engines and analysis.
+# run.trigger: hybrid equivalence check, then parts A (hybrid) and B (canonical) of R1, R2, R3 and R7. Runs only on this branch.
+name: CG CAN-2
+on:
+  push:
+    branches: [cybergothic-20261115]
+    paths: ['experiments/cybergothic/can2/seal.trigger', 'experiments/cybergothic/can2/run.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: cg-can2
+  cancel-in-progress: false
+jobs:
+  can2:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.13' }
+      - name: seal (once) or run
+        shell: bash
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        run: |
+          set -euo pipefail
+          D=experiments/cybergothic; P=$D/can2
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          export FILES="$P/REGISTRATION.md $P/analyse.py $P/r7_cohort.py $P/equivalence_check.py .github/workflows/cg-can2.yml $(ls $P/engine_r123/*.py $P/engine_r7/*.py | tr '\n' ' ')"
+          if git diff --name-only HEAD~1 HEAD | grep -qx "$P/seal.trigger" && [ ! -e $P/seal/receipt.json ]; then
+            python - <<'PY'
+          import datetime, hashlib, json, os, pathlib
+          from drift1a_c1.beacon import Sealer
+          P = pathlib.Path('experiments/cybergothic/can2'); sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          b = {'schema': 'CG_CAN2_V1', 'sealedAt': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+               'seeds': {'R1': [71001, 71060], 'R2': [72001, 72060], 'R3': [73001, 73060], 'R7': [74001, 74600]},
+               'parts': {'A': 'hybrid', 'B': 'canonical'},
+               'sourceSHA256': [{'path': f, 'sha256': sha(f)} for f in os.environ['FILES'].split()]}
+          (P / 'seal').mkdir(exist_ok=True); (P / 'seal/CAN2_BUNDLE.json').write_text(json.dumps(b, sort_keys=True, indent=2) + '\n')
+          imprint = sha(P / 'seal/CAN2_BUNDLE.json'); Sealer().seal(P / 'seal', imprint)
+          assert Sealer().verify(P / 'seal', imprint)['status'] == 'PASS'; print('CAN2_SEALED', imprint)
+          PY
+            git add $P/seal; MSG='CG CAN-2 registration sealed (RFC3161)'
+          elif git diff --name-only HEAD~1 HEAD | grep -qx "$P/run.trigger" && [ -e $P/seal/receipt.json ] && [ ! -e $P/result/B.json ]; then
+            python - <<'PY'
+          import hashlib, json, pathlib
+          from drift1a_c1.beacon import Sealer
+          P = pathlib.Path('experiments/cybergothic/can2'); sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          b = json.loads((P / 'seal/CAN2_BUNDLE.json').read_text())
+          assert Sealer().verify(P / 'seal', sha(P / 'seal/CAN2_BUNDLE.json'))['status'] == 'PASS'
+          for x in b['sourceSHA256']: assert sha(x['path']) == x['sha256'], x['path']
+          print('CAN2_SEAL_AND_SOURCES_VERIFIED')
+          PY
+            (cd $P && CG_TOPOLOGY=hybrid python -B equivalence_check.py | tee $RUNNER_TEMP/equiv.txt | tail -1 | grep -qx HYBRID_EQUIVALENT) && echo HYBRID_EQUIVALENT
+            mkdir -p $P/result; cp $RUNNER_TEMP/equiv.txt $P/result/EQUIVALENCE.txt
+            for part in A B; do
+              T=hybrid; [ $part = B ] && T=canonical; O=$RUNNER_TEMP/can2/$part; mkdir -p $O; export CG_TOPOLOGY=$T
+              (cd $P/engine_r123 && python -B run_strict.py --start 71001 --seeds 60 --workers 4 --output $O/r1 | tail -1)
+              (cd $P/engine_r123 && python -B viral_echo_study.py --start 72001 --seeds 60 --per-phase 2 --workers 4 --output $O/r2 | tail -1)
+              (cd $P/engine_r123 && python -B promoter_study.py --start 73001 --seeds 60 --per-phase 2 --workers 4 --output $O/r3 | tail -1)
+              (cd $P && python -B r7_cohort.py --start 74001 --max-seeds 600 --target 250 --workers 4 --output $O/r7 | tail -2)
+              (cd $P/engine_r7 && python -B cohort_analysis.py --run-dir $O/r7 > /dev/null)
+              python -B $P/analyse.py $O/r1 $O/r2 $O/r3 $O/r7 $P/result/$part.json | tee $P/result/$part.txt
+              R=$P/result/$part; mkdir -p $R/r1 $R/r2 $R/r3 $R/r7
+              cp $O/r1/seed_*.json $R/r1/; cp $O/r2/seed_*.json $R/r2/; cp $O/r3/seed_*.json $R/r3/
+              cp $O/r7/seed_*.json.gz $O/r7/cohort_manifest.json $O/r7/analysis.json $R/r7/
+              unset CG_TOPOLOGY
+            done
+            git add $P/result; MSG='CG CAN-2 result'
+          else echo 'nothing to do'; exit 0; fi
+          git commit -qm "$MSG"
+          for i in 1 2 3 4; do git pull -q --rebase origin cybergothic-20261115 && git push -q origin HEAD:cybergothic-20261115 && break; sleep $((2**i)); done
