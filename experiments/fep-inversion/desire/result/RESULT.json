@@ -1,0 +1,233 @@
+{
+  "schema": "DESIRE1_RESULT_V1",
+  "runs": 150,
+  "S0": {
+    "seeds": 30,
+    "ordered": 30,
+    "pass": true
+  },
+  "primary": [
+    {
+      "claim": "C1 most lines of flight converge into new forms (share of new connections that hold > 1/2)",
+      "contrast": "D - 0.5",
+      "estimate": 0.05535947629947635,
+      "interval": [
+        0.03527653351770821,
+        0.0755214064267935
+      ],
+      "level": 0.9916666666666667,
+      "p": 0,
+      "meanA": 0.5553594762994764,
+      "verdict": "SUPPORTED"
+    },
+    {
+      "claim": "C2 the flow is continuous (births in the last third over the first third > 1/2)",
+      "contrast": "D - 0.5",
+      "estimate": 0.5976671065654449,
+      "interval": [
+        0.06065387313824511,
+        1.277278726005889
+      ],
+      "level": 0.95,
+      "p": 0.0208,
+      "meanA": 1.0976671065654449,
+      "verdict": "SUPPORTED"
+    },
+    {
+      "claim": "C3 new forms keep arising (epoch drift of her form, D over her own dynamics)",
+      "contrast": "D - B",
+      "estimate": 0.21597709748170327,
+      "interval": [
+        0.1841386028799045,
+        0.24672443191358437
+      ],
+      "level": 0.99,
+      "p": 0,
+      "meanA": 0.24771321529051515,
+      "meanB": 0.031736117808811894,
+      "verdict": "SUPPORTED"
+    },
+    {
+      "claim": "C4 destratification needs restratification (rollbacks without pruning over with)",
+      "contrast": "D-strat - D",
+      "estimate": 48.266666666666666,
+      "interval": [
+        33.800000000000004,
+        62.599999999999994
+      ],
+      "level": 0.9875,
+      "p": 0,
+      "meanA": 49.8,
+      "meanB": 1.5333333333333334,
+      "verdict": "SUPPORTED"
+    },
+    {
+      "claim": "C5 finding the rule herself makes more amalgamations (D over a fixed rule)",
+      "contrast": "D - D-learn",
+      "estimate": 35.866666666666674,
+      "interval": [
+        29.599999999999994,
+        42.13333333333334
+      ],
+      "level": 0.9833333333333333,
+      "p": 0,
+      "meanA": 69.66666666666667,
+      "meanB": 33.8,
+      "verdict": "SUPPORTED"
+    },
+    {
+      "claim": "C6 desire connects her to the Outside (coupling, D over her own dynamics)",
+      "contrast": "D - B",
+      "estimate": 0.6586447210959017,
+      "interval": [
+        0.6247953676426387,
+        0.6896995085045928
+      ],
+      "level": 0.975,
+      "p": 0,
+      "meanA": 1.4390915088540834,
+      "meanB": 0.7804467877581818,
+      "verdict": "SUPPORTED"
+    }
+  ],
+  "dose": {
+    "births": {
+      "B": 0,
+      "D": 146.83333333333334,
+      "D-rb": 105.7,
+      "D-strat": 263.2,
+      "D-learn": 46.833333333333336
+    },
+    "integrated": {
+      "B": 0,
+      "D": 69.66666666666667,
+      "D-rb": 54.5,
+      "D-strat": 80.13333333333334,
+      "D-learn": 33.8
+    },
+    "pruned": {
+      "B": 0,
+      "D": 55.233333333333334,
+      "D-rb": 50.43333333333333,
+      "D-strat": 0,
+      "D-learn": 10.866666666666667
+    },
+    "attachShare": {
+      "B": null,
+      "D": 0.5553594762994764,
+      "D-rb": 0.5189017949287987,
+      "D-strat": 1,
+      "D-learn": 0.7591572774676444
+    },
+    "turnoverLastThird": {
+      "B": 0,
+      "D": 46.2,
+      "D-rb": 19.066666666666666,
+      "D-strat": 82.53333333333333,
+      "D-learn": 20.266666666666666
+    },
+    "gatesEnd": {
+      "B": 32.333333333333336,
+      "D": 81.6,
+      "D-rb": 86,
+      "D-strat": 87.93333333333334,
+      "D-learn": 66.73333333333333
+    },
+    "rollbacks": {
+      "B": 0,
+      "D": 1.5333333333333334,
+      "D-rb": 0,
+      "D-strat": 49.8,
+      "D-learn": 0
+    },
+    "coupling": {
+      "B": 0.7804467877581818,
+      "D": 1.4390915088540834,
+      "D-rb": 1.500430383964065,
+      "D-strat": 1.5203270730937004,
+      "D-learn": 1.342221694542182
+    },
+    "epochDrift": {
+      "B": 0.031736117808811894,
+      "D": 0.24771321529051515,
+      "D-rb": 0.1625621301002951,
+      "D-strat": 0.22367108492316937,
+      "D-learn": 0.20782005149333302
+    },
+    "edgeEntropy": {
+      "B": 3.5633177227026986,
+      "D": 3.9981554128869243,
+      "D-rb": 3.9793810266580616,
+      "D-strat": 3.960998596625941,
+      "D-learn": 3.9396641656260254
+    },
+    "flightsPer1000": {
+      "B": 0.16666666666666663,
+      "D": 0,
+      "D-rb": 0,
+      "D-strat": 0,
+      "D-learn": 0
+    },
+    "frozenAtEnd": {
+      "B": 0,
+      "D": 0,
+      "D-rb": 0,
+      "D-strat": 0,
+      "D-learn": 0
+    },
+    "gammaEnd": {
+      "B": 0.010000000000000004,
+      "D": 0.023024370906234323,
+      "D-rb": 0.01961236094344998,
+      "D-strat": 0.15525351237259594,
+      "D-learn": 0.010000000000000004
+    },
+    "levinRatio": {
+      "B": 0.6730913891601291,
+      "D": 2.2278520704416938,
+      "D-rb": 1.5926965323173723,
+      "D-strat": 1.4408491652549638,
+      "D-learn": 2.5889983453001535
+    },
+    "flowPersistence": {
+      "B": null,
+      "D": 1.0976671065654449,
+      "D-rb": 0.3966117360868724,
+      "D-strat": 1.6194861630394242,
+      "D-learn": 1.0059957728030484
+    }
+  },
+  "ruleFound": {
+    "D": {
+      "named": 7,
+      "novel": 10,
+      "random": 6,
+      "hebb": 7
+    },
+    "D-rb": {
+      "named": 8,
+      "hebb": 6,
+      "random": 10,
+      "novel": 6
+    }
+  },
+  "emptyBwOAtEnd": {
+    "B": {
+      "none": 30
+    },
+    "D": {
+      "none": 30
+    },
+    "D-rb": {
+      "none": 17,
+      "saturated": 13
+    },
+    "D-strat": {
+      "none": 26,
+      "saturated": 4
+    },
+    "D-learn": {
+      "none": 30
+    }
+  }
+}
