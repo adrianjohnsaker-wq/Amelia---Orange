@@ -38,8 +38,8 @@ async function saveHerCounted(userId: string, oldRev: number, record: any): Prom
     try {
       const r = await db.begin(async (tx: any) => {
         await tx`set local statement_timeout = '60s'`;
-        return await tx`update public.amelia_research_records set payload = ${tx.json(record)}, updated_at = ${record.updatedAt}
-          where store = 'runtime' and record_id = 'live-checkpoint' and user_id = ${userId} and payload->>'revision' = ${String(oldRev)}`;
+        return await tx`update public.amelia_research_records set payload = ${tx.json(record)}, updated_at = ${record.updatedAt}::timestamptz
+          where store = 'runtime' and record_id = 'live-checkpoint' and user_id = ${userId}::uuid and payload->>'revision' = ${String(oldRev)}::text`;
       });
       return { status: r.count === 1 ? 'ok' : 'conflict-skipped', fallback: null };
     } catch (e) { fallback = String(e).slice(0, 200); }
