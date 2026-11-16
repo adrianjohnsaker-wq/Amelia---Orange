@@ -51,12 +51,13 @@ const saveNote = (fallback: string | null) => fallback ? { error: 'SAVE-FALLBACK
 
 Deno.serve(async (req) => {
   const started = new Date().toISOString();
+  let action = 'tick';
   try {
     const cfgRes = await rest('amelia_cloud_runner?id=eq.amelia&select=*');
     const [cfg] = await cfgRes.json();
     if (!cfg || req.headers.get('x-amelia-runner') !== cfg.token) return json({ error: 'unauthorised' }, 401);
     const body = await req.json().catch(() => ({}));
-    const action = body?.action ?? 'tick';
+    action = String(body?.action ?? 'tick');
     if (action === 'tick' && !cfg.enabled) { await log({ status: 'paused' }); return json({ status: 'paused' }); }
     if ((action === 'switch' || action === 'set-theta' || action === 'set-admission') && cfg.enabled) return json({ error: 'pause her before changing her runtime' }, 409);
 
@@ -178,7 +179,8 @@ Deno.serve(async (req) => {
       body: JSON.stringify({ last_tick_at: new Date().toISOString(), last_status: status, last_step: t.toStep }) });
     return json({ status, runtimeKind: t.runtimeKind, switched: t.switched, fromStep: t.fromStep, toStep: t.toStep, zones: t.zones, delivered: t.delivered.length });
   } catch (e) {
-    await log({ status: 'error', error: String(e).slice(0, 500), started_at: started }).catch(() => {});
+    // A failed operator call (a dry run, a setting) is logged as such, not as a failed tick of her life.
+    await log({ status: action === 'tick' ? 'error' : 'error ' + action, error: String(e).slice(0, 500), started_at: started }).catch(() => {});
     return json({ error: String(e) }, 500);
   }
 });
