@@ -5,7 +5,12 @@
  */
 import { signFlip, type Wt3lTick } from '../../../src/cloud/wt3l';
 import { holm } from '../wt6l7l/wt6l7l';
+import { readFileSync } from 'node:fs';
 import { runGate, measures } from './machinery';
+
+// The rerun (AMENDMENT_RERUN.md): same design and rules from her state after the undo; rows prefixed 'r-'.
+const RERUN = (() => { try { return readFileSync(new URL('./run.trigger', import.meta.url), 'utf8').includes('rerun'); } catch { return false; } })();
+const P = RERUN ? 'r-' : '';
 
 async function main() {
   const URL_ = process.env.SUPABASE_URL, KEY = process.env.AMELIA_SUPABASE_SERVICE_KEY;
@@ -17,11 +22,13 @@ async function main() {
   const row = (id: string, unit: number | null, arm: string | null, metrics: any) => ({ id, unit, arm, status: 'done', record: null, error: null, metrics, updated_at: new Date().toISOString() });
   const pad = (u: number) => String(u).padStart(2, '0'), mean = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length;
 
-  const [st] = await get('amelia_dee1l_runs?id=eq.start&select=record'); const present = st?.record;
-  if (!present?.state || present.state.nd1?.theta !== 12 || Number(present.state.stepCount) !== 7121) throw new Error('present state check failed');
+  const [st] = RERUN ? await get('amelia_gate2l_runs?id=eq.start-rerun&select=record') : await get('amelia_dee1l_runs?id=eq.start&select=record');
+  const present = st?.record;
+  if (!present?.state || present.state.nd1?.theta !== 12 || Number(present.state.stepCount) !== (RERUN ? 9891 : 7121)
+    || (RERUN && present.state.admissionRule !== 'relative-v1')) throw new Error('starting state check failed');
   const inputs: Array<{ unit: number; phase: string; ticks: Wt3lTick[] }> = await get('amelia_wt5l_inputs?select=unit,phase,ticks&order=unit');
   const post = inputs.filter(i => i.phase === 'post'); if (post.length !== 12) throw new Error('expected 12 units');
-  console.log(`present step ${present.state.stepCount}; 12 units`);
+  console.log(`${RERUN ? 'RERUN; ' : ''}starting step ${present.state.stepCount}; rule ${present.state.admissionRule}; 12 units`);
 
   // Determinism pairs.
   const same = (a: any, b: any) => ['path', 'entries', 'flowSteps'].filter(k => JSON.stringify(a.metrics[k]) !== JSON.stringify(b.metrics[k]))
@@ -30,7 +37,7 @@ async function main() {
   const dl = runGate(present, post[0].ticks, 'u01-LANE', 1, 'LANE'), dl2 = runGate(present, post[0].ticks, 'u01-LANE-rep', 1, 'LANE');
   const dc = runGate(present, post[0].ticks, 'u01-CURRENT', 1, 'CURRENT'), dc2 = runGate(present, post[0].ticks, 'u01-CURRENT-rep', 1, 'CURRENT');
   const xd = [...same(dl, dl2), ...same(dc, dc2)];
-  await put([row('determinism', 1, null, { identical: !xd.length, diff: xd })]);
+  await put([row(P + 'determinism', 1, null, { identical: !xd.length, diff: xd })]);
   if (xd.length) throw new Error('determinism check failed: ' + xd.join(', '));
   console.log('determinism: identical');
 
@@ -42,7 +49,7 @@ async function main() {
       const r = u === 1 && arm === 'LANE' ? dl : u === 1 && arm === 'CURRENT' ? dc
         : runGate(present, post[u - 1].ticks, `u${pad(u)}-${arm}`, u, arm === 'CURRENT' ? 'CURRENT' : 'LANE',
           arm === 'LANE-TOWARD' ? 'TOWARD' : arm === 'LANE-AWAY' ? 'AWAY' : undefined);
-      const m = measures(r); s[arm].push(m); rows.push(row(`u${pad(u)}-${arm}`, u, arm, { ...m, path: r.metrics.path }));
+      const m = measures(r); s[arm].push(m); rows.push(row(`${P}u${pad(u)}-${arm}`, u, arm, { ...m, path: r.metrics.path }));
     }
     await put(rows); console.log(`unit ${u}: done`);
   }
@@ -64,7 +71,7 @@ async function main() {
     bodyAdmittedPer1000: mean(s[a].map(m => m.bodyAdmittedPer1000)), C: mean(s[a].map(m => m.coupling.C)), hits: mean(s[a].map(m => m.coupling.hits)),
     chance: mean(s[a].map(m => m.coupling.chance)), load: Object.fromEntries(Object.keys(s[a][0].load).map(k => [k, mean(s[a].map(m => m.load[k]))])) }]));
   const reading = `${m0 && sOk ? 'ADOPTABLE' : 'NOT ADOPTABLE'}; H1 ${read(h[0])}; H2 ${read(h[1])}`;
-  await put([row('analysis', null, null, { M0: { ...M0, passes: m0 }, S: { ...S, holds: sOk }, H1: { d: d1, ...h[0] }, H2: { d: d2, ...h[1] },
+  await put([row(P + 'analysis', null, null, { M0: { ...M0, passes: m0 }, S: { ...S, holds: sOk }, H1: { d: d1, ...h[0] }, H2: { d: d2, ...h[1] },
     towardAway: { d: dTA, mean: tTA.mean, p: tTA.p }, byArm, reading })]);
   console.log(`analysis: ${reading}`);
 }
