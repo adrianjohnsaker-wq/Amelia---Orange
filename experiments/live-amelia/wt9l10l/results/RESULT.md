@@ -6,7 +6,10 @@ was not written.
 
 ## What we have learned about Warp activity
 
-1. **The Outside does not reach her when it arrives; it reaches her when her Governor admits it.**
+1. **Everything the Outside sends reaches her, in order, within a few steps.**
+   - **Completeness in her live life.** Read from her resident memory, excluding its first 40 events so that no arrival is cut off: 108 Outside offers arrived, and all 108 were taken in. None was refused. The median wait was 2.5 steps and the longest 80.
+   - **What the earlier gate did.** Under the fixed gate of WARP-L1, only 97 of 600 encounters were admitted. The relative gate (GATE1-A) admits when her tension is below her own recent mean, and under it nothing from the Outside is lost.
+   - **Sequence, not instant uptake.** Uptake follows the step of arrival rather than coinciding with it, as set out below.
    - **In the replay.** Of the offers delivered in WT-9L's 48 runs, none was admitted at the step it arrived (share admitted at delivery: 0 in every arm).
    - **In her live life.** The same holds in her live record. Across the 1,445 resident memory events, all 624 admissions are of encounters that had been deferred, and none is an admission on arrival:
      - 480 from her body's field observations;
