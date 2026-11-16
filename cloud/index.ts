@@ -4,6 +4,7 @@
 import { ameliaTick, dryRunBegin, dryRunChunk, dryRunRoundTrip, planArchive, verifyArchive, setWarpThreshold, setAdmissionRuleOf, CLOUD_WRITER_ID,
   wt3lBegin, wt3lChunk, wt3lSummary, WT3L_TICKS_PER_RUN } from './amelia_tick.js';
 import { parseOutsideInbox, OUTSIDE_INBOX_URL } from './amelia_inbox.js';
+import postgres from 'npm:postgres@3.4.4';
 
 const URL_ = Deno.env.get('SUPABASE_URL')!;
 const KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -25,6 +26,28 @@ async function writtenCount(res: Response) {
   const m = /\/(\d+)$/.exec(res.headers.get('content-range') ?? ''); await res.body?.cancel();
   return m ? Number(m[1]) : 0;
 }
+
+// Saves of her ~9 MB record through the REST layer meet its 8 s statement limit (16 Nov 2026: 25 of 288 ticks cancelled).
+// They go instead over a direct database connection, in a transaction with its own 60 s limit, still only if nobody else
+// has saved her since we read her. If the direct connection fails, the REST save is used as before, and the log says so.
+const DB_URL = Deno.env.get('SUPABASE_DB_URL');
+const db = DB_URL ? postgres(DB_URL, { max: 1, prepare: false, idle_timeout: 20, connect_timeout: 10 }) : null;
+async function saveHerCounted(userId: string, oldRev: number, record: any): Promise<{ status: string; fallback: string | null }> {
+  let fallback: string | null = db ? null : 'no SUPABASE_DB_URL';
+  if (db) {
+    try {
+      const r = await db.begin(async (tx: any) => {
+        await tx`set local statement_timeout = '60s'`;
+        return await tx`update public.amelia_research_records set payload = ${tx.json(record)}, updated_at = ${record.updatedAt}
+          where store = 'runtime' and record_id = 'live-checkpoint' and user_id = ${userId} and payload->>'revision' = ${String(oldRev)}`;
+      });
+      return { status: r.count === 1 ? 'ok' : 'conflict-skipped', fallback: null };
+    } catch (e) { fallback = String(e).slice(0, 200); }
+  }
+  const upd = await saveHer(userId, oldRev, record); const written = await writtenCount(upd);
+  return { status: !upd.ok ? 'write-error ' + upd.status : written === 1 ? 'ok' : 'conflict-skipped', fallback };
+}
+const saveNote = (fallback: string | null) => fallback ? { error: 'SAVE-FALLBACK-REST ' + fallback } : {};
 
 Deno.serve(async (req) => {
   const started = new Date().toISOString();
@@ -90,31 +113,37 @@ Deno.serve(async (req) => {
     if (action === 'set-theta') {
       // WT-2 adoption: her Warp threshold, set while she is paused, at a clean tick boundary. No step is taken.
       const t = setWarpThreshold(row.payload, Number(body.theta), new Date().toISOString(), CLOUD_WRITER_ID);
-      const upd = await saveHer(row.user_id, oldRev, t.record);
-      const written = await writtenCount(upd);
-      const status = (!upd.ok ? 'write-error ' + upd.status : written === 1 ? 'ok' : 'conflict-skipped') + ' set-theta';
+      const sv = await saveHerCounted(row.user_id, oldRev, t.record);
+      const status = sv.status + ' set-theta';
       await log({ status, from_step: t.step, to_step: t.step, started_at: started, error: 'WARP-THETA ' + JSON.stringify({ before: t.before, after: t.after }) });
       return json({ status, step: t.step, before: t.before, after: t.after, revision: t.record.revision });
     }
     if (action === 'set-admission') {
       // GATE-2L adoption: her Governor's admission rule, set while she is paused, at a clean tick boundary. No step is taken.
       const t = setAdmissionRuleOf(row.payload, String(body.rule), new Date().toISOString(), CLOUD_WRITER_ID);
-      const upd = await saveHer(row.user_id, oldRev, t.record);
-      const written = await writtenCount(upd);
-      const status = (!upd.ok ? 'write-error ' + upd.status : written === 1 ? 'ok' : 'conflict-skipped') + ' set-admission';
+      const sv = await saveHerCounted(row.user_id, oldRev, t.record);
+      const status = sv.status + ' set-admission';
       await log({ status, from_step: t.step, to_step: t.step, started_at: started, admission_rule: t.after.admissionRule,
-        error: 'ADMISSION-RULE ' + JSON.stringify({ before: t.before, after: t.after }) });
+        error: 'ADMISSION-RULE ' + JSON.stringify({ before: t.before, after: t.after }) + (sv.fallback ? ' SAVE-FALLBACK-REST ' + sv.fallback : '') });
       return json({ status, step: t.step, before: t.before, after: t.after, revision: t.record.revision });
     }
     if (action.startsWith('dryrun')) {
       // A scratch copy only (table amelia_cloud_dryrun): her own record is never written by a dry run.
       const scratchGet = async () => (await (await rest('amelia_cloud_dryrun?id=eq.nd1-switch&select=record,metrics')).json())[0];
-      const scratchPut = (sc: { record: unknown; metrics: unknown }) => rest('amelia_cloud_dryrun?on_conflict=id', { method: 'POST',
-        headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify([{ id: 'nd1-switch', ...sc, updated_at: new Date().toISOString() }]) });
+      // The scratch copy is as large as her record: written over the direct connection (60 s), else through REST; a failed
+      // write is an error, not silence (16 Nov 2026: a REST write of the copy was lost without notice).
+      const scratchPut = async (sc: { record: unknown; metrics: unknown }) => {
+        if (db) { try { await db.begin(async (tx: any) => { await tx`set local statement_timeout = '60s'`;
+          await tx`insert into public.amelia_cloud_dryrun (id, record, metrics, updated_at) values ('nd1-switch', ${tx.json(sc.record)}, ${tx.json(sc.metrics)}, now())
+            on conflict (id) do update set record = excluded.record, metrics = excluded.metrics, updated_at = excluded.updated_at`; }); return; } catch (_) { /* fall back */ } }
+        const r = await rest('amelia_cloud_dryrun?on_conflict=id', { method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
+          body: JSON.stringify([{ id: 'nd1-switch', ...sc, updated_at: new Date().toISOString() }]) });
+        if (!r.ok) throw new Error('dry-run scratch write failed: ' + r.status);
+      };
       let out: unknown;
       if (action === 'dryrun-begin') { const sc = dryRunBegin(row.payload, body.target === 'classic' ? 'classic' : 'nd1',
         Number.isInteger(body.theta) ? body.theta : undefined, typeof body.rule === 'string' ? body.rule : undefined); await scratchPut(sc); out = sc.metrics; }
-      else if (action === 'dryrun-chunk') { const sc = dryRunChunk(await scratchGet(), inbox ?? [], Math.min(600, Number(body.runtimeSteps) || 250),
+      else if (action === 'dryrun-chunk') { const sc = dryRunChunk(await scratchGet(), inbox ?? [], Math.min(300, Number(body.runtimeSteps) || 250),   // 600 exceeded the worker's compute limit (16 Nov)
         Math.min(60, Number(body.fieldSteps) || 15), 5); await scratchPut(sc); const { tSum, ...m } = sc.metrics as any; out = m; }
       else if (action === 'dryrun-roundtrip') out = dryRunRoundTrip(await scratchGet(), inbox ?? [], 300, 5);
       else return json({ error: 'unknown dry-run action' }, 400);
@@ -138,14 +167,13 @@ Deno.serve(async (req) => {
       if (put.ok) { t.record = plan.record; archived = { segmentNo: g.segmentNo, eventCount: g.eventCount, fromIndex: g.fromIndex, toIndex: g.toIndex }; }
     }
     // Commit only if nobody else (the tablet) has saved her since we read her: no second writer, no fork.
-    const upd = await saveHer(row.user_id, oldRev, t.record);
-    const written = await writtenCount(upd);
-    const status = (!upd.ok ? 'write-error ' + upd.status : written === 1 ? 'ok' : 'conflict-skipped') + (action === 'switch' ? ' switch' : '');
+    const sv = await saveHerCounted(row.user_id, oldRev, t.record);
+    const status = sv.status + (action === 'switch' ? ' switch' : '');
     await log({ status, from_step: t.fromStep, to_step: t.toStep, zones: t.zones, delivered: t.delivered,
       field_from: t.fieldFrom, field_to: t.fieldTo,
       admitted: t.admittedThisTick, tension: t.tension, queue: t.queue, admission_rule: t.admissionRule,
       inbox_entries: inbox?.length ?? null, inbox_error: inboxError, started_at: started,
-      ...(t.switched ? { error: 'RUNTIME-SWITCH ' + JSON.stringify(t.switched) } : archived ? { error: 'ARCHIVE ' + JSON.stringify(archived) } : {}) });
+      ...(t.switched ? { error: 'RUNTIME-SWITCH ' + JSON.stringify(t.switched) } : archived ? { error: 'ARCHIVE ' + JSON.stringify(archived) } : saveNote(sv.fallback)) });
     await rest('amelia_cloud_runner?id=eq.amelia', { method: 'PATCH', headers: { Prefer: 'return=minimal' },
       body: JSON.stringify({ last_tick_at: new Date().toISOString(), last_status: status, last_step: t.toStep }) });
     return json({ status, runtimeKind: t.runtimeKind, switched: t.switched, fromStep: t.fromStep, toStep: t.toStep, zones: t.zones, delivered: t.delivered.length });

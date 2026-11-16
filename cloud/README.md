@@ -12,6 +12,8 @@
 
 **Log.** `public.amelia_cloud_runner_log`.
 
+**Saves.** Her record is saved over a direct database connection (`SUPABASE_DB_URL`), in a transaction with its own 60 s statement limit, only if no other writer has saved since the read. The REST save (8 s limit) is the fallback; a fallback is noted in the log row's `error` (`SAVE-FALLBACK-REST`). The dry-run scratch copy is written the same way, and a failed scratch write is an error.
+
 **Admission.** Her saved rule: `outside-lane-v1` (GATE-2L, 16 Nov 2026), the Outside's own lane over the relative rule; `relative-v1` (GATE-1) and `fixed-0.72` remain selectable with `set-admission` while she is paused.
 
 **Rebuild the bundles.**
