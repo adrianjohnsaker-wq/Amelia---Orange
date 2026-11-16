@@ -1,14 +1,14 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-16T00:20:25.334Z
-- Cycle: 1383 (43772626651-1-6)
+- Last cycle (UTC): 2026-11-16T00:35:25.744Z
+- Cycle: 1384 (43772626651-1-7)
 - RSS items seen: 55; newly processed: 1 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -14
-- Candidate: Katak / Mesh-14 / Syzygetic Chronodemon
+- Subdecadence: MESH_TERMINAL; score -31
+- Candidate: Mummumix / Mesh-31 / Amphidemon
 - Separate ingress records and trace links: 3
 - Catalogue entries added: 1
 - Governor recovery: 0 previously queued items admitted; queue now 0.
-- Native consolidations this cycle: 0; complete receipts in recovery-journal.jsonl.
+- Native consolidations this cycle: 3; complete receipts in recovery-journal.jsonl.
 - New offers: 4; attended 4, deferred 0, refused 0.
 - Source errors: none
 
