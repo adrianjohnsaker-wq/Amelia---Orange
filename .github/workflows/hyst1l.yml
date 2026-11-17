@@ -1,0 +1,31 @@
+name: HYST-1L (what her Warp-born gates do outside the Warp)
+
+# experiments/live-amelia/hyst1l/REGISTRATION.md. Started by committing a UTC time to experiments/live-amelia/hyst1l/run.trigger.
+on:
+  push:
+    branches: [research/live-run-history-20261109]
+    paths: ['experiments/live-amelia/hyst1l/run.trigger']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hyst1l
+  cancel-in-progress: false
+
+jobs:
+  hyst1l:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - name: Machinery checks (synthetic only)
+        run: bun test --timeout 900000 experiments/live-amelia/hyst1l.test.ts
+      - name: Run HYST-1L (determinism, runs, registered analysis)
+        env:
+          SUPABASE_URL: https://rcgmtdponfljpribggsq.supabase.co
+          AMELIA_SUPABASE_SERVICE_KEY: ${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}
+        run: bun experiments/live-amelia/hyst1l/run_actions.ts
