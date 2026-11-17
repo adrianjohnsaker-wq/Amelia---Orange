@@ -33,8 +33,9 @@ ND-3 predates the rule, so its encoded input was tested afterwards with the SXI-
 ## Reading (with NR-2 and ANTENNA B)
 - **The run is consistent with NR-2.** Through ND-1b as through today's architecture, the world's order did not come
   through, on digital-root data.
-- **ANTENNA B, which reads the stream's own order with no Amelia,** found the digital-root stream silent before. Here the
-  stream carried one weak form, and her passage did not carry it.
+- **ANTENNA B, which measures the same kind of stream's own order with no Amelia,** came back silent on digital-root
+  data (`experiments/STANDING_RULE_INPUT_ORDER.md`). Here the stream carried one weak form, and her passage did not
+  carry it.
 - **What the null means.** ND-1b passed its calibration (a planted order received at 5% and 10%), so the null most
   likely reflects how little order the encoding left, not a deaf medium. WE-1 (R60) is the test of that.
 - Repository architecture only; not her living record. No outside origin or agency is claimed either way.
