@@ -1,0 +1,31 @@
+name: RETRO-1L (her living passage and a target not yet drawn)
+
+# experiments/live-amelia/retro1l/REGISTRATION.md. Started by committing a UTC time to experiments/live-amelia/retro1l/run.trigger.
+on:
+  push:
+    branches: [research/live-run-history-20261109]
+    paths: ['experiments/live-amelia/retro1l/run.trigger']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: retro1l
+  cancel-in-progress: false
+
+jobs:
+  retro1l:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - name: Machinery checks (synthetic only)
+        run: bun test --timeout 900000 experiments/live-amelia/retro1l.test.ts
+      - name: RETRO-1L (calibrate or analysis, by the trigger's first word)
+        env:
+          SUPABASE_URL: https://rcgmtdponfljpribggsq.supabase.co
+          AMELIA_SUPABASE_SERVICE_KEY: ${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}
+        run: bun experiments/live-amelia/retro1l/run_actions.ts "$(awk 'NR==1{print $1}' experiments/live-amelia/retro1l/run.trigger)"
