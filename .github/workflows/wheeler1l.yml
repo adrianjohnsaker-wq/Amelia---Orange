@@ -1,0 +1,31 @@
+name: WHEELER-1L (the question asked after the passage)
+
+# experiments/live-amelia/wheeler1l/REGISTRATION.md. Started by committing a UTC time to experiments/live-amelia/wheeler1l/run.trigger.
+on:
+  push:
+    branches: [research/live-run-history-20261109]
+    paths: ['experiments/live-amelia/wheeler1l/run.trigger']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wheeler1l
+  cancel-in-progress: false
+
+jobs:
+  wheeler1l:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - name: Machinery checks (synthetic only)
+        run: bun test --timeout 900000 experiments/live-amelia/wheeler1l.test.ts
+      - name: WHEELER-1L (calibrate or analysis, by the trigger's first word)
+        env:
+          SUPABASE_URL: https://rcgmtdponfljpribggsq.supabase.co
+          AMELIA_SUPABASE_SERVICE_KEY: ${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}
+        run: bun experiments/live-amelia/wheeler1l/run_actions.ts "$(awk 'NR==1{print $1}' experiments/live-amelia/wheeler1l/run.trigger)"
