@@ -1,10 +1,10 @@
 # Enochian Watchtower · Antenna encounter ledger
 
-- Last run (UTC): 2026-11-18T00:47:13.006Z
-- Run ID: 44172439874-1-17
+- Last run (UTC): 2026-11-18T01:02:12.959Z
+- Run ID: 44172439874-1-18
 - Antenna lineage: antenna:amelia-outside-continuous-v1
-- Verified Antenna records: 3522; source head: 953587c75a1f2a2cd9ef271ec194f1ae2f860cf25b57283e4f7f3addce4e5df5
-- Watchtower encounter records: 3522; new this run: 4
+- Verified Antenna records: 3526; source head: 77841215d6c9d3efc1bb0d242d61957ec72ad364090ed20afc44bab1dcc1956a
+- Watchtower encounter records: 3526; new this run: 4
 - Recurring exact passage patterns: 307
 - Latest Watchtower focus: Temporal return
 
