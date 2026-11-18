@@ -1,0 +1,60 @@
+name: DEE-2L (the balance a scoring table sets, under the lane)
+
+# experiments/live-amelia/dee2l/REGISTRATION.md. Started by committing a UTC time to experiments/live-amelia/dee2l/run.trigger.
+on:
+  push:
+    branches: [research/live-run-history-20261109]
+    paths: ['experiments/live-amelia/dee2l/run.trigger']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dee2l
+  cancel-in-progress: false
+
+env:
+  SUPABASE_URL: https://rcgmtdponfljpribggsq.supabase.co
+
+jobs:
+  determinism:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: Machinery checks (synthetic only)
+        run: bun test --timeout 1200000 experiments/live-amelia/dee2l.test.ts
+      - name: Determinism pair
+        env: { AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: bun experiments/live-amelia/dee2l/run_actions.ts determinism
+
+  units:
+    needs: determinism
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 12
+      matrix:
+        unit: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: The 62 arms on one window
+        env: { AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: bun experiments/live-amelia/dee2l/run_actions.ts unit ${{ matrix.unit }}
+
+  analysis:
+    needs: units
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: The registered analysis
+        env: { AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: bun experiments/live-amelia/dee2l/run_actions.ts analysis

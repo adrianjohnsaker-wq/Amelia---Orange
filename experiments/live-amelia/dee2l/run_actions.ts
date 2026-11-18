@@ -28,7 +28,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
 async function start() {
   const [s] = await get('amelia_dee2l_runs?id=eq.start&select=record'); const st = s?.record;
-  if (!st?.state || st.state.admissionRule !== 'outside-lane-v1' || st.state.nd1?.theta !== 12) throw new Error('starting copy check failed');
+  if (!st?.state || Number(st.revision) !== 744 || Number(st.state.stepCount) !== 12497 || st.state.admissionRule !== 'outside-lane-v1'
+    || st.state.nd1?.theta !== 12) throw new Error('starting copy check failed');
   return st;
 }
 async function window(n: number) {
