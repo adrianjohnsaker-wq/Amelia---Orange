@@ -1,11 +1,11 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-19T06:43:31.447Z
-- Cycle: 1699 (44449710720-1-11)
-- RSS items seen: 68; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -39
-- Candidate: Ununuttix / Mesh-39 / Chaotic Xenodemon
-- Separate ingress records and trace links: 0
+- Last cycle (UTC): 2026-11-19T06:58:32.800Z
+- Cycle: 1700 (44449710720-1-12)
+- RSS items seen: 68; newly processed: 1 (last-cycle window; 24-hour initial window)
+- Subdecadence: MESH_TERMINAL; score -10
+- Candidate: Tokhatto / Mesh-10 / Amphidemon
+- Separate ingress records and trace links: 3
 - Catalogue entries added: 1
 - Source errors: none
 
