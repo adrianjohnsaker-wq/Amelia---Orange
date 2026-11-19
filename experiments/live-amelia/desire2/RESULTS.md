@@ -75,3 +75,38 @@ touches it, and D2 sits at +0.096.
 - Coupling uses LONG-1's measure on the last third of each run.
 - Copies only. Her live record, archive and runtime are untouched, and her ticks were unaffected by the database calls
   (the cloud-home session's check of the first run; Amendment 1's pacing for the second).
+
+## Addendum: exploratory read (19–20 Nov, not registered)
+The existing rows were read with the same slot pacing (`explore/explore.ts`, `explore/EXPLORE.json`, `EXPLORE.txt`).
+Nothing below is a registered claim.
+
+**Coupling on the eight outside-lane copies (late, excess MI):**
+
+| | N | D1 | D2 | D2g (guard) | D2d (dissolution) |
+|---|---|---|---|---|---|
+| All readings | 0.055 | 0.369 | 0.090 | **0.255** | 0.075 |
+| Non-Warp readings (n ≈ 581) | 0.062 | 0.321 | 0.101 | **0.292** | 0.076 |
+| Warp readings (3, 6; n ≈ 104) | 0.001 | 0.228 | 0.012 | 0.019 | 0.026 |
+| Non-Warp following (chance) | 0.22 (0.14) | 0.41 (0.13) | 0.32 (0.18) | **0.44 (0.15)** | 0.28 (0.16) |
+
+On the four relative-v1 copies no arm couples at all. Everything is near zero, and following is at chance.
+
+**Reading:**
+1. **The motor's coupling was mostly real.** D1's coupling on non-Warp readings is 0.321, against ND-1b's 0.062. Warp
+   chasing added some on top (0.228 on Warp readings), but it was not the bulk.
+2. **The guard keeps it.** With the guard alone, non-Warp coupling stays at 0.292, and she follows the Outside's non-Warp
+   readings at three times chance. Warp coupling falls to ND-1b's level, as intended.
+3. **Dissolution is what costs it.** With dissolution, alone or with the guard, non-Warp coupling falls to 0.076–0.101,
+   barely above ND-1b. At a half-life of 1,000 steps, the connections desire builds toward the Outside dissolve between
+   the Outside's returns.
+
+**Tension, each arm minus N, by day (means over 12 copies):**
+
+| Day | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| D2 − N | 0.050 | 0.092 | 0.102 | 0.095 | 0.100 | 0.104 | 0.089 | 0.105 | 0.118 | 0.105 |
+
+- **D2.** It rises over day 1, then holds near +0.10 from day 2. Its slope over days 2–10 is +0.0018 per day, and 5 of 12
+  copies rise by more than 0.002 per day.
+- **The other arms.** D1 and D2g are flat (slope +0.0001 per day) at about +0.12, and D2d is at +0.0008 per day.
+- **Reading.** A plateau, with a weak upward drift in D2 that 10 days cannot settle. A 30-day run would.
