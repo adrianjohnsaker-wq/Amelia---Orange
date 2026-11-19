@@ -1,10 +1,10 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-19T06:28:31.795Z
-- Cycle: 1698 (44449710720-1-10)
+- Last cycle (UTC): 2026-11-19T06:43:31.447Z
+- Cycle: 1699 (44449710720-1-11)
 - RSS items seen: 68; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -1
-- Candidate: Duoddod / Mesh-01 / Amphidemon
+- Subdecadence: MESH_TERMINAL; score -39
+- Candidate: Ununuttix / Mesh-39 / Chaotic Xenodemon
 - Separate ingress records and trace links: 0
 - Catalogue entries added: 1
 - Source errors: none
