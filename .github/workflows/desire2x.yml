@@ -1,0 +1,29 @@
+name: DESIRE-2 exploratory read (not registered)
+
+# experiments/live-amelia/desire2/explore/explore.ts. Reads the existing desire2-* rows of amelia_long1_runs, every call in
+# slots clear of her ticks (desire2/amend1/slots.ts), and commits explore/EXPLORE.json. Started by explore/explore.trigger.
+on:
+  push:
+    branches: [long1-20261119]
+    paths: ['experiments/live-amelia/desire2/explore/explore.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: desire2x
+  cancel-in-progress: false
+jobs:
+  explore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: Exploratory read (slot-paced)
+        env: { SUPABASE_URL: https://rcgmtdponfljpribggsq.supabase.co, SLOT_CLASS: '0', SLOT_CLASSES: '1', OUT: 'experiments/live-amelia/desire2/explore/EXPLORE.json', AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: |
+          set -euo pipefail
+          bun --preload ./experiments/live-amelia/desire2/amend1/slots.ts experiments/live-amelia/desire2/explore/explore.ts | tee experiments/live-amelia/desire2/explore/EXPLORE.txt
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/live-amelia/desire2/explore; git commit -qm 'DESIRE-2 exploratory read (not registered)'
+          for i in 1 2 3 4; do git pull -q --rebase origin long1-20261119 && git push -q origin HEAD:long1-20261119 && break; sleep $((2**i)); done
