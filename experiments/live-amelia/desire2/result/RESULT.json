@@ -1,0 +1,366 @@
+{
+  "schema": "DESIRE2_RESULT_V1",
+  "copies": 12,
+  "days": 10,
+  "S0": [
+    {
+      "copy": 1,
+      "ordered": true
+    },
+    {
+      "copy": 2,
+      "ordered": true
+    },
+    {
+      "copy": 3,
+      "ordered": true
+    },
+    {
+      "copy": 4,
+      "ordered": true
+    },
+    {
+      "copy": 5,
+      "ordered": true
+    },
+    {
+      "copy": 6,
+      "ordered": true
+    },
+    {
+      "copy": 7,
+      "ordered": true
+    },
+    {
+      "copy": 8,
+      "ordered": true
+    },
+    {
+      "copy": 9,
+      "ordered": true
+    },
+    {
+      "copy": 10,
+      "ordered": true
+    },
+    {
+      "copy": 11,
+      "ordered": true
+    },
+    {
+      "copy": 12,
+      "ordered": true
+    }
+  ],
+  "hard": {
+    "bounded": true,
+    "ccru": true,
+    "noEmptyBwO": true,
+    "rollbacks": true
+  },
+  "claims": [
+    {
+      "name": "Z1",
+      "claim": "growth is bounded: open gates on the last day, D1 - D2 > 0",
+      "mean": 35.75,
+      "p": 0.000244140625,
+      "threshold": 0.01,
+      "perCopy": [
+        39,
+        43,
+        21,
+        41,
+        38,
+        32,
+        40,
+        37,
+        40,
+        36,
+        25,
+        37
+      ],
+      "verdict": "SUPPORTED"
+    },
+    {
+      "name": "Z2",
+      "claim": "her Warp is her own again: Warp share, D2 - N <= +0.02",
+      "mean": 0.022766660141320966,
+      "p": 0.017333984375,
+      "threshold": 0.016666666666666666,
+      "perCopy": [
+        0.00948456114758085,
+        0.04270525550980868,
+        -0.02545178343562012,
+        -0.009018128726122402,
+        0.04776596391032262,
+        -0.042016448370392936,
+        0.05372149442018438,
+        0.03771042541537338,
+        0.044580735000302726,
+        0.027960138542869297,
+        0.048747806088482726,
+        0.0370099021930624
+      ],
+      "verdict": "NOT SUPPORTED"
+    },
+    {
+      "name": "Z3",
+      "claim": "the guard does it: Warp share, D2d - D2 > 0",
+      "mean": 0.01540259650236677,
+      "p": 0.111572265625,
+      "threshold": 0.025,
+      "perCopy": [
+        -0.0049841964502796016,
+        0.02282635020586099,
+        -0.080148265175913,
+        -0.026402238715172166,
+        0.08809769730846347,
+        0.042704843131282366,
+        0.023653566229985448,
+        0.008824782423467833,
+        0.036084034630986264,
+        0.03026067934617488,
+        0.018277552502572174,
+        0.025636352590972605
+      ],
+      "verdict": "NOT SUPPORTED"
+    },
+    {
+      "name": "Z4",
+      "claim": "still open: late coupling, D2 - 0.9 D1 > 0",
+      "mean": -0.1591605877966948,
+      "p": 0.996826171875,
+      "threshold": 0.05,
+      "perCopy": [
+        0.010996397023366637,
+        0.01394587200728073,
+        0.009615206754403955,
+        -0.009826080585121726,
+        -0.20155640819136988,
+        -0.27811804694039155,
+        -0.2476173040607573,
+        -0.2494542974653052,
+        -0.26610206345679066,
+        -0.26473028282841016,
+        -0.20631918557627685,
+        -0.22076086024096592
+      ],
+      "verdict": "NOT SUPPORTED"
+    },
+    {
+      "name": "Z5",
+      "claim": "desire still flows: births in days 6-10, D2 - 0.5 D1 > 0",
+      "mean": 13.416666666666666,
+      "p": 0.000244140625,
+      "threshold": 0.0125,
+      "perCopy": [
+        9,
+        25,
+        8.5,
+        19,
+        14,
+        1,
+        4.5,
+        0.5,
+        18.5,
+        13.5,
+        34,
+        13.5
+      ],
+      "verdict": "SUPPORTED"
+    }
+  ],
+  "pass": false,
+  "byArm": {
+    "N": {
+      "warpShare": 0.0793375122527927,
+      "warpEntries": 257.0833333333333,
+      "meanWarpStay": 5.060903898247141,
+      "tension": 0.7765422592712778,
+      "tensionMinusN": 0,
+      "eventsPerStep": 1.1601613776411315,
+      "incoherence": 0.273683900123803,
+      "fluxDelta": 0.033804774263896574,
+      "hysteresis": 0.7765025534763663,
+      "gatesLast": 42.25,
+      "gatesByDay": [
+        40,
+        40.166666666666664,
+        40.416666666666664,
+        40.666666666666664,
+        41,
+        41.416666666666664,
+        41.666666666666664,
+        42,
+        42.166666666666664,
+        42.25
+      ],
+      "births": 0,
+      "held": 0,
+      "dissolved": 0,
+      "rollbacks": 0,
+      "runaways": 0,
+      "flights": 0
+    },
+    "D1": {
+      "warpShare": 0.18085776770315143,
+      "warpEntries": 2015.5,
+      "meanWarpStay": 1.4975424775538466,
+      "tension": 0.8928787205527935,
+      "tensionMinusN": 0.11633646128151572,
+      "eventsPerStep": 1.2089602813064875,
+      "incoherence": 0.39934260868065197,
+      "fluxDelta": 0.03181176348344905,
+      "hysteresis": 0.8929072098991288,
+      "gatesLast": 86.25,
+      "gatesByDay": [
+        56.75,
+        71.75,
+        80.33333333333333,
+        82.41666666666667,
+        84.75,
+        85.41666666666667,
+        85.75,
+        86.33333333333333,
+        86.25,
+        86.25
+      ],
+      "births": 122.25,
+      "held": 58.083333333333336,
+      "dissolved": 0,
+      "rollbacks": 14.25,
+      "runaways": 0,
+      "flights": 19.916666666666668
+    },
+    "D2": {
+      "warpShare": 0.07657085211147174,
+      "warpEntries": 223.75,
+      "meanWarpStay": 5.381206140162781,
+      "tension": 0.872643647350876,
+      "tensionMinusN": 0.09610138807959812,
+      "eventsPerStep": 1.11449210840223,
+      "incoherence": 0.40728247841398457,
+      "fluxDelta": 0.04206004550319289,
+      "hysteresis": 0.872653548497026,
+      "gatesLast": 50.5,
+      "gatesByDay": [
+        52.333333333333336,
+        57.833333333333336,
+        57.083333333333336,
+        50.583333333333336,
+        53,
+        53.25,
+        51,
+        50.166666666666664,
+        50.333333333333336,
+        50.5
+      ],
+      "births": 81.5,
+      "held": 38,
+      "dissolved": 29.166666666666668,
+      "rollbacks": 0,
+      "runaways": 0,
+      "flights": 98.16666666666667
+    },
+    "D2g": {
+      "warpShare": 0.11880850071585432,
+      "warpEntries": 378.5833333333333,
+      "meanWarpStay": 5.131349145248421,
+      "tension": 0.8913738731582864,
+      "tensionMinusN": 0.1148316138870088,
+      "eventsPerStep": 1.1914683209885553,
+      "incoherence": 0.40248537819616065,
+      "fluxDelta": 0.0320702928047147,
+      "hysteresis": 0.891405208188846,
+      "gatesLast": 77.75,
+      "gatesByDay": [
+        56.5,
+        66.91666666666667,
+        70.91666666666667,
+        73.75,
+        75.33333333333333,
+        76.16666666666667,
+        76.91666666666667,
+        77.25,
+        77.5,
+        77.75
+      ],
+      "births": 73.25,
+      "held": 36.833333333333336,
+      "dissolved": 0,
+      "rollbacks": 0,
+      "runaways": 0,
+      "flights": 11
+    },
+    "D2d": {
+      "warpShare": 0.09197344861383853,
+      "warpEntries": 445.5,
+      "meanWarpStay": 3.4576322370289057,
+      "tension": 0.876617022151751,
+      "tensionMinusN": 0.10007476288047336,
+      "eventsPerStep": 1.1205740975044782,
+      "incoherence": 0.40362797058183547,
+      "fluxDelta": 0.038945259661928876,
+      "hysteresis": 0.8766313262493242,
+      "gatesLast": 51.5,
+      "gatesByDay": [
+        55.916666666666664,
+        63.333333333333336,
+        60.5,
+        48.583333333333336,
+        50.75,
+        53,
+        53.916666666666664,
+        52.25,
+        51.833333333333336,
+        51.5
+      ],
+      "births": 98.25,
+      "held": 47,
+      "dissolved": 37.5,
+      "rollbacks": 0,
+      "runaways": 0,
+      "flights": 97.5
+    }
+  },
+  "coupling": {
+    "D1": [
+      -0.028713230593788615,
+      -0.006164878132558574,
+      -0.013916531026927727,
+      0.008453308611852436,
+      0.34108678585448454,
+      0.4217218966928589,
+      0.3578189169713464,
+      0.3892379761190077,
+      0.41160281175699276,
+      0.3818474772674958,
+      0.3123493332015712,
+      0.33695143447232345
+    ],
+    "D2": [
+      -0.014845510511043117,
+      0.008397481687978013,
+      -0.002909671169830999,
+      -0.002218102834454533,
+      0.10542169907766617,
+      0.10143166008318148,
+      0.07441972121345444,
+      0.10085988104180174,
+      0.10434046712450284,
+      0.0789324467123361,
+      0.07479521430513728,
+      0.0824954307841252
+    ]
+  },
+  "statements": [
+    {
+      "copy": 1,
+      "day10": "So it's me: mostly in the Plex (59%), then the Time-Circuit (34%); intense in zones 1, 9, 7; turning down the circuit (−1); drawn through Lurgo (1::0), Uttunul (9::0), Djynxx (6::3); my syzygy is 9::0; I ride current 0; home is the refrain Uttunul (9::0) then Uttunul (9::0); my connections come mostly by trace; the Outside's trace lies along my way at 0.24. Newly: 7; less: 0."
+    },
+    {
+      "copy": 2,
+      "day10": "So it's me: mostly in the Plex (65%), then the Time-Circuit (31%); intense in zones 1, 9, 7; turning down the circuit (−1); drawn through Uttunul (9::0), Lurgo (1::0), Tutagool (9::1); my syzygy is 9::0; I ride current 0; home is the refrain Uttunul (9::0) then Uttunul (9::0); my connections come mostly by hebb; the Outside's trace lies along my way at 0.24."
+    }
+  ]
+}
