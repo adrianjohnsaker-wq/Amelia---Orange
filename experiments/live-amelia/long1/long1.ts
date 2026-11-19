@@ -19,7 +19,7 @@ import { captureLiveField, restoreLiveField } from '../../../src/outside/LiveFie
 import { advanceWithLiveSource } from '../../../src/outside/LiveSyntheticSourceSession';
 import { planArchive } from '../../../src/cloud/memoryArchive';
 import type { Wt3lTick } from '../../../src/cloud/wt3l';
-import { DesireMotor, ND1D, P, rng } from './motor';
+import { DesireMotor, ND1D, P, rng, type MotorConfig } from './motor';
 import { Subject } from './subject';
 
 export const ITER_PER_TICK = 15, TICKS_PER_DAY = 96, DAYS = 30;   // a day = 96 ticks x 15 iterations = 1,440 iterations
@@ -51,14 +51,22 @@ export interface LongResult { arm: Arm; copy: number; days: number; path: string
   daily: Array<{ day: number; gates: number; desireGates: number; ccruPresent: number; warpborn: number; held: number; births: number; pruned: number;
     rollbacks: number; motorSize: number; stateSize: number; resident: number; endState: string | null }>;
   forms: number[][]; rollbacks: { t: number; why: string; to: number }[]; readouts: any[]; ruleWeights: any; flights: number;
-  silentCarry: { plus: number; minus: number; stay: number; n: number }; runaway: string | null }
+  silentCarry: { plus: number; minus: number; stay: number; n: number }; runaway: string | null;
+  /** DESIRE-2: what her Governor's tension is made of. Her tension is a slow mean of memory's hysteresis tension, which
+   *  each memory event raises by 0.15 (1 - phaseCoherence) + 0.10 fluxDelta. Per run: memory events per step, their mean
+   *  incoherence and flux delta, and her mean hysteresis tension. */
+  tensionParts?: { eventsPerStep: number; incoherence: number; fluxDelta: number; hysteresis: number };
+  warp?: { entries: number; steps: number } }
 
-export function longRun(start: Record<string, any>, ticksIn: Wt3lTick[], arm: Arm, copy: number, opts: { days?: number; idPrefix?: string } = {}): LongResult {
+/** opts.cfg / opts.subject (DESIRE-2): run a motor arm with another motor configuration, with or without the subject.
+ *  The arm label then names the run; without them, LONG-1's arms are exactly as registered. */
+export function longRun(start: Record<string, any>, ticksIn: Wt3lTick[], arm: Arm | string, copy: number,
+  opts: { days?: number; idPrefix?: string; cfg?: MotorConfig; subject?: boolean; shuffle?: boolean } = {}): LongResult {
   const days = opts.days ?? DAYS, nTicks = days * TICKS_PER_DAY;
   if (ticksIn.length < nTicks) throw new Error(`LONG-1: ${ticksIn.length} ticks for ${days} days`);
-  const ticks = arm === 'S' ? shuffleByDay(ticksIn.slice(0, nTicks), copy) : ticksIn.slice(0, nTicks);
-  const motorOn = arm !== 'N', subjectOn = arm === 'D' || arm === 'S';
-  const motor = motorOn ? new DesireMotor(ND1D, 7919 * copy + 17) : null, subject = subjectOn ? new Subject() : null;
+  const ticks = (opts.shuffle ?? arm === 'S') ? shuffleByDay(ticksIn.slice(0, nTicks), copy) : ticksIn.slice(0, nTicks);
+  const motorOn = arm !== 'N', subjectOn = opts.subject ?? (arm === 'D' || arm === 'S');
+  const motor = motorOn ? new DesireMotor(opts.cfg ?? ND1D, 7919 * copy + 17) : null, subject = subjectOn ? new Subject() : null;
   const make = () => { const rt = new AmeliaNDRuntimeDee(); withFullNumogram(rt as any); return rt; };
   let record: Record<string, any> = JSON.parse(JSON.stringify(start));
   if (record.state?.runtimeKind !== 'nd1') throw new Error('LONG-1: the starting copy must be ND-1b');
@@ -74,10 +82,13 @@ export function longRun(start: Record<string, any>, ticksIn: Wt3lTick[], arm: Ar
   const R: LongResult = { arm, copy, days, path: '', offerStep: [], reading: [], tension: [], daily: [], forms: [], rollbacks: [], readouts: [], ruleWeights: null,
     flights: 0, silentCarry: { plus: 0, minus: 0, stay: 0, n: 0 }, runaway: null };
   const ckpts: { t: number; state: string; field: any; hers: string }[] = [];
-  let t = 0, heldSeen = 0;
+  let t = 0, heldSeen = 0, nEv = 0, sumInc = 0, sumFlux = 0, sumHys = 0;
   const one = (reading: number | null, speaks: boolean, go: () => any) => {
     const from = rt.getCurrentZone() as number; if (motor) motor.before(reading, speaks);
+    const ev0 = rt.getMemory().getEvents().length;
     prepare(); const snap = go(); const to = rt.getCurrentZone() as number;
+    { const ev: any[] = rt.getMemory().getEvents() as any[]; for (let i = ev0; i < ev.length; i++) { nEv++; sumInc += 1 - Number(ev[i]?.phaseCoherence ?? 1); sumFlux += Number(ev[i]?.fluxDelta ?? 0); }
+      sumHys += Number((rt.getMemory() as any).hysteresisTension ?? 0); }   // read-only: the private field, not exportState (which copies every event)
     R.path += String(to); R.tension.push(Number(snap?.governor?.deformationFieldTension ?? NaN));
     if (reading !== null) { R.offerStep.push(t); R.reading.push(reading); }
     if (!speaks) { const s = (to - from + 10) % 10; R.silentCarry.n++; if (s === 1) R.silentCarry.plus++; else if (s === 9) R.silentCarry.minus++; else if (s === 0) R.silentCarry.stay++; }
@@ -119,6 +130,8 @@ export function longRun(start: Record<string, any>, ticksIn: Wt3lTick[], arm: Ar
       record = next; load();
     }
   }
+  R.tensionParts = { eventsPerStep: nEv / Math.max(1, t), incoherence: sumInc / Math.max(1, nEv), fluxDelta: sumFlux / Math.max(1, nEv), hysteresis: sumHys / Math.max(1, t) };
+  { let e = 0, w = 0; for (let i = 0; i < R.path.length; i++) { const x = R.path[i] === '3' || R.path[i] === '6'; if (x) w++; if (x && (i === 0 || !(R.path[i - 1] === '3' || R.path[i - 1] === '6'))) e++; } R.warp = { entries: e, steps: w }; }
   if (motor) { R.rollbacks = motor.log.rollbacks; R.ruleWeights = motor.w; R.flights = motor.flights; (R as any).dissolvedN = motor.log.dissolved.length; }
   return R;
 }
