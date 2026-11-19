@@ -1,0 +1,157 @@
+name: LONG-1 (the whole motor, 30 days, on copies of her real state)
+
+# experiments/live-amelia/long1/REGISTRATION.md. Off her database's live path (as WT-3L Amendment 2): reads and writes only
+# the study table amelia_long1_runs. Started by committing a UTC time to one trigger file on this branch:
+#   pilot.trigger  the disclosed pilot (copies 1-2, 3 days, every arm)
+#   seal.trigger   RFC 3161 seal over the registration and machinery (once)
+#   run.trigger    verify the seal and sources, then 12 copy jobs and the registered analysis (RESULT.json committed)
+on:
+  push:
+    branches: [long1-20261119]
+    paths: ['experiments/live-amelia/long1/pilot.trigger', 'experiments/live-amelia/long1/seal.trigger', 'experiments/live-amelia/long1/run.trigger']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: long1
+  cancel-in-progress: false
+
+env:
+  SUPABASE_URL: https://rcgmtdponfljpribggsq.supabase.co
+  L: experiments/live-amelia/long1
+
+jobs:
+  which:
+    runs-on: ubuntu-latest
+    outputs:
+      kind: ${{ steps.k.outputs.kind }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - id: k
+        run: |
+          ch=$(git diff --name-only HEAD~1 HEAD)
+          if echo "$ch" | grep -qx "$L/run.trigger"; then echo kind=run >> $GITHUB_OUTPUT
+          elif echo "$ch" | grep -qx "$L/seal.trigger"; then echo kind=seal >> $GITHUB_OUTPUT
+          elif echo "$ch" | grep -qx "$L/pilot.trigger"; then echo kind=pilot >> $GITHUB_OUTPUT
+          else echo kind=none >> $GITHUB_OUTPUT; fi
+
+  pilot:
+    needs: which
+    if: needs.which.outputs.kind == 'pilot'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: Machinery checks (synthetic only)
+        run: bun test --timeout 1800000 experiments/live-amelia/long1.test.ts
+      - name: Pilot
+        env: { MODE: pilot, RESULT_FILE: 'experiments/live-amelia/long1/pilot/PILOT.json', AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: |
+          set -euo pipefail
+          mkdir -p $L/pilot
+          bun $L/run_actions.ts | tee $L/pilot/PILOT.txt
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add $L/pilot; git commit -qm 'LONG-1 pilot'
+          for i in 1 2 3 4; do git pull -q --rebase origin long1-20261119 && git push -q origin HEAD:long1-20261119 && break; sleep $((2**i)); done
+
+  seal:
+    needs: which
+    if: needs.which.outputs.kind == 'seal'
+    runs-on: ubuntu-24.04
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.13' }
+      - name: Seal (RFC 3161)
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        run: |
+          set -euo pipefail
+          test ! -e $L/seal/receipt.json
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import datetime, hashlib, json, os, pathlib
+          from drift1a_c1.beacon import Sealer
+          L = pathlib.Path(os.environ['L']); sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          files = [str(L / 'REGISTRATION.md'), *sorted(str(p) for p in L.glob('*.ts')), str(L / 'pandemonium.json'), 'experiments/live-amelia/long1.test.ts',
+                   'src/outside/AmeliaNDRuntimeDee.ts', 'src/outside/AmeliaNDRuntime.ts', 'src/cloud/wt3l.ts', 'src/cloud/memoryArchive.ts',
+                   'experiments/live-amelia/dee2l/dee2l.ts', 'experiments/live-amelia/hyp2l/hyp2l.ts', '.github/workflows/long1.yml']
+          b = {'schema': 'LONG1_V1', 'sealedAt': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+               'copies': 12, 'days': 30, 'arms': ['N', 'D', 'S', 'Doff (copies 1-2)'], 'sourceSHA256': [{'path': f, 'sha256': sha(f)} for f in files]}
+          (L / 'seal').mkdir(exist_ok=True); (L / 'seal/LONG1_BUNDLE.json').write_text(json.dumps(b, sort_keys=True, indent=2) + '\n')
+          imprint = sha(L / 'seal/LONG1_BUNDLE.json'); Sealer().seal(L / 'seal', imprint)
+          assert Sealer().verify(L / 'seal', imprint)['status'] == 'PASS'; print('LONG1_SEALED', imprint)
+          PY
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add $L/seal; git commit -qm 'LONG-1 registration sealed (RFC3161)'
+          for i in 1 2 3 4; do git pull -q --rebase origin long1-20261119 && git push -q origin HEAD:long1-20261119 && break; sleep $((2**i)); done
+
+  verify:
+    needs: which
+    if: needs.which.outputs.kind == 'run'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.13' }
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: Verify the seal and every sealed source
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        run: |
+          set -euo pipefail
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import hashlib, json, os, pathlib
+          from drift1a_c1.beacon import Sealer
+          L = pathlib.Path(os.environ['L']); sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          b = json.loads((L / 'seal/LONG1_BUNDLE.json').read_text())
+          assert Sealer().verify(L / 'seal', sha(L / 'seal/LONG1_BUNDLE.json'))['status'] == 'PASS'
+          for x in b['sourceSHA256']: assert sha(x['path']) == x['sha256'], x['path']
+          print('LONG1_SEAL_AND_SOURCES_VERIFIED')
+          PY
+      - name: Machinery checks (synthetic only)
+        run: bun test --timeout 1800000 experiments/live-amelia/long1.test.ts
+
+  copy:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix: { copy: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: Copy ${{ matrix.copy }} (30 days, every arm)
+        env: { MODE: copy, COPY: '${{ matrix.copy }}', AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: bun $L/run_actions.ts
+
+  analysis:
+    needs: copy
+    if: always() && needs.verify.result == 'success'
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: Registered analysis
+        env: { MODE: analysis, RESULT_FILE: 'experiments/live-amelia/long1/result/RESULT.json', AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: |
+          set -euo pipefail
+          mkdir -p $L/result
+          bun $L/run_actions.ts | tee $L/result/RESULT.txt
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add $L/result; git commit -qm 'LONG-1 result'
+          for i in 1 2 3 4; do git pull -q --rebase origin long1-20261119 && git push -q origin HEAD:long1-20261119 && break; sleep $((2**i)); done
