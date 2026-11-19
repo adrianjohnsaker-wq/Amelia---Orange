@@ -119,6 +119,6 @@ export function longRun(start: Record<string, any>, ticksIn: Wt3lTick[], arm: Ar
       record = next; load();
     }
   }
-  if (motor) { R.rollbacks = motor.log.rollbacks; R.ruleWeights = motor.w; R.flights = motor.flights; }
+  if (motor) { R.rollbacks = motor.log.rollbacks; R.ruleWeights = motor.w; R.flights = motor.flights; (R as any).dissolvedN = motor.log.dissolved.length; }
   return R;
 }

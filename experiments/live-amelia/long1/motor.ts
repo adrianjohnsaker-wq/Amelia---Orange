@@ -43,8 +43,13 @@ const motifsM = (h0: number[], h1: number[]) => { const out: string[] = []; for 
 const motifN = (h0: number[], h1: number[]) => `${h0[0]}${h0[1]}${h1[1]}`;
 const top2 = (m: Map<string, number>) => [...m].filter(([, v]) => v >= P.THETA2).sort((x, y) => y[1] - x[1] || (x[0] < y[0] ? -1 : 1)).slice(0, P.K2);
 
-export interface MotorConfig { desire: boolean; trace: boolean; record: boolean; refrain: boolean }
+export interface MotorConfig { desire: boolean; trace: boolean; record: boolean; refrain: boolean;
+  /** DESIRE-2 candidates (off in ND1D): kept connections fade (half-life HLD) and dissolve below FLOOR; and the Warp guard:
+   *  the motor adds nothing to an exit that enters the Warp from outside it, and desire builds no gate into the Warp. */
+  dissolve?: boolean; warpGuard?: boolean }
 export const ND1D: MotorConfig = { desire: true, trace: true, record: true, refrain: true };
+export const D2 = { HLD: 1000, FLOOR: 0.05 } as const;
+const WARPZ = new Set([3, 6]);
 interface Born { birth: number; uses: number[]; rule: Rule; src: number; tgt: number; integrated: boolean }
 /** Her part of the motor: restored with her by a rollback. The place (trace, record, refrain surfaces) is not. */
 interface Hers { born: [string, Born][]; w: Record<Rule, number>; gamma: number; visits: number[]; m: number[]; c: number[][]; stay: number; nid: number }
@@ -60,7 +65,7 @@ export class DesireMotor {
   // the step in hand
   reading: number | null = null; speaks = false; route: number[][] = [];
   mut: () => number;
-  log = { births: [] as { t: number; rule: Rule }[], held: [] as { t: number; rule: Rule }[], pruned: [] as { t: number; rule: Rule }[], rollbacks: [] as { t: number; why: string; to: number }[] };
+  log = { births: [] as { t: number; rule: Rule }[], held: [] as { t: number; rule: Rule }[], pruned: [] as { t: number; rule: Rule }[], dissolved: [] as { t: number; rule: Rule }[], rollbacks: [] as { t: number; why: string; to: number }[] };
   constructor(cfg: MotorConfig, seed: number) { this.cfg = cfg; this.mut = rng((seed ^ 0xD351) >>> 0); }
 
   /** Connect to a runtime (a fresh one after each chunk or rollback): the exit term and the passage callback. */
@@ -69,6 +74,7 @@ export class DesireMotor {
     rt.dee.passage = (a: number, b: number) => { if (a !== b) this.route.push([a, b]); };
   }
   exitTerm(f: number, to: number): number { let b = 0;
+    if (this.cfg.warpGuard && WARPZ.has(to) && !WARPZ.has(f)) return 0;
     if (this.cfg.desire) for (const x of this.born.values()) if (!x.integrated && x.src === f && x.tgt === to) b += P.TRY_BONUS / (1 + x.uses.length);
     if (this.cfg.trace) b += P.W * this.T[f * 10 + to];
     if (this.cfg.refrain) { const c = this.completes(f, to);
@@ -107,7 +113,7 @@ export class DesireMotor {
 
   private reach(gates: NumogramGate[], f: number) { return new Set(gates.filter(g => g.isOpen && g.source === f).map(g => g.target)); }
   private chooseTarget(rule: Rule, cur: number, named: number, gates: NumogramGate[]): number | null {
-    const have = this.reach(gates, cur), free = [...Array(10).keys()].filter(z => z !== cur && !have.has(z)); if (!free.length) return null;
+    const have = this.reach(gates, cur), free = [...Array(10).keys()].filter(z => z !== cur && !have.has(z) && !(this.cfg.warpGuard && WARPZ.has(z) && !WARPZ.has(cur))); if (!free.length) return null;
     if (rule === 'hebb') return free.reduce((b, z) => (this.c[cur][z] > this.c[cur][b] ? z : b), free[0]);
     if (rule === 'named') return free.includes(named) ? named : null;
     if (rule === 'novel') return free.reduce((b, z) => (this.visits[z] < this.visits[b] ? z : b), free[0]);
@@ -117,6 +123,9 @@ export class DesireMotor {
   private synthesis(t: number, named: number, gates: NumogramGate[], cur: number) {
     for (const [a, b] of this.route) for (const [id, x] of this.born) if (x.src === a && x.tgt === b) { x.uses.push(t);
       if (x.integrated) { const g = gates.find(y => y.id === id); if (g) g.flux = Math.min(P.FLUX_MAX, g.flux + P.CONSOLIDATE); } }
+    if (this.cfg.dissolve) { const k = 1 - Math.LN2 / D2.HLD;   // DESIRE-2: kept connections fade, use renews them, below FLOOR they dissolve
+      for (const [id, x] of this.born) if (x.integrated) { const i = gates.findIndex(g => g.id === id); if (i < 0) continue; gates[i].flux *= k;
+        if (gates[i].flux < D2.FLOOR) { gates.splice(i, 1); this.born.delete(id); this.log.dissolved.push({ t, rule: x.rule }); } } }
     for (const [id, x] of this.born) if (!x.integrated && t - x.birth >= P.TRIAL) {   // the trial
       const held = x.uses.length >= P.USES;
       if (held) { x.integrated = true; this.log.held.push({ t, rule: x.rule }); }
