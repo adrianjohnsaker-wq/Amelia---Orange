@@ -138,7 +138,7 @@ jobs:
         run: bun $L/run_actions.ts
 
   analysis:
-    needs: copy
+    needs: [verify, copy]
     if: always() && needs.verify.result == 'success'
     runs-on: ubuntu-latest
     permissions: { contents: write }
