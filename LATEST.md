@@ -1,11 +1,11 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-19T12:26:07.826Z
-- Cycle: 1722 (44500547829-1-11)
-- RSS items seen: 69; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -21
-- Candidate: Puppo / Mesh-21 / Amphidemon
-- Separate ingress records and trace links: 0
+- Last cycle (UTC): 2026-11-19T12:41:11.352Z
+- Cycle: 1723 (44500547829-1-12)
+- RSS items seen: 69; newly processed: 2 (last-cycle window; 24-hour initial window)
+- Subdecadence: MESH_TERMINAL; score -5
+- Candidate: Ixidod / Mesh-05 / Amphidemon
+- Separate ingress records and trace links: 6
 - Catalogue entries added: 1
 - Source errors: none
 
