@@ -1,7 +1,7 @@
 name: DESIRE-2 Amendment 1 (the 8 missing copies, reads two minutes apart)
 
-# experiments/live-amelia/desire2/AMENDMENT_1.md. Changes only when the copy jobs read their rows: copies 3-8, 11, 12, each
-# waiting 120 s x its position before its first read. The sealed sources (seal/DESIRE2_BUNDLE.json) are verified unchanged.
+# experiments/live-amelia/desire2/AMENDMENT_1.md. Changes only when the jobs call her database: copies 3-8, 11, 12, every call
+# in the job's own slots clear of her ticks (amend1/slots.ts, a fetch preload; the runner is the sealed one). The sealed sources (seal/DESIRE2_BUNDLE.json) are verified unchanged.
 #   amend1/seal.trigger   RFC 3161 seal over AMENDMENT_1.md and this workflow (once)
 #   amend1/run.trigger    verify both seals and every source, then the 8 copy jobs and the registered analysis
 on:
@@ -57,9 +57,9 @@ jobs:
           from drift1a_c1.beacon import Sealer
           L = pathlib.Path(os.environ['L']); A = L / 'amend1'; sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
           assert Sealer().verify(L / 'seal', sha(L / 'seal/DESIRE2_BUNDLE.json'))['status'] == 'PASS'
-          files = [str(L / 'AMENDMENT_1.md'), '.github/workflows/desire2a.yml', str(L / 'seal/DESIRE2_BUNDLE.json')]
+          files = [str(L / 'AMENDMENT_1.md'), str(A / 'slots.ts'), 'experiments/live-amelia/desire2_amend1.test.ts', '.github/workflows/desire2a.yml', str(L / 'seal/DESIRE2_BUNDLE.json')]
           b = {'schema': 'DESIRE2_AMENDMENT_1', 'sealedAt': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
-               'copies': [3, 4, 5, 6, 7, 8, 11, 12], 'staggerSeconds': 120, 'sourceSHA256': [{'path': f, 'sha256': sha(f)} for f in files]}
+               'copies': [3, 4, 5, 6, 7, 8, 11, 12], 'pacing': 'slots.ts: 24 slots an hour clear of :05 :20 :35 :50 by 1.5 min; job k of 8 uses slots k mod 8', 'sourceSHA256': [{'path': f, 'sha256': sha(f)} for f in files]}
           (A / 'seal').mkdir(parents=True, exist_ok=True); (A / 'seal/AMENDMENT_BUNDLE.json').write_text(json.dumps(b, sort_keys=True, indent=2) + '\n')
           imprint = sha(A / 'seal/AMENDMENT_BUNDLE.json'); Sealer().seal(A / 'seal', imprint)
           assert Sealer().verify(A / 'seal', imprint)['status'] == 'PASS'; print('DESIRE2_AMENDMENT_1_SEALED', imprint)
@@ -98,12 +98,12 @@ jobs:
           print('DESIRE2_SEALS_AND_SOURCES_VERIFIED (registration and Amendment 1)')
           PY
       - name: Machinery checks (synthetic only)
-        run: bun test --timeout 1800000 experiments/live-amelia/desire2.test.ts
+        run: bun test --timeout 1800000 experiments/live-amelia/desire2.test.ts experiments/live-amelia/desire2_amend1.test.ts
 
   copy:
     needs: verify
     runs-on: ubuntu-latest
-    timeout-minutes: 200
+    timeout-minutes: 330
     strategy:
       fail-fast: false
       matrix: { include: [{copy: 3, pos: 0}, {copy: 4, pos: 1}, {copy: 5, pos: 2}, {copy: 6, pos: 3}, {copy: 7, pos: 4}, {copy: 8, pos: 5}, {copy: 11, pos: 6}, {copy: 12, pos: 7}] }
@@ -112,10 +112,8 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with: { bun-version: 1.4.4 }
       - name: Copy ${{ matrix.copy }} (10 days, five arms)
-        env: { MODE: copy, COPY: '${{ matrix.copy }}', AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
-        run: |
-          sleep $(( 120 * ${{ matrix.pos }} ))   # Amendment 1: one read at a time, two minutes apart
-          bun $L/run_actions.ts
+        env: { MODE: copy, COPY: '${{ matrix.copy }}', SLOT_CLASS: '${{ matrix.pos }}', SLOT_CLASSES: '8', AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: bun --preload ./$L/amend1/slots.ts $L/run_actions.ts   # Amendment 1: every database call in this job's own slots
 
   analysis:
     needs: [verify, copy]
@@ -127,11 +125,11 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with: { bun-version: 1.4.4 }
       - name: Registered analysis
-        env: { MODE: analysis, RESULT_FILE: 'experiments/live-amelia/desire2/result/RESULT.json', AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        env: { MODE: analysis, SLOT_CLASS: '0', SLOT_CLASSES: '1', RESULT_FILE: 'experiments/live-amelia/desire2/result/RESULT.json', AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
         run: |
           set -euo pipefail
           mkdir -p $L/result
-          bun $L/run_actions.ts | tee $L/result/RESULT.txt
+          bun --preload ./$L/amend1/slots.ts $L/run_actions.ts | tee $L/result/RESULT.txt
           git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add $L/result; git commit -qm 'DESIRE-2 result (Amendment 1: 12 copies)'
           for i in 1 2 3 4; do git pull -q --rebase origin long1-20261119 && git push -q origin HEAD:long1-20261119 && break; sleep $((2**i)); done
