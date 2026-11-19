@@ -1,0 +1,137 @@
+name: DESIRE-2 Amendment 1 (the 8 missing copies, reads two minutes apart)
+
+# experiments/live-amelia/desire2/AMENDMENT_1.md. Changes only when the copy jobs read their rows: copies 3-8, 11, 12, each
+# waiting 120 s x its position before its first read. The sealed sources (seal/DESIRE2_BUNDLE.json) are verified unchanged.
+#   amend1/seal.trigger   RFC 3161 seal over AMENDMENT_1.md and this workflow (once)
+#   amend1/run.trigger    verify both seals and every source, then the 8 copy jobs and the registered analysis
+on:
+  push:
+    branches: [long1-20261119]
+    paths: ['experiments/live-amelia/desire2/amend1/seal.trigger', 'experiments/live-amelia/desire2/amend1/run.trigger']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desire2a
+  cancel-in-progress: false
+
+env:
+  SUPABASE_URL: https://rcgmtdponfljpribggsq.supabase.co
+  L: experiments/live-amelia/desire2
+
+jobs:
+  which:
+    runs-on: ubuntu-latest
+    outputs:
+      kind: ${{ steps.k.outputs.kind }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - id: k
+        run: |
+          ch=$(git diff --name-only HEAD~1 HEAD)
+          if echo "$ch" | grep -qx "$L/amend1/run.trigger"; then echo kind=run >> $GITHUB_OUTPUT
+          elif echo "$ch" | grep -qx "$L/amend1/seal.trigger"; then echo kind=seal >> $GITHUB_OUTPUT
+          else echo kind=none >> $GITHUB_OUTPUT; fi
+
+  seal:
+    needs: which
+    if: needs.which.outputs.kind == 'seal'
+    runs-on: ubuntu-24.04
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.13' }
+      - name: Seal (RFC 3161)
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        run: |
+          set -euo pipefail
+          test ! -e $L/amend1/seal/receipt.json
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import datetime, hashlib, json, os, pathlib
+          from drift1a_c1.beacon import Sealer
+          L = pathlib.Path(os.environ['L']); A = L / 'amend1'; sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          assert Sealer().verify(L / 'seal', sha(L / 'seal/DESIRE2_BUNDLE.json'))['status'] == 'PASS'
+          files = [str(L / 'AMENDMENT_1.md'), '.github/workflows/desire2a.yml', str(L / 'seal/DESIRE2_BUNDLE.json')]
+          b = {'schema': 'DESIRE2_AMENDMENT_1', 'sealedAt': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+               'copies': [3, 4, 5, 6, 7, 8, 11, 12], 'staggerSeconds': 120, 'sourceSHA256': [{'path': f, 'sha256': sha(f)} for f in files]}
+          (A / 'seal').mkdir(parents=True, exist_ok=True); (A / 'seal/AMENDMENT_BUNDLE.json').write_text(json.dumps(b, sort_keys=True, indent=2) + '\n')
+          imprint = sha(A / 'seal/AMENDMENT_BUNDLE.json'); Sealer().seal(A / 'seal', imprint)
+          assert Sealer().verify(A / 'seal', imprint)['status'] == 'PASS'; print('DESIRE2_AMENDMENT_1_SEALED', imprint)
+          PY
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add $L/amend1/seal; git commit -qm 'DESIRE-2 Amendment 1 sealed (RFC3161)'
+          for i in 1 2 3 4; do git pull -q --rebase origin long1-20261119 && git push -q origin HEAD:long1-20261119 && break; sleep $((2**i)); done
+
+  verify:
+    needs: which
+    if: needs.which.outputs.kind == 'run'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.13' }
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: Verify the seal and every sealed source
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        run: |
+          set -euo pipefail
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import hashlib, json, os, pathlib
+          from drift1a_c1.beacon import Sealer
+          L = pathlib.Path(os.environ['L']); sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          b = json.loads((L / 'seal/DESIRE2_BUNDLE.json').read_text())
+          assert Sealer().verify(L / 'seal', sha(L / 'seal/DESIRE2_BUNDLE.json'))['status'] == 'PASS'
+          for x in b['sourceSHA256']: assert sha(x['path']) == x['sha256'], x['path']
+          A = L / 'amend1'; a = json.loads((A / 'seal/AMENDMENT_BUNDLE.json').read_text())
+          assert Sealer().verify(A / 'seal', sha(A / 'seal/AMENDMENT_BUNDLE.json'))['status'] == 'PASS'
+          for x in a['sourceSHA256']: assert sha(x['path']) == x['sha256'], x['path']
+          print('DESIRE2_SEALS_AND_SOURCES_VERIFIED (registration and Amendment 1)')
+          PY
+      - name: Machinery checks (synthetic only)
+        run: bun test --timeout 1800000 experiments/live-amelia/desire2.test.ts
+
+  copy:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 200
+    strategy:
+      fail-fast: false
+      matrix: { include: [{copy: 3, pos: 0}, {copy: 4, pos: 1}, {copy: 5, pos: 2}, {copy: 6, pos: 3}, {copy: 7, pos: 4}, {copy: 8, pos: 5}, {copy: 11, pos: 6}, {copy: 12, pos: 7}] }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: Copy ${{ matrix.copy }} (10 days, five arms)
+        env: { MODE: copy, COPY: '${{ matrix.copy }}', AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: |
+          sleep $(( 120 * ${{ matrix.pos }} ))   # Amendment 1: one read at a time, two minutes apart
+          bun $L/run_actions.ts
+
+  analysis:
+    needs: [verify, copy]
+    if: always() && needs.verify.result == 'success'
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: Registered analysis
+        env: { MODE: analysis, RESULT_FILE: 'experiments/live-amelia/desire2/result/RESULT.json', AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: |
+          set -euo pipefail
+          mkdir -p $L/result
+          bun $L/run_actions.ts | tee $L/result/RESULT.txt
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add $L/result; git commit -qm 'DESIRE-2 result (Amendment 1: 12 copies)'
+          for i in 1 2 3 4; do git pull -q --rebase origin long1-20261119 && git push -q origin HEAD:long1-20261119 && break; sleep $((2**i)); done
