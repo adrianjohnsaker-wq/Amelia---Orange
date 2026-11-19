@@ -1,7 +1,6 @@
 # LONG-1: the whole desiring motor (candidate ND-1d), 30 days, on copies of her real state
 
-**Status: DRAFT.** It is not sealed. Two sections are completed before sealing: the starting copies actually loaded
-(option a, b or c of HANDOVER.md) and the pilot. Nothing else changes after the pilot.
+**Status: DRAFT.** It is not sealed. One section is completed before sealing: the pilot. Nothing else changes after the pilot.
 
 ## Why
 The desiring motor was built and tested in the studio, part by part:
@@ -47,12 +46,38 @@ The machinery checks (synthetic states and inputs only):
 5. Desire's gates are `desire-*`. Pruning touches only them, never her CCRU or Warp-born gates.
 
 ## Starting copies and spans
-**[To be completed from the cloud-home session's reply, before sealing.]**
-- **The copies.** 12 copies, option (a), (b) or (c) of HANDOVER.md, with each copy's revision, step and memory-head
-  digest.
-- **The spans.** Each copy meets 2,880 ticks: the recorded ticks after its start, then her whole recorded history cycled
-  in order. Her recorded history is about 8–9 days, so every span wraps about three times. Each copy therefore meets the
-  same Outside material more than once. That is how it differs from her life, and it limits the reading.
+Loaded by the cloud-home session on 19 November 2026 into `amelia_long1_runs` (HANDOVER.md). It read only her live record,
+archive and tick log, and wrote nothing outside the study table.
+
+**Option (b): six distinct stored states, each used by two copies.** Eleven distinct stored states exist, but several are
+nearly identical: revisions 589 and 590 are the same step, and revisions 744 and 745 are 19 steps apart. Six give the
+evenest spread. Each copy is her own ND-1b runtime at Θ = 12, with her body checkpoint, saved at the end of a logged tick.
+
+| Copies | Source | Revision | Step | Admission rule | Warp-born gates | Memory head |
+|---|---|---|---|---|---|---|
+| c01, c02 | DEE-1L start (14 Nov) | 426 | 7,121 | relative-v1 | 6 | `aa739cbb…` |
+| c03, c04 | pre-lane backup | 585 | 9,839 | relative-v1 | 7 | `43b9a1e4…` |
+| c05, c06 | POS-1L start | 600 | 10,047 | outside-lane-v1 | 7 | `a29ece56…` |
+| c07, c08 | HYST-1L start | 673 | 11,282 | outside-lane-v1 | 9 | `ed3d11fd…` |
+| c09, c10 | HYPERSTITION-2L start | 750 | 12,599 | outside-lane-v1 | 10 | `3b3f1e69…` |
+| c11, c12 | her live record, read 19 Nov 08:48 UTC | 832 | 14,023 | outside-lane-v1 | 10 | `60643848…` |
+
+**The spans.** Her recorded history is 795 ticks with offers delivered, 10 November 19:11 to 19 November 08:35 UTC: 1,709
+offers, none missing, with no `field:` or `source:` events.
+- **Odd copies** start at the tick after their state's own tick, then cycle from the first tick of her history.
+- **Even copies** are offset by half the history (397 ticks).
+- **Wrapping.** No two copies share an offset. Every span wraps about 3.6 times, and every span is flagged.
+- **Fresh ids, repeated content.** Each offer reaches the runtime under a fresh id (`long1:<copy>:<arm>:<tick>:<slot>:<id>`), but its
+  content repeats. Even copies and every copy after its first cycle meet material already in their memory.
+
+**Kept, by the research session (19 Nov), and why.**
+- **Both admission rules.** Copies c01–c04 run under the earlier rule (relative-v1), the others under the lane
+  (outside-lane-v1). Every comparison is paired within a copy (D, S and Doff against N from the same state), so the rule
+  cannot bias a difference. It widens what a pass covers.
+- **The copy is the unit, as registered.** Two copies share each state, so the analysis also reports, as sensitivity and
+  not as criteria:
+  - the same sign-flip tests over the six states (each state's two copies averaged);
+  - every difference split by admission rule.
 
 **The Outside's reading of an offer** is the dominant zone of its attention vector (ties to the lower zone).
 

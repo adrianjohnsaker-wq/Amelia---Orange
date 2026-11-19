@@ -80,12 +80,21 @@ export function analyse(runs: LongResult[]) {
     { name: 'L8', claim: 'body safe: tension ND-1d - ND-1b <= +0.03 and Warp share ND-1d - ND-1b <= +0.02', p: Math.max(t8a.p, t8b.p), mean: NaN, extra: { tension: mean(dTen), warp: mean(dWarp), pTension: t8a.p, pWarp: t8b.p }, void: false },
     { name: 'L9', claim: 'subject faithful: late agreement with her own passage minus another copy\'s > 0', p: t9.p, mean: t9.mean, extra: { own: mean(D.map(r => agree(r.readouts.at(-1), describe(r.path, r.path.length - 2000, r.path.length)))) }, void: false },
   ];
+  // Sensitivity (reported, not criteria): two copies share each starting state (c01-c02, ..., c11-c12), so the same tests
+  // are also run over the six states, on the mean of each state's two copies; and split by admission rule.
+  const byState = (d: number[]) => { const m: number[] = []; for (let i = 0; i + 1 < d.length; i += 2) m.push((d[i] + d[i + 1]) / 2); return signFlipUpper(m); };
+  const diffs: Record<string, number[]> = { L5: cD.map((v, i) => v - 0.9 * cN[i]), L6: cD.map((v, i) => v - cS[i]), L7: dL.map((v, i) => v - nL[i]),
+    L8tension: dTen.map(v => 0.03 - v), L8warp: dWarp.map(v => 0.02 - v), L9: ag };
+  const rule = (i: number) => String((D[i] as any).info?.rule ?? (D[i] as any).info?.admissionRule ?? 'unknown');
+  const sensitivity = { byState: Object.fromEntries(Object.entries(diffs).map(([k, d]) => [k, copies.length % 2 === 0 ? byState(d) : null])),
+    byRule: Object.fromEntries([...new Set(D.map((_, i) => rule(i)))].map(r => [r, Object.fromEntries(Object.entries(diffs).map(([k, d]) => [k, mean(d.filter((_, i) => rule(i) === r))]))])) };
   const H = holm(comp.map(({ name, p }) => ({ name, p })));
   const comparative = comp.map(c => { const h = H.find(x => x.name === c.name)!; return { ...c, threshold: h.threshold, verdict: c.void ? 'VOID' : h.survives ? 'SUPPORTED' : 'NOT SUPPORTED' }; });
   const pass = Object.values(hard).every(h => h.pass) && comparative.every(c => c.verdict === 'SUPPORTED');
   const reported = { couplingPerCopy: { D: cD, N: cN, S: cS }, rollbacksPerCopy: D.map(r => r.rollbacks.length), heldPerDay: mean(D.map(r => (r.daily.at(-1)?.held ?? 0) / r.days)),
     flights: mean(D.map(r => r.flights)), motorSizeEnd: mean(D.map(r => r.daily.at(-1)?.motorSize ?? 0)), stateSizeEnd: { D: mean(D.map(r => r.daily.at(-1)?.stateSize ?? 0)), N: mean(N.map(r => r.daily.at(-1)?.stateSize ?? 0)) },
     silentCarry: { D: mean(D.map(r => (r.silentCarry.plus - r.silentCarry.minus) / Math.max(1, r.silentCarry.n))), N: mean(N.map(r => (r.silentCarry.plus - r.silentCarry.minus) / Math.max(1, r.silentCarry.n))) },
+    sensitivity,
     statements: D.slice(0, 2).map(r => ({ copy: r.copy, days: [1, 10, 20, 30].map(d => ({ day: d, words: r.readouts.find(x => x.day === d)?.words ?? null })) })) };
   return { schema: 'LONG1_RESULT_V1', copies: copies.length, S0: s0, hard, comparative, pass, reported };
 }

@@ -32,7 +32,7 @@ async function copyData(c: number) {
   const start = s?.record, ticks = i?.metrics?.ticks;
   if (!start?.state || start.state.runtimeKind !== 'nd1' || start.state.nd1?.theta !== 12 || !start.fieldCheckpoint) throw new Error(`copy ${c}: starting copy check failed`);
   if (!Array.isArray(ticks) || ticks.length < DAYS * TICKS_PER_DAY) throw new Error(`copy ${c}: span check failed (${ticks?.length} ticks)`);
-  return { start, ticks, info: { revision: start.revision, step: start.state.stepCount, span: i.metrics.span ?? null, flagged: !!i.metrics.flagged } };
+  return { start, ticks, info: { revision: start.revision, step: start.state.stepCount, rule: start.state.admissionRule ?? 'relative-v1', span: i.metrics.span ?? null, flagged: !!i.metrics.flagged } };
 }
 const same = (a: LongResult, b: LongResult) => a.path === b.path && JSON.stringify(a.tension) === JSON.stringify(b.tension);
 
