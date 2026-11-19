@@ -1,12 +1,12 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-19T01:08:24.296Z
-- Cycle: 1676 (44382007030-1-23)
+- Last cycle (UTC): 2026-11-19T01:21:13.570Z
+- Cycle: 1677 (44435878641-1-1)
 - RSS items seen: 68; newly processed: 1 (last-cycle window; 24-hour initial window)
-- Subdecadence: DECK_EXHAUSTED_POSITIVE; score 24
-- Candidate: none (positive deck exhaustion)
+- Subdecadence: MESH_TERMINAL; score -3
+- Candidate: Ixix / Mesh-03 / Chaotic Xenodemon
 - Separate ingress records and trace links: 3
-- Catalogue entries added: 0
+- Catalogue entries added: 1
 - Governor recovery: 0 previously queued items admitted; queue now 0.
 - Native consolidations this cycle: 0; complete receipts in recovery-journal.jsonl.
 - New offers: 4; attended 4, deferred 0, refused 0.
