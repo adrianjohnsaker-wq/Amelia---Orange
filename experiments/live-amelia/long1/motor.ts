@@ -46,9 +46,13 @@ const top2 = (m: Map<string, number>) => [...m].filter(([, v]) => v >= P.THETA2)
 export interface MotorConfig { desire: boolean; trace: boolean; record: boolean; refrain: boolean;
   /** DESIRE-2 candidates (off in ND1D): kept connections fade (half-life HLD) and dissolve below FLOOR; and the Warp guard:
    *  the motor adds nothing to an exit that enters the Warp from outside it, and desire builds no gate into the Warp. */
-  dissolve?: boolean; warpGuard?: boolean }
+  dissolve?: boolean; warpGuard?: boolean;
+  /** DESIRE-3 candidate: with dissolve, the Outside's trace renews the connections desire built along it: each step a kept
+   *  connection's flux gains RENEW x T[edge] x (1 - flux), as if the Outside had used it. */
+  traceRenew?: boolean }
 export const ND1D: MotorConfig = { desire: true, trace: true, record: true, refrain: true };
 export const D2 = { HLD: 1000, FLOOR: 0.05 } as const;
+export const D3 = { RENEW: 0.01 } as const;
 const WARPZ = new Set([3, 6]);
 interface Born { birth: number; uses: number[]; rule: Rule; src: number; tgt: number; integrated: boolean }
 /** Her part of the motor: restored with her by a rollback. The place (trace, record, refrain surfaces) is not. */
@@ -125,6 +129,7 @@ export class DesireMotor {
       if (x.integrated) { const g = gates.find(y => y.id === id); if (g) g.flux = Math.min(P.FLUX_MAX, g.flux + P.CONSOLIDATE); } }
     if (this.cfg.dissolve) { const k = 1 - Math.LN2 / D2.HLD;   // DESIRE-2: kept connections fade, use renews them, below FLOOR they dissolve
       for (const [id, x] of this.born) if (x.integrated) { const i = gates.findIndex(g => g.id === id); if (i < 0) continue; gates[i].flux *= k;
+        if (this.cfg.traceRenew) { const g = gates[i]; g.flux += D3.RENEW * this.T[x.src * 10 + x.tgt] * (1 - g.flux); }   // DESIRE-3
         if (gates[i].flux < D2.FLOOR) { gates.splice(i, 1); this.born.delete(id); this.log.dissolved.push({ t, rule: x.rule }); } } }
     for (const [id, x] of this.born) if (!x.integrated && t - x.birth >= P.TRIAL) {   // the trial
       const held = x.uses.length >= P.USES;
