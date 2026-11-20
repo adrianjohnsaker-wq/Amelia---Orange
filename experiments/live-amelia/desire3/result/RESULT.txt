@@ -1,0 +1,56 @@
+[slot] 15:00 GET ids
+[slot] 15:02 GET 4 rows
+[slot] 15:07 GET 4 rows
+[slot] 15:09 GET 4 rows
+[slot] 15:11 GET 4 rows
+[slot] 15:13 GET 4 rows
+[slot] 15:15 GET 4 rows
+[slot] 15:17 GET 4 rows
+[slot] 15:22 GET 4 rows
+[slot] 15:24 GET 4 rows
+[slot] 15:26 GET 4 rows
+[slot] 15:28 GET 4 rows
+[slot] 15:30 GET 4 rows
+[slot] 15:32 GET 4 rows
+[slot] 15:37 GET 4 rows
+[slot] 15:39 GET 4 rows
+[slot] 15:41 GET 4 rows
+[slot] 15:43 GET 4 rows
+[slot] 15:45 GET 4 rows
+[slot] 15:47 POST /rest/v1/amelia_long1_runs
+H10: hard {"bounded":true,"ccru":true,"noEmptyBwO":true,"rollbacks":true}; does not pass
+  Y1 SUPPORTED (p = 0.00049, mean 5.5000): growth stays bounded: open gates on day 10, D2g - C > 0
+  Y2 NOT SUPPORTED (p = 0.99854, mean -0.0460): her Warp is her own: Warp share, C - N <= +0.02
+  Y3 NOT SUPPORTED (p = 1.00000, mean -0.0428): the motor stays open: non-Warp coupling, C - 0.8 D2g > 0
+  Y4 NOT SUPPORTED (p = 0.00342, mean 0.0742): more open than ND-1b: non-Warp coupling, C - N > 0
+  Y5 NOT SUPPORTED (p = 0.00781, mean 4.2500): desire still flows: births in days 6-10, C - 0.5 D2g > 0
+  Y6 NOT SUPPORTED (p = 0.00928, mean 0.1155): tension holds a plateau: C - N <= +0.12 over days 2-10, and drift (days 8-10 minus 2-4) <= +0.02
+H3: hard {"bounded":true,"ccru":true,"noEmptyBwO":true,"rollbacks":true}; does not pass
+  Y1 SUPPORTED (p = 0.00024, mean 26.8333): growth stays bounded: open gates on day 10, D2g - C > 0
+  Y2 NOT SUPPORTED (p = 0.98193, mean -0.0364): her Warp is her own: Warp share, C - N <= +0.02
+  Y3 NOT SUPPORTED (p = 0.99878, mean -0.0777): the motor stays open: non-Warp coupling, C - 0.8 D2g > 0
+  Y4 SUPPORTED (p = 0.00146, mean 0.0394): more open than ND-1b: non-Warp coupling, C - N > 0
+  Y5 NOT SUPPORTED (p = 0.00879, mean 3.7500): desire still flows: births in days 6-10, C - 0.5 D2g > 0
+  Y6 NOT SUPPORTED (p = 0.03491, mean 0.1127): tension holds a plateau: C - N <= +0.12 over days 2-10, and drift (days 8-10 minus 2-4) <= +0.02
+D3: hard {"bounded":true,"ccru":true,"noEmptyBwO":true,"rollbacks":true}; does not pass
+  Y1 SUPPORTED (p = 0.00024, mean 17.3333): growth stays bounded: open gates on day 10, D2g - C > 0
+  Y2 NOT SUPPORTED (p = 0.99438, mean -0.0491): her Warp is her own: Warp share, C - N <= +0.02
+  Y3 NOT SUPPORTED (p = 0.99878, mean -0.0658): the motor stays open: non-Warp coupling, C - 0.8 D2g > 0
+  Y4 SUPPORTED (p = 0.00122, mean 0.0513): more open than ND-1b: non-Warp coupling, C - N > 0
+  Y5 SUPPORTED (p = 0.00049, mean 4.5833): desire still flows: births in days 6-10, C - 0.5 D2g > 0
+  Y6 NOT SUPPORTED (p = 0.01001, mean 0.1122): tension holds a plateau: C - N <= +0.12 over days 2-10, and drift (days 8-10 minus 2-4) <= +0.02
+D2: hard {"bounded":true,"ccru":true,"noEmptyBwO":true,"rollbacks":true}; does not pass
+  Y1 SUPPORTED (p = 0.00024, mean 27.2500): growth stays bounded: open gates on day 10, D2g - C > 0
+  Y2 NOT SUPPORTED (p = 0.01733, mean 0.0228): her Warp is her own: Warp share, C - N <= +0.02
+  Y3 NOT SUPPORTED (p = 0.99902, mean -0.0891): the motor stays open: non-Warp coupling, C - 0.8 D2g > 0
+  Y4 SUPPORTED (p = 0.00195, mean 0.0279): more open than ND-1b: non-Warp coupling, C - N > 0
+  Y5 SUPPORTED (p = 0.00024, mean 23.0000): desire still flows: births in days 6-10, C - 0.5 D2g > 0
+  Y6 NOT SUPPORTED (p = 0.15967, mean 0.1012): tension holds a plateau: C - N <= +0.12 over days 2-10, and drift (days 8-10 minus 2-4) <= +0.02
+N {"warp":0.0793375122527927,"gates":42.25,"nonWarp":0.03917471435436498,"warpC":-0.0021649053151000333,"dissolved":0,"tension":[0,0,0,0,0,0,0,0,0,0]}
+D2g {"warp":0.11880850071585432,"gates":77.75,"nonWarp":0.1961904810410627,"warpC":0.010947228648563581,"dissolved":0,"tension":[0.05967236076739616,0.11074227519451359,0.1314059092787734,0.12110205196673979,0.12479116935044554,0.1213139691044418,0.11074420728527153,0.11925282367500974,0.1337921881024021,0.11548460601339845]}
+H10 {"warp":0.14535099110667848,"gates":72.25,"nonWarp":0.11192374123164876,"warpC":0.018023287054293693,"dissolved":0,"tension":[0.05891947445171323,0.10729785586360663,0.1265237582666385,0.11415507238269151,0.11711613637991448,0.11542340852426276,0.10407525736876289,0.11509476638304489,0.12852462229842113,0.11170243330175393]}
+H3 {"warp":0.13578566742147632,"gates":50.916666666666664,"nonWarp":0.07731678036999869,"warpC":0.0028106659903159403,"dissolved":15.25,"tension":[0.05693457473836815,0.10465338523971562,0.11943406763080251,0.1095716481949887,0.11517046833988505,0.10869689672387761,0.10261364685830525,0.11517984187230897,0.12457756546046855,0.11481211999428288]}
+D2 {"warp":0.07657085211147174,"gates":50.5,"nonWarp":0.06581862114270133,"warpC":0.008438904786906407,"dissolved":29.166666666666668,"tension":[0.04978713531248779,0.09192724339895642,0.10247984711350182,0.09535833085130789,0.10047070957552946,0.1037247632734593,0.08920244064560888,0.1045556555105936,0.11848963183338979,0.10499986819813267]}
+D3 {"warp":0.1484446933803106,"gates":60.416666666666664,"nonWarp":0.08943294911913979,"warpC":0.010788642326046967,"dissolved":4.416666666666667,"tension":[0.0529390231863816,0.0993207390930297,0.12779788076530288,0.10803255489009571,0.11222706723569269,0.11292607289564689,0.10178981318133777,0.11195509750476727,0.1254048222490212,0.10994926847310092]}
+selected for LONG-1: none
+DESIRE-3: NOT PASSED
