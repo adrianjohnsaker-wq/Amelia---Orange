@@ -1,0 +1,32 @@
+name: QBIST-1 (a quantum-probabilistic organ for her passage)
+
+# experiments/live-amelia/qbist1/REGISTRATION.md. Started by committing to experiments/live-amelia/qbist1/run.trigger; its
+# first word picks the job: "stage0" or "test".
+on:
+  push:
+    branches: [research/live-run-history-20261109]
+    paths: ['experiments/live-amelia/qbist1/run.trigger']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: qbist1
+  cancel-in-progress: false
+
+jobs:
+  qbist1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - name: Machinery checks (synthetic only)
+        run: bun test --timeout 900000 experiments/live-amelia/qbist1.test.ts
+      - name: QBIST-1 (stage0 or test, by the trigger's first word)
+        env:
+          SUPABASE_URL: https://rcgmtdponfljpribggsq.supabase.co
+          AMELIA_SUPABASE_SERVICE_KEY: ${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}
+        run: bun experiments/live-amelia/qbist1/run_actions.ts "$(awk 'NR==1{print $1}' experiments/live-amelia/qbist1/run.trigger)"
