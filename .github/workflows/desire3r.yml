@@ -1,0 +1,29 @@
+name: DESIRE-3 calibration read (the Outside's return intervals; not a test)
+
+# experiments/live-amelia/desire3/returns/returns.ts. Reads the 12 desire2-cNN-N rows of amelia_long1_runs, every call in
+# slots clear of her ticks (desire2/amend1/slots.ts), and commits returns/RETURNS.json. Started by returns/returns.trigger.
+on:
+  push:
+    branches: [long1-20261119]
+    paths: ['experiments/live-amelia/desire3/returns/returns.trigger']
+permissions:
+  contents: write
+concurrency:
+  group: desire3r
+  cancel-in-progress: false
+jobs:
+  returns:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: Calibration read (slot-paced)
+        env: { SUPABASE_URL: https://rcgmtdponfljpribggsq.supabase.co, SLOT_CLASS: '0', SLOT_CLASSES: '1', OUT: 'experiments/live-amelia/desire3/returns/RETURNS.json', AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: |
+          set -euo pipefail
+          bun --preload ./experiments/live-amelia/desire2/amend1/slots.ts experiments/live-amelia/desire3/returns/returns.ts | tee experiments/live-amelia/desire3/returns/RETURNS.txt
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/live-amelia/desire3/returns; git commit -qm 'DESIRE-3 calibration read (the Outside return intervals)'
+          for i in 1 2 3 4; do git pull -q --rebase origin long1-20261119 && git push -q origin HEAD:long1-20261119 && break; sleep $((2**i)); done
