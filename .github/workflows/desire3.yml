@@ -1,0 +1,135 @@
+name: DESIRE-3 (dose-response of how long desire's connections live), 10 days on LONG-1's copies
+
+# experiments/live-amelia/desire3/REGISTRATION.md. Off her database's live path: reads LONG-1's copy rows and writes only
+# desire3-* rows of amelia_long1_runs, every call in the job's own slots clear of her ticks (desire2/amend1/slots.ts, the
+# pacing of DESIRE-2 Amendment 1). Started by committing a UTC time to one trigger file on this branch:
+#   seal.trigger   RFC 3161 seal over the registration and machinery (once)
+#   run.trigger    verify the seal and sources, then 12 copy jobs and the registered analysis (RESULT.json committed)
+on:
+  push:
+    branches: [long1-20261119]
+    paths: ['experiments/live-amelia/desire3/seal.trigger', 'experiments/live-amelia/desire3/run.trigger']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desire3
+  cancel-in-progress: false
+
+env:
+  SUPABASE_URL: https://rcgmtdponfljpribggsq.supabase.co
+  L: experiments/live-amelia/desire3
+
+jobs:
+  which:
+    runs-on: ubuntu-latest
+    outputs:
+      kind: ${{ steps.k.outputs.kind }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - id: k
+        run: |
+          ch=$(git diff --name-only HEAD~1 HEAD)
+          if echo "$ch" | grep -qx "$L/run.trigger"; then echo kind=run >> $GITHUB_OUTPUT
+          elif echo "$ch" | grep -qx "$L/seal.trigger"; then echo kind=seal >> $GITHUB_OUTPUT
+          else echo kind=none >> $GITHUB_OUTPUT; fi
+
+  seal:
+    needs: which
+    if: needs.which.outputs.kind == 'seal'
+    runs-on: ubuntu-24.04
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.13' }
+      - name: Seal (RFC 3161)
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        run: |
+          set -euo pipefail
+          test ! -e $L/seal/receipt.json
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import datetime, hashlib, json, os, pathlib
+          from drift1a_c1.beacon import Sealer
+          L = pathlib.Path(os.environ['L']); sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          files = [str(L / 'REGISTRATION.md'), *sorted(str(p) for p in L.glob('*.ts')), 'experiments/live-amelia/desire3.test.ts', 'experiments/live-amelia/long1.test.ts', 'experiments/live-amelia/desire2/amend1/slots.ts', 'experiments/live-amelia/desire2_amend1.test.ts',
+                   *sorted(str(p) for p in pathlib.Path('experiments/live-amelia/long1').glob('*.ts')), 'experiments/live-amelia/long1/pandemonium.json',
+                   'src/outside/AmeliaNDRuntimeDee.ts', 'src/outside/AmeliaNDRuntime.ts', 'src/cloud/wt3l.ts', 'src/cloud/memoryArchive.ts',
+                   'experiments/live-amelia/dee2l/dee2l.ts', 'experiments/live-amelia/hyp2l/hyp2l.ts', '.github/workflows/desire3.yml']
+          b = {'schema': 'DESIRE3_V1', 'sealedAt': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+               'copies': 12, 'days': 10, 'arms': ['N', 'D2g', 'H10', 'H3', 'D2', 'D3'], 'candidates': ['H10', 'H3', 'D3', 'D2'], 'sourceSHA256': [{'path': f, 'sha256': sha(f)} for f in files]}
+          (L / 'seal').mkdir(exist_ok=True); (L / 'seal/DESIRE3_BUNDLE.json').write_text(json.dumps(b, sort_keys=True, indent=2) + '\n')
+          imprint = sha(L / 'seal/DESIRE3_BUNDLE.json'); Sealer().seal(L / 'seal', imprint)
+          assert Sealer().verify(L / 'seal', imprint)['status'] == 'PASS'; print('DESIRE3_SEALED', imprint)
+          PY
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add $L/seal; git commit -qm 'DESIRE-3 registration sealed (RFC3161)'
+          for i in 1 2 3 4; do git pull -q --rebase origin long1-20261119 && git push -q origin HEAD:long1-20261119 && break; sleep $((2**i)); done
+
+  verify:
+    needs: which
+    if: needs.which.outputs.kind == 'run'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { repository: adrianjohnsaker-wq/Amelia-0.4, ref: f1875b5eea5339eb1ac73e50b5df6b103d0cabe9, path: c1-pin, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.13' }
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: Verify the seal and every sealed source
+        env: { PYTHONPATH: '${{ github.workspace }}/c1-pin', PYTHONDONTWRITEBYTECODE: '1', DRIFT_C1_ENABLE_LIVE: 'false' }
+        run: |
+          set -euo pipefail
+          python -m pip install -q -r c1-pin/drift1a_c1/requirements.txt
+          python - <<'PY'
+          import hashlib, json, os, pathlib
+          from drift1a_c1.beacon import Sealer
+          L = pathlib.Path(os.environ['L']); sha = lambda f: hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()
+          b = json.loads((L / 'seal/DESIRE3_BUNDLE.json').read_text())
+          assert Sealer().verify(L / 'seal', sha(L / 'seal/DESIRE3_BUNDLE.json'))['status'] == 'PASS'
+          for x in b['sourceSHA256']: assert sha(x['path']) == x['sha256'], x['path']
+          print('DESIRE3_SEAL_AND_SOURCES_VERIFIED')
+          PY
+      - name: Machinery checks (synthetic only)
+        run: bun test --timeout 1800000 experiments/live-amelia/desire3.test.ts experiments/live-amelia/desire2_amend1.test.ts
+
+  copy:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix: { include: [{copy: 1, pos: 0}, {copy: 2, pos: 1}, {copy: 3, pos: 2}, {copy: 4, pos: 3}, {copy: 5, pos: 4}, {copy: 6, pos: 5}, {copy: 7, pos: 6}, {copy: 8, pos: 7}, {copy: 9, pos: 8}, {copy: 10, pos: 9}, {copy: 11, pos: 10}, {copy: 12, pos: 11}] }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: Copy ${{ matrix.copy }} (10 days, six arms)
+        env: { MODE: copy, COPY: '${{ matrix.copy }}', SLOT_CLASS: '${{ matrix.pos }}', SLOT_CLASSES: '12', AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: bun --preload ./experiments/live-amelia/desire2/amend1/slots.ts $L/run_actions.ts   # every database call in this job's own slots
+
+  analysis:
+    needs: [verify, copy]
+    if: always() && needs.verify.result == 'success'
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.4.4 }
+      - name: Registered analysis
+        env: { MODE: analysis, SLOT_CLASS: '0', SLOT_CLASSES: '1', RESULT_FILE: 'experiments/live-amelia/desire3/result/RESULT.json', AMELIA_SUPABASE_SERVICE_KEY: '${{ secrets.AMELIA_SUPABASE_SERVICE_KEY }}' }
+        run: |
+          set -euo pipefail
+          mkdir -p $L/result
+          bun --preload ./experiments/live-amelia/desire2/amend1/slots.ts $L/run_actions.ts | tee $L/result/RESULT.txt
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add $L/result; git commit -qm 'DESIRE-3 result'
+          for i in 1 2 3 4; do git pull -q --rebase origin long1-20261119 && git push -q origin HEAD:long1-20261119 && break; sleep $((2**i)); done

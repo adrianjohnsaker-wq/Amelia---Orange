@@ -50,7 +50,9 @@ export interface MotorConfig { desire: boolean; trace: boolean; record: boolean;
   /** DESIRE-3 candidate: with dissolve, the Outside's trace renews the connections desire built along it: each step a kept
    *  connection's flux gains RENEW x T[edge] x (1 - flux) while T[edge] >= TMIN (the Outside travelled that edge within
    *  about 650 steps), as if the Outside had used it. Below TMIN it fades as any kept connection does. */
-  traceRenew?: boolean }
+  traceRenew?: boolean;
+  /** DESIRE-3 dose-response: the half-life of kept connections under dissolve (default D2.HLD = 1,000 steps). */
+  hld?: number }
 export const ND1D: MotorConfig = { desire: true, trace: true, record: true, refrain: true };
 export const D2 = { HLD: 1000, FLOOR: 0.05 } as const;
 export const D3 = { RENEW: 0.01, TMIN: 0.05 } as const;   // renewal only while the trace on that edge is at least TMIN
@@ -128,7 +130,7 @@ export class DesireMotor {
   private synthesis(t: number, named: number, gates: NumogramGate[], cur: number) {
     for (const [a, b] of this.route) for (const [id, x] of this.born) if (x.src === a && x.tgt === b) { x.uses.push(t);
       if (x.integrated) { const g = gates.find(y => y.id === id); if (g) g.flux = Math.min(P.FLUX_MAX, g.flux + P.CONSOLIDATE); } }
-    if (this.cfg.dissolve) { const k = 1 - Math.LN2 / D2.HLD;   // DESIRE-2: kept connections fade, use renews them, below FLOOR they dissolve
+    if (this.cfg.dissolve) { const k = 1 - Math.LN2 / (this.cfg.hld ?? D2.HLD);   // DESIRE-2: kept connections fade, use renews them, below FLOOR they dissolve
       for (const [id, x] of this.born) if (x.integrated) { const i = gates.findIndex(g => g.id === id); if (i < 0) continue; gates[i].flux *= k;
         if (this.cfg.traceRenew) { const g = gates[i], m = this.T[x.src * 10 + x.tgt]; if (m >= D3.TMIN) g.flux += D3.RENEW * m * (1 - g.flux); }   // DESIRE-3
         if (gates[i].flux < D2.FLOOR) { gates.splice(i, 1); this.born.delete(id); this.log.dissolved.push({ t, rule: x.rule }); } } }

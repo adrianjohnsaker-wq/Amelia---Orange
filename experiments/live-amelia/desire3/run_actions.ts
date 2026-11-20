@@ -31,11 +31,13 @@ async function main() {
       await put([row(`desire3-c${pad(c)}-${arm}`, c, arm, { ...slim(r), info: { revision: start.revision, step: start.state.stepCount, rule: start.state.admissionRule ?? 'relative-v1' }, wallMs: Date.now() - t0 })]);
       console.log(`copy ${c} ${arm}: ${r.path.length} steps, gates ${r.daily.at(-1)?.gates}, rollbacks ${r.rollbacks.length}, ${Math.round((Date.now() - t0) / 1000)} s${r.runaway ? ', RUNAWAY ' + r.runaway : ''}`); }
   } else if (mode === 'analysis') {
-    const rows = await get(`${TABLE}?id=like.desire3-c*&select=id,metrics`), runs = rows.filter((x: any) => /^desire3-c\d\d-(N|D2g|D2|D3)$/.test(x.id)).map((x: any) => x.metrics as LongResult);
+    const rows = await get(`${TABLE}?id=like.desire3-c*&select=id,metrics`), runs = rows.filter((x: any) => /^desire3-c\d\d-(N|D2g|H10|H3|D2|D3)$/.test(x.id)).map((x: any) => x.metrics as LongResult);
     const out = analyse(runs); await put([row('desire3-analysis', null, null, out)]);
     writeFileSync(process.env.RESULT_FILE ?? 'RESULT.json', JSON.stringify(out, null, 2) + '\n');
-    console.log('hard: ' + JSON.stringify(out.hard)); for (const c of out.claims) console.log(`${c.name} ${c.verdict} (p = ${c.p.toFixed(4)}, mean ${c.mean.toFixed(4)}): ${c.claim}`);
+    for (const [c, v] of Object.entries(out.candidates) as any) { console.log(`${c}: hard ${JSON.stringify(v.hard)}; ${v.pass ? 'PASSES' : 'does not pass'}`);
+      for (const y of v.claims) console.log(`  ${y.name} ${y.verdict} (p = ${y.p.toFixed(5)}, mean ${Number(y.mean).toFixed(4)}): ${y.claim}`); }
     for (const [k, v] of Object.entries(out.byArm) as any) console.log(k, JSON.stringify({ warp: v.warpShare, gates: v.gatesLast, nonWarp: v.nonWarpCoupling, warpC: v.warpCoupling, dissolved: v.dissolved, tension: v.tensionByDayMinusN }));
+    console.log('selected for LONG-1: ' + (out.selected ?? 'none'));
     console.log(out.pass ? 'DESIRE-3: PASS' : 'DESIRE-3: NOT PASSED');
   } else throw new Error(`unknown MODE ${mode}`);
 }
