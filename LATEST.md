@@ -1,11 +1,11 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-20T15:59:23.642Z
-- Cycle: 1833 (44753516358-1-7)
-- RSS items seen: 71; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -19
-- Candidate: Tchakki / Mesh-19 / Amphidemon
-- Separate ingress records and trace links: 0
+- Last cycle (UTC): 2026-11-20T16:14:26.410Z
+- Cycle: 1834 (44753516358-1-8)
+- RSS items seen: 71; newly processed: 2 (last-cycle window; 24-hour initial window)
+- Subdecadence: MESH_TERMINAL; score -11
+- Candidate: Tukkamu / Mesh-11 / Cyclic Chronodemon
+- Separate ingress records and trace links: 6
 - Catalogue entries added: 1
 - Source errors: none
 
