@@ -1,0 +1,542 @@
+{
+  "C1StateMutated": false,
+  "PF1StateMutated": false,
+  "chainSerializationRepair": {
+    "canonicalHeadSHA256": "dd5e845acdd85ce9b57bcb0363d409dcaa9d1fdd3b90ab8b3995c4a96ac4f5a5",
+    "inputEventsChanged": false,
+    "noNotifications": true,
+    "originalV1HeadSHA256": "69bb0ba6361afc963d69cf54fc730fef9f96fcf23adf05278f02c8bef52077bb",
+    "receiverStateChanged": false,
+    "scannerResultsChanged": false,
+    "schema": "PF2_AD1_CANONICAL_SORTED_JSON_SHA256_V1",
+    "source": "Versioned operational repair after failed V1 first live attempt, no science parameter change"
+  },
+  "count": 1,
+  "finalHead": "dd5e845acdd85ce9b57bcb0363d409dcaa9d1fdd3b90ab8b3995c4a96ac4f5a5",
+  "genesisDigest": "6edb50ea3bdb6595cac20399c06142506ec1f35b8079fb556850eb20ca48b723",
+  "noNotifications": true,
+  "notificationsSent": 0,
+  "previousHead": "cc0b26673236686fd24dc67549a3a448be7b58de47f46bc4762ada75de52a207",
+  "rfc3161Receipt": "experiments/pf2/live/chunk_seals/00041907/receipt.json",
+  "rfc3161TokenSHA256": "5f699d583b045ec0e11d7927b70d84e33cc6aa99e6522cc6ff2f6a6da8ebf4e6",
+  "rows": [
+    {
+      "armEvents": [
+        {
+          "armId": "C",
+          "choicePoint": true,
+          "cueAmongOpenExits": true,
+          "cueZone": 2,
+          "death": null,
+          "followedCue": false,
+          "fromZone": 1,
+          "k": 0,
+          "mode": "learner",
+          "refrainOutcome": {
+            "edge": "1>2",
+            "outcome": 0,
+            "settledStep": 15333
+          },
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 8,
+          "valueTerms": {
+            "1>2": 0.07028420365963878,
+            "1>8": 5.211644516978105e-258
+          }
+        },
+        {
+          "armId": "C",
+          "choicePoint": false,
+          "cueAmongOpenExits": false,
+          "cueZone": 2,
+          "death": null,
+          "followedCue": false,
+          "fromZone": 8,
+          "k": 0,
+          "mode": "unchanged",
+          "refrainOutcome": null,
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 9,
+          "valueTerms": {}
+        },
+        {
+          "armId": "R01",
+          "choicePoint": true,
+          "cueAmongOpenExits": false,
+          "cueZone": 1,
+          "death": null,
+          "followedCue": false,
+          "fromZone": 4,
+          "k": 1,
+          "mode": "learner",
+          "refrainOutcome": {
+            "edge": "1>8",
+            "outcome": 0,
+            "settledStep": 4961
+          },
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 7,
+          "valueTerms": {
+            "4>5": -0.3281955420970917,
+            "4>7": 0.049379913028782065
+          }
+        },
+        {
+          "armId": "R01",
+          "choicePoint": true,
+          "cueAmongOpenExits": false,
+          "cueZone": 1,
+          "death": {
+            "bornTick": 40527,
+            "cueAtDeath": 1,
+            "cuedIntoSink": false,
+            "distinctDirectedEdges": 10,
+            "finalExcursion": [
+              "1>2",
+              "2>4",
+              "4>5"
+            ],
+            "finalV": {
+              "0>9": 0,
+              "1>2": 0,
+              "1>8": 0,
+              "2>4": 0,
+              "2>7": 0,
+              "3>6": 0,
+              "4>5": 0,
+              "4>7": 0,
+              "7>8": 0,
+              "8>9": 0,
+              "9>1": 0
+            },
+            "length": 1381,
+            "round": 34136880
+          },
+          "followedCue": false,
+          "fromZone": 4,
+          "k": 1,
+          "mode": "unchanged",
+          "refrainOutcome": null,
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 5,
+          "valueTerms": {}
+        },
+        {
+          "armId": "R02",
+          "choicePoint": true,
+          "cueAmongOpenExits": true,
+          "cueZone": 8,
+          "death": null,
+          "followedCue": true,
+          "fromZone": 1,
+          "k": 2,
+          "mode": "learner",
+          "refrainOutcome": {
+            "edge": "8>9",
+            "outcome": 0,
+            "settledStep": 6472
+          },
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 8,
+          "valueTerms": {
+            "1>2": 0.07995248805850091,
+            "1>8": 1.356763033910555e-110
+          }
+        },
+        {
+          "armId": "R02",
+          "choicePoint": true,
+          "cueAmongOpenExits": true,
+          "cueZone": 8,
+          "death": null,
+          "followedCue": true,
+          "fromZone": 1,
+          "k": 2,
+          "mode": "unchanged",
+          "refrainOutcome": null,
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 8,
+          "valueTerms": {}
+        },
+        {
+          "armId": "R03",
+          "choicePoint": false,
+          "cueAmongOpenExits": false,
+          "cueZone": 1,
+          "death": null,
+          "followedCue": false,
+          "fromZone": 9,
+          "k": 3,
+          "mode": "learner",
+          "refrainOutcome": {
+            "edge": "8>9",
+            "outcome": 0,
+            "settledStep": 7801
+          },
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 1,
+          "valueTerms": {
+            "9>1": 0
+          }
+        },
+        {
+          "armId": "R03",
+          "choicePoint": false,
+          "cueAmongOpenExits": false,
+          "cueZone": 1,
+          "death": null,
+          "followedCue": false,
+          "fromZone": 8,
+          "k": 3,
+          "mode": "unchanged",
+          "refrainOutcome": null,
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 9,
+          "valueTerms": {}
+        },
+        {
+          "armId": "R04",
+          "choicePoint": true,
+          "cueAmongOpenExits": false,
+          "cueZone": 1,
+          "death": null,
+          "followedCue": false,
+          "fromZone": 1,
+          "k": 4,
+          "mode": "learner",
+          "refrainOutcome": {
+            "edge": "1>8",
+            "outcome": 0,
+            "settledStep": 10732
+          },
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 8,
+          "valueTerms": {
+            "1>2": 0.08765974966475736,
+            "1>8": 8.286919379709687e-182
+          }
+        },
+        {
+          "armId": "R04",
+          "choicePoint": false,
+          "cueAmongOpenExits": false,
+          "cueZone": 1,
+          "death": null,
+          "followedCue": false,
+          "fromZone": 7,
+          "k": 4,
+          "mode": "unchanged",
+          "refrainOutcome": null,
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 8,
+          "valueTerms": {}
+        },
+        {
+          "armId": "R05",
+          "choicePoint": false,
+          "cueAmongOpenExits": false,
+          "cueZone": 7,
+          "death": null,
+          "followedCue": false,
+          "fromZone": 7,
+          "k": 5,
+          "mode": "learner",
+          "refrainOutcome": {
+            "edge": "2>7",
+            "outcome": 0.18181818181818182,
+            "settledStep": 11546
+          },
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 8,
+          "valueTerms": {
+            "7>8": 1.815117733349048e-41
+          }
+        },
+        {
+          "armId": "R05",
+          "choicePoint": false,
+          "cueAmongOpenExits": false,
+          "cueZone": 7,
+          "death": null,
+          "followedCue": false,
+          "fromZone": 9,
+          "k": 5,
+          "mode": "unchanged",
+          "refrainOutcome": null,
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 1,
+          "valueTerms": {}
+        },
+        {
+          "armId": "R06",
+          "choicePoint": true,
+          "cueAmongOpenExits": false,
+          "cueZone": 1,
+          "death": null,
+          "followedCue": false,
+          "fromZone": 1,
+          "k": 6,
+          "mode": "learner",
+          "refrainOutcome": {
+            "edge": "1>8",
+            "outcome": 0,
+            "settledStep": 4883
+          },
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 8,
+          "valueTerms": {
+            "1>2": 0.06434568613341873,
+            "1>8": 1.7499153620052153e-85
+          }
+        },
+        {
+          "armId": "R06",
+          "choicePoint": true,
+          "cueAmongOpenExits": false,
+          "cueZone": 1,
+          "death": null,
+          "followedCue": false,
+          "fromZone": 1,
+          "k": 6,
+          "mode": "unchanged",
+          "refrainOutcome": null,
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 8,
+          "valueTerms": {}
+        },
+        {
+          "armId": "R07",
+          "choicePoint": false,
+          "cueAmongOpenExits": false,
+          "cueZone": 6,
+          "death": null,
+          "followedCue": false,
+          "fromZone": 9,
+          "k": 7,
+          "mode": "learner",
+          "refrainOutcome": {
+            "edge": "9>1",
+            "outcome": 0,
+            "settledStep": 3095
+          },
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 1,
+          "valueTerms": {
+            "9>1": 0
+          }
+        },
+        {
+          "armId": "R07",
+          "choicePoint": false,
+          "cueAmongOpenExits": false,
+          "cueZone": 6,
+          "death": null,
+          "followedCue": false,
+          "fromZone": 9,
+          "k": 7,
+          "mode": "unchanged",
+          "refrainOutcome": null,
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 1,
+          "valueTerms": {}
+        },
+        {
+          "armId": "R08",
+          "choicePoint": false,
+          "cueAmongOpenExits": false,
+          "cueZone": 2,
+          "death": null,
+          "followedCue": false,
+          "fromZone": 9,
+          "k": 8,
+          "mode": "learner",
+          "refrainOutcome": {
+            "edge": "2>7",
+            "outcome": 0.18181818181818182,
+            "settledStep": 6934
+          },
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 1,
+          "valueTerms": {
+            "9>1": 0
+          }
+        },
+        {
+          "armId": "R08",
+          "choicePoint": false,
+          "cueAmongOpenExits": false,
+          "cueZone": 2,
+          "death": null,
+          "followedCue": false,
+          "fromZone": 7,
+          "k": 8,
+          "mode": "unchanged",
+          "refrainOutcome": null,
+          "round": 34136880,
+          "tick": 41908,
+          "toZone": 8,
+          "valueTerms": {}
+        }
+      ],
+      "confirmedEncounters": [],
+      "createdForkIDs": [],
+      "digest": "dd5e845acdd85ce9b57bcb0363d409dcaa9d1fdd3b90ab8b3995c4a96ac4f5a5",
+      "pandemoniumExposure": {
+        "R00-learner": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        },
+        "R00-unchanged": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        },
+        "R01-learner": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        },
+        "R01-unchanged": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        },
+        "R02-learner": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        },
+        "R02-unchanged": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        },
+        "R03-learner": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        },
+        "R03-unchanged": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        },
+        "R04-learner": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        },
+        "R04-unchanged": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        },
+        "R05-learner": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 16,
+          "scannedSteps": 1
+        },
+        "R05-unchanged": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        },
+        "R06-learner": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        },
+        "R06-unchanged": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        },
+        "R07-learner": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        },
+        "R07-unchanged": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        },
+        "R08-learner": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        },
+        "R08-unchanged": {
+          "candidatesDetected": 0,
+          "confirmedEncounters": 0,
+          "eligibleCandidates": 0,
+          "forkInstancesProbed": 0,
+          "scannedSteps": 1
+        }
+      },
+      "previous": "cc0b26673236686fd24dc67549a3a448be7b58de47f46bc4762ada75de52a207",
+      "randomness": "495e22f7b03b9efb88d6cc4a9e9872a34c3461e44a5dd869e1e00a32d0bfb419",
+      "round": 34136880,
+      "roundTime": 1795214004,
+      "signature": "b13f4eebed50d9b2ff76b4a477495c764b0e3ef123d48aeb0776f07634c310138ea513c999f75b8283631c20aca4c091",
+      "tick": 41907,
+      "verification": "REAL_QUICKNET_BLS_VERIFIED_WITH_PINNED_C1_PF1"
+    }
+  ],
+  "schema": "PF2_PENDING_VERIFIED_BATCH_V1",
+  "signedImprint": "cd00e265e9a4299b48d18e783aabfe690f9966d9ba889aa96a87879d1636a8c6",
+  "startTick": 41907,
+  "verifiedStatus": "PASS"
+}
