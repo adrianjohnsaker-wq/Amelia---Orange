@@ -1,11 +1,11 @@
 # Amelia Outside continuous ingress
 
-- Last cycle (UTC): 2026-11-21T05:09:23.591Z
-- Cycle: 1886 (44852647087-1-14)
-- RSS items seen: 60; newly processed: 0 (last-cycle window; 24-hour initial window)
-- Subdecadence: MESH_TERMINAL; score -4
-- Candidate: Ixigool / Mesh-04 / Amphidemon
-- Separate ingress records and trace links: 0
+- Last cycle (UTC): 2026-11-21T05:24:24.430Z
+- Cycle: 1887 (44852647087-1-15)
+- RSS items seen: 60; newly processed: 1 (last-cycle window; 24-hour initial window)
+- Subdecadence: MESH_TERMINAL; score -8
+- Candidate: Skoodu / Mesh-08 / Cyclic Chronodemon
+- Separate ingress records and trace links: 3
 - Catalogue entries added: 1
 - Source errors: none
 
